@@ -11,8 +11,8 @@
   --bg:#08080a;
   --bg-2:#0d0d10;
   --ink:#f5f3ee;
-  --muted:#a6a39c;
-  --muted-2:#6d6a64;
+  --muted:#bcb9b2;
+  --muted-2:#928f87;
   --faint:#48464180;
   --line:rgba(255,255,255,.09);
   --line-2:rgba(255,255,255,.055);
@@ -200,7 +200,7 @@ ul,ol{list-style:none}
 .chap-lead{margin-top:22px;color:var(--muted);font-size:clamp(15px,1.7vw,18px);max-width:620px}
 .chap-lead strong{color:var(--ink);font-weight:600}
 
-.footnote{margin-top:34px;font-family:var(--mono);font-size:11.5px;color:var(--muted-2);max-width:640px;line-height:1.7;letter-spacing:.01em}
+.footnote{margin-top:34px;font-family:var(--mono);font-size:12.5px;color:var(--muted);max-width:660px;line-height:1.8;letter-spacing:.01em}
 .bigline{
   margin-top:clamp(34px,5vh,56px);font-size:clamp(22px,3.4vw,40px);font-weight:600;
   letter-spacing:-.03em;line-height:1.12;max-width:900px;
@@ -287,57 +287,75 @@ body.deck-snap .chapter{scroll-snap-align:start;scroll-snap-stop:always}
 ========================================================= */
 .era-stage{display:grid;gap:clamp(22px,3vw,34px)}
 .era-visual{
-  position:relative;height:clamp(220px,34vh,340px);border-radius:var(--r-lg);overflow:hidden;
-  border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,0));
+  position:relative;height:clamp(240px,36vh,360px);border-radius:var(--r-lg);overflow:hidden;
+  border:1px solid var(--line);isolation:isolate;
+  /* opaque dark fill so the page shader does not bleed through and turn into noise */
+  background:radial-gradient(135% 130% at 50% -12%, #16161c 0%, #0c0c10 52%, #08080a 100%);
 }
 .era-frame{position:absolute;inset:0;display:grid;place-items:center;opacity:0;transition:opacity .7s var(--ease),transform .7s var(--ease);transform:scale(1.04)}
-.era-glyph{position:absolute;top:18px;left:22px;font-size:22px;color:var(--muted-2)}
+.era-glyph{
+  position:relative;z-index:2;font-size:clamp(58px,9vw,104px);line-height:1;
+  filter:drop-shadow(0 10px 44px rgba(0,0,0,.72));
+}
+.era-field .era-glyph{color:var(--warn)}
+.era-factory .era-glyph{color:var(--ink)}
+.era-office .era-glyph{color:#9bbcff}
+.era-allocator .era-glyph{color:var(--pos)}
+.era-frame::after{
+  position:absolute;z-index:2;bottom:18px;left:24px;
+  font-family:var(--mono);font-size:12px;letter-spacing:.16em;color:var(--ink);opacity:.88;
+}
+.era-field::after{content:"FIELD · before 1800"}
+.era-factory::after{content:"FACTORY · 1800s"}
+.era-office::after{content:"OFFICE · 1900s"}
+.era-allocator::after{content:"ALLOCATOR · now"}
 .era-visual[data-era="0"] .era-field,
 .era-visual[data-era="1"] .era-factory,
 .era-visual[data-era="2"] .era-office,
 .era-visual[data-era="3"] .era-allocator{opacity:1;transform:none}
-.era-art{position:absolute;inset:0}
-/* field: low horizon, earthy lines */
+.era-art{position:absolute;inset:0;z-index:1}
+/* field: furrowed soil rows + warm earth glow + faint green sky */
 .era-art-field{
   background:
-    repeating-linear-gradient(0deg, rgba(243,180,78,.05) 0 2px, transparent 2px 30px),
-    radial-gradient(120% 90% at 50% 120%, rgba(243,180,78,.22), transparent 60%),
-    linear-gradient(180deg, rgba(86,211,154,.04), transparent 50%);
+    linear-gradient(180deg, rgba(86,211,154,.06) 0%, transparent 40%),
+    radial-gradient(72% 60% at 50% 110%, rgba(243,180,78,.34), transparent 66%),
+    repeating-linear-gradient(0deg, rgba(243,180,78,.16) 0 1px, transparent 1px 30px);
 }
-/* factory: vertical bars / systems */
+/* factory: machine columns rising from a floor */
 .era-art-factory{
   background:
-    repeating-linear-gradient(90deg, rgba(245,243,238,.07) 0 2px, transparent 2px 34px),
-    radial-gradient(80% 80% at 50% 50%, rgba(245,243,238,.06), transparent 70%);
+    linear-gradient(180deg, transparent 52%, rgba(245,243,238,.08) 52%),
+    repeating-linear-gradient(90deg, rgba(245,243,238,.20) 0 5px, transparent 5px 42px),
+    radial-gradient(85% 75% at 50% 42%, rgba(245,243,238,.05), transparent 76%);
 }
-/* office: spreadsheet grid */
+/* office: spreadsheet grid of cells */
 .era-art-office{
   background:
-    repeating-linear-gradient(90deg, rgba(245,243,238,.06) 0 1px, transparent 1px 26px),
-    repeating-linear-gradient(0deg, rgba(245,243,238,.06) 0 1px, transparent 1px 22px),
-    radial-gradient(70% 70% at 50% 50%, rgba(120,170,255,.05), transparent 70%);
+    repeating-linear-gradient(90deg, rgba(155,188,255,.16) 0 1px, transparent 1px 40px),
+    repeating-linear-gradient(0deg, rgba(155,188,255,.13) 0 1px, transparent 1px 30px),
+    radial-gradient(72% 72% at 50% 46%, rgba(155,188,255,.06), transparent 72%);
 }
-/* allocator: nodes / radial rings */
+/* allocator: concentric signal rings + scattered nodes */
 .era-art-alloc{
   background:
-    radial-gradient(circle at 50% 50%, transparent 0 38px, rgba(233,189,134,.16) 38px 39px, transparent 40px),
-    radial-gradient(circle at 50% 50%, transparent 0 70px, rgba(233,189,134,.1) 70px 71px, transparent 72px),
-    radial-gradient(circle at 50% 50%, transparent 0 104px, rgba(233,189,134,.07) 104px 105px, transparent 106px),
-    radial-gradient(40% 40% at 50% 50%, var(--pos-dim), transparent 70%);
+    radial-gradient(circle at 50% 52%, transparent 0 48px, rgba(86,211,154,.22) 48px 49px, transparent 50px),
+    radial-gradient(circle at 50% 52%, transparent 0 86px, rgba(233,189,134,.16) 86px 87px, transparent 88px),
+    radial-gradient(circle at 50% 52%, transparent 0 124px, rgba(233,189,134,.10) 124px 125px, transparent 126px),
+    radial-gradient(46% 46% at 50% 52%, var(--pos-dim), transparent 72%);
 }
 .era-art-alloc::after{
   content:"";position:absolute;inset:0;
   background:
-    radial-gradient(circle at 28% 36%, var(--pos) 0 3px, transparent 4px),
-    radial-gradient(circle at 73% 30%, var(--accent) 0 3px, transparent 4px),
-    radial-gradient(circle at 64% 70%, var(--warn) 0 3px, transparent 4px),
-    radial-gradient(circle at 36% 66%, var(--pos) 0 2px, transparent 3px);
-  opacity:.9;
+    radial-gradient(circle at 24% 32%, var(--pos) 0 3px, transparent 4px),
+    radial-gradient(circle at 76% 28%, var(--accent) 0 3px, transparent 4px),
+    radial-gradient(circle at 68% 74%, var(--warn) 0 3px, transparent 4px),
+    radial-gradient(circle at 32% 70%, var(--pos) 0 2px, transparent 3px);
+  opacity:.95;
 }
 
 .era-copy{position:relative;min-height:74px}
 .era-text{
-  position:absolute;inset:0;color:var(--muted);font-size:clamp(15px,1.9vw,19px);max-width:680px;
+  position:absolute;inset:0;color:#d8d5ce;font-size:clamp(15.5px,1.9vw,19px);max-width:680px;
   opacity:0;transform:translateY(8px);transition:.5s var(--ease);
 }
 .era-text strong{color:var(--ink);font-weight:600;font-family:var(--serif);font-style:italic;font-weight:400;font-size:1.18em}
