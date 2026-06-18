@@ -166,14 +166,144 @@
   })();
 
   /* =========================================================
-     CHAPTER 2 — era slider
+     PIXEL SCENES — labor-force eras + the audience crowd
+     Minecraft-style sprites rendered as crisp SVG rects.
+  ========================================================= */
+  (function pixelScenes() {
+    var P = {
+      s:'#e8b487', k:'#15110b', H:'#e3b34e', Y:'#b9821c',
+      b:'#5b86c9', B:'#39517e', o:'#6a4a30', O:'#4a3220', g:'#5fae5a', t:'#cf9a3e',
+      G:'#56d39a', m:'#9aa0a8', M:'#565c66', w:'#ecebe4', a:'#f3b44e', r:'#ff6f6b',
+      n:'#7a5230', d:'#23262d', c:'#0e1a14'
+    };
+    function R(x,y,w,h,f){ return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+f+'"/>'; }
+    function PX(grid,u,ox,oy){ // ox/oy in pixels, run-length per row
+      var out='';
+      for(var y=0;y<grid.length;y++){
+        var row=grid[y],x=0;
+        while(x<row.length){
+          var ch=row.charAt(x);
+          if(ch==='.'||ch===' '){x++;continue;}
+          var run=1; while(x+run<row.length && row.charAt(x+run)===ch) run++;
+          if(P[ch]) out+=R(ox+x*u, oy+y*u, run*u, u, P[ch]);
+          x+=run;
+        }
+      }
+      return out;
+    }
+    function G(cls,body){ return '<g class="'+cls+'">'+body+'</g>'; }
+    function SVG(vb,body){ return '<svg class="pixscene" viewBox="'+vb+'" shape-rendering="crispEdges" preserveAspectRatio="xMidYMid meet">'+body+'</svg>'; }
+
+    var FARMER=["...HHHHHH...","..HHHHHHHH..",".HHHHHHHHHH.","...kssssk...","...ssssss...","...kssssk...","....ssss....","..bbbbbbbb..",".bbbbbbbbbb.",".b.bbbbbb.b.","...bbbbbb...","...BBBBBB...","...BBBBBB..."];
+    var LEGA=["...BB..BB...","..kk....kk.."], LEGB=["....BBBB....","...kk..kk..."];
+    var FWORKER=["..aaaaaa..",".aaaaaaaa.","..kssssk..","..ssssss..","...ksss...","..bbbbbb..",".bbbbbbbb.",".b.bbbb.b.","..bbbbbb..","..BBBBBB..","..BB..BB..",".kk....kk."];
+    var OWORKER=["...kkkk...","..kkkkkk..","..kssssk..","..ssssss..","...ksss...","..wwwwww..",".wwwwwwww.",".w.wwww.w."];
+    var PWORKER=["...kkkk...","..kkkkkk..","..kssssk..","..ssssss..","...ksss...","..GGGGGG..",".GGGGGGGG.",".G.GGGG.G.","..GGGGGG..","..BBBBBB..","..BB..BB..",".kk....kk."];
+
+    function sceneField(){
+      var body='';
+      // sun + rays
+      body+=R(222,18,22,22,P.a)+R(229,8,6,4,P.a)+R(229,42,6,4,P.a)+R(212,29,4,6,P.a)+R(246,29,4,6,P.a);
+      // soil + furrows
+      body+=R(0,134,264,34,P.o)+R(0,134,264,3,P.O)+R(0,149,264,2,P.O)+R(0,160,264,2,P.O);
+      // crops behind farmer
+      for(var cx=12;cx<=246;cx+=26){ body+=R(cx,114,5,20,P.g)+R(cx-3,106,11,9,P.t); }
+      // farmer (walks + bobs + steps)
+      var legs=G('leg-a',PX(LEGA,6,48,120))+G('leg-b',PX(LEGB,6,48,120));
+      var man=PX(FARMER,6,48,42)+G('pix-step',legs);
+      body+=G('pix-walk',G('pix-bob',man));
+      return SVG('0 0 264 168',body);
+    }
+    function sceneFactory(){
+      var body='';
+      body+=R(0,140,264,28,P.d); // floor
+      // overhead press
+      body+=R(150,22,66,20,P.M)+R(170,26,26,6,P.m);
+      body+=G('pix-press',R(176,42,14,62,P.m));
+      // gear
+      body+=G('pix-gear',R(214,40,20,20,P.M)+R(220,33,8,7,P.m)+R(220,60,8,7,P.m)+R(207,46,7,8,P.m)+R(234,46,7,8,P.m)+R(221,47,6,6,P.d));
+      // conveyor belt
+      body+=R(0,120,264,12,P.M);
+      for(var rx=4;rx<264;rx+=16){ body+=R(rx,123,8,6,P.m); }
+      // boxes moving on belt
+      var boxes='';
+      for(var bx=-48;bx<312;bx+=48){ boxes+=R(bx+18,108,28,12,P.n)+R(bx+18,108,28,3,P.t); }
+      body+=G('pix-belt',boxes);
+      // worker
+      body+=PX(FWORKER,6,30,68);
+      return SVG('0 0 264 168',body);
+    }
+    function sceneOffice(){
+      var body='';
+      // worker seated behind desk
+      body+=PX(OWORKER,6,40,78);
+      // desk
+      body+=R(0,128,264,40,P.n)+R(0,128,264,3,P.d);
+      // keyboard + mug
+      body+=R(96,121,84,5,P.M)+R(64,116,14,12,P.a)+R(76,119,4,5,P.a);
+      // monitor
+      body+=R(150,72,66,48,P.d)+R(156,78,54,36,P.c)+R(174,118,18,6,P.d)+R(168,124,30,5,P.d);
+      // rising green chart on screen + blinking cursor
+      body+=R(160,106,7,4,P.G)+R(168,100,7,4,P.G)+R(176,102,7,4,P.G)+R(184,94,7,4,P.G)+R(192,88,7,4,P.G)+R(200,90,7,4,P.G);
+      body+=G('pix-cursor',R(205,84,4,8,P.G));
+      return SVG('0 0 264 168',body);
+    }
+    function scenePhone(){
+      var body='';
+      // signal arcs behind, pulsing
+      body+='<circle class="pix-signal" cx="176" cy="64" r="20" fill="none" stroke="'+P.G+'" stroke-width="2"/>';
+      body+='<circle class="pix-signal" cx="176" cy="64" r="20" fill="none" stroke="'+P.G+'" stroke-width="2" style="animation-delay:.8s"/>';
+      body+='<circle class="pix-signal" cx="176" cy="64" r="20" fill="none" stroke="'+P.a+'" stroke-width="2" style="animation-delay:1.6s"/>';
+      // floor line
+      body+=R(0,150,264,18,P.d);
+      // worker
+      body+=PX(PWORKER,6,60,42);
+      // raised arm to phone
+      body+=R(120,72,8,24,P.s)+R(124,64,18,8,P.s);
+      // phone with rising green candles
+      body+=R(150,46,30,40,P.d)+R(154,50,22,32,P.c);
+      var candles=R(157,72,4,8,P.G)+R(163,66,4,14,P.G)+R(169,60,4,20,P.G)+R(175,54,3,26,P.G);
+      body+=G('pix-rise',candles);
+      // floating up-ticks
+      body+=R(200,40,6,4,P.G)+R(202,36,2,8,P.G)+R(210,58,6,4,P.a)+R(212,54,2,8,P.a);
+      return SVG('0 0 264 168',body);
+    }
+    function sceneCrowd(){
+      var base=[".kkkk.",".ssss.",".ssss.","CCCCCC","CCCCCC","C.CC.C",".k..k."];
+      function lil(sk,ox){
+        var grid=base.map(function(r){return r.replace(/C/g,sk);});
+        var dot='<circle class="pix-signal" cx="'+(ox+18)+'" cy="22" r="4" fill="'+P.G+'" style="animation-delay:'+(ox/120).toFixed(2)+'s"/>';
+        return dot+PX(grid,6,ox,44);
+      }
+      var people=['b','g','a','M'];
+      var body='';
+      people.forEach(function(sk,i){ body+=lil(sk,8+i*52); });
+      return SVG('0 0 220 100',body);
+    }
+
+    var builders={ field:sceneField, factory:sceneFactory, office:sceneOffice, phone:scenePhone, crowd:sceneCrowd };
+    $$('[data-scene]').forEach(function(el){
+      var fn=builders[el.getAttribute('data-scene')];
+      if(fn) el.innerHTML=fn();
+    });
+  })();
+
+  /* =========================================================
+     CHAPTER 2 — era slider + labor-share graph
   ========================================================= */
   (function era() {
     var slider = $('#eraSlider');
     var visual = $('#eraVisual');
     var marks = $$('.era-mark');
     if (!slider || !visual) return;
-    var labels = ['hands', 'machines', 'desks', 'allocation'];
+    var labels = ['hands', 'machines', 'desks', 'judgment'];
+    var DATA = [
+      { num: '83<span class="eg-pct">%</span>', tag: 'agriculture', col: 0 },
+      { num: '~30<span class="eg-pct">%</span>', tag: 'manufacturing', col: 1 },
+      { num: '~60<span class="eg-pct">%</span>', tag: 'white-collar &amp; services', col: 2 },
+      { num: '~1<span class="eg-pct">%</span>', tag: 'judgment &amp; taste — the premium', col: 3 }
+    ];
+    var egNum = $('#egNum'), egTag = $('#egTag'), cols = $$('#egChart .eg-col');
     function set(v) {
       v = parseInt(v, 10);
       visual.setAttribute('data-era', v);
@@ -181,6 +311,10 @@
       slider.style.setProperty('--fill', (v / 3 * 100) + '%');
       slider.setAttribute('aria-valuetext', labels[v]);
       marks.forEach(function (m, k) { m.classList.toggle('is-on', k === v); });
+      var d = DATA[v];
+      if (egNum) egNum.innerHTML = d.num;
+      if (egTag) egTag.innerHTML = d.tag;
+      cols.forEach(function (c, k) { c.classList.toggle('active', k === d.col); });
     }
     slider.addEventListener('input', function () { set(slider.value); });
     marks.forEach(function (m) {
@@ -230,22 +364,30 @@
   })();
 
   /* =========================================================
-     CHAPTER 6 — attention exchange
+     CHAPTER 6 — attention → value flow
+     Attention streams one way; value pools; Backer adds a return rail.
   ========================================================= */
-  (function exchange() {
-    var ex = $('#exchange');
-    var pulse = $('#pulse');
-    if (!ex) return;
-    var obs = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) {
-          ex.classList.add('lit');
-          if (pulse && !RM) pulse.classList.add('grow');
-          obs.disconnect();
+  (function attnFlow() {
+    var attn = $('#attn');
+    var stream = $('#attnStream');
+    if (!attn) return;
+    if (stream) {
+      var lanes = [26, 58, 90, 122, 150], svg = '';
+      lanes.forEach(function (y) { svg += '<path class="sline" d="M8 ' + y + ' L184 ' + y + '"/>'; });
+      lanes.forEach(function (y, li) {
+        for (var d = 0; d < 2; d++) {
+          var delay = (li * 0.45 + d * 1.3).toFixed(2);
+          svg += '<circle class="sdot" cx="12" cy="' + y + '" r="2.6" style="animation-delay:' + delay + 's"/>';
         }
       });
-    }, { threshold: 0.35 });
-    obs.observe(ex);
+      stream.innerHTML = svg;
+    }
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { attn.classList.add('lit'); obs.disconnect(); }
+      });
+    }, { threshold: 0.3 });
+    obs.observe(attn);
   })();
 
   /* =========================================================

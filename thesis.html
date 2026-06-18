@@ -17,7 +17,8 @@
   /* No-JS fallback: every chapter stays fully readable */
   .reveal{opacity:1 !important;transform:none !important}
   .opener{max-height:none !important;opacity:1 !important;border-width:1px !important}
-  .exchange .newrail{opacity:1 !important;transform:none !important}
+  .attn-pool-fill{height:84% !important}
+  .lane-backer{opacity:1 !important;transform:none !important}
   .poa .band-meter i{width:var(--w,70%) !important}
   .arch-step{transform:none !important}
   #ticker,.rail,.scan,.deckmode-toggle{display:none !important}
@@ -132,17 +133,31 @@
 
       <div class="era-stage reveal">
         <div class="era-visual" id="eraVisual" data-era="0" aria-hidden="true">
-          <div class="era-frame era-field"><span class="era-glyph">▤</span><div class="era-art era-art-field"></div></div>
-          <div class="era-frame era-factory"><span class="era-glyph">▦</span><div class="era-art era-art-factory"></div></div>
-          <div class="era-frame era-office"><span class="era-glyph">▣</span><div class="era-art era-art-office"></div></div>
-          <div class="era-frame era-allocator"><span class="era-glyph">◈</span><div class="era-art era-art-alloc"></div></div>
+          <div class="era-scenes">
+            <div class="era-frame era-field"><div class="era-scene" data-scene="field"></div><span class="era-cap mono">FIELD · before 1800</span></div>
+            <div class="era-frame era-factory"><div class="era-scene" data-scene="factory"></div><span class="era-cap mono">FACTORY · 1800s–1900s</span></div>
+            <div class="era-frame era-office"><div class="era-scene" data-scene="office"></div><span class="era-cap mono">OFFICE · 1900s–now</span></div>
+            <div class="era-frame era-allocator"><div class="era-scene" data-scene="phone"></div><span class="era-cap mono">JUDGMENT · now →</span></div>
+          </div>
+          <div class="era-graph">
+            <span class="eg-label mono">SHARE OF LABOR FORCE</span>
+            <span class="eg-num" id="egNum">83<span class="eg-pct">%</span></span>
+            <span class="eg-tag" id="egTag">agriculture</span>
+            <div class="eg-chart" id="egChart">
+              <div class="eg-col" data-i="0"><i style="--h:100%"></i><span class="eg-cl">agri</span></div>
+              <div class="eg-col" data-i="1"><i style="--h:36%"></i><span class="eg-cl">factory</span></div>
+              <div class="eg-col" data-i="2"><i style="--h:72%"></i><span class="eg-cl">office</span></div>
+              <div class="eg-col" data-i="3"><i style="--h:9%"></i><span class="eg-cl">judgment</span></div>
+            </div>
+            <span class="eg-foot mono">illustrative · the dominant occupation keeps shifting</span>
+          </div>
         </div>
 
         <div class="era-copy">
           <p class="era-text" data-era-text="0"><strong>Field.</strong> For most of history, work meant land, weather, hands, endurance.</p>
           <p class="era-text" data-era-text="1"><strong>Factory.</strong> Machines made scale possible. Labor moved from soil to systems.</p>
           <p class="era-text" data-era-text="2"><strong>Office.</strong> Symbols became work. Spreadsheets, meetings, software, strategy, capital.</p>
-          <p class="era-text" data-era-text="3"><strong>Allocator.</strong> When AI performs the middle, judgment becomes the premium.</p>
+          <p class="era-text" data-era-text="3"><strong>Judgment.</strong> When AI does the actual work, judgment and taste become the premium.</p>
         </div>
 
         <div class="era-slider-wrap reveal">
@@ -152,12 +167,10 @@
             <button class="era-mark is-on" data-era-set="0">hands</button>
             <button class="era-mark" data-era-set="1">machines</button>
             <button class="era-mark" data-era-set="2">desks</button>
-            <button class="era-mark" data-era-set="3">allocation</button>
+            <button class="era-mark" data-era-set="3">judgment</button>
           </div>
         </div>
       </div>
-
-      <p class="footnote reveal">Pre-industrial agriculture: broadly estimated at 80–90% of world population. U.S. agriculture labor force: 83% in 1800.</p>
     </div>
   </section>
 
@@ -313,42 +326,41 @@
   <section class="chapter" id="ch6" data-index="5" data-label="Views Became Currency" aria-labelledby="ch6-h">
     <div class="chap-grid">
       <header class="chap-head reveal">
-        <span class="kicker">Market · the asset</span>
-        <h2 id="ch6-h">Views already<br/><em>move money.</em></h2>
-        <p class="chap-lead">They price ads, sponsorships, distribution, cultural leverage, and founder reach. But the earliest believers capture none of the compounding value they help create.</p>
+        <span class="kicker">Attention ≈ asset</span>
+        <h2 id="ch6-h">Views already<br/><em>become currency.</em></h2>
+        <p class="chap-lead">Human attention prices ads, sponsorships, distribution, cultural leverage, and founder reach. But the earliest believers capture none of the compounding value they help create.</p>
       </header>
 
-      <div class="exchange reveal" id="exchange">
-        <div class="flow flow-top">
-          <span class="node" data-n="audience">audience</span>
-          <span class="rail-seg"></span>
-          <span class="node" data-n="platform">platform</span>
-          <span class="rail-seg"></span>
-          <span class="node" data-n="algorithm">algorithm</span>
-          <span class="rail-seg"></span>
-          <span class="node" data-n="advertiser">advertiser</span>
-          <span class="rail-seg"></span>
-          <span class="node" data-n="creator">creator</span>
-          <span class="rail-seg"></span>
-          <span class="node node-end" data-n="culture">culture</span>
-        </div>
-
-        <div class="pulse-wrap" aria-hidden="true">
-          <div class="pulse" id="pulse"></div>
-          <div class="rise rise-platform"><span>platform value</span><i></i></div>
-          <div class="rise rise-brand"><span>brand value</span><i></i></div>
-          <div class="rise rise-creator"><span>creator leverage</span><i></i></div>
-          <div class="outsider" id="outsider"><span class="outsider-dot"></span> early believer · outside the loop</div>
-        </div>
-
-        <div class="newrail" id="newrail">
-          <span class="newrail-tag mono">BACKER RAIL</span>
-          <div class="newrail-steps">
-            <span class="nr-step">belief</span><span class="nr-arr">→</span>
-            <span class="nr-step">contract</span><span class="nr-arr">→</span>
-            <span class="nr-step">milestone</span><span class="nr-arr">→</span>
-            <span class="nr-step">track record</span>
+      <div class="attn reveal" id="attn" aria-hidden="true">
+        <div class="attn-grid">
+          <!-- SUPPLY: the audience supplies attention -->
+          <div class="attn-col attn-supply">
+            <span class="attn-k mono">YOU · THE AUDIENCE</span>
+            <div class="attn-crowd" data-scene="crowd"></div>
+            <div class="attn-chips">
+              <span>swipe</span><span>like</span><span>comment</span><span>share</span><span>watch-time</span><span>gift</span><span>subscribe</span>
+            </div>
+            <span class="attn-zero"><span class="az-ic">✕</span> you earn today <b>$0</b></span>
           </div>
+
+          <!-- FLOW: attention/engagement streams one way -->
+          <div class="attn-flow">
+            <svg class="attn-stream" id="attnStream" viewBox="0 0 200 170" preserveAspectRatio="none"></svg>
+            <span class="attn-flow-label mono">your attention &amp; spend →</span>
+          </div>
+
+          <!-- CAPTURE: value accrues to the platform & creator -->
+          <div class="attn-col attn-capture">
+            <span class="attn-k mono">VALUE CAPTURED</span>
+            <div class="attn-pool"><div class="attn-pool-fill"></div><span class="attn-coin mono">$</span></div>
+            <div class="attn-tags"><span>platform</span><span>algorithm</span><span>creator</span></div>
+          </div>
+        </div>
+
+        <!-- RETURNS: today nothing comes back; Backer opens a rail -->
+        <div class="attn-returns">
+          <div class="attn-lane lane-dead"><span class="lane-ic">✕</span><span>Today the value flows one way. None of it returns to the people who supply the attention.</span></div>
+          <div class="attn-lane lane-backer"><span class="lane-tag mono">BACKER RAIL</span><span class="lane-on">A return rail on your early belief — <b>earn while you engage.</b></span></div>
         </div>
       </div>
 
