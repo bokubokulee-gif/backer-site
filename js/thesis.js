@@ -98,15 +98,6 @@
     });
   });
 
-  /* ---------- deck mode (snap) ---------- */
-  var deckToggle = $('#deckModeToggle');
-  if (deckToggle) {
-    deckToggle.addEventListener('click', function () {
-      var on = document.body.classList.toggle('deck-snap');
-      deckToggle.setAttribute('aria-pressed', on ? 'true' : 'false');
-    });
-  }
-
   /* ---------- keyboard navigation ---------- */
   document.addEventListener('keydown', function (e) {
     if (memoOpen) {
