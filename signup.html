@@ -171,8 +171,7 @@
     <span class="brand-sub">Join Beta</span>
   </a>
   <div class="topbar-actions">
-    <a class="tb-link" href="https://bokubokulee-gif.github.io/backer-site/" target="_blank" rel="noopener noreferrer"><span class="dm-dot"></span>Demo</a>
-    <a class="tb-link" href="portfolio.html">Log in</a>
+    <a class="tb-link" href="https://bokubokulee-gif.github.io/backer-site/" target="_blank" rel="noopener noreferrer"><span class="dm-dot"></span>View the demo</a>
   </div>
 </header>
 
@@ -206,7 +205,7 @@
   <section class="auth-right">
     <div class="ar-top">
       <span class="kicker">Join the beta</span>
-      <span class="ar-login">Already have an account? <a href="portfolio.html">Log in</a></span>
+      <span class="ar-login">Invite-only beta · we’ll email you when your spot opens</span>
     </div>
 
     <!-- STEP 0 — role chooser -->
@@ -293,8 +292,16 @@
             <input type="checkbox" id="ack" />
             <span>I understand Backer V1 is a simulated experience and no real money moves.</span>
           </label>
-          <button class="btn btn-grad btn-block btn-lg" id="invEnter">Enter Backer<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+          <button class="btn btn-grad btn-block btn-lg" id="invEnter">Join the beta<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
           <p class="legal">Future real-money milestone positions can lose the full stake. Proof of Attention is advisory underwriting — it does not settle contracts.</p>
+        </div>
+        <!-- beta confirmation -->
+        <div class="csuccess" id="invSuccess">
+          <div class="ok"><svg viewBox="0 0 24 24" class="ic"><path d="M5 13l4 4L19 7"/></svg></div>
+          <h3>You’re on the beta list</h3>
+          <p id="invSuccessMsg">Your spot is reserved. We’ll email you when your Backer account is ready.</p>
+          <p class="legal" style="margin-top:14px">Backer V1 is simulated; no real money moves. Want to see it first? <a href="https://bokubokulee-gif.github.io/backer-site/" target="_blank" rel="noopener noreferrer" style="color:var(--accent)">View the demo</a>.</p>
+          <a class="btn btn-line btn-lg" href="thesisd.html" style="margin-top:6px">Back to the thesis</a>
         </div>
       </div>
 
@@ -319,9 +326,9 @@
         <div class="csuccess" id="creatorSuccess">
           <div class="ok"><svg viewBox="0 0 24 24" class="ic"><path d="M5 13l4 4L19 7"/></svg></div>
           <h3>Application submitted</h3>
-          <p>Backer will review your platforms and propose milestone terms within 48 hours.</p>
+          <p>Backer will review your platforms and propose milestone terms within 48 hours. You’ll get an email when your Creator Terminal is ready.</p>
           <div class="url-recap" id="urlRecap"></div>
-          <a class="btn btn-fill btn-lg" href="portfolio.html?mode=creator">Open your Creator Terminal<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="btn btn-line btn-lg" href="thesisd.html">Back to Backer</a>
         </div>
       </div>
     </div>
@@ -419,9 +426,13 @@
     setErr('f-name',!okName); setErr('f-handle',!okHandle);
     $('#ackBox').classList.toggle('has-err',!ack);
     if(!okName||!okHandle||!ack) return;
-    store.displayName=name; store.handle=handle; store.acceptedDemoRiskAt=Date.now(); store.onboarding='COMPLETE'; save();
-    var btn=this; btn.disabled=true; btn.textContent='Securing your session…';
-    setTimeout(function(){ window.location.href='portfolio.html'; }, 650);
+    store.displayName=name; store.handle=handle; store.acceptedDemoRiskAt=Date.now(); store.onboarding='WAITLISTED'; save();
+    var btn=this; btn.disabled=true; btn.textContent='Reserving your spot…';
+    setTimeout(function(){
+      $('#invSuccessMsg').textContent='Thanks, '+name+' — your spot is reserved. We’ll email '+(store.email||'you')+' when your Backer account is ready.';
+      $('#invStep2').style.display='none';
+      $('#invSuccess').classList.add('is-on');
+    }, 650);
   });
 
   /* ===== creator raise modal ===== */

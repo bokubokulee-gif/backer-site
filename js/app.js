@@ -151,6 +151,7 @@
   }
 
   function go(view, arg) {
+    if (view === 'portfolio') { window.location.href = 'portfolio.html'; return; }
     if (view === 'home') {
       document.body.classList.remove('body-app');
       app.classList.add('hidden'); app.setAttribute('aria-hidden', 'true');
@@ -611,6 +612,11 @@
     initHero();
     initTyped();
     $('.dock-home').classList.add('active');
+    // deep-link from portfolio.html dock (e.g. index.html?view=market)
+    try {
+      var dl = new URLSearchParams(location.search).get('view');
+      if (dl && (dl === 'market' || dl === 'search')) go(dl);
+    } catch (e) {}
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();

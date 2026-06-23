@@ -153,6 +153,18 @@
 
   .hidden{display:none!important}
 
+  /* ===== bottom dock (matches demo) ===== */
+  .wrap{padding-bottom:118px}
+  .dock{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:6px;padding:8px;border-radius:999px;background:rgba(16,16,19,.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--line);box-shadow:0 18px 50px rgba(0,0,0,.5)}
+  .dock-btn{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:var(--muted);position:relative;transition:.2s var(--ease)}
+  .dock-btn:hover{color:var(--ink);background:var(--card-2)}
+  .dock-btn.active{color:var(--ink);background:var(--card-hi)}
+  .dock-btn .ic{width:20px;height:20px}
+  .dock-home .dock-orb{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 32% 30%,#fff,#cfd6da 30%,#6b7378 70%,#2a2e31);box-shadow:0 0 18px rgba(255,255,255,.25),inset -4px -6px 10px rgba(0,0,0,.4);transition:.2s}
+  .dock-home:hover .dock-orb{transform:scale(1.08)}
+  .dock-btn[data-tip]::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);font-size:11px;color:var(--ink);background:var(--bg-2);border:1px solid var(--line);padding:4px 9px;border-radius:7px;white-space:nowrap;opacity:0;pointer-events:none;transition:.2s}
+  .dock-btn:hover::after{opacity:1}
+
   /* ===== CREATOR TERMINAL ===== */
   .ct-strip{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--card);padding:20px;margin-bottom:18px}
   .ct-id{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
@@ -231,12 +243,12 @@
 
 <!-- top bar -->
 <header class="topbar">
-  <a class="brand" href="thesisd.html" aria-label="Backer">
+  <a class="brand" href="index.html" aria-label="Backer — demo home">
     <span class="brand-mark">B</span><span class="brand-word">Backer</span><span class="brand-sub">Portfolio</span>
   </a>
   <div class="topbar-actions">
-    <a class="tb-link" href="https://bokubokulee-gif.github.io/backer-site/" target="_blank" rel="noopener noreferrer"><span class="dm-dot"></span>Demo</a>
-    <a class="tb-link" href="signup.html">Join beta</a>
+    <a class="tb-link" href="index.html?view=market">Marketplace</a>
+    <a class="tb-link" href="index.html">Demo home</a>
   </div>
 </header>
 
@@ -249,9 +261,9 @@
   <div class="id-head">
     <div class="avatar" id="userAvatar">C</div>
     <div class="id-main">
-      <div class="id-name" id="userName">Cooper Hale</div>
+      <div class="id-name" id="userName">Cooper</div>
       <div class="id-meta">
-        <span id="userHandle">@cooper</span><span class="sep">·</span>
+        <span id="userHandle">@endurance</span><span class="sep">·</span>
         <span>Simulated Portfolio</span><span class="sep">·</span>
         <span class="badge badge-pos" data-tip="Proof-of-taste signal based on simulated portfolio return.">Taste Grade A+</span><span class="sep">·</span>
         <span>Joined Feb 2026</span>
@@ -381,7 +393,7 @@
 
     <!-- find more -->
     <div style="text-align:center;margin-top:34px">
-      <a class="btn btn-line btn-lg" href="https://bokubokulee-gif.github.io/backer-site/" target="_blank" rel="noopener noreferrer">Find more creators<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="btn btn-line btn-lg" href="index.html?view=market">Find more creators<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     </div>
   </section>
 
@@ -466,7 +478,7 @@
           <h3>Creator Actions</h3>
           <div class="actions-list">
             <button class="act-btn primary" id="proposeBtn"><svg viewBox="0 0 24 24" class="ic"><path d="M12 5v14M5 12h14"/></svg> Propose milestone</button>
-            <a class="act-btn" href="https://bokubokulee-gif.github.io/backer-site/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" class="ic"><path d="M14 3h7v7M21 3l-9 9"/><path d="M21 14v5a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h5"/></svg> View public profile</a>
+            <a class="act-btn" href="index.html?view=market"><svg viewBox="0 0 24 24" class="ic"><path d="M14 3h7v7M21 3l-9 9"/><path d="M21 14v5a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h5"/></svg> View public profile</a>
             <button class="act-btn" id="shareReport"><svg viewBox="0 0 24 24" class="ic"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7"/><path d="M16 6l-4-4-4 4M12 2v13"/></svg> Share report</button>
           </div>
         </div>
@@ -533,6 +545,22 @@
   <div id="drawerContent"></div>
 </aside>
 
+<!-- ===== bottom dock (demo navigation) ===== -->
+<nav class="dock" aria-label="Demo navigation">
+  <a class="dock-btn" href="index.html?view=search" data-tip="Search" aria-label="AI Search">
+    <svg viewBox="0 0 24 24" class="ic"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+  </a>
+  <a class="dock-btn" href="index.html?view=market" data-tip="Market" aria-label="Marketplace">
+    <svg viewBox="0 0 24 24" class="ic"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+  </a>
+  <a class="dock-btn dock-home" href="index.html" data-tip="Home" aria-label="Home">
+    <span class="dock-orb"></span>
+  </a>
+  <a class="dock-btn active" href="portfolio.html" data-tip="Portfolio" aria-label="Portfolio">
+    <svg viewBox="0 0 24 24" class="ic"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+  </a>
+</nav>
+
 <script src="js/shader.js"></script>
 <script>
 (function(){
@@ -542,12 +570,7 @@
   function money(n){ var s=n<0?'-':'+'; return s+'$'+Math.abs(n).toFixed(2); }
   function plus(n){ return (n>=0?'+':'')+n; }
 
-  /* ---- personalize from signup (if present) ---- */
-  try{
-    var p=JSON.parse(localStorage.getItem('backer_profile')||'{}');
-    if(p.displayName){ $('#userName').textContent=p.displayName; $('#userAvatar').textContent=p.displayName.trim().charAt(0).toUpperCase()||'C'; }
-    if(p.handle){ $('#userHandle').textContent='@'+p.handle; }
-  }catch(e){}
+  /* Demo example portfolio — fixed identity (Cooper · @endurance). Not personalized. */
 
   /* ================= DATA ================= */
   var INST={MILESTONE_CONTRACT:{label:'Milestone Contract',cls:'inst-ms',short:'Milestone'},
@@ -865,8 +888,6 @@
   /* ================= INIT ================= */
   renderPositions(); renderActivity(); drawPerf('YTD');
   renderContracts(); renderTape(); setAI('price'); drawCt('price');
-  // creator application banner from signup
-  try{ var pr=JSON.parse(localStorage.getItem('backer_profile')||'{}'); if(pr.creatorApplication){ /* could surface pending state */ } }catch(e){}
   var params=(location.search||'').toLowerCase();
   setMode(params.indexOf('mode=creator')>=0?'creator':'investor');
 })();
