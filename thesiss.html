@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Backer — The Trust Layer for Human Attention</title>
+<meta name="description" content="An investment thesis. When AI compresses work, human judgment becomes the scarce asset. Backer is the trust + capital infrastructure layer for human attention." />
+<meta name="robots" content="index,follow" />
+<meta property="og:title" content="Backer — Where belief gets priced." />
+<meta property="og:description" content="The trust + capital infrastructure layer for human attention." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23090909'/%3E%3Ctext x='50' y='72' font-family='Georgia,serif' font-size='64' font-weight='700' fill='%23f5f3ee' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/thesis.css" />
+<noscript><style>
+  /* No-JS fallback: every chapter stays fully readable */
+  .reveal{opacity:1 !important;transform:none !important}
+  .opener{max-height:none !important;opacity:1 !important;border-width:1px !important}
+  .attn-pool-fill{height:84% !important}
+  .lane-backer{opacity:1 !important;transform:none !important}
+  .poa .band-meter i{width:var(--w,70%) !important}
+  .arch-step{transform:none !important}
+  #ticker,.rail,.scan,.deckmode-toggle{display:none !important}
+</style></noscript>
+</head>
+<body class="deck">
+<canvas id="bg" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- skip link -->
+<a href="#ch1" class="skip">Skip to thesis</a>
+
+<!-- ================= TOP NAV ================= -->
+<header class="topbar" id="topbar">
+  <a class="brand" href="#ch1" data-jump="0" aria-label="Backer — top">
+    <span class="brand-mark">B</span>
+    <span class="brand-word">Backer</span>
+    <span class="brand-sub">Thesis</span>
+  </a>
+  <nav class="topnav" aria-label="Sections">
+    <a href="#ch1" data-jump="0">Thesis</a>
+    <a href="#ch3" data-jump="2">Why Now</a>
+    <a href="#ch8" data-jump="7">Trust Layer</a>
+    <a href="#ch5" data-jump="4">Market</a>
+    <a href="#ch10" data-jump="9">Ask</a>
+  </nav>
+  <div class="topbar-actions">
+    <a class="deckmode-toggle demo-link" href="https://bokubokulee-gif.github.io/backer-site/" target="_blank" rel="noopener noreferrer" title="Open the Backer product demo">
+      <span class="dm-dot" aria-hidden="true"></span> Demo
+    </a>
+    <button class="btn btn-line" data-memo>Request the memo</button>
+  </div>
+</header>
+
+<!-- progress bar -->
+<div class="scan" id="scan" aria-hidden="true"><span id="scanBar"></span></div>
+
+<!-- chapter rail -->
+<nav class="rail" id="rail" aria-label="Chapter navigation"><!-- dots injected --></nav>
+
+<!-- counter -->
+<div class="counter" id="counter" aria-hidden="true">
+  <span id="counterNow">01</span><span class="counter-sep">/</span><span class="counter-tot">10</span>
+</div>
+
+<main id="deck">
+
+  <!-- =========================================================
+       CHAPTER 1 — COLD OPEN: THE LAST HUMAN JOB
+  ========================================================== -->
+  <section class="chapter cold-open" id="ch1" data-index="0" data-label="The Last Human Job" aria-labelledby="ch1-h">
+    <div class="hero-field" aria-hidden="true">
+      <svg class="field-svg" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="graphGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#56d39a" stop-opacity="0"/>
+            <stop offset=".35" stop-color="#56d39a" stop-opacity=".9"/>
+            <stop offset="1" stop-color="#f4ab63" stop-opacity=".95"/>
+          </linearGradient>
+          <radialGradient id="figGlow" cx="50%" cy="42%" r="55%">
+            <stop offset="0" stop-color="#f5f3ee" stop-opacity=".22"/>
+            <stop offset="1" stop-color="#f5f3ee" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <!-- faint human silhouette assembled from signal lines -->
+        <g class="figure">
+          <ellipse cx="600" cy="250" rx="200" ry="240" fill="url(#figGlow)"/>
+          <path class="fig-path" d="M600 150
+            c-34 0 -60 26 -60 60 c0 22 11 40 28 51
+            c-44 12 -78 40 -96 86
+            c-12 30 -16 70 -16 118
+            l24 0 c2 -44 8 -78 18 -104
+            l0 240 24 0 8 -150 8 0 8 150 24 0
+            l0 -240 c10 26 16 60 18 104 l24 0
+            c0 -48 -4 -88 -16 -118 c-18 -46 -52 -74 -96 -86
+            c17 -11 28 -29 28 -51 c0 -34 -26 -60 -60 -60 z"/>
+        </g>
+        <!-- market graph it dissolves into -->
+        <polyline class="graph-line" points="60,520 180,500 300,512 420,470 540,488 660,402 780,430 900,300 1020,338 1140,150"/>
+        <g class="spark">
+          <circle class="spark-dot" cx="1140" cy="150" r="5"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="cold-inner">
+      <p class="eyebrow"><span class="dot"></span> The Trust Layer for Human Attention</p>
+      <h1 class="cold-h" id="ch1-h">The last human job<br/>is <em>judgment.</em></h1>
+      <p class="cold-sub">AI is compressing the middle of knowledge work. What remains scarce is taste, trust, allocation, and early belief.</p>
+      <p class="cold-line"><span class="mono-tag">→</span> Backer turns belief into a market.</p>
+      <div class="cold-cta">
+        <a class="btn btn-fill" href="https://bokubokulee-gif.github.io/backer-site/" target="_blank" rel="noopener noreferrer">Enter the belief market<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+
+    <!-- abstract market ticker -->
+    <div class="ticker" id="ticker" aria-hidden="true">
+      <div class="ticker-track" id="tickerTrack"><!-- injected --></div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       CHAPTER 2 — EVERY WORK REVOLUTION SOUNDED IMPOSSIBLE
+  ========================================================== -->
+  <section class="chapter" id="ch2" data-index="1" data-label="The Shape of Work" aria-labelledby="ch2-h">
+    <div class="chap-grid">
+      <header class="chap-head reveal">
+        <span class="kicker">Why now · 01</span>
+        <h2 id="ch2-h">Every work revolution<br/>sounded impossible<br/><em>before it happened.</em></h2>
+      </header>
+
+      <div class="era-stage reveal">
+        <div class="era-visual" id="eraVisual" data-era="0" aria-hidden="true">
+          <div class="era-scenes">
+            <div class="era-frame era-field"><div class="era-scene" data-scene="field"></div><span class="era-cap mono">FIELD · before 1800</span></div>
+            <div class="era-frame era-factory"><div class="era-scene" data-scene="factory"></div><span class="era-cap mono">FACTORY · 1800s–1900s</span></div>
+            <div class="era-frame era-office"><div class="era-scene" data-scene="office"></div><span class="era-cap mono">OFFICE · 1900s–now</span></div>
+            <div class="era-frame era-allocator"><div class="era-scene" data-scene="phone"></div><span class="era-cap mono">JUDGMENT · now →</span></div>
+          </div>
+          <div class="era-graph">
+            <span class="eg-label mono">SHARE OF LABOR FORCE</span>
+            <span class="eg-num" id="egNum">83<span class="eg-pct">%</span></span>
+            <span class="eg-tag" id="egTag">agriculture</span>
+            <div class="eg-chart" id="egChart">
+              <div class="eg-col" data-i="0"><i style="--h:100%"></i><span class="eg-cl">agri</span></div>
+              <div class="eg-col" data-i="1"><i style="--h:36%"></i><span class="eg-cl">factory</span></div>
+              <div class="eg-col" data-i="2"><i style="--h:72%"></i><span class="eg-cl">office</span></div>
+              <div class="eg-col" data-i="3"><i style="--h:9%"></i><span class="eg-cl">judgment</span></div>
+            </div>
+            <span class="eg-foot mono">illustrative · the dominant occupation keeps shifting</span>
+          </div>
+        </div>
+
+        <div class="era-copy">
+          <p class="era-text" data-era-text="0"><strong>Field.</strong> For most of history, work meant land, weather, hands, endurance.</p>
+          <p class="era-text" data-era-text="1"><strong>Factory.</strong> Machines made scale possible. Labor moved from soil to systems.</p>
+          <p class="era-text" data-era-text="2"><strong>Office.</strong> Symbols became work. Spreadsheets, meetings, software, strategy, capital.</p>
+          <p class="era-text" data-era-text="3"><strong>Judgment.</strong> When AI does the actual work, judgment and taste become the premium.</p>
+        </div>
+
+        <div class="era-slider-wrap reveal">
+          <label class="era-label" for="eraSlider">What society thinks work is</label>
+          <input id="eraSlider" class="era-slider" type="range" min="0" max="3" step="1" value="0" aria-valuetext="hands" />
+          <div class="era-marks">
+            <button class="era-mark is-on" data-era-set="0">hands</button>
+            <button class="era-mark" data-era-set="1">machines</button>
+            <button class="era-mark" data-era-set="2">desks</button>
+            <button class="era-mark" data-era-set="3">judgment</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       CHAPTER 3 — AI EATS THE MIDDLE
+  ========================================================== -->
+  <section class="chapter" id="ch3" data-index="2" data-label="AI Eats the Middle" aria-labelledby="ch3-h">
+    <div class="chap-grid">
+      <header class="chap-head reveal">
+        <span class="kicker">Why now · 02</span>
+        <h2 id="ch3-h">AI eats <em>the middle.</em></h2>
+        <p class="chap-lead">Modern knowledge work is a three-part machine. The job was always the middle. Now the middle becomes the tool.</p>
+      </header>
+
+      <div class="machine reveal" id="machine" data-ai="off">
+        <div class="layer layer-in">
+          <span class="layer-tag">INPUT · human-lit</span>
+          <h3>Intent</h3>
+          <ul class="layer-list">
+            <li>ideas</li><li>prompts</li><li>questions</li><li>goals</li><li>taste</li>
+          </ul>
+        </div>
+
+        <div class="layer layer-mid" id="layerMid">
+          <span class="layer-tag">MIDDLE</span>
+          <h3 class="mid-title">Production</h3>
+          <ul class="layer-list">
+            <li>research</li><li>analysis</li><li>decks</li><li>code</li><li>editing</li><li>modeling</li><li>comparison</li>
+          </ul>
+          <div class="ai-core" aria-hidden="true">
+            <span class="ai-core-ring"></span>
+            <span class="ai-core-label">AI</span>
+          </div>
+        </div>
+
+        <div class="layer layer-out">
+          <span class="layer-tag">OUTPUT · human-lit</span>
+          <h3>Judgment</h3>
+          <ul class="layer-list">
+            <li>execution choices</li><li>capital allocation</li><li>distribution</li><li>risk</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="machine-bar reveal">
+        <button class="ai-switch" id="aiSwitch" role="switch" aria-checked="false">
+          <span class="ai-switch-track"><span class="ai-switch-knob"></span></span>
+          <span class="ai-switch-label" id="aiSwitchLabel">Turn on AI</span>
+        </button>
+        <p class="machine-readout" id="machineReadout">
+          <span class="r-off">The middle used to be the job.</span>
+          <span class="r-on">Now it is becoming the tool. What remains is deciding what deserves work, attention, and capital.</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       CHAPTER 4 — THE ANDREESSEN PROVOCATION
+  ========================================================== -->
+  <section class="chapter chap-quote" id="ch4" data-index="3" data-label="The Primitive" aria-labelledby="ch4-h">
+    <div class="chap-grid">
+      <figure class="bigquote reveal">
+        <span class="quote-mark" aria-hidden="true">“</span>
+        <blockquote id="ch4-h">when the AI is doing everything else, that may be one of the last remaining fields that people are still doing.</blockquote>
+        <figcaption>Marc Andreessen, on venture capital and AI</figcaption>
+      </figure>
+
+      <div class="reframe reveal">
+        <p>Andreessen is describing venture capital.<br/>But VC is not only a profession. <em>It is a primitive.</em></p>
+      </div>
+
+      <ol class="primitive" aria-label="The VC primitive">
+        <li class="prim reveal"><span class="prim-no">01</span><span class="prim-t">spot talent early</span></li>
+        <li class="prim reveal"><span class="prim-no">02</span><span class="prim-t">underwrite uncertainty</span></li>
+        <li class="prim reveal"><span class="prim-no">03</span><span class="prim-t">allocate capital</span></li>
+        <li class="prim reveal"><span class="prim-no">04</span><span class="prim-t">help the asset compound</span></li>
+        <li class="prim reveal"><span class="prim-no">05</span><span class="prim-t">build a track record</span></li>
+      </ol>
+
+      <div class="turn reveal">
+        <p class="turn-line">Backer makes the VC primitive <span class="grad-text">internet-native.</span></p>
+        <p class="turn-sub">Not everyone becomes a venture capitalist. But everyone can become an <em>allocator of belief.</em></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       CHAPTER 5 — RETAIL CONVICTION KEEPS FINDING NEW MARKETS
+  ========================================================== -->
+  <section class="chapter" id="ch5" data-index="4" data-label="New Surfaces for Conviction" aria-labelledby="ch5-h">
+    <div class="chap-grid">
+      <header class="chap-head reveal">
+        <span class="kicker">Market · the pattern</span>
+        <h2 id="ch5-h">Retail conviction keeps<br/>finding <em>new surfaces.</em></h2>
+        <p class="chap-lead">Not the same as what came before. The pattern is what repeats: retail belief keeps finding a new surface to price.</p>
+      </header>
+
+      <div class="wall reveal" id="wall">
+        <button class="tile" data-tile aria-expanded="false">
+          <span class="tile-sym mono">BTC</span>
+          <span class="tile-name">Bitcoin</span>
+          <span class="tile-priced">priced belief in money</span>
+          <span class="tile-reveal">
+            <span><b>Investable</b> · a monetary network</span>
+            <span><b>Missing before</b> · permissionless price</span>
+          </span>
+        </button>
+        <button class="tile" data-tile aria-expanded="false">
+          <span class="tile-sym mono">OPT</span>
+          <span class="tile-name">Retail options</span>
+          <span class="tile-priced">priced belief in direction</span>
+          <span class="tile-reveal">
+            <span><b>Investable</b> · convex conviction</span>
+            <span><b>Missing before</b> · access at small size</span>
+          </span>
+        </button>
+        <button class="tile" data-tile aria-expanded="false">
+          <span class="tile-sym mono">IPC</span>
+          <span class="tile-name">Internet collectibles</span>
+          <span class="tile-priced">priced belief in culture</span>
+          <span class="tile-reveal">
+            <span><b>Investable</b> · digital provenance</span>
+            <span><b>Missing before</b> · provable digital scarcity</span>
+          </span>
+        </button>
+        <button class="tile" data-tile aria-expanded="false">
+          <span class="tile-sym mono">PRX</span>
+          <span class="tile-name">Prediction markets</span>
+          <span class="tile-priced">priced belief in events</span>
+          <span class="tile-reveal">
+            <span><b>Investable</b> · discrete outcomes</span>
+            <span><b>Missing before</b> · a market for <em>growth</em>, not events</span>
+          </span>
+        </button>
+
+        <!-- Backer opens vertically beneath the row -->
+        <div class="opener" id="opener" data-tile-backer>
+          <div class="opener-spine" aria-hidden="true"></div>
+          <div class="opener-body">
+            <span class="tile-sym mono opener-sym">BKR</span>
+            <h3 class="opener-name">Backer <span class="opener-prices">prices belief in <em>people.</em></span></h3>
+            <p class="opener-text">Bitcoin priced belief in money. Prediction markets priced belief in events. Prediction markets price discrete outcomes — <strong>Backer prices growth potential in human attention.</strong></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       CHAPTER 6 — VIEWS BECAME CURRENCY
+  ========================================================== -->
+  <section class="chapter" id="ch6" data-index="5" data-label="Views Became Currency" aria-labelledby="ch6-h">
+    <div class="chap-grid">
+      <header class="chap-head reveal">
+        <span class="kicker">Attention ≈ asset</span>
+        <h2 id="ch6-h">Views already<br/><em>become currency.</em></h2>
+        <p class="chap-lead">Human attention prices ads, sponsorships, distribution, cultural leverage, and founder reach. But the earliest believers capture none of the compounding value they help create.</p>
+      </header>
+
+      <div class="attn reveal" id="attn" aria-hidden="true">
+        <div class="attn-grid">
+          <!-- SUPPLY: the audience supplies attention -->
+          <div class="attn-col attn-supply">
+            <span class="attn-k mono">YOU · THE AUDIENCE</span>
+            <div class="attn-crowd" data-scene="crowd"></div>
+            <div class="attn-chips">
+              <span>swipe</span><span>like</span><span>comment</span><span>share</span><span>watch-time</span><span>gift</span><span>subscribe</span>
+            </div>
+            <span class="attn-zero"><span class="az-ic">✕</span> you earn today <b>$0</b></span>
+          </div>
+
+          <!-- FLOW: attention/engagement streams one way -->
+          <div class="attn-flow">
+            <svg class="attn-stream" id="attnStream" viewBox="0 0 200 170" preserveAspectRatio="none"></svg>
+            <span class="attn-flow-label mono">your attention &amp; spend →</span>
+          </div>
+
+          <!-- CAPTURE: value accrues to the platform & creator -->
+          <div class="attn-col attn-capture">
+            <span class="attn-k mono">VALUE CAPTURED</span>
+            <div class="attn-pool"><div class="attn-pool-fill"></div><span class="attn-coin mono">$</span></div>
+            <div class="attn-tags"><span>platform</span><span>algorithm</span><span>creator</span></div>
+          </div>
+        </div>
+
+        <!-- RETURNS: today nothing comes back; Backer opens a rail -->
+        <div class="attn-returns">
+          <div class="attn-lane lane-dead"><span class="lane-ic">✕</span><span>Today the value flows one way. None of it returns to the people who supply the attention.</span></div>
+          <div class="attn-lane lane-backer"><span class="lane-tag mono">BACKER RAIL</span><span class="lane-on">A return rail on your early belief — <b>earn while you engage.</b></span></div>
+        </div>
+      </div>
+
+      <p class="bigline reveal">The asset is <span class="grad-text">aggregated fan conviction.</span></p>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       CHAPTER 7 — AI MAKES EVERYONE AN ONLINE IP
+  ========================================================== -->
+  <section class="chapter" id="ch7" data-index="6" data-label="Everyone Becomes IP" aria-labelledby="ch7-h">
+    <div class="chap-grid">
+      <header class="chap-head reveal">
+        <span class="kicker">Market · the supply</span>
+        <h2 id="ch7-h">AI turns individuals<br/>into <em>media companies.</em></h2>
+        <p class="chap-lead">AI lowers the cost of creation. Distribution turns individuals into companies. Audience becomes the first balance sheet.</p>
+      </header>
+
+      <div class="constellation reveal" id="constellation" aria-hidden="true">
+        <svg class="const-links" id="constLinks" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid meet"></svg>
+        <div class="const-nodes" id="constNodes"><!-- injected --></div>
+      </div>
+      <p class="const-help reveal">Select an online IP to inspect what a market would have to price.</p>
+
+      <p class="bigline reveal">The next investable asset is not only the startup.<br/>It is the <em>online IP</em> that compounds attention into leverage.</p>
+    </div>
+
+    <!-- IP detail card overlay -->
+    <div class="ipcard" id="ipcard" role="dialog" aria-modal="false" aria-labelledby="ipcardTitle" hidden>
+      <div class="ipcard-inner">
+        <button class="ipcard-x" id="ipcardClose" aria-label="Close">✕</button>
+        <span class="ipcard-kind mono" id="ipcardKind"></span>
+        <h3 id="ipcardTitle"></h3>
+        <div class="ipcard-rows" id="ipcardRows"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       CHAPTER 8 — THE TRUST PROBLEM
+  ========================================================== -->
+  <section class="chapter chap-trust" id="ch8" data-index="7" data-label="No Trust Layer, No Market" aria-labelledby="ch8-h">
+    <div class="chap-grid">
+      <header class="chap-head reveal">
+        <span class="kicker kicker-warn">Trust layer · the problem</span>
+        <h2 id="ch8-h">You cannot build a capital market<br/>on numbers <em>anyone can fake.</em></h2>
+      </header>
+
+      <div class="metricwall reveal" id="metricwall" aria-hidden="true"><!-- injected --></div>
+
+      <p class="nomarket reveal"><span class="nm-strike">No trust layer,</span> <strong>no market.</strong></p>
+
+      <div class="poa reveal" id="poa">
+        <div class="poa-head">
+          <span class="kicker kicker-accent">Proof of Attention — a standard, not a feature</span>
+          <p class="poa-questions">
+            <span class="poa-q">Is it real?</span>
+            <span class="poa-q">Will it compound?</span>
+          </p>
+        </div>
+        <div class="poa-bands" id="poaBands">
+          <div class="band" data-band="authenticity"><span class="band-k mono">authenticity</span><span class="band-meter"><i></i></span></div>
+          <div class="band" data-band="durability"><span class="band-k mono">durability</span><span class="band-meter"><i></i></span></div>
+          <div class="band" data-band="anomaly"><span class="band-k mono">anomaly</span><span class="band-meter band-warn"><i></i></span></div>
+          <div class="band" data-band="depth"><span class="band-k mono">depth</span><span class="band-meter"><i></i></span></div>
+          <div class="band" data-band="trajectory"><span class="band-k mono">trajectory</span><span class="band-meter"><i></i></span></div>
+          <div class="band" data-band="confidence"><span class="band-k mono">confidence</span><span class="band-meter"><i></i></span></div>
+        </div>
+        <p class="poa-note">Not a better bot filter. <strong>An independent rating layer for attention.</strong> Backer does not claim to out-detect platforms — they hold private data. Backer's edge is independence, standardization, and investment-specific underwriting.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       CHAPTER 9 — BACKER: THE BELIEF MARKET
+  ========================================================== -->
+  <section class="chapter" id="ch9" data-index="8" data-label="The Belief Market" aria-labelledby="ch9-h">
+    <div class="chap-grid">
+      <header class="chap-head reveal">
+        <span class="kicker kicker-accent">The architecture</span>
+        <h2 id="ch9-h">Backer is where<br/><em>belief gets priced.</em></h2>
+        <p class="chap-lead">Not a content host. A market architecture — five primitives that turn early belief into an underwritten position.</p>
+      </header>
+
+      <div class="arch reveal" id="arch">
+        <div class="arch-step" data-step="0">
+          <span class="arch-no mono">01</span>
+          <span class="arch-label">Discovery</span>
+          <span class="arch-artifact">Creator / IP profile</span>
+        </div>
+        <span class="arch-arrow" aria-hidden="true">→</span>
+        <div class="arch-step" data-step="1">
+          <span class="arch-no mono">02</span>
+          <span class="arch-label">Underwriting</span>
+          <span class="arch-artifact">Proof of Attention band</span>
+        </div>
+        <span class="arch-arrow" aria-hidden="true">→</span>
+        <div class="arch-step" data-step="2">
+          <span class="arch-no mono">03</span>
+          <span class="arch-label">Pricing</span>
+          <span class="arch-artifact">Milestone contract</span>
+        </div>
+        <span class="arch-arrow" aria-hidden="true">→</span>
+        <div class="arch-step" data-step="3">
+          <span class="arch-no mono">04</span>
+          <span class="arch-label">Position</span>
+          <span class="arch-artifact">Belief position</span>
+        </div>
+        <span class="arch-arrow" aria-hidden="true">→</span>
+        <div class="arch-step" data-step="4">
+          <span class="arch-no mono">05</span>
+          <span class="arch-label">Track Record</span>
+          <span class="arch-artifact">Taste record</span>
+        </div>
+      </div>
+
+      <ul class="belief-notes reveal">
+        <li>Backer does not host content.</li>
+        <li>Creators build investable profiles.</li>
+        <li>Backers take positions in milestones.</li>
+        <li>Proof of Attention gives belief a risk layer.</li>
+        <li>Portfolios become proof of taste.</li>
+      </ul>
+
+      <div class="min reveal">
+        <span class="min-amt mono">$1</span>
+        <p>From one dollar, anyone can price belief.</p>
+      </div>
+
+      <p class="disclaimer reveal">Conceptual pitch experience. Not investment advice. Simulated market language.</p>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       CHAPTER 10 — CATEGORY CLOSER
+  ========================================================== -->
+  <section class="chapter chap-closer" id="ch10" data-index="9" data-label="Own the Category" aria-labelledby="ch10-h">
+    <div class="chap-grid">
+      <header class="chap-head reveal">
+        <span class="kicker">The ask</span>
+        <h2 id="ch10-h">Build the trust layer first.<br/><em>Own the category second.</em></h2>
+        <p class="chap-lead">Attention has scale. What it lacks is underwriting.</p>
+      </header>
+
+      <div class="cockpit reveal">
+        <div class="flywheel" id="flywheel" aria-hidden="true">
+          <svg viewBox="0 0 360 360" class="fly-svg">
+            <circle class="fly-track" cx="180" cy="180" r="140"/>
+            <circle class="fly-arc" cx="180" cy="180" r="140"/>
+          </svg>
+          <ul class="fly-nodes">
+            <li style="--a:0">trust</li>
+            <li style="--a:60">pricing</li>
+            <li style="--a:120">liquidity</li>
+            <li style="--a:180">outcomes</li>
+            <li style="--a:240">data</li>
+            <li style="--a:300">stronger trust</li>
+          </ul>
+          <div class="fly-hub mono">FLYWHEEL</div>
+        </div>
+
+        <div class="cockpit-cols">
+          <div class="wedge">
+            <span class="col-k mono">THE WEDGE</span>
+            <ul>
+              <li>underpriced creators</li>
+              <li>founder-led media</li>
+              <li>high-retention niche audiences</li>
+              <li>AI-native online IP</li>
+              <li>creator markets before institutions arrive</li>
+            </ul>
+          </div>
+          <div class="risks">
+            <span class="col-k mono">RISK · RESPONSE</span>
+            <ul class="risk-list">
+              <li><span class="risk">regulation</span><span class="resp">simulate before capital</span></li>
+              <li><span class="risk">manipulation</span><span class="resp">separate rating from settlement</span></li>
+              <li><span class="risk">liquidity</span><span class="resp">surface ambiguity</span></li>
+              <li><span class="risk">adverse selection</span><span class="resp">cap exposure by confidence</span></li>
+              <li><span class="risk">platform dependency</span><span class="resp">independence over reach</span></li>
+              <li><span class="risk">public-data limits</span><span class="resp">verified signal over time</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="closer-final reveal">
+        <p class="final-line">Backer is <span class="grad-text">where belief gets priced.</span></p>
+        <div class="closer-cta">
+          <button class="btn btn-fill btn-lg" data-memo>Request the memo<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+          <button class="btn btn-line btn-lg" data-jump="0">Replay the thesis</button>
+        </div>
+      </div>
+
+      <footer class="deck-foot">
+        <span class="brand small"><span class="brand-mark">B</span> Backer</span>
+        <span class="foot-tag">The trust + capital infrastructure layer for human attention.</span>
+        <span class="foot-disc">Conceptual pitch experience · Not investment advice · Simulated market language</span>
+      </footer>
+    </div>
+  </section>
+
+</main>
+
+<!-- ================= MEMO OVERLAY ================= -->
+<div class="memo-overlay" id="memoOverlay" hidden>
+  <div class="memo-panel" role="dialog" aria-modal="true" aria-labelledby="memoTitle">
+    <button class="memo-x" id="memoClose" aria-label="Close">✕</button>
+    <span class="kicker kicker-accent">Investor access</span>
+    <h3 id="memoTitle">Request the memo.</h3>
+    <p class="memo-sub">The category brief and underwriting thesis, by request. No product login. No live market.</p>
+    <a class="btn btn-fill memo-go" id="memoMail" href="#">Open a request<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <p class="memo-foot mono">where belief gets priced</p>
+  </div>
+</div>
+
+<!-- reduced-motion / shader off note for AT users is implicit; deck is fully readable statically -->
+<script src="js/shader.js"></script>
+<script src="js/thesis.js"></script>
+</body>
+</html>
