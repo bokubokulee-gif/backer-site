@@ -48,12 +48,13 @@
   .role-q{font-family:var(--serif);font-size:26px;letter-spacing:-.01em;margin-bottom:5px}
   .role-help{color:var(--muted);font-size:13.5px;margin-bottom:20px}
   .role-grid{display:grid;gap:12px}
+  /* .role-card glass comes from the shared css/liquid-glass.css */
   .role-card{
     display:flex;gap:14px;align-items:flex-start;text-align:left;width:100%;
     padding:16px 18px;border:1px solid var(--line);border-radius:var(--r);background:var(--card);
     transition:.2s var(--ease);
   }
-  .role-card:hover{border-color:var(--card-hi);background:var(--card-2);transform:translateY(-1px)}
+  .role-card:hover{transform:translateY(-1px)}
   .role-ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--card-2);border:1px solid var(--line);flex:none}
   .role-ic .ic{width:19px;height:19px;stroke:var(--accent)}
   .role-card h4{font-size:15px;font-weight:600;margin-bottom:2px}
@@ -157,8 +158,9 @@
   .modal-msg{font-size:12.5px;margin:6px 0 14px;min-height:16px}
   .modal-msg.err{color:var(--neg)} .modal-msg.warn{color:var(--warn)} .modal-msg.ok{color:var(--pos)}
 </style>
+<link rel="stylesheet" href="css/liquid-glass.css" />
 </head>
-<body>
+<body class="page-signup">
 <canvas id="bg" aria-hidden="true"></canvas>
 <div class="vignette" aria-hidden="true"></div>
 <div class="grain" aria-hidden="true"></div>
@@ -353,6 +355,7 @@
 </div>
 
 <script src="js/shader.js"></script>
+<script src="js/liquid-glass.js"></script>
 <script>
 (function(){
   'use strict';

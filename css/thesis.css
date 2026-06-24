@@ -801,3 +801,7 @@ body.deck-snap .chapter{scroll-snap-align:start;scroll-snap-stop:always}
   .attn.lit .attn-stream .sdot,.attn.lit .attn-chips span{animation:none}
   .attn-stream .sdot{opacity:.7}
 }
+
+/* Liquid-glass treatment for .layer / .tile / .opener (and every other
+   writing block) now lives in the shared css/liquid-glass.css, loaded
+   after this file on every page. Single source of truth. */
