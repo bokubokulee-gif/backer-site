@@ -1,9 +1,14 @@
 /* =========================================================
    BACKER — shader background
-   Ported verbatim from the original `shader-lines.tsx`
-   (Three.js GLSL) to raw WebGL, so it needs no Three.js,
-   no build step, and runs fully offline.
-   The fragment shader is the original, unchanged.
+   Dot-matrix reveal, ported from the `sign-in-flow-1`
+   component (21st.dev · erikx) — its CanvasRevealEffect /
+   DotMatrix (Three.js GLSL) reworked into raw WebGL1, so it
+   needs no Three.js, no build step, and runs fully offline.
+
+   Why the change: the previous shader-lines effect drew
+   bright radial streaks that washed out the copy. This dot
+   field is dark and sparse, so text stays readable on every
+   tab (thesis / signup / portfolio / product) that loads it.
    ========================================================= */
 (function () {
   'use strict';
@@ -13,37 +18,54 @@
     void main() { gl_Position = vec4(aPos, 0.0, 1.0); }
   `;
 
-  // --- original fragment shader from shader-lines.tsx (unchanged) ---
+  // --- dot-matrix twinkle, from sign-in-flow-1's CanvasRevealEffect ---
+  // White dots on black, each grid cell flickering between a small set of
+  // opacities (0.3 / 0.5 / 0.8 / 1.0) on a slow random cycle — the same
+  // look as the reference, expressed without array uniforms so it compiles
+  // on WebGL1. The page CSS (#bg opacity + .vignette + .grain) supplies the
+  // same dimming the reference gets from its radial mask + black gradient.
   const FRAG = `
-    #define TWO_PI 6.2831853072
-    #define PI 3.14159265359
     precision highp float;
     uniform vec2 resolution;
     uniform float time;
 
-    float random (in float x) { return fract(sin(x)*1e4); }
-    float random (vec2 st) {
-      return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+    float PHI = 1.61803398874989484820459;
+
+    float random(vec2 xy) {
+      return fract(tan(distance(xy * PHI, xy) * 0.5) * xy.x);
     }
 
     void main(void) {
-      vec2 uv = (gl_FragCoord.xy * 2.0 - resolution.xy) / min(resolution.x, resolution.y);
+      float u_total_size = 18.0;   // grid cell size, device px
+      float u_dot_size   = 2.0;    // dot size within the cell, device px
 
-      vec2 fMosaicScal = vec2(4.0, 2.0);
-      vec2 vScreenSize = vec2(256.0, 256.0);
-      uv.x = floor(uv.x * vScreenSize.x / fMosaicScal.x) / (vScreenSize.x / fMosaicScal.x);
-      uv.y = floor(uv.y * vScreenSize.y / fMosaicScal.y) / (vScreenSize.y / fMosaicScal.y);
+      vec2 st = gl_FragCoord.xy;
+      st.x -= abs(floor((mod(resolution.x, u_total_size) - u_dot_size) * 0.5));
+      st.y -= abs(floor((mod(resolution.y, u_total_size) - u_dot_size) * 0.5));
 
-      float t = time * 0.06 + random(uv.x) * 0.4;
-      float lineWidth = 0.0008;
+      float opacity = step(0.0, st.x);
+      opacity *= step(0.0, st.y);
 
-      vec3 color = vec3(0.0);
-      for (int j = 0; j < 3; j++) {
-        for (int i = 0; i < 5; i++) {
-          color[j] += lineWidth * float(i*i) / abs(fract(t - 0.01*float(j) + float(i)*0.01) * 1.0 - length(uv));
-        }
-      }
-      gl_FragColor = vec4(color[2], color[1], color[0], 1.0);
+      vec2 st2 = vec2(floor(st.x / u_total_size), floor(st.y / u_total_size));
+
+      float frequency = 5.0;
+      float show_offset = random(st2);
+      float rand = random(st2 * floor((time / frequency) + show_offset + frequency) + 1.0);
+
+      // stepped opacities — matches the CanvasRevealEffect default ramp
+      float idx = floor(rand * 10.0);
+      float ov = 0.3;
+      ov = mix(ov, 0.5, step(3.0, idx));
+      ov = mix(ov, 0.8, step(6.0, idx));
+      ov = mix(ov, 1.0, step(9.0, idx));
+      opacity *= ov;
+
+      // carve the dot out of the cell
+      opacity *= 1.0 - step(u_dot_size / u_total_size, fract(st.x / u_total_size));
+      opacity *= 1.0 - step(u_dot_size / u_total_size, fract(st.y / u_total_size));
+
+      vec3 color = vec3(1.0); // white dots, matching sign-in-flow-1's colors
+      gl_FragColor = vec4(color * opacity, 1.0);
     }
   `;
 
