@@ -712,8 +712,10 @@ em{font-style:normal}
   display:flex;flex-direction:column;justify-content:center;
 }
 .val-fact b{font-size:clamp(26px,3vw,32px);font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
-.val-fact span{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.45}
+.val-fact > span{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.45}
 .val-fact em{color:var(--accent);font-style:normal;font-weight:600}
+/* count-up spans nested in the big figure must render as part of it */
+.val-fact b span,.val-big b span{display:inline;font:inherit;color:inherit;margin:0;letter-spacing:inherit}
 
 /* four conditions */
 .val-cond{
@@ -757,7 +759,7 @@ em{font-style:normal}
 }
 .val-big::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 120% at 0% 0%,rgba(86,211,154,.06),transparent 55%);pointer-events:none}
 .val-big b{display:block;font-size:clamp(24px,3.2vw,34px);font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;white-space:nowrap}
-.val-big span{display:block;font-size:13px;color:var(--muted);margin-top:9px;line-height:1.5}
+.val-big > span{display:block;font-size:13px;color:var(--muted);margin-top:9px;line-height:1.5}
 
 /* =========================================================
    FAQ + PAYOUT LAB
