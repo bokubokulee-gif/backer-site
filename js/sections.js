@@ -270,6 +270,20 @@
     }, { passive: true });
   }
 
+  /* ---------------- standalone pages (no app.js) ---------------- */
+  function initStandalone() {
+    if (document.getElementById('app')) return; // app.js drives these on the demo page
+    const nav = $('#nav');
+    if (nav) {
+      const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 20);
+      window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    $$('.reveal:not(.in)').forEach(el => io.observe(el));
+  }
+
   /* ---------------- boot ---------------- */
   function boot() {
     initValBars();
@@ -277,6 +291,7 @@
     initCalc();
     initFaq();
     initBurger();
+    initStandalone();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();

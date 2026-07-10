@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Backer FAQ — How the Money Moves</title>
+<meta name="description" content="The questions everyone asks about Backer — especially how payouts work for backers and creators. Try any numbers in the live payout calculator." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23090909'/%3E%3Ctext x='50' y='72' font-family='Georgia,serif' font-size='64' font-weight='700' fill='%23f5f3ee' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/styles.css?v=3" />
+<link rel="stylesheet" href="css/liquid-glass.css?v=2" />
+</head>
+<body class="page-product">
+<canvas id="bg" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+
+<!-- ================= TOP NAV ================= -->
+<header class="nav" id="nav">
+  <a class="brand" href="backerdemo.html" aria-label="Backer home">
+    <span class="brand-mark">B</span>
+    <span class="brand-word">Backer</span>
+  </a>
+  <nav class="nav-links" id="navLinks" aria-label="Primary">
+    <a href="backerthesis.html">Thesis</a>
+    <a href="backerdemo.html#validation">Validation</a>
+    <a href="backerdemo.html#proof">Proof of Attention</a>
+    <a href="backerdemo.html#product">Product</a>
+    <a href="backerdemo.html#partners">Partners</a>
+    <a href="faq.html" aria-current="page">FAQ</a>
+  </nav>
+  <div class="nav-cta">
+    <a class="btn btn-ghost" href="portfolio.html">Portfolio</a>
+    <a class="btn btn-primary" href="backerdemo.html?view=market">Launch App<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <button class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" class="ic"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="site">
+
+  <!-- FAQ -->
+  <section class="section" id="faq" style="padding-top:clamp(120px,16vw,170px)">
+    <div class="section-head reveal">
+      <span class="kicker">FAQ</span>
+      <h2>The questions everyone asks.</h2>
+      <p class="section-lead">Especially the one that matters most: how the money moves — for backers and for&nbsp;creators.</p>
+    </div>
+
+    <!-- PAYOUT LAB -->
+    <div class="calc reveal" id="calc">
+      <div class="calc-head">
+        <div class="calc-title">
+          <h3>The payout, live</h3>
+          <p>Put in any numbers, pick a scenario, and watch where every dollar&nbsp;goes.</p>
+        </div>
+        <div class="calc-tabs" role="tablist" aria-label="Payout scenario">
+          <button class="calc-tab active" data-scen="milestone" role="tab" aria-selected="true">Milestone</button>
+          <button class="calc-tab" data-scen="pk" role="tab" aria-selected="false">PK battle</button>
+          <button class="calc-tab" data-scen="perp" role="tab" aria-selected="false">Perp</button>
+        </div>
+      </div>
+
+      <div class="calc-grid">
+        <div class="calc-inputs">
+          <!-- pooled scenarios (milestone + pk) -->
+          <div class="calc-pane" id="panePool">
+            <div class="calc-field">
+              <label for="cStake">Your stake</label>
+              <div class="calc-num"><span class="cur">$</span><input id="cStake" type="number" inputmode="decimal" min="0" step="1" value="1" /></div>
+            </div>
+            <div class="calc-field">
+              <label id="cSideLab">Your side</label>
+              <div class="calc-seg" id="cSide" role="radiogroup" aria-labelledby="cSideLab">
+                <button class="seg active" data-side="yes" role="radio" aria-checked="true">YES — it hits</button>
+                <button class="seg" data-side="no" role="radio" aria-checked="false">NO — it misses</button>
+              </div>
+            </div>
+            <div class="calc-field-row">
+              <div class="calc-field">
+                <label for="cYes" id="cYesLab">Total staked YES <em>(incl. yours)</em></label>
+                <div class="calc-num"><span class="cur">$</span><input id="cYes" type="number" inputmode="decimal" min="0" step="1" value="20" /></div>
+              </div>
+              <div class="calc-field">
+                <label for="cNo" id="cNoLab">Total staked NO</label>
+                <div class="calc-num"><span class="cur">$</span><input id="cNo" type="number" inputmode="decimal" min="0" step="1" value="80" /></div>
+              </div>
+            </div>
+            <div class="calc-field">
+              <label id="cOutLab">Then the milestone…</label>
+              <div class="calc-seg" id="cOutcome" role="radiogroup" aria-labelledby="cOutLab">
+                <button class="seg active" data-out="yes" role="radio" aria-checked="true">Hits ✓</button>
+                <button class="seg" data-out="no" role="radio" aria-checked="false">Misses ✕</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- perp scenario -->
+          <div class="calc-pane hidden" id="panePerp">
+            <div class="calc-field">
+              <label for="pStake">Your stake</label>
+              <div class="calc-num"><span class="cur">$</span><input id="pStake" type="number" inputmode="decimal" min="0" step="1" value="1" /></div>
+            </div>
+            <div class="calc-field-row">
+              <div class="calc-field">
+                <label for="pEntry">Index at entry</label>
+                <div class="calc-num"><input id="pEntry" type="number" inputmode="decimal" min="1" step="1" value="100" /></div>
+              </div>
+              <div class="calc-field">
+                <label for="pExit">Index at exit</label>
+                <div class="calc-num"><input id="pExit" type="number" inputmode="decimal" min="0" step="1" value="120" /></div>
+              </div>
+            </div>
+            <div class="calc-field">
+              <label for="pFee">Trade fee, each way</label>
+              <div class="calc-num"><input id="pFee" type="number" inputmode="decimal" min="0" max="10" step="0.1" value="0.5" /><span class="cur">%</span></div>
+            </div>
+          </div>
+
+          <div class="calc-feenote"><span class="fee-chip mono" id="feeChip">fee 10% · proposed</span> All fee rates and splits are proposals — <b>to be determined.</b></div>
+        </div>
+
+        <div class="calc-out" aria-live="polite">
+          <div class="calc-poolbar" id="calcPoolbar">
+            <div class="cp-track" id="cpTrack">
+              <div class="cp-seg cp-yes" id="cpYes"><i id="cpYou"></i></div>
+              <div class="cp-seg cp-no" id="cpNo"></div>
+              <div class="cp-seg cp-fee" id="cpFee"></div>
+            </div>
+            <div class="cp-legend mono" id="cpLegend">
+              <span class="cpl cpl-you" id="cplYou">you $1</span>
+              <span class="cpl cpl-yes" id="cplYes">YES $20</span>
+              <span class="cpl cpl-no" id="cplNo">NO $80</span>
+              <span class="cpl cpl-fee" id="cplFee">fee $10</span>
+            </div>
+          </div>
+          <div class="calc-payout">
+            <span class="calc-payout-lab" id="payoutLab">Your payout</span>
+            <span class="calc-payout-num mono" id="payoutNum">$4.50</span>
+            <span class="calc-payout-delta" id="payoutDelta">+350% on your $1</span>
+          </div>
+          <p class="calc-formula mono" id="calcFormula">$1 × ($100 × 0.90) ÷ $20 = $4.50</p>
+          <p class="calc-split" id="calcSplit">Fee $10 → $6 Backer revenue · $4 creator royalty <em>(proposed 60 / 40)</em></p>
+          <p class="calc-insight" id="calcInsight">The pool balance <em>is</em> the price: side with the crowd and win pennies — be right against it and get paid multiples.</p>
+        </div>
+      </div>
+
+      <p class="calc-one"><b>The one-line version:</b> you win the pool minus the fee, in proportion to your share of the winning side. On a perp, your dollar simply tracks the index.</p>
+    </div>
+
+    <!-- Q&A -->
+    <div class="faq-list reveal" id="faqList">
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">What exactly am I doing when I back a creator?<span class="faq-x" aria-hidden="true">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><p>Taking a position on a defined, measurable milestone — <em>"50K subscribers in 12 months"</em> — from as little as $1. It's not a donation, not a tip, and not equity in a person. If the milestone hits, your position pays under the contract terms. If it misses, the stake was the risk you accepted — like any early bet.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">How is my payout calculated when a market resolves?<span class="faq-x" aria-hidden="true">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><p>Milestone and PK markets are pooled: every stake on both sides forms one pool. At resolution a platform fee comes off the top (proposed 10% — final fees TBD), and the rest is paid to the winning side in proportion to each backer's share of it:</p><p class="faq-formula mono">Payout = Stake × Pool × (1 − fee) ÷ Winning side</p><p>Worked example: a $100 pool split $20 YES / $80 NO, and you hold $1 on YES. The milestone hits → $90 is paid out, your share is 1/20 of it → <b>$4.50, a +350% return.</b> If it misses, a $1 NO backer collects $90 × 1/80 = $1.125 (+12.5%). Try your own numbers in the calculator above.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">How do creators get paid?<span class="faq-x" aria-hidden="true">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><p>From the fee, not from backers' losses. Under the proposed split, 60% of the market fee is Backer's revenue and 40% is paid to the creator as a royalty — <b>independent of the outcome</b>, so a creator earns from the volume their market attracts whether the milestone hits or misses. In a PK battle the two creators share the royalty. All rates are proposals, to be determined.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">Why did the contrarian in the example make 4.5× while the crowd made 12.5%?<span class="faq-x" aria-hidden="true">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><p>Because the pool balance <em>is</em> the price. When 80% of the money disagrees with you and you turn out right, you split the pool with a small winning side — that's the 4.5×. When you side with the crowd, you split it with almost everyone — pennies. Early, correct conviction is exactly what the market pays for. That's the same asymmetry that rewards a fan who spots a creator at 800 followers.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">What's a perp, and how does it pay out?<span class="faq-x" aria-hidden="true">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><p>A continuous position with no pool and no expiry: your dollar tracks a creator's attention index (built on verified Proof-of-Attention data). Payout = Stake × (index at exit ÷ index at entry), minus a small trade fee charged on entry and exit (proposed ~0.5% each way, TBD). Index up 20% → $1 becomes ≈ $1.19.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">How do I know a creator's numbers are real?<span class="faq-x" aria-hidden="true">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><p>Every listed creator carries a Proof-of-Attention read before a dollar is priced — an independent, cross-platform, auditable standard for whether an audience is real and whether it will compound. Think Moody's, not a better spam filter. Suspicious profiles aren't hidden; they're shown with the reason flagged in plain language, and position limits scale down with lower confidence.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">Isn't this just gambling?<span class="faq-x" aria-hidden="true">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><p>It's the same four conditions behind any real market: high attention, genuine uncertainty, measurable outcomes, strong disagreement. The difference from a casino is structural — you get underwriting information (Proof of Attention), transparent pricing (the pool is the odds), position limits tied to verifiability, and a platform that earns on volume rather than on your losses.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">Does Backer bet against me?<span class="faq-x" aria-hidden="true">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><p>Never. Backer holds no positions, and creators can't pay for a better score. Rating and settlement are kept structurally separate — the number that rates a creator never decides who gets paid. The moment those merge, the platform becomes the house and the rating becomes corruptible. Independence is the entire asset.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">What are the minimum and maximum position sizes?<span class="faq-x" aria-hidden="true">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><p>The floor is $1 — that's the strategic primitive: anyone can play. The ceiling isn't a flat number; it scales with how verifiable the asset is. A flagged 2K-subscriber profile carries a far lower cap than a verified 200K creator, because position limits are the market's defense against manipulation of thin markets.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">Is real money moving today?<span class="faq-x" aria-hidden="true">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><p>V1 runs as a simulated layer: positions and portfolios are tracked, no real capital moves. The mechanics and the score get proven before money goes live. When it does, settlement runs on programmable, auditable rails — with fiat on-ramps so anyone can join with a card. Everything on this page is a design proposal, not investment advice.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-top">
+      <a class="brand" href="backerdemo.html"><span class="brand-mark">B</span><span class="brand-word">Backer</span></a>
+      <p class="footer-tag">Invest in people. Before the world does.</p>
+    </div>
+    <div class="footer-cols">
+      <div class="fcol"><span>Product</span><a href="backerdemo.html?view=market">Marketplace</a><a href="backerdemo.html?view=search">AI Search</a><a href="portfolio.html">Portfolio</a></div>
+      <div class="fcol"><span>Protocol</span><a href="backerdemo.html#proof">Proof of Attention</a><a href="backerdemo.html#metrics">Why metrics break</a></div>
+      <div class="fcol"><span>Company</span><a href="backerthesis.html">Thesis</a><a href="backerdemo.html#validation">Market validation</a><a href="backerdemo.html#partners">Partners</a><a href="faq.html">FAQ</a></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Backer. A demo experience. Not investment advice.</span>
+      <span class="footer-disc">Returns shown are illustrative. Backing early creators carries risk of total loss.</span>
+    </div>
+  </footer>
+</main>
+
+<script src="js/shader.js"></script>
+<script src="js/liquid-glass.js"></script>
+<script src="js/sections.js?v=2"></script>
+</body>
+</html>
