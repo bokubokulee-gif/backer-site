@@ -84,7 +84,14 @@ body.deck .risks,
 .page-product .holdings,
 .page-product .ipo,
 .page-product .gifting,
-.page-product .invest{
+.page-product .invest,
+.page-product .val-lane,
+.page-product .val-chart,
+.page-product .val-fact,
+.page-product .val-cond,
+.page-product .val-big,
+.page-product .calc,
+.page-product .faq-item{
   background:var(--lg-fg);
   -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat));
   backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) url(#liquid-glass);
@@ -103,7 +110,11 @@ body.deck .tile[aria-expanded="true"],
 .page-product .q-card:hover,
 .page-product .score-card:hover,
 .page-product .surface:hover,
-.page-product .logo-card:hover{
+.page-product .logo-card:hover,
+.page-product .val-fact:hover,
+.page-product .val-big:hover,
+.page-product .faq-item:hover,
+.page-product .faq-item.open{
   background:var(--lg-fg-hi);
   border-color:rgba(255,255,255,.22);
 }
@@ -115,7 +126,8 @@ body.deck .opener,
 body.deck .min,
 .page-signup .ipo-card,
 .page-product .claim,
-.page-product .open-note{
+.page-product .open-note,
+.page-product .val-lane-backer{
   background:var(--lg-fg-warm);
   -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat));
   backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) url(#liquid-glass);
@@ -128,7 +140,8 @@ body.deck .min,
    --------------------------------------------------------- */
 body.deck .ipcard,
 body.deck .memo-panel,
-.page-portfolio .drawer{
+.page-portfolio .drawer,
+.page-product .nav.menu-open .nav-links{
   background:var(--lg-fg-dark);
   -webkit-backdrop-filter:blur(26px) saturate(160%);
   backdrop-filter:blur(26px) saturate(160%) url(#liquid-glass);
@@ -173,7 +186,8 @@ body.deck .eyebrow,
    --------------------------------------------------------- */
 .page-signup .ipo-meta .badge,
 .page-portfolio .badge,
-.page-product .ccard-cat{
+.page-product .ccard-cat,
+.page-product .fee-chip{
   -webkit-backdrop-filter:blur(8px) saturate(140%);
   backdrop-filter:blur(8px) saturate(140%) url(#liquid-glass);
   box-shadow:var(--lg-rim-pill);
@@ -189,7 +203,9 @@ body.deck .eyebrow,
 .page-product .toggle,
 .page-product .hero-search,
 .page-product .big-search,
-.page-product .app-searchbar{
+.page-product .app-searchbar,
+.page-product .calc-tabs,
+.page-product .calc-seg{
   background:var(--lg-fg);
   -webkit-backdrop-filter:blur(14px) saturate(160%);
   backdrop-filter:blur(14px) saturate(160%) url(#liquid-glass);
@@ -247,7 +263,11 @@ body.deck .risks{
   .page-product .invest, .page-product .claim, .page-product .open-note,
   .page-product .eyebrow, .page-product .pill, .page-product .dtag,
   .page-product .plat, .page-product .ccard-cat, .page-product .toggle,
-  .page-product .hero-search, .page-product .big-search, .page-product .app-searchbar{
+  .page-product .hero-search, .page-product .big-search, .page-product .app-searchbar,
+  .page-product .val-lane, .page-product .val-chart, .page-product .val-fact,
+  .page-product .val-cond, .page-product .val-big, .page-product .calc,
+  .page-product .faq-item, .page-product .calc-tabs, .page-product .calc-seg,
+  .page-product .fee-chip, .page-product .nav.menu-open .nav-links{
     -webkit-backdrop-filter:none !important;
     backdrop-filter:none !important;
     background:#0e0e12;

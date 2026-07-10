@@ -9,8 +9,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/styles.css" />
-<link rel="stylesheet" href="css/liquid-glass.css" />
+<link rel="stylesheet" href="css/styles.css?v=3" />
+<link rel="stylesheet" href="css/liquid-glass.css?v=2" />
 </head>
 <body class="page-product">
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -22,15 +22,20 @@
     <span class="brand-mark">B</span>
     <span class="brand-word">Backer</span>
   </a>
-  <nav class="nav-links" aria-label="Primary">
+  <nav class="nav-links" id="navLinks" aria-label="Primary">
     <a href="#thesis">Thesis</a>
+    <a href="#validation">Validation</a>
     <a href="#proof">Proof of Attention</a>
     <a href="#product">Product</a>
     <a href="#partners">Partners</a>
+    <a href="#faq">FAQ</a>
   </nav>
   <div class="nav-cta">
     <button class="btn btn-ghost" data-view="portfolio">Portfolio</button>
     <button class="btn btn-primary" data-view="market">Launch App<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    <button class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" class="ic"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
   </div>
 </header>
 
@@ -66,14 +71,6 @@
       <span>First principles</span>
       <svg viewBox="0 0 24 24" class="ic"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
     </button>
-  </section>
-
-  <!-- STATS STRIP -->
-  <section class="strip reveal">
-    <div class="strip-item"><span class="strip-num" data-count="37">$37B</span><span class="strip-label">Creator-related ad spend in 2025 (IAB)</span></div>
-    <div class="strip-item"><span class="strip-num">4×</span><span class="strip-label">Faster growth than total media</span></div>
-    <div class="strip-item"><span class="strip-num">$13.7B</span><span class="strip-label">US influencer marketing by 2027 (eMarketer)</span></div>
-    <div class="strip-item"><span class="strip-num">$1</span><span class="strip-label">Minimum to take a real position</span></div>
   </section>
 
   <!-- THESIS / PROBLEM -->
@@ -113,6 +110,140 @@
         <div class="g-row g-zero"><span class="g-who">Fan</span><div class="g-bar"><span style="width:2%" class="g-neg"></span></div><span class="g-val">receives nothing — no return, no ownership, no upside</span></div>
       </div>
       <p class="gifting-foot">The question was never whether fans will fund creators. They already do. The question is: <strong>what if funding came with upside?</strong></p>
+    </div>
+  </section>
+
+  <!-- MARKET VALIDATION -->
+  <section class="section" id="validation">
+    <div class="section-head reveal">
+      <span class="kicker">Market validation</span>
+      <h2>People already pay to own a piece of <span class="grad-text">the future.</span></h2>
+      <p class="section-lead">Wherever human attention concentrates, capital follows — and a market forms to price it. Prediction markets just proved that behavior at scale. Backer applies it to what attention actually orbits: <strong>people.</strong></p>
+    </div>
+
+    <!-- attention → capital → market, twice -->
+    <div class="val-parallel reveal" id="valParallel">
+      <div class="val-lane">
+        <span class="val-lane-tag mono">PROVEN · EVENTS</span>
+        <div class="val-flow">
+          <div class="val-node">
+            <span class="val-node-k">Attention</span>
+            <span class="val-node-d">veers into eyeball-catching events</span>
+          </div>
+          <div class="val-arrow" aria-hidden="true"><i></i></div>
+          <div class="val-node">
+            <span class="val-node-k">Capital follows</span>
+            <span class="val-node-d">into priced positions on outcomes</span>
+          </div>
+          <div class="val-arrow" aria-hidden="true"><i></i></div>
+          <div class="val-node val-node-mkt">
+            <span class="val-node-k">Prediction markets</span>
+            <span class="val-node-d">Kalshi&nbsp;+&nbsp;Polymarket</span>
+          </div>
+        </div>
+      </div>
+      <div class="val-lane val-lane-backer">
+        <span class="val-lane-tag mono">NEXT · PEOPLE</span>
+        <div class="val-flow">
+          <div class="val-node">
+            <span class="val-node-k">Attention</span>
+            <span class="val-node-d">veers into eyeball-catching people</span>
+          </div>
+          <div class="val-arrow" aria-hidden="true"><i></i></div>
+          <div class="val-node">
+            <span class="val-node-k">Capital follows</span>
+            <span class="val-node-d">into belief in who compounds next</span>
+          </div>
+          <div class="val-arrow" aria-hidden="true"><i></i></div>
+          <div class="val-node val-node-mkt val-node-bkr">
+            <span class="val-node-k">Backer</span>
+            <span class="val-node-d">where belief in people gets priced</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- prediction market proof -->
+    <div class="val-proof">
+      <div class="val-chart reveal" id="valChartCard">
+        <div class="val-chart-head">
+          <div class="val-chart-title">
+            <h3>The behavior is proven.</h3>
+            <p>Kalshi + Polymarket, combined monthly notional volume</p>
+          </div>
+          <div class="val-chart-now">
+            <span class="val-now-num mono" data-countup data-to="24" data-prefix="$" data-suffix="B" data-dur="1400">$0B</span>
+            <span class="val-now-cap">per month · Apr&nbsp;2026</span>
+          </div>
+        </div>
+        <div class="val-bars" id="valBars" aria-hidden="true"></div>
+        <div class="val-chart-x mono"><span>SEP 2025 · &lt;$5B</span><span>APR 2026 · ~$24B</span></div>
+        <p class="val-chart-note">Endpoints as reported; months between are interpolated for illustration.</p>
+      </div>
+      <div class="val-proof-side">
+        <div class="val-fact reveal">
+          <b><span data-countup data-to="44" data-prefix="~$" data-suffix="B" data-dur="1200">~$0B</span></b>
+          <span>full-year 2025 total notional volume across the two venues</span>
+        </div>
+        <div class="val-fact reveal">
+          <b><span data-countup data-to="5" data-suffix="×" data-dur="1000">0×</span></b>
+          <span>growth in monthly flow in eight months — under $5B to&nbsp;~$24B</span>
+        </div>
+        <div class="val-fact reveal">
+          <b><span data-countup data-to="90" data-prefix="~" data-suffix="%" data-dur="1200">~0%</span></b>
+          <span>of volume on both platforms is sports, politics and crypto — the things people watch. The composition is the tell: <em>capital follows eyeballs.</em></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- four conditions -->
+    <div class="val-cond reveal" id="valCond">
+      <div class="val-cond-head">
+        <h3>A tradable market needs four conditions. Creators meet every&nbsp;one.</h3>
+        <p>The exact conditions that made events tradable already hold for the people who hold the internet's attention.</p>
+      </div>
+      <div class="val-cond-table" role="table" aria-label="Market conditions: events vs creators">
+        <div class="vc-row vc-head mono" role="row"><span>Condition</span><span>Events</span><span>Creators</span></div>
+        <div class="vc-row" role="row" style="--i:0">
+          <div class="vc-c"><b>High attention</b><span>creators attract economically valuable attention</span></div>
+          <span class="vc-check" aria-label="yes">✓</span><span class="vc-check vc-check-b" aria-label="yes">✓</span>
+        </div>
+        <div class="vc-row" role="row" style="--i:1">
+          <div class="vc-c"><b>Real uncertainty</b><span>their future growth is genuinely unknown</span></div>
+          <span class="vc-check" aria-label="yes">✓</span><span class="vc-check vc-check-b" aria-label="yes">✓</span>
+        </div>
+        <div class="vc-row" role="row" style="--i:2">
+          <div class="vc-c"><b>Measurable outcomes</b><span>performance resolves against observable milestones</span></div>
+          <span class="vc-check" aria-label="yes">✓</span><span class="vc-check vc-check-b" aria-label="yes">✓</span>
+        </div>
+        <div class="vc-row" role="row" style="--i:3">
+          <div class="vc-c"><b>Strong disagreement</b><span>people already argue over who rises or falls next</span></div>
+          <span class="vc-check" aria-label="yes">✓</span><span class="vc-check vc-check-b" aria-label="yes">✓</span>
+        </div>
+      </div>
+      <p class="val-cond-foot">Backer turns those beliefs into <strong>tradable positions.</strong></p>
+    </div>
+
+    <!-- asset base -->
+    <div class="val-asset reveal">
+      <div class="val-asset-head">
+        <h3>And the asset base is already funded.</h3>
+        <p>The money isn't hypothetical. It already moves from believers to people — today, with zero return attached.</p>
+      </div>
+      <div class="val-asset-grid">
+        <div class="val-big">
+          <b><span data-countup data-to="40" data-prefix="$" data-dur="1200">$0</span>–60B+</b>
+          <span>flows from fans directly to creators every year, globally — gifts, tips, memberships. No upside expected, sent&nbsp;anyway.</span>
+        </div>
+        <div class="val-big">
+          <b>$250B → <span data-countup data-to="480" data-prefix="$" data-suffix="B" data-dur="1400">$0B</span></b>
+          <span>creator-economy market value today — and where Goldman Sachs projects it lands by&nbsp;2027.</span>
+        </div>
+        <div class="val-big">
+          <b><span data-countup data-to="207" data-suffix="M" data-dur="1400">0M</span></b>
+          <span>people worldwide identify as creators — before counting professionals with a creator side&nbsp;gig.</span>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -223,6 +354,160 @@
     <p class="partners-foot reveal">Strategic partners for on-ramp, attestation, and settlement.</p>
   </section>
 
+  <!-- FAQ -->
+  <section class="section" id="faq">
+    <div class="section-head reveal">
+      <span class="kicker">FAQ</span>
+      <h2>The questions everyone asks.</h2>
+      <p class="section-lead">Especially the one that matters most: how the money moves — for backers and for&nbsp;creators.</p>
+    </div>
+
+    <!-- PAYOUT LAB -->
+    <div class="calc reveal" id="calc">
+      <div class="calc-head">
+        <div class="calc-title">
+          <h3>The payout, live</h3>
+          <p>Put in any numbers, pick a scenario, and watch where every dollar&nbsp;goes.</p>
+        </div>
+        <div class="calc-tabs" role="tablist" aria-label="Payout scenario">
+          <button class="calc-tab active" data-scen="milestone" role="tab" aria-selected="true">Milestone</button>
+          <button class="calc-tab" data-scen="pk" role="tab" aria-selected="false">PK battle</button>
+          <button class="calc-tab" data-scen="perp" role="tab" aria-selected="false">Perp</button>
+        </div>
+      </div>
+
+      <div class="calc-grid">
+        <div class="calc-inputs">
+          <!-- pooled scenarios (milestone + pk) -->
+          <div class="calc-pane" id="panePool">
+            <div class="calc-field">
+              <label for="cStake">Your stake</label>
+              <div class="calc-num"><span class="cur">$</span><input id="cStake" type="number" inputmode="decimal" min="0" step="1" value="1" /></div>
+            </div>
+            <div class="calc-field">
+              <label id="cSideLab">Your side</label>
+              <div class="calc-seg" id="cSide" role="radiogroup" aria-labelledby="cSideLab">
+                <button class="seg active" data-side="yes" role="radio" aria-checked="true">YES — it hits</button>
+                <button class="seg" data-side="no" role="radio" aria-checked="false">NO — it misses</button>
+              </div>
+            </div>
+            <div class="calc-field-row">
+              <div class="calc-field">
+                <label for="cYes" id="cYesLab">Total staked YES <em>(incl. yours)</em></label>
+                <div class="calc-num"><span class="cur">$</span><input id="cYes" type="number" inputmode="decimal" min="0" step="1" value="20" /></div>
+              </div>
+              <div class="calc-field">
+                <label for="cNo" id="cNoLab">Total staked NO</label>
+                <div class="calc-num"><span class="cur">$</span><input id="cNo" type="number" inputmode="decimal" min="0" step="1" value="80" /></div>
+              </div>
+            </div>
+            <div class="calc-field">
+              <label id="cOutLab">Then the milestone…</label>
+              <div class="calc-seg" id="cOutcome" role="radiogroup" aria-labelledby="cOutLab">
+                <button class="seg active" data-out="yes" role="radio" aria-checked="true">Hits ✓</button>
+                <button class="seg" data-out="no" role="radio" aria-checked="false">Misses ✕</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- perp scenario -->
+          <div class="calc-pane hidden" id="panePerp">
+            <div class="calc-field">
+              <label for="pStake">Your stake</label>
+              <div class="calc-num"><span class="cur">$</span><input id="pStake" type="number" inputmode="decimal" min="0" step="1" value="1" /></div>
+            </div>
+            <div class="calc-field-row">
+              <div class="calc-field">
+                <label for="pEntry">Index at entry</label>
+                <div class="calc-num"><input id="pEntry" type="number" inputmode="decimal" min="1" step="1" value="100" /></div>
+              </div>
+              <div class="calc-field">
+                <label for="pExit">Index at exit</label>
+                <div class="calc-num"><input id="pExit" type="number" inputmode="decimal" min="0" step="1" value="120" /></div>
+              </div>
+            </div>
+            <div class="calc-field">
+              <label for="pFee">Trade fee, each way</label>
+              <div class="calc-num"><input id="pFee" type="number" inputmode="decimal" min="0" max="10" step="0.1" value="0.5" /><span class="cur">%</span></div>
+            </div>
+          </div>
+
+          <div class="calc-feenote"><span class="fee-chip mono" id="feeChip">fee 10% · proposed</span> All fee rates and splits are proposals — <b>to be determined.</b></div>
+        </div>
+
+        <div class="calc-out" aria-live="polite">
+          <div class="calc-poolbar" id="calcPoolbar">
+            <div class="cp-track" id="cpTrack">
+              <div class="cp-seg cp-yes" id="cpYes"><i id="cpYou"></i></div>
+              <div class="cp-seg cp-no" id="cpNo"></div>
+              <div class="cp-seg cp-fee" id="cpFee"></div>
+            </div>
+            <div class="cp-legend mono" id="cpLegend">
+              <span class="cpl cpl-you" id="cplYou">you $1</span>
+              <span class="cpl cpl-yes" id="cplYes">YES $20</span>
+              <span class="cpl cpl-no" id="cplNo">NO $80</span>
+              <span class="cpl cpl-fee" id="cplFee">fee $10</span>
+            </div>
+          </div>
+          <div class="calc-payout">
+            <span class="calc-payout-lab" id="payoutLab">Your payout</span>
+            <span class="calc-payout-num mono" id="payoutNum">$4.50</span>
+            <span class="calc-payout-delta" id="payoutDelta">+350% on your $1</span>
+          </div>
+          <p class="calc-formula mono" id="calcFormula">$1 × ($100 × 0.90) ÷ $20 = $4.50</p>
+          <p class="calc-split" id="calcSplit">Fee $10 → $6 Backer revenue · $4 creator royalty <em>(proposed 60 / 40)</em></p>
+          <p class="calc-insight" id="calcInsight">The pool balance <em>is</em> the price: side with the crowd and win pennies — be right against it and get paid multiples.</p>
+        </div>
+      </div>
+
+      <p class="calc-one"><b>The one-line version:</b> you win the pool minus the fee, in proportion to your share of the winning side. On a perp, your dollar simply tracks the index.</p>
+    </div>
+
+    <!-- Q&A -->
+    <div class="faq-list reveal" id="faqList">
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">What exactly am I doing when I back a creator?<span class="faq-x" aria-hidden="true">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><p>Taking a position on a defined, measurable milestone — <em>"50K subscribers in 12 months"</em> — from as little as $1. It's not a donation, not a tip, and not equity in a person. If the milestone hits, your position pays under the contract terms. If it misses, the stake was the risk you accepted — like any early bet.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">How is my payout calculated when a market resolves?<span class="faq-x" aria-hidden="true">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><p>Milestone and PK markets are pooled: every stake on both sides forms one pool. At resolution a platform fee comes off the top (proposed 10% — final fees TBD), and the rest is paid to the winning side in proportion to each backer's share of it:</p><p class="faq-formula mono">Payout = Stake × Pool × (1 − fee) ÷ Winning side</p><p>Worked example: a $100 pool split $20 YES / $80 NO, and you hold $1 on YES. The milestone hits → $90 is paid out, your share is 1/20 of it → <b>$4.50, a +350% return.</b> If it misses, a $1 NO backer collects $90 × 1/80 = $1.125 (+12.5%). Try your own numbers in the calculator above.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">How do creators get paid?<span class="faq-x" aria-hidden="true">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><p>From the fee, not from backers' losses. Under the proposed split, 60% of the market fee is Backer's revenue and 40% is paid to the creator as a royalty — <b>independent of the outcome</b>, so a creator earns from the volume their market attracts whether the milestone hits or misses. In a PK battle the two creators share the royalty. All rates are proposals, to be determined.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">Why did the contrarian in the example make 4.5× while the crowd made 12.5%?<span class="faq-x" aria-hidden="true">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><p>Because the pool balance <em>is</em> the price. When 80% of the money disagrees with you and you turn out right, you split the pool with a small winning side — that's the 4.5×. When you side with the crowd, you split it with almost everyone — pennies. Early, correct conviction is exactly what the market pays for. That's the same asymmetry that rewards a fan who spots a creator at 800 followers.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">What's a perp, and how does it pay out?<span class="faq-x" aria-hidden="true">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><p>A continuous position with no pool and no expiry: your dollar tracks a creator's attention index (built on verified Proof-of-Attention data). Payout = Stake × (index at exit ÷ index at entry), minus a small trade fee charged on entry and exit (proposed ~0.5% each way, TBD). Index up 20% → $1 becomes ≈ $1.19.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">How do I know a creator's numbers are real?<span class="faq-x" aria-hidden="true">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><p>Every listed creator carries a Proof-of-Attention read before a dollar is priced — an independent, cross-platform, auditable standard for whether an audience is real and whether it will compound. Think Moody's, not a better spam filter. Suspicious profiles aren't hidden; they're shown with the reason flagged in plain language, and position limits scale down with lower confidence.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">Isn't this just gambling?<span class="faq-x" aria-hidden="true">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><p>It's the same four conditions behind any real market: high attention, genuine uncertainty, measurable outcomes, strong disagreement. The difference from a casino is structural — you get underwriting information (Proof of Attention), transparent pricing (the pool is the odds), position limits tied to verifiability, and a platform that earns on volume rather than on your losses.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">Does Backer bet against me?<span class="faq-x" aria-hidden="true">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><p>Never. Backer holds no positions, and creators can't pay for a better score. Rating and settlement are kept structurally separate — the number that rates a creator never decides who gets paid. The moment those merge, the platform becomes the house and the rating becomes corruptible. Independence is the entire asset.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">What are the minimum and maximum position sizes?<span class="faq-x" aria-hidden="true">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><p>The floor is $1 — that's the strategic primitive: anyone can play. The ceiling isn't a flat number; it scales with how verifiable the asset is. A flagged 2K-subscriber profile carries a far lower cap than a verified 200K creator, because position limits are the market's defense against manipulation of thin markets.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">Is real money moving today?<span class="faq-x" aria-hidden="true">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner"><p>V1 runs as a simulated layer: positions and portfolios are tracked, no real capital moves. The mechanics and the score get proven before money goes live. When it does, settlement runs on the programmable, auditable rails described under Partners — with fiat on-ramps so anyone can join with a card. Everything on this page is a design proposal, not investment advice.</p></div></div>
+      </div>
+    </div>
+  </section>
+
   <!-- FINAL CTA -->
   <section class="finale reveal">
     <h2 class="finale-line">Attention has always been currency.</h2>
@@ -242,7 +527,7 @@
     <div class="footer-cols">
       <div class="fcol"><span>Product</span><button data-view="market">Marketplace</button><button data-view="search">AI Search</button><button data-view="portfolio">Portfolio</button></div>
       <div class="fcol"><span>Protocol</span><a href="#proof">Proof of Attention</a><a href="#proof">Open methodology</a><a href="#metrics">Why metrics break</a></div>
-      <div class="fcol"><span>Company</span><a href="#thesis">Thesis</a><a href="#partners">Partners</a><a href="#benefits">Who benefits</a></div>
+      <div class="fcol"><span>Company</span><a href="#thesis">Thesis</a><a href="#validation">Market validation</a><a href="#partners">Partners</a><a href="#faq">FAQ</a></div>
     </div>
     <div class="footer-bottom">
       <span>© 2026 Backer. A demo experience. Not investment advice.</span>
@@ -279,6 +564,7 @@
 <script src="js/shader.js"></script>
 <script src="js/liquid-glass.js"></script>
 <script src="js/data.js"></script>
-<script src="js/app.js?v=2"></script>
+<script src="js/app.js?v=3"></script>
+<script src="js/sections.js?v=1"></script>
 </body>
 </html>
