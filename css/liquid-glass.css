@@ -91,7 +91,10 @@ body.deck .risks,
 .page-product .val-cond,
 .page-product .val-big,
 .page-product .calc,
-.page-product .faq-item{
+.page-product .faq-item,
+.page-product .way,
+.page-product .comp,
+.page-product .person{
   background:var(--lg-fg);
   -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat));
   backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) url(#liquid-glass);
@@ -114,7 +117,9 @@ body.deck .tile[aria-expanded="true"],
 .page-product .val-fact:hover,
 .page-product .val-big:hover,
 .page-product .faq-item:hover,
-.page-product .faq-item.open{
+.page-product .faq-item.open,
+.page-product .comp:hover,
+.page-product .person:hover{
   background:var(--lg-fg-hi);
   border-color:rgba(255,255,255,.22);
 }
@@ -267,7 +272,8 @@ body.deck .risks{
   .page-product .val-lane, .page-product .val-chart, .page-product .val-fact,
   .page-product .val-cond, .page-product .val-big, .page-product .calc,
   .page-product .faq-item, .page-product .calc-tabs, .page-product .calc-seg,
-  .page-product .fee-chip, .page-product .nav.menu-open .nav-links{
+  .page-product .fee-chip, .page-product .nav.menu-open .nav-links,
+  .page-product .way, .page-product .comp, .page-product .person{
     -webkit-backdrop-filter:none !important;
     backdrop-filter:none !important;
     background:#0e0e12;
