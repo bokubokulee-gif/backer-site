@@ -182,6 +182,7 @@ body.deck .eyebrow,
 .page-product .dtag,
 .page-product .sx-chip,
 .page-product .sx-strip-tab,
+.page-product .sx-plat-toggle,
 .page-product .plat{
   background:var(--lg-fg);
   -webkit-backdrop-filter:blur(10px) saturate(150%);

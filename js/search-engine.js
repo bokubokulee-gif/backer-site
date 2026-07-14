@@ -225,9 +225,15 @@ window.BackerSearch = (function () {
     for (const t of TOPICS) if (!intent.exclusions.includes(t) && TOPIC_KW[t].some(k => q.includes(k))) intent.topics.push(t);
     for (const t in TYPE_KW) if (TYPE_KW[t].some(k => q.includes(k))) intent.types.push(t);
 
-    // platforms named → restrict
+    // platform scope: pre-search toggles, overridden when the query names platforms
+    intent.platforms = PLATFORMS.filter(p => platformFilter.has(p));
     const named = PLATFORMS.filter(p => q.includes(p) || (p === 'x' && /\bon x\b|\btwitter\b/.test(q)));
-    if (named.length) intent.platforms = named;
+    if (named.length) {
+      intent.platforms = named;
+      platformFilter.clear();
+      named.forEach(p => platformFilter.add(p));
+      syncPlatformToggles();
+    }
 
     // formats, cadence, stage, language, geo
     for (const f in FMT_KW) if (FMT_KW[f].some(k => q.includes(k))) intent.formats.push(f);
@@ -354,6 +360,7 @@ window.BackerSearch = (function () {
   let CATALOG = null;
   let session = null;
   let seq = 0;
+  const platformFilter = new Set(PLATFORMS);   // pre-search platform selection
 
   function newSession(intent) {
     if (!CATALOG) CATALOG = buildCatalog();
@@ -389,8 +396,9 @@ window.BackerSearch = (function () {
     container.innerHTML = `
       <div class="search-view sx">
         <div class="search-hero">
-          <h1>Multi-Platform Creator Search</h1>
-          <p>Describe a creator in natural language. Backer parses the request into editable constraints, searches five platforms independently, and keeps four signals separate: <b>Match Confidence</b>, <b>Observed Attention</b>, <b>Proof of Attention</b>, and <b>Evidence Confidence</b>.</p>
+          <h1>Backer AI — Creator Discovery Agent</h1>
+          <p class="sx-lede">Describe what creators you want to back in natural language.</p>
+          <p class="sx-sub">Backer parses the request into editable constraints, searches five platforms independently, and keeps four signals separate: Match Confidence, Observed Attention, Proof of Attention, and Evidence Confidence.</p>
         </div>
         <form class="big-search" id="sxForm">
           <svg viewBox="0 0 24 24" class="ic" style="width:20px;height:20px"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
@@ -403,6 +411,10 @@ window.BackerSearch = (function () {
           <button class="chip" data-ex="musicians about to break out, under 50K">music · pre-breakout</button>
           <button class="chip" data-ex="Spanish-language cooking creators">cooking · Spanish</button>
         </div>
+        <div class="sx-plat-filter" role="group" aria-label="Platforms to search">
+          <span class="sx-plat-filter-label">Search on</span>
+          ${PLATFORMS.map(p => `<button type="button" class="sx-plat-toggle" data-plat="${p}" aria-pressed="${platformFilter.has(p)}"><svg viewBox="0 0 24 24" class="ic">${(window.BACKER.PLAT_IC[p] || "")}</svg>${PLAT_LABEL[p]}</button>`).join('')}
+        </div>
         <div id="sxOut"></div>
         <div class="sx-announce" aria-live="polite"></div>
       </div>`;
@@ -410,7 +422,30 @@ window.BackerSearch = (function () {
     const form = root.querySelector('#sxForm'), input = root.querySelector('#sxInput');
     form.addEventListener('submit', e => { e.preventDefault(); submit(input.value.trim()); });
     root.querySelectorAll('.search-ex .chip').forEach(ch => ch.addEventListener('click', () => { input.value = ch.dataset.ex; submit(ch.dataset.ex); }));
+    root.querySelectorAll('.sx-plat-toggle').forEach(b => b.addEventListener('click', () => togglePlatform(b.dataset.plat)));
     if (query) submit(query);
+  }
+
+  function syncPlatformToggles() {
+    root.querySelectorAll('.sx-plat-toggle').forEach(b => b.setAttribute('aria-pressed', String(platformFilter.has(b.dataset.plat))));
+  }
+
+  function togglePlatform(p) {
+    if (platformFilter.has(p)) {
+      if (platformFilter.size === 1) { announce('At least one platform must stay selected'); return; }
+      platformFilter.delete(p);
+    } else platformFilter.add(p);
+    syncPlatformToggles();
+    // refine a live search: re-run the same intent on the new platform set
+    if (session) {
+      const it = session.intent;
+      it.platforms = PLATFORMS.filter(x => platformFilter.has(x));
+      const rev = session.revision + 1;
+      session = newSession(it);
+      session.revision = rev;
+      renderSession();
+      announce('Platform scope updated, revision ' + rev);
+    }
   }
 
   function announce(msg) { if (announcer) announcer.textContent = msg; }

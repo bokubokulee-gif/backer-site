@@ -6,6 +6,22 @@
 
 .sx-announce{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
+/* ---- hero copy ---- */
+.sx-lede{font-weight:700;color:var(--ink);font-size:17px;margin:14px 0 6px}
+.sx-sub{font-style:italic;color:var(--accent);opacity:.8;font-size:14px;line-height:1.65;max-width:760px;margin:0 auto}
+
+/* ---- pre-search platform filter ---- */
+.sx-plat-filter{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:16px 0 4px}
+.sx-plat-filter-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-2)}
+.sx-plat-toggle{display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:13px;font-weight:500;
+  transition:opacity .15s var(--ease),border-color .15s var(--ease)}
+.sx-plat-toggle .ic{width:14px;height:14px;color:var(--muted)}
+.sx-plat-toggle[aria-pressed="true"]{border-color:rgba(233,189,134,.5)}
+.sx-plat-toggle[aria-pressed="true"] .ic{color:var(--accent)}
+.sx-plat-toggle[aria-pressed="false"]{opacity:.4}
+.sx-plat-toggle:hover{opacity:1;background:var(--card-hi)}
+
 .sx-demo-note{margin:26px 0 14px;padding:10px 14px;border:1px dashed var(--line);border-radius:var(--r-sm);
   color:var(--muted);font-size:12.5px;line-height:1.5}
 
