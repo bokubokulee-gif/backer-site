@@ -94,6 +94,7 @@ body.deck .risks,
 .page-product .faq-item,
 .page-product .way,
 .page-product .comp,
+.page-product .sx-section,
 .page-product .person{
   background:var(--lg-fg);
   -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat));
@@ -146,6 +147,7 @@ body.deck .min,
 body.deck .ipcard,
 body.deck .memo-panel,
 .page-portfolio .drawer,
+.page-product .sx-drawer,
 .page-product .nav.menu-open .nav-links{
   background:var(--lg-fg-dark);
   -webkit-backdrop-filter:blur(26px) saturate(160%);
@@ -178,6 +180,8 @@ body.deck .eyebrow,
 .page-product .eyebrow,
 .page-product .pill,
 .page-product .dtag,
+.page-product .sx-chip,
+.page-product .sx-strip-tab,
 .page-product .plat{
   background:var(--lg-fg);
   -webkit-backdrop-filter:blur(10px) saturate(150%);

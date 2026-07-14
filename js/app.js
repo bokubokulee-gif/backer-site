@@ -464,6 +464,8 @@
     }).sort((x, y) => y.score - x.score);
   }
   function renderSearch(query) {
+    // Multi-platform PRD engine (js/search-engine.js) owns this view when present
+    if (window.BackerSearch) { window.BackerSearch.render(app, query); return; }
     app.innerHTML = `
       <div class="search-view">
         <div class="search-hero"><h1>AI Search Agent</h1><p>Describe the kind of creator you want to back. The agent traverses public data across platforms and ranks by authenticity and trajectory.</p></div>
