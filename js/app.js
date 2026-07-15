@@ -174,6 +174,8 @@
   let activeFilter = 'all';
   const FILTERS = [['all', 'All'], ['ai', 'AI Research'], ['tech', 'Tech Education'], ['music', 'Music'], ['indie', 'Indie Hackers'], ['art', 'Digital Art'], ['gaming', 'Gaming'], ['cooking', 'Cooking'], ['writing', 'Writing'], ['video', 'Film']];
   function renderMarket() {
+    // Creator Attention Marketplace (js/market.js) owns this view when present
+    if (window.BackerMarket) { window.BackerMarket.render(app); return; }
     const list = activeFilter === 'all' ? B.creators : B.creators.filter(c => c.cat === activeFilter);
     app.innerHTML = `
       <div class="app-head">
@@ -202,9 +204,14 @@
     const authColor = c.auth >= 80 ? '#56d39a' : c.auth >= 60 ? '#f3b44e' : '#ff6f6b';
     const ac = authColors(c.auth);
     const monthsTraj = ['Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-    const msTarget = c.milestone.money ? B.money(c.milestone.target) : B.fmt(c.milestone.target);
-    const msCurrent = c.milestone.money ? B.money(c.milestone.current) : B.fmt(c.milestone.current);
-    const msPct = Math.min(100, Math.round(c.milestone.current / c.milestone.target * 100));
+    // market state gates every contract surface (PRD: no synthesized terms)
+    const mstate = c.mkt ? c.mkt.state : 'OPEN';
+    const stateInfo = (window.BACKER_MKT && window.BACKER_MKT.STATES[mstate]) || { label: 'Open' };
+    const investable = mstate === 'OPEN' && !!c.milestone;
+    const hasTerms = !!c.milestone && ['OPEN', 'OPENING_SOON', 'CLOSED', 'RESOLVED'].includes(mstate);
+    const msTarget = c.milestone ? (c.milestone.money ? B.money(c.milestone.target) : B.fmt(c.milestone.target)) : '';
+    const msCurrent = c.milestone ? (c.milestone.money ? B.money(c.milestone.current) : B.fmt(c.milestone.current)) : '';
+    const msPct = c.milestone ? Math.min(100, Math.round(c.milestone.current / c.milestone.target * 100)) : 0;
     const flagBanner = c.flagged ? `<div class="metric" style="grid-column:1/-1;border-color:${c.flagged === 'neg' ? 'rgba(255,111,107,.4)' : 'rgba(243,180,78,.4)'};background:${c.flagged === 'neg' ? 'rgba(255,111,107,.07)' : 'rgba(243,180,78,.06)'}">
         <div class="metric-label" style="color:${c.flagged === 'neg' ? '#ff6f6b' : '#f3b44e'}"><svg viewBox="0 0 24 24" class="ic" style="width:14px;height:14px"><path d="M12 9v4M12 17h0M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg> Backer caution flag</div>
         <div class="metric-sub" style="font-size:13px;margin-top:8px;color:var(--ink)">${c.flagged === 'neg' ? 'This profile shows strong signatures of purchased engagement. We surface it on purpose — to show the protocol working. Read the AI assessment before considering a position.' : 'Audience quality is mixed and velocity is elevated. The headline growth is likely inflated. Adjust your expectations accordingly.'}</div>
@@ -220,7 +227,7 @@
               <span class="dhero-avatar" style="background:${avatarBg(c.hue)};display:grid;place-items:center;font-weight:700;font-size:30px;color:hsl(${c.hue} 60% 14%)">${initials(c.name)}</span>
               <div class="dhero-meta">
                 <h1>${c.name}</h1><div class="handle">${c.handle}</div>
-                <div class="dhero-tags"><span class="dtag">${c.category}</span><span class="dtag">Growth +${c.growth}% MoM</span><span class="dtag" style="color:${ac.bg};border-color:${ac.bg}">${c.auth}% authentic</span></div>
+                <div class="dhero-tags"><span class="dtag">${c.category}</span><span class="dtag">Growth +${c.growth}% MoM</span><span class="dtag" style="color:${ac.bg};border-color:${ac.bg}">${c.mkt ? 'PoA ' + c.mkt.poa.score + ' · ' + c.mkt.evidence.grade + ' evidence' : c.auth + '% authentic'}</span>${c.mkt ? `<span class="dtag">${stateInfo.label}</span>` : ''}</div>
               </div>
               <div class="dhero-actions"><button class="btn btn-ghost" data-share>Share</button></div>
             </div>
@@ -248,8 +255,8 @@
             <div class="chart-x">${monthsTraj.map(m => `<span>${m}</span>`).join('')}</div>
           </div>
 
-          <div class="terms">
-            <h3>Milestone terms</h3>
+          ${hasTerms ? `<div class="terms">
+            <h3>Milestone terms${mstate !== 'OPEN' ? ` · ${stateInfo.label}` : ''}</h3>
             <div class="term-row">
               <div class="term-ic"><svg viewBox="0 0 24 24" class="ic"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4-6.3-4.6L5.7 21 8 14 2 9.4h7.6z"/></svg></div>
               <div class="term-info"><b>Reach ${msTarget} ${c.milestone.metric} in ${c.milestone.deadline}</b><p>Currently ${msCurrent} · ${msPct}% of the way there</p>
@@ -257,16 +264,19 @@
               </div>
               <div class="term-mult">${c.milestone.mult}×</div>
             </div>
-            <p class="metric-sub" style="margin-top:6px">If the milestone is met by the deadline, early backers receive ${c.milestone.mult}× their stake. If it isn't, the stake is lost. Settlement is escrowed on-chain.</p>
-          </div>
+            <p class="metric-sub" style="margin-top:6px">If the milestone is met by the deadline, early backers receive ${c.milestone.mult}× their simulated stake. If it isn't, the simulated stake is lost. Simulated positions — no real money moves.</p>
+          </div>` : `<div class="terms">
+            <h3>Market state — ${stateInfo.label}</h3>
+            <p class="metric-sub">No approved milestone contract exists for this creator. Backer tracks the attention and underwriting evidence above; contract terms are never synthesized. Watch this creator to be notified if a contract opens.</p>
+          </div>`}
         </div>
 
         <aside class="aside">
-          <div class="invest">
+          ${investable ? `<div class="invest">
             <h3>Back ${c.name.split(' ')[0]}</h3>
-            <p class="sub">Take a position from $1. You're betting on the milestone above.</p>
+            <p class="sub">Take a simulated position from $1. You're betting on the milestone above.</p>
             <div class="amount"><span class="cur">$</span><input id="investAmt" type="number" min="1" value="25" inputmode="numeric"/></div>
-            <div class="quick"><button data-quick="5">$5</button><button data-quick="25">$25</button><button data-quick="100">$100</button><button data-quick="500">$500</button></div>
+            <div class="quick"><button data-quick="5">$5</button><button data-quick="25">$25</button><button data-quick="100">$100</button><button data-quick="250">$250</button></div>
             <div class="proj">
               <div class="proj-row"><span>Payout multiple</span><b>${c.milestone.mult}×</b></div>
               <div class="proj-row"><span>If milestone hits</span><b class="pos" id="projPayout">$0</b></div>
@@ -274,8 +284,12 @@
               <div class="proj-row"><span>If it misses</span><b id="projLoss">-$0</b></div>
             </div>
             <button class="btn btn-accent" id="backBtn" data-back-creator="${c.id}">Back this creator</button>
-            <p class="invest-foot">Demo experience · transparent, small-denomination risk. Backing early creators can lose the full stake.</p>
-          </div>
+            <p class="invest-foot">Simulated · no real money moves. Ceiling scales with PoA confidence and contract risk. Backing early creators can lose the full simulated stake.</p>
+          </div>` : `<div class="invest">
+            <h3>${stateInfo.label}</h3>
+            <p class="sub">Position controls appear only for a valid open simulated milestone contract. Attention and underwriting evidence stay fully visible either way.</p>
+            <button class="btn btn-ghost" data-view="market" style="width:100%;justify-content:center">Back to the market</button>
+          </div>`}
 
           <div class="ai-panel">
             <div class="ai-head"><span class="ai-orb"></span><div><b>Backer AI</b><span>Underwriting copilot</span></div></div>
@@ -292,7 +306,7 @@
     mountCovers(app);
     // animate ring
     requestAnimationFrame(() => { const rf = $('.ring-fill', app); if (rf) rf.style.strokeDashoffset = rf.dataset.off; });
-    mountInvest(c);
+    if (investable) mountInvest(c);
     mountAI(c);
   }
 
@@ -350,8 +364,8 @@
         <div class="receipt-row"><span>Payout if hit</span><b class="pos">${B.money(payout)} (${c.milestone.mult}×)</b></div>
         <div class="receipt-row"><span>Potential profit</span><b class="pos">+${B.money(profit)}</b></div>
       </div>
-      <button class="btn btn-accent" data-confirm="${c.id}" data-amt="${amt}">Confirm & settle ${B.money(amt)}</button>
-      <div class="modal-pay">Settled on-chain · ${partnerLogos}</div>
+      <button class="btn btn-accent" data-confirm="${c.id}" data-amt="${amt}">Confirm simulated position · ${B.money(amt)}</button>
+      <div class="modal-pay">Simulated · no real money moves · ${partnerLogos}</div>
     `);
   }
   function showSuccess(c, amt) {
@@ -360,11 +374,11 @@
       <button class="modal-x" data-close aria-label="Close"><svg viewBox="0 0 24 24" class="ic"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       <div class="modal-ic"><svg viewBox="0 0 24 24" class="ic"><path d="M20 6 9 17l-5-5"/></svg></div>
       <h2>You're backing ${c.name.split(' ')[0]}.</h2>
-      <p>Your ${B.money(amt)} position is live and escrowed. You were here early — that's the whole point.</p>
+      <p>Your ${B.money(amt)} simulated position is recorded. You were here early — that's the whole point.</p>
       <div class="modal-receipt">
         <div class="receipt-row"><span>Position</span><b>${B.money(amt)} in ${c.name}</b></div>
         <div class="receipt-row"><span>Pays out</span><b class="pos">${B.money(payout)} if milestone hits</b></div>
-        <div class="receipt-row"><span>Settlement</span><b>Confirmed · on-chain</b></div>
+        <div class="receipt-row"><span>Status</span><b>Simulated · no real money moves</b></div>
       </div>
       <button class="btn btn-primary" data-view="portfolio" data-close>View my portfolio</button>
       <button class="btn btn-ghost" data-close style="margin-top:10px">Keep exploring</button>
@@ -523,6 +537,7 @@
     toastEl.innerHTML = `<svg viewBox="0 0 24 24" class="ic" style="color:${kind === 'warn' ? 'var(--warn)' : 'var(--pos)'}">${kind === 'warn' ? '<path d="M12 9v4M12 17h0M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>' : '<path d="M20 6 9 17l-5-5"/>'}</svg>${msg}`;
     toastEl.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('show'), 2600);
   }
+  window.__backerToast = toast;
 
   /* ---------------- global click delegation ---------------- */
   document.addEventListener('click', e => {
@@ -615,9 +630,11 @@
     initTyped();
     $('.dock-home').classList.add('active');
     // deep-link from portfolio.html dock (e.g. index.html?view=market)
+    // and shareable marketplace state links (#market?window=…&genre=…)
     try {
       var dl = new URLSearchParams(location.search).get('view');
       if (dl && (dl === 'market' || dl === 'search')) go(dl);
+      else if (/^#market/.test(location.hash)) go('market');
     } catch (e) {}
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);

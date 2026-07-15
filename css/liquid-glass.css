@@ -95,7 +95,11 @@ body.deck .risks,
 .page-product .way,
 .page-product .comp,
 .page-product .sx-section,
-.page-product .person{
+.page-product .person,
+.page-product .mkt-mcard,
+.page-product .mkt-minis,
+.page-product .mkt-catcard,
+.page-product .mkt-platcard{
   background:var(--lg-fg);
   -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat));
   backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) url(#liquid-glass);
