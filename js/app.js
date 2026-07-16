@@ -153,7 +153,7 @@
   function go(view, arg) {
     if (view === 'portfolio') { window.location.href = 'portfolio.html'; return; }
     if (view === 'home') {
-      document.body.classList.remove('body-app');
+      document.body.classList.remove('body-app', 'mkt-full');
       app.classList.add('hidden'); app.setAttribute('aria-hidden', 'true');
       $$('.dock-btn', dock).forEach(b => b.classList.remove('active'));
       $('.dock-home').classList.add('active');
@@ -161,6 +161,7 @@
       return;
     }
     document.body.classList.add('body-app');
+    document.body.classList.toggle('mkt-full', view === 'market'); // market view escapes the 1180px app cap
     app.classList.remove('hidden'); app.setAttribute('aria-hidden', 'false');
     window.scrollTo({ top: 0, behavior: 'auto' });
     if (view === 'market') { renderMarket(); setDock('market'); }

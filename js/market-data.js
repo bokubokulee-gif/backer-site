@@ -458,8 +458,160 @@ window.BACKER_MKT = (function () {
     ];
   }
 
+  /* =========================================================
+     Contract layer — Exchange Homepage PRDs (2026-07-15).
+     Milestone contracts as first-class fixture records with a
+     FIXED demo snapshot (no generated "fresh" timestamps).
+     Demo · simulated data — fixtures never enter production.
+     ========================================================= */
+  const DEMO_SNAP_LABEL = '15 Jul 2026 09:00 UTC';
+  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const LASTD = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  function deadlineLabel(mOffset) { // month-end N months after the Jul 2026 snapshot
+    const m = 6 + mOffset, y = 2026 + Math.floor(m / 12), mi = m % 12;
+    return MON[mi] + ' ' + LASTD[mi] + ', ' + y;
+  }
+  function dateFromDays(d) {
+    const t = new Date(Date.UTC(2026, 6, 15 + d));
+    return MON[t.getUTCMonth()] + ' ' + t.getUTCDate() + ', ' + t.getUTCFullYear();
+  }
+
+  const CONTRACT_STATES = ['OPEN', 'OPENING_SOON', 'CLOSED', 'RESOLVED'];
+  ALL.forEach(c => {
+    if (!c.milestone || !CONTRACT_STATES.includes(c.mkt.state)) return;
+    const r = rng('ct' + c.id);
+    const st = c.mkt.state;
+    const mOff = parseInt(c.milestone.deadline) || 9;
+    const cur = c.milestone.current, tgt = c.milestone.target;
+    const baseline = Math.round(cur * (0.55 + r() * 0.3));
+    const progress = clamp(cur / tgt, 0, 1);
+    const closeDays = st === 'OPEN' ? Math.round(8 + r() * 80) : 0;
+    const simVol = st === 'OPENING_SOON' ? 0 : Math.max(400, c.raised);
+    const backers = simVol ? Math.max(3, Math.round(simVol / (40 + r() * 140))) : 0;
+    const spark = [];
+    for (let i = 0; i <= 10; i++) {
+      const wob = 1 + (rng('sp' + c.id + i)() - .5) * 0.06;
+      spark.push(Math.max(0, Math.round((baseline + (cur - baseline) * Math.pow(i / 10, 0.9)) * wob)));
+    }
+    spark[10] = cur;
+    const p0 = platById(c.mkt.profiles[0].plat);
+    const fmtV = v => c.milestone.money ? B.money(v) : B.fmt(v);
+    c.contract = {
+      id: 'ct-' + c.id, version: 'v1.' + (1 + Math.floor(r() * 4)),
+      title: 'Reach ' + fmtV(tgt) + ' ' + c.milestone.metric + ' by ' + deadlineLabel(mOff),
+      deadlineLabel: deadlineLabel(mOff),
+      closeDays, closingSoon: st === 'OPEN' && closeDays <= 21,
+      closeLabel: st === 'OPEN' ? dateFromDays(closeDays) : null,
+      opensInDays: st === 'OPENING_SOON' ? Math.round(2 + r() * 12) : null,
+      listedDaysAgo: Math.round(1 + r() * 60),
+      baseline, progress, progressPct: Math.round(progress * 100),
+      curLabel: fmtV(cur), tgtLabel: fmtV(tgt), money: !!c.milestone.money,
+      mult: c.milestone.mult,
+      simVol, backers, watchers: Math.round(20 + r() * 400),
+      volDelta: Math.round((r() - 0.35) * 60), posDelta: Math.round((r() - 0.3) * 50), watchDelta: Math.round((r() - 0.3) * 40),
+      freshMin: Math.round(4 + r() * 110),
+      source: (p0 ? p0.name : 'Platform') + ' public metrics — independent resolution source',
+      outcome: st === 'RESOLVED' ? (r() < 0.6 ? 'HIT' : 'MISS') : null,
+      spark
+    };
+    if (c.contract.listedDaysAgo <= 7 && st === 'OPEN') c.contract.isNew = true;
+  });
+  const CONTRACTS = ALL.filter(c => c.contract);
+  const RADAR_STATES = ['WATCH_ONLY', 'NO_CONTRACT', 'APPLICATION_PENDING', 'UNDER_REVIEW', 'OPENING_SOON'];
+
+  function pctIn(sortedAsc, v) {
+    if (sortedAsc.length < 2) return 50;
+    let n = 0; for (let i = 0; i < sortedAsc.length; i++) if (sortedAsc[i] <= v) n++;
+    return (n - 1) / (sortedAsc.length - 1) * 100;
+  }
+  const asc = a => a.slice().sort((x, y) => x - y);
+
+  /* Trending — PRD §15.3C: 0.40 sim-volume growth + 0.25 position starts
+     + 0.20 Pulse delta + 0.15 watch adds (percentiles, open contracts only) */
+  function trendingList(w) {
+    const open = CONTRACTS.filter(c => c.mkt.state === 'OPEN');
+    const vs = asc(open.map(c => c.contract.volDelta)), ps = asc(open.map(c => c.contract.posDelta));
+    const ds = asc(open.map(c => c.mkt.windows[w].delta)), ws = asc(open.map(c => c.contract.watchDelta));
+    return open.map(c => ({
+      c, score: .40 * pctIn(vs, c.contract.volDelta) + .25 * pctIn(ps, c.contract.posDelta)
+        + .20 * pctIn(ds, c.mkt.windows[w].delta) + .15 * pctIn(ws, c.contract.watchDelta)
+    })).sort((a, b) => b.score - a.score || (a.c.id < b.c.id ? -1 : 1)).map(x => x.c);
+  }
+
+  /* Featured — PRD §14.3: 0.35 Pulse pct + 0.25 activity pct + 0.20 evidence
+     + 0.10 freshness + 0.10 editorial, material-risk exclusion, Medium+ evidence */
+  function featuredList(w) {
+    const elig = CONTRACTS.filter(c => c.mkt.state === 'OPEN' && c.mkt.evidence.score >= 60
+      && c.mkt.risk.level !== 'severe' && c.mkt.risk.level !== 'elevated');
+    const pls = asc(elig.map(c => c.mkt.windows[w].pulse.value)), acts = asc(elig.map(c => c.contract.simVol));
+    return elig.map(c => ({
+      c, score: .35 * pctIn(pls, c.mkt.windows[w].pulse.value) + .25 * pctIn(acts, c.contract.simVol)
+        + .20 * c.mkt.evidence.score + .10 * clamp(100 - c.contract.freshMin, 0, 100) + .10 * 50
+    })).sort((a, b) => b.score - a.score || (a.c.id < b.c.id ? -1 : 1)).slice(0, 4).map(x => x.c);
+  }
+
+  function moversList(w) {
+    return CONTRACTS.filter(c => c.mkt.state === 'OPEN')
+      .slice().sort((a, b) => Math.abs(b.mkt.windows[w].delta) - Math.abs(a.mkt.windows[w].delta)).slice(0, 3);
+  }
+  function openingSoonList() {
+    return CONTRACTS.filter(c => c.mkt.state === 'OPENING_SOON').sort((a, b) => a.contract.opensInDays - b.contract.opensInDays);
+  }
+  function newList() { return CONTRACTS.filter(c => c.contract.isNew).sort((a, b) => a.contract.listedDaysAgo - b.contract.listedDaysAgo); }
+  function volumeList() { return CONTRACTS.filter(c => c.mkt.state === 'OPEN').slice().sort((a, b) => b.contract.simVol - a.contract.simVol).slice(0, 3); }
+
+  /* Risk Watch — material changes only */
+  function riskWatchList() {
+    const items = [];
+    CONTRACTS.filter(c => c.mkt.state === 'OPEN' && (c.mkt.risk.level === 'elevated' || c.mkt.risk.level === 'severe'))
+      .slice(0, 2).forEach(c => items.push({ c, msg: c.mkt.risk.label, kind: 'risk' }));
+    const delayed = CONTRACTS.find(c => c.mkt.state === 'OPEN' && c.mkt.profiles.some(p => p.fresh.state === 'PROVIDER_DELAYED'));
+    if (delayed) items.push({ c: delayed, msg: 'Instagram provider-delayed · last-good snapshot in use', kind: 'delay' });
+    const lowEv = CONTRACTS.find(c => c.mkt.state === 'OPEN' && c.mkt.evidence.grade === 'Low');
+    if (lowEv) items.push({ c: lowEv, msg: 'Evidence Confidence Low — read the evidence panel', kind: 'evidence' });
+    return items.slice(0, 3);
+  }
+
+  /* AI Pulse — deterministic source-backed digest (no free-form generation) */
+  function aiPulse(w) {
+    const open = CONTRACTS.filter(c => c.mkt.state === 'OPEN');
+    const byCat = {};
+    open.forEach(c => { (byCat[c.mkt.cat] = byCat[c.mkt.cat] || []).push(c.mkt.windows[w].delta); });
+    let topCat = null, topAvg = -1e9;
+    Object.keys(byCat).forEach(k => {
+      if (byCat[k].length < 2) return;
+      const avg = byCat[k].reduce((a, b) => a + b, 0) / byCat[k].length;
+      if (avg > topAvg) { topAvg = avg; topCat = k; }
+    });
+    const medPlus = open.filter(c => c.mkt.evidence.score >= 60).length;
+    const bullets = [];
+    if (topCat) bullets.push({ t: catById(topCat).name + ' contracts lead ' + WIN_LABEL[w] + ' Attention Pulse movement (' + (topAvg >= 0 ? '+' : '') + topAvg.toFixed(1) + ' pts avg).', src: 'ranking snapshot' });
+    bullets.push({ t: medPlus + ' of ' + open.length + ' open contracts carry Medium+ Evidence Confidence.', src: 'evidence grades' });
+    if (CONTRACTS.some(c => c.mkt.state === 'OPEN' && c.mkt.profiles.some(p => p.fresh.state === 'PROVIDER_DELAYED')))
+      bullets.push({ t: 'One or more open markets operate on delayed Instagram data; last-good snapshots served.', src: 'provider status' });
+    return bullets.slice(0, 3);
+  }
+
+  /* Market status ticker — real internal fixture aggregates only */
+  function tickerStats() {
+    const open = CONTRACTS.filter(c => c.mkt.state === 'OPEN');
+    const closing = open.filter(c => c.contract.closeDays <= 30).length;
+    const vol = CONTRACTS.reduce((n, c) => n + c.contract.simVol, 0);
+    const medPlus = open.length ? Math.round(open.filter(c => c.mkt.evidence.score >= 60).length / open.length * 100) : 0;
+    return [
+      { v: open.length + ' open contracts', tip: 'Valid open milestone contracts in the fixture catalog.' },
+      { v: closing + ' closing within 30 days', tip: 'Open contracts whose entry window closes within 30 days of the demo snapshot.' },
+      { v: B.money(vol) + ' simulated volume', tip: 'Sum of simulated position amounts. Simulated — no real money moves.' },
+      { v: medPlus + '% Medium+ evidence', tip: 'Share of open contracts at Evidence Confidence Medium or High.' },
+      { v: 'Instagram provider-delayed', tip: 'Last-good snapshots served for Instagram-sourced metrics.', warn: true },
+      { v: 'Demo snapshot ' + DEMO_SNAP_LABEL, tip: 'Fixed fixture snapshot — this demo never generates fresh-looking timestamps.' }
+    ];
+  }
+
   return {
     VERSIONS, WINDOWS, DEFAULT_WINDOW, WIN_LABEL, TAXONOMY, PLATFORMS, TIERS, STATES, EV_GRADES,
-    catById, subName, platById, tierOf, ALL, ranks, sortBoard, risingList, highConfidenceList, statusStrip
+    catById, subName, platById, tierOf, ALL, ranks, sortBoard, risingList, highConfidenceList, statusStrip,
+    CONTRACTS, RADAR_STATES, DEMO_SNAP_LABEL, dateFromDays,
+    trendingList, featuredList, moversList, openingSoonList, newList, volumeList, riskWatchList, aiPulse, tickerStats
   };
 })();
