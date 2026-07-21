@@ -236,7 +236,7 @@
   .health-row .v{font-weight:600}
 </style>
 <link rel="stylesheet" href="css/liquid-glass.css" />
-<link rel="stylesheet" href="css/poa-terminal.css?v=4" />
+<link rel="stylesheet" href="css/poa-terminal.css?v=13" />
 </head>
 <body class="page-portfolio">
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -480,7 +480,7 @@
           <h3>Creator Actions</h3>
           <div class="actions-list">
             <button class="act-btn primary" id="proposeBtn"><svg viewBox="0 0 24 24" class="ic"><path d="M12 5v14M5 12h14"/></svg> Propose milestone</button>
-            <a class="act-btn" href="backerdemo.html?view=market"><svg viewBox="0 0 24 24" class="ic"><path d="M14 3h7v7M21 3l-9 9"/><path d="M21 14v5a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h5"/></svg> View public profile</a>
+            <a class="act-btn" href="portfolio.html?mode=creator&amp;poa=cooper" data-poa-term="cooper"><svg viewBox="0 0 24 24" class="ic"><path d="M14 3h7v7M21 3l-9 9"/><path d="M21 14v5a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h5"/></svg> View PoA composition</a>
             <button class="act-btn" id="shareReport"><svg viewBox="0 0 24 24" class="ic"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7"/><path d="M16 6l-4-4-4 4M12 2v13"/></svg> Share report</button>
           </div>
         </div>
@@ -542,7 +542,7 @@
 
 <!-- ===== position detail drawer ===== -->
 <div class="drawer-overlay" id="drawerOverlay"></div>
-<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drTitle">
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Position details" aria-hidden="true" inert>
   <button class="drawer-x" id="drawerX" aria-label="Close">✕</button>
   <div id="drawerContent"></div>
 </aside>
@@ -777,8 +777,10 @@
     }
     $('#drawerContent').innerHTML=html;
     $('#drawerOverlay').classList.add('is-open'); $('#drawer').classList.add('is-open');
+    $('#drawer').removeAttribute('inert'); $('#drawer').setAttribute('aria-hidden','false');
+    try{$('#drawerX').focus();}catch(e){}
   }
-  function closeDrawer(){ $('#drawerOverlay').classList.remove('is-open'); $('#drawer').classList.remove('is-open'); }
+  function closeDrawer(){ $('#drawerOverlay').classList.remove('is-open'); $('#drawer').classList.remove('is-open'); $('#drawer').setAttribute('aria-hidden','true'); $('#drawer').setAttribute('inert',''); }
   $('#drawerX').addEventListener('click',closeDrawer);
   $('#drawerOverlay').addEventListener('click',closeDrawer);
   document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeDrawer(); });
@@ -850,14 +852,15 @@
   }
   function openContract(i){
     var c=CONTRACTS[i];
-    $('#drawerContent').innerHTML='<span class="dr-kind">'+c.type+' contract · '+c.status+'</span>'+
-      '<h2 class="dr-title">'+c.title+'</h2><p class="dr-sub">'+c.metric+'</p>'+
-      '<div class="dr-rows">'+row('Current',c.cur,1)+row('Target',c.target,1)+row('Progress',c.progress+'%',1)+
-      row('Deadline',c.deadline)+row('Multiplier',c.mult+' simulated',1)+row('Total backing',c.backing+' simulated',1)+
-      row('Backers',c.backers,1)+row('Risk tier',c.tier)+'</div>'+
-      '<div class="progress"><i style="width:'+c.progress+'%"></i></div>'+
-      '<div class="dr-note">If hit: simulated backers win according to terms. If missed: simulated stakes lose. Settlement: unavailable in V1.</div>';
-    $('#drawerOverlay').classList.add('is-open'); $('#drawer').classList.add('is-open');
+    var routePosition={
+      id:'cooper-contract-'+i,inst:'MILESTONE_CONTRACT',status:'ACTIVE',title:'Cooper',sub:c.title,
+      creator:{id:'cooper',name:'Cooper',handle:'@endurance',hue:34,platform:'youtube',followers:31400,growth:14,auth:78,poa:{shown:true,value:78}},
+      stake:25,value:25,pnl:0,roi:0,reason:c.progress+'% progress toward '+c.target+' '+c.metric,
+      deadline:c.deadline,poa:'MEDIUM',ms:{start:c.cur,target:c.target,progress:c.progress,payout:Math.round(25*parseFloat(c.mult))}
+    };
+    if(window.PoaTerminal&&window.PoaTerminal.openPositionRoute){window.PoaTerminal.openPositionRoute(routePosition.id,routePosition,'portfolio_creator');return;}
+    try{sessionStorage.setItem('backer_market_route_position_v1',JSON.stringify(routePosition));}catch(e){}
+    location.href='backermarket.html?position='+encodeURIComponent(routePosition.id)+'&instrument=milestone&source=portfolio_creator';
   }
 
   var TAPE=[
@@ -889,13 +892,26 @@
   $('#shareReport').addEventListener('click',function(){ var b=this; if(navigator.clipboard){navigator.clipboard.writeText(location.href).catch(function(){});} flash(b,'<svg viewBox="0 0 24 24" class="ic"><path d="M5 13l4 4L19 7"/></svg> Report link copied'); });
 
   /* ================= INIT ================= */
-  try{ window.__PORTFOLIO_POSITIONS = POSITIONS; }catch(e){}
+  try{
+    window.__PORTFOLIO_POSITIONS = POSITIONS;
+    window.__BACKER_EXTRA_CREATORS = window.__BACKER_EXTRA_CREATORS || {};
+    window.__BACKER_EXTRA_CREATORS.cooper = {id:'cooper',name:'Cooper',handle:'@endurance',hue:34,platform:'youtube',followers:31400,growth:14,auth:78,poa:{shown:true,value:78}};
+  }catch(e){}
   renderPositions(); renderActivity(); drawPerf('YTD');
   renderContracts(); renderTape(); setAI('price'); drawCt('price');
   var params=(location.search||'').toLowerCase();
   setMode(params.indexOf('mode=creator')>=0?'creator':'investor');
 })();
 </script>
-<script src="js/poa-terminal.js?v=4"></script>
+<script src="js/poa-terminal.js?v=13"></script>
+<script>
+(function(){
+  var params=new URLSearchParams(location.search);
+  var creator=params.get('poa');
+  if(creator&&window.PoaTerminal&&window.PoaTerminal.openByCreator){
+    window.setTimeout(function(){window.PoaTerminal.openByCreator(creator,{surface:'poa'});},0);
+  }
+})();
+</script>
 </body>
 </html>

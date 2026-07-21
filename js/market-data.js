@@ -482,7 +482,16 @@ window.BACKER_MKT = (function () {
     const r = rng('ct' + c.id);
     const st = c.mkt.state;
     const mOff = parseInt(c.milestone.deadline) || 9;
-    const cur = c.milestone.current, tgt = c.milestone.target;
+    let cur = c.milestone.current;
+    const tgt = c.milestone.target;
+    const resolvedOutcome = st === 'RESOLVED' ? (r() < 0.6 ? 'HIT' : 'MISS') : null;
+    if (resolvedOutcome === 'HIT') {
+      cur = Math.round(tgt * (1.01 + r() * 0.05));
+      c.milestone.current = cur;
+    }
+    const contractDeadline = st === 'RESOLVED'
+      ? ((hash('resolved-' + c.id) % 2) ? 'May 31, 2026' : 'Jun 30, 2026')
+      : deadlineLabel(mOff);
     const baseline = Math.round(cur * (0.55 + r() * 0.3));
     const progress = clamp(cur / tgt, 0, 1);
     const closeDays = st === 'OPEN' ? Math.round(8 + r() * 80) : 0;
@@ -498,8 +507,8 @@ window.BACKER_MKT = (function () {
     const fmtV = v => c.milestone.money ? B.money(v) : B.fmt(v);
     c.contract = {
       id: 'ct-' + c.id, version: 'v1.' + (1 + Math.floor(r() * 4)),
-      title: 'Reach ' + fmtV(tgt) + ' ' + c.milestone.metric + ' by ' + deadlineLabel(mOff),
-      deadlineLabel: deadlineLabel(mOff),
+      title: 'Reach ' + fmtV(tgt) + ' ' + c.milestone.metric + ' by ' + contractDeadline,
+      deadlineLabel: contractDeadline,
       closeDays, closingSoon: st === 'OPEN' && closeDays <= 21,
       closeLabel: st === 'OPEN' ? dateFromDays(closeDays) : null,
       opensInDays: st === 'OPENING_SOON' ? Math.round(2 + r() * 12) : null,
@@ -511,7 +520,7 @@ window.BACKER_MKT = (function () {
       volDelta: Math.round((r() - 0.35) * 60), posDelta: Math.round((r() - 0.3) * 50), watchDelta: Math.round((r() - 0.3) * 40),
       freshMin: Math.round(4 + r() * 110),
       source: (p0 ? p0.name : 'Platform') + ' public metrics — independent resolution source',
-      outcome: st === 'RESOLVED' ? (r() < 0.6 ? 'HIT' : 'MISS') : null,
+      outcome: resolvedOutcome,
       spark
     };
     if (c.contract.listedDaysAgo <= 7 && st === 'OPEN') c.contract.isNew = true;

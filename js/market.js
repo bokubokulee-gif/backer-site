@@ -42,6 +42,26 @@ window.BackerMarket = (function () {
     t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2400);
   }
 
+  function focusTerminalTrigger(trigger) {
+    if (!trigger || !trigger.focus) return;
+    try { trigger.focus({ preventScroll: true }); } catch (e) { try { trigger.focus(); } catch (x) {} }
+  }
+  function openMarketTerminal(c, trigger) {
+    if (!c) return;
+    focusTerminalTrigger(trigger);
+    window.location.href = 'backermarket.html?market=' + encodeURIComponent(c.id) + '&source=market';
+  }
+  function openPoaTerminal(c, trigger) {
+    if (!c) return;
+    focusTerminalTrigger(trigger);
+    const terminal = window.PoaTerminal;
+    const context = { seed: c.id, creator: c, name: c.name, surface: 'poa' };
+    if (terminal && typeof terminal.open === 'function') { terminal.open(context); return; }
+    if (terminal && typeof terminal.openByCreator === 'function') { terminal.openByCreator(c.id, context); return; }
+    lastTrigger = trigger;
+    openPoa(c);
+  }
+
   /* ---------------- URL state (defaults omitted; legacy keys still read) ---------------- */
   function writeURL() {
     const p = [];
@@ -161,7 +181,7 @@ window.BackerMarket = (function () {
     const m = c.mkt, band = m.poa.band;
     const txt = band === 'insufficient' ? '—' : m.poa.score;
     const g = m.evidence.grade[0];
-    return `<button class="mkt-poa ${band}" data-poa="${c.id}" aria-label="Proof of Attention ${band === 'insufficient' ? 'insufficient evidence' : m.poa.score + ', evidence ' + m.evidence.grade}" title="PoA ${txt} · Evidence ${m.evidence.grade} — underwriting, not success odds"><i></i>${txt}<em>${g}</em></button>`;
+    return `<button type="button" class="mkt-poa ${band}" data-mkt-poa-open="${c.id}" aria-label="Open Proof of Attention composition for ${esc(c.name)}; ${band === 'insufficient' ? 'insufficient evidence' : 'score ' + m.poa.score + ', evidence ' + m.evidence.grade}" title="PoA ${txt} · Evidence ${m.evidence.grade} — underwriting, not success odds"><i></i>${txt}<em>${g}</em></button>`;
   }
   function watchBtn(c, label) {
     const on = watch.has(c.id);
@@ -175,6 +195,13 @@ window.BackerMarket = (function () {
   function riskTag(c) {
     const l = c.mkt.risk.level;
     return `<span class="mkt-risk ${l}" title="${esc(c.mkt.risk.label)}">${riskWord[l]}</span>`;
+  }
+  function safePublicEvidence(c) {
+    const text = c && c.mkt && c.mkt.poa ? String(c.mkt.poa.positive || '') : '';
+    if (!text || /watch\s*time|view\s*duration|retention|returning[-\s]*viewer/i.test(text)) {
+      return 'Stable public engagement breadth across sampled content.';
+    }
+    return text;
   }
   function simVolOf(c) { return c.contract.simVol + (sessionAdds[c.id] || 0); }
   function backersOf(c) { return c.contract.backers + (sessionAdds[c.id] ? 1 : 0); }
@@ -194,10 +221,10 @@ window.BackerMarket = (function () {
   }
   function cardCTA(c) {
     const st = c.mkt.state;
-    if (st === 'OPEN') return `<button class="mkt-cta" data-position="${c.id}">Back $1+</button>`;
+    if (st === 'OPEN') return `<button type="button" class="mkt-cta" data-market-open="${c.id}" aria-label="Open market and back ${esc(c.name)} from $1">Back $1+</button>`;
     if (st === 'OPENING_SOON') return watchBtn(c, true);
-    if (st === 'CLOSED') return `<button class="mkt-btn ghost sm" data-profile="${c.id}">View contract</button>`;
-    if (st === 'RESOLVED') return `<button class="mkt-btn ghost sm" data-profile="${c.id}">View result</button>`;
+    if (st === 'CLOSED') return `<button type="button" class="mkt-btn ghost sm" data-market-open="${c.id}">View contract</button>`;
+    if (st === 'RESOLVED') return `<button type="button" class="mkt-btn ghost sm" data-market-open="${c.id}">View result</button>`;
     return '';
   }
   function sparkline(c, w, h) {
@@ -217,12 +244,13 @@ window.BackerMarket = (function () {
   function card(c) {
     const m = c.mkt, k = c.contract, cat = M.catById(m.cat);
     const p0 = M.platById(m.profiles[0].plat);
-    return `<article class="mkt-card st-${m.state.toLowerCase()}" data-row="${c.id}" aria-label="${esc(k.title)} — ${esc(c.name)}">
+    return `<article class="mkt-card st-${m.state.toLowerCase()}" data-row="${c.id}" data-market-card aria-label="${esc(k.title)} — ${esc(c.name)}">
+      <button type="button" class="mkt-card-hit" data-market-open="${c.id}" aria-label="Open traded market for ${esc(c.name)}: ${esc(k.title)}"></button>
       <header class="mkt-card-h">
-        <button class="mkt-name" data-profile="${c.id}">${avatar(c, 30)}<span><b>${esc(c.name)}</b><small>${p0 ? p0.name : ''} · ${cat ? cat.name : ''}</small></span></button>
+        <button type="button" class="mkt-name" data-mkt-poa-open="${c.id}" aria-label="Open Proof of Attention composition for ${esc(c.name)}">${avatar(c, 30)}<span><b>${esc(c.name)}</b><small>${p0 ? p0.name : ''} · ${cat ? cat.name : ''}</small></span></button>
         ${statusBadge(c)}${watchBtn(c)}
       </header>
-      <h3 class="mkt-card-title"><button data-profile="${c.id}" title="Open contract details">${esc(k.title)}</button></h3>
+      <h3 class="mkt-card-title"><button type="button" data-market-open="${c.id}" title="Open traded market">${esc(k.title)}</button></h3>
       <div class="mkt-prog" role="img" aria-label="Milestone progress: ${k.curLabel} of ${k.tgtLabel}, ${k.progressPct}%">
         <b>${k.curLabel}</b><span class="mkt-bar"><i style="width:${k.progressPct}%"></i></span><b>${k.tgtLabel}</b>
         <em title="Milestone progress — completion toward the target, not chance of success">${k.progressPct}%</em>
@@ -235,7 +263,7 @@ window.BackerMarket = (function () {
       </div>
       <footer class="mkt-card-f">
         <span class="f-act">${k.simVol || sessionAdds[c.id] ? `${B.money(simVolOf(c))} <em>sim. vol.</em> · ${backersOf(c)} backers` : `${k.watchers} watching`} · ${freshTag(c)}</span>
-        <span class="f-cta"><button class="mkt-link" data-profile="${c.id}">Details</button>${cardCTA(c)}</span>
+        <span class="f-cta"><button type="button" class="mkt-link" data-market-open="${c.id}">Details</button>${cardCTA(c)}</span>
       </footer>
     </article>`;
   }
@@ -247,15 +275,16 @@ window.BackerMarket = (function () {
     state.featIdx = Math.max(0, Math.min(state.featIdx, feats.length - 1));
     const c = feats[state.featIdx], m = c.mkt, k = c.contract, cat = M.catById(m.cat);
     const p0 = M.platById(m.profiles[0].plat);
-    return `<article class="mkt-feat" data-row="${c.id}" aria-label="Featured market: ${esc(k.title)}">
+    return `<article class="mkt-feat" data-row="${c.id}" data-market-card aria-label="Featured market: ${esc(k.title)}">
+      <button type="button" class="mkt-card-hit" data-market-open="${c.id}" aria-label="Open traded market for ${esc(c.name)}: ${esc(k.title)}"></button>
       <header class="mkt-card-h">
         <span class="mkt-feat-tag">Featured market</span>
-        <button class="mkt-name" data-profile="${c.id}">${avatar(c, 34)}<span><b>${esc(c.name)}</b><small>${p0 ? p0.name : ''} · ${cat ? cat.name : ''}</small></span></button>
+        <button type="button" class="mkt-name" data-mkt-poa-open="${c.id}" aria-label="Open Proof of Attention composition for ${esc(c.name)}">${avatar(c, 34)}<span><b>${esc(c.name)}</b><small>${p0 ? p0.name : ''} · ${cat ? cat.name : ''}</small></span></button>
         ${statusBadge(c)}
         <span class="mkt-feat-nav"><button data-feat-prev aria-label="Previous featured market" ${state.featIdx === 0 ? 'disabled' : ''}>‹</button><em>${state.featIdx + 1} of ${feats.length}</em><button data-feat-next aria-label="Next featured market" ${state.featIdx === feats.length - 1 ? 'disabled' : ''}>›</button></span>
         ${watchBtn(c)}
       </header>
-      <h3 class="mkt-feat-title"><button data-profile="${c.id}">${esc(k.title)}</button></h3>
+      <h3 class="mkt-feat-title"><button type="button" data-market-open="${c.id}">${esc(k.title)}</button></h3>
       <div class="mkt-prog big" role="img" aria-label="Milestone progress: ${k.curLabel} of ${k.tgtLabel}, ${k.progressPct}%">
         <b>${k.curLabel}</b><span class="mkt-bar"><i style="width:${k.progressPct}%"></i></span><b>${k.tgtLabel}</b>
         <em title="Milestone progress — completion toward the target, not chance of success">${k.progressPct}% progress</em>
@@ -271,10 +300,10 @@ window.BackerMarket = (function () {
         ${riskTag(c)}
         <span class="t-close">${k.closeLabel ? `<b>${k.closeLabel}</b><small>entry closes</small>` : ''}</span>
       </div>
-      <p class="mkt-feat-ev">+ ${esc(m.poa.positive)}</p>
+      <p class="mkt-feat-ev">+ ${esc(safePublicEvidence(c))}</p>
       <footer class="mkt-card-f">
         <span class="f-act">${B.money(simVolOf(c))} <em>sim. vol.</em> · ${backersOf(c)} backers · ${freshTag(c)}</span>
-        <span class="f-cta"><button class="mkt-btn ghost sm" data-profile="${c.id}">Details</button><button class="mkt-cta" data-position="${c.id}">Back $1+</button></span>
+        <span class="f-cta"><button type="button" class="mkt-btn ghost sm" data-market-open="${c.id}">Details</button><button type="button" class="mkt-cta" data-market-open="${c.id}" aria-label="Open market and back ${esc(c.name)} from $1">Back $1+</button></span>
       </footer>
     </article>`;
   }
@@ -286,7 +315,7 @@ window.BackerMarket = (function () {
     const win = m.windows[state.window];
     return `<article class="mkt-card mkt-rcard" data-row="${c.id}">
       <header class="mkt-card-h">
-        <button class="mkt-name" data-profile="${c.id}">${avatar(c, 30)}<span><b>${esc(c.name)}</b><small>${p0 ? p0.name : ''} · ${cat ? cat.name : ''}</small></span></button>
+        <button type="button" class="mkt-name" data-mkt-poa-open="${c.id}" aria-label="Open Proof of Attention composition for ${esc(c.name)}">${avatar(c, 30)}<span><b>${esc(c.name)}</b><small>${p0 ? p0.name : ''} · ${cat ? cat.name : ''}</small></span></button>
         <span class="mkt-badge watch">${st.label}</span>${watchBtn(c)}
       </header>
       <div class="mkt-rcard-grid">
@@ -298,14 +327,14 @@ window.BackerMarket = (function () {
       <p class="mkt-rcard-note">Watch-only research — no open contract. No terms are synthesized.</p>
       <footer class="mkt-card-f">
         <span class="f-act">${freshTag(c)}</span>
-        <span class="f-cta"><button class="mkt-link" data-profile="${c.id}">Open profile</button>${watchBtn(c, true)}</span>
+        <span class="f-cta"><button type="button" class="mkt-link" data-mkt-poa-open="${c.id}">Open PoA composition</button>${watchBtn(c, true)}</span>
       </footer>
     </article>`;
   }
 
   /* ---------------- Backer Pulse right rail (PRD §15) ---------------- */
   function railRow(c, i, val, sub, ctx) {
-    return `<button class="mkt-rrow" data-profile="${c.id}">
+    return `<button type="button" class="mkt-rrow" data-mkt-poa-open="${c.id}" aria-label="Open Proof of Attention composition for ${esc(c.name)}">
       <span class="rr-rank">${String(i + 1).padStart(2, '0')}</span>
       <span class="rr-body"><b>${esc(c.name)}</b><small>${esc(ctx)}</small></span>
       <span class="rr-val"><b>${val}</b><small>${sub}</small></span>
@@ -358,7 +387,7 @@ window.BackerMarket = (function () {
     /* E — Risk watch (material changes only) */
     const rw = M.riskWatchList();
     if (rw.length) mods.push(`<section class="mkt-rmod warn"><h4>Risk watch</h4>
-      ${rw.map((x, i) => `<button class="mkt-rrow" data-profile="${x.c.id}"><span class="rr-rank warn">!</span><span class="rr-body"><b>${esc(x.c.name)}</b><small>${esc(x.msg)}</small></span></button>`).join('')}
+      ${rw.map((x, i) => `<button type="button" class="mkt-rrow" data-mkt-poa-open="${x.c.id}" aria-label="Open Proof of Attention composition for ${esc(x.c.name)}"><span class="rr-rank warn">!</span><span class="rr-body"><b>${esc(x.c.name)}</b><small>${esc(x.msg)}</small></span></button>`).join('')}
       <button class="mkt-link rm-all" data-viewall="risk-watch">View all →</button>
     </section>`);
 
@@ -520,7 +549,7 @@ window.BackerMarket = (function () {
         <h5>Missing data &amp; limitations</h5><ul class="mkt-limits">${missing}</ul>
         <small class="mkt-vers">Public-data score · demo snapshot ${M.DEMO_SNAP_LABEL} · ${M.VERSIONS.poa}</small>
       </div>
-      <div class="mkt-drawer-f"><button class="mkt-btn ghost" data-correction>Report a correction</button><button class="mkt-btn" data-profile="${c.id}">Full underwriting profile →</button></div>
+      <div class="mkt-drawer-f"><button class="mkt-btn ghost" data-correction>Report a correction</button><button class="mkt-btn" data-mkt-poa-open="${c.id}">Full underwriting profile →</button></div>
     </div>`;
     $('.mkt-x', d).focus();
   }
@@ -725,6 +754,8 @@ window.BackerMarket = (function () {
         });
         return;
       }
+      if ((el = has('[data-mkt-poa-open]'))) { e.stopPropagation(); e.preventDefault(); openPoaTerminal(B.byId(el.dataset.mktPoaOpen), el); return; }
+      if ((el = has('[data-market-open]'))) { e.stopPropagation(); e.preventDefault(); openMarketTerminal(B.byId(el.dataset.marketOpen), el); return; }
       if ((el = has('[data-poa]'))) { e.stopPropagation(); e.preventDefault(); lastTrigger = el; openPoa(B.byId(el.dataset.poa)); return; }
       if ((el = has('[data-close-poa]'))) { e.stopPropagation(); closePoa(); return; }
       if ((el = has('[data-correction]'))) { e.stopPropagation(); closePoa(); toast('Correction request recorded — reviewed with source evidence'); return; }

@@ -1,0 +1,294 @@
+/* Standalone Backer market route. The exchange terminal is mounted below a
+   persistent product nav, with no marketplace grid or shader behind it. */
+:root{
+  --mdp-nav-h:64px;
+  color-scheme:dark;
+  background:var(--bg,#08080a);
+}
+
+html,
+body.mdp-page{
+  width:100%;
+  min-height:100%;
+  margin:0;
+  background:var(--bg,#08080a);
+}
+
+body.mdp-page{
+  min-height:100dvh;
+  overflow:hidden;
+  color:#f4f2ec;
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+}
+
+body.mdp-page::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.014) 1px,transparent 1px);
+  background-size:40px 40px;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.7),transparent 82%);
+}
+
+.mdp-nav{
+  position:relative;
+  z-index:2147483001;
+  height:var(--mdp-nav-h);
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:28px;
+  padding:0 clamp(14px,2.5vw,34px);
+  border-bottom:1px solid var(--line-2,rgba(255,255,255,.06));
+  background:rgba(8,8,10,.96);
+  box-sizing:border-box;
+}
+
+.mdp-brand{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  min-height:44px;
+  color:var(--ink,#f5f3ee);
+  text-decoration:none;
+  font-family:var(--sans,'Inter',system-ui,-apple-system,sans-serif);
+  font-size:19px;
+  font-weight:600;
+  line-height:1;
+  letter-spacing:-.02em;
+}
+
+.mdp-brand-mark{
+  width:30px;
+  height:30px;
+  display:grid;
+  place-items:center;
+  border-radius:9px;
+  background:var(--grad,linear-gradient(100deg,#ffe7c0,#f4ab63 42%,#e3713f));
+  color:#23120a;
+  font-family:var(--serif,'Instrument Serif',Georgia,serif);
+  font-size:21px;
+  font-weight:700;
+  box-shadow:0 4px 18px rgba(227,113,63,.35);
+}
+
+.mdp-nav-links{
+  display:flex;
+  align-items:stretch;
+  justify-content:flex-start;
+  height:100%;
+  gap:4px;
+}
+
+.mdp-nav-links a{
+  position:relative;
+  display:flex;
+  align-items:center;
+  padding:0 12px;
+  color:var(--muted,#a6a39c);
+  text-decoration:none;
+  font-size:14px;
+  font-weight:400;
+}
+
+.mdp-nav-links a:hover,
+.mdp-nav-links a.is-active{color:#f4f2ec}
+
+.mdp-nav-links a.is-active::after{
+  content:"";
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:0;
+  height:2px;
+  border-radius:2px 2px 0 0;
+  background:var(--accent,#e9bd86);
+}
+
+.mdp-back,
+.mdp-primary-action{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  min-height:44px;
+  padding:0 14px;
+  border:1px solid var(--line,rgba(255,255,255,.09));
+  border-radius:999px;
+  background:var(--card,rgba(255,255,255,.035));
+  color:var(--muted,#a6a39c);
+  text-decoration:none;
+  font-size:14px;
+  font-weight:600;
+}
+
+.mdp-back:hover,
+.mdp-primary-action:hover{
+  border-color:var(--card-hi,rgba(255,255,255,.08));
+  background:var(--card-2,rgba(255,255,255,.055));
+  color:var(--ink,#f5f3ee);
+}
+
+.mdp-nav a:focus-visible,
+.mdp-status a:focus-visible{
+  outline:2px solid var(--accent,#e9bd86);
+  outline-offset:3px;
+}
+
+.mdp-status{
+  position:relative;
+  z-index:1;
+  min-height:calc(100dvh - var(--mdp-nav-h));
+  display:grid;
+  place-items:center;
+  padding:28px;
+  box-sizing:border-box;
+}
+
+.mdp-status[hidden]{display:none!important}
+
+.mdp-status-card{
+  width:min(650px,100%);
+  padding:clamp(26px,5vw,54px);
+  border:1px solid rgba(255,255,255,.11);
+  border-radius:16px;
+  background:linear-gradient(150deg,#111318,#090a0d);
+  box-shadow:0 28px 90px rgba(0,0,0,.45);
+  text-align:center;
+  box-sizing:border-box;
+}
+
+.mdp-status-card h1{
+  margin:12px 0 10px;
+  color:#f4f2ec;
+  font-family:'Instrument Serif',Georgia,serif;
+  font-size:clamp(32px,5vw,52px);
+  font-weight:400;
+  line-height:1.02;
+  letter-spacing:-.03em;
+}
+
+.mdp-status-card p{
+  max-width:540px;
+  margin:0 auto;
+  color:#989ba1;
+  font-size:14px;
+  line-height:1.65;
+}
+
+.mdp-kicker{
+  color:var(--accent,#e9bd86);
+  font-family:'JetBrains Mono',ui-monospace,monospace;
+  font-size:10px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+.mdp-loader{
+  height:18px;
+  margin:22px auto 8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+
+.mdp-loader span{
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:var(--accent,#e9bd86);
+  animation:mdp-pulse 1.1s ease-in-out infinite;
+}
+.mdp-loader span:nth-child(2){animation-delay:.14s}
+.mdp-loader span:nth-child(3){animation-delay:.28s}
+
+@keyframes mdp-pulse{
+  0%,70%,100%{opacity:.25;transform:translateY(0)}
+  35%{opacity:1;transform:translateY(-4px)}
+}
+
+.mdp-error .mdp-loader{display:none}
+.mdp-error .mdp-kicker{color:#f1b45a}
+
+.mdp-error-actions{
+  margin-top:22px;
+  display:flex;
+  justify-content:center;
+}
+.mdp-error-actions[hidden]{display:none!important}
+.mdp-primary-action{background:#f4f2ec;color:#090a0b;border-color:#f4f2ec}
+.mdp-primary-action:hover{background:#fff;color:#050506;border-color:#fff}
+
+.mdp-market-suggestions{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  margin-top:24px;
+  text-align:left;
+}
+
+.mdp-market-suggestions:empty{display:none}
+
+.mdp-market-suggestions a{
+  min-width:0;
+  padding:10px 11px;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:8px;
+  color:#b8bac0;
+  text-decoration:none;
+  font-size:11px;
+  line-height:1.35;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.mdp-market-suggestions a:hover{border-color:rgba(233,189,134,.45);color:#fff}
+
+.mdp-noscript{margin:auto}
+
+/* Convert the shared terminal from a viewport modal into the content region
+   of this dedicated route. The shared JS can still repaint it normally. */
+body.mdp-page .poa-term-root{
+  inset:var(--mdp-nav-h) 0 0;
+  height:auto;
+}
+
+body.mdp-page .poa-term-root .pt-scrim{background:var(--bg,#08080a)}
+
+body.mdp-page .poa-term-root .pt-term,
+body.mdp-page .poa-term-root.open .pt-term{
+  inset:0;
+  top:0;
+  width:100%;
+  height:100%;
+  max-height:100%;
+  margin:0;
+  border-width:0;
+  border-radius:0;
+  box-shadow:none;
+}
+
+@media (max-width:760px){
+  :root{--mdp-nav-h:56px}
+  .mdp-nav{gap:12px;padding:0 12px}
+  .mdp-brand{font-size:18px}
+  .mdp-brand-mark{width:28px;height:28px;font-size:19px}
+  .mdp-nav-links{display:none}
+  .mdp-back{margin-left:auto;min-height:44px;padding:0 12px}
+  .mdp-status{padding:16px}
+  .mdp-market-suggestions{grid-template-columns:1fr}
+}
+
+@media (max-width:420px){
+  .mdp-back span:last-child{font-size:0}
+  .mdp-back span:last-child::after{content:"Markets";font-size:12px}
+  .mdp-page[data-return-source="portfolio"] .mdp-back span:last-child::after{content:"Portfolio"}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .mdp-loader span{animation:none;opacity:.7}
+}

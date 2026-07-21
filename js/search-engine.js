@@ -565,7 +565,10 @@ window.BackerSearch = (function () {
     ps.shown += slice.length;
     if (ps.shown >= ps.ranked.length) ps.state = ps.ranked.length >= PLAT_CAP ? 'cap' : 'exhausted';
     rows.parentElement.setAttribute('aria-busy', 'false');
-    rows.querySelectorAll('.sx-poa-btn:not([data-wired])').forEach(b => { b.dataset.wired = '1'; b.addEventListener('click', () => openDrawer(p, b.dataset.acct, b)); });
+    rows.querySelectorAll('[data-search-poa]:not([data-wired])').forEach(b => {
+      b.dataset.wired = '1';
+      b.addEventListener('click', () => openSearchPoa(p, b.dataset.searchPoa, b));
+    });
     updateSectionChrome(p);
     if (!initial) announce('Added ' + slice.length + ' ' + PLAT_LABEL[p] + ' results, ' + ps.shown + ' total');
   }
@@ -643,6 +646,7 @@ window.BackerSearch = (function () {
     const a = r.account;
     const poaLabel = a.poa.shown ? a.poa.value + ' · ' + a.poa.tier : 'Insufficient evidence';
     return `<div class="sx-row">
+      <button type="button" class="sx-row-hit" data-search-poa="${a.id}" aria-label="Open Proof of Attention composition for ${esc(a.name)}"></button>
       <span class="sx-rank">${rank}</span>
       <span class="sx-ava" style="background:linear-gradient(135deg,hsl(${a.hue} 45% 26%),hsl(${(a.hue + 40) % 360} 50% 16%))" aria-hidden="true">${esc(a.name.split(' ').map(w => w[0]).join(''))}</span>
       <div class="sx-id">
@@ -657,7 +661,7 @@ window.BackerSearch = (function () {
       </div>
       <div class="sx-scores">
         <span class="sx-match" title="Match Confidence (Beta calibration) — how well this account satisfies the interpreted request">Match ${r.match}</span>
-        <button class="sx-poa-btn" data-acct="${a.id}" aria-label="Open Proof of Attention details for ${esc(a.name)}">PoA: ${poaLabel}</button>
+        <button type="button" class="sx-poa-btn" data-search-poa="${a.id}" aria-label="Open Proof of Attention composition for ${esc(a.name)}">PoA: ${poaLabel}</button>
         <span class="sx-ec sx-ec-${a.evidence.tier.toLowerCase()}">Evidence: ${a.evidence.tier}</span>
       </div>
     </div>`;
@@ -665,6 +669,21 @@ window.BackerSearch = (function () {
 
   /* ---------- PoA drawer ---------- */
   let drawerEl = null, drawerReturn = null;
+
+  function openSearchPoa(p, acctId, trigger) {
+    const platform = session && session.platforms[p];
+    const result = platform && platform.ranked.find(x => x.account.id === acctId);
+    if (!result) return;
+    const a = result.account;
+    if (trigger && trigger.focus) {
+      try { trigger.focus({ preventScroll: true }); } catch (e) { try { trigger.focus(); } catch (x) {} }
+    }
+    const terminal = window.PoaTerminal;
+    const context = { seed: a.id, creator: a, name: a.name, handle: a.handle, surface: 'poa' };
+    if (terminal && typeof terminal.open === 'function') { terminal.open(context); return; }
+    if (terminal && typeof terminal.openByCreator === 'function') { terminal.openByCreator(a.id, context); return; }
+    openDrawer(p, acctId, trigger);
+  }
 
   function openDrawer(p, acctId, trigger) {
     const r = session.platforms[p].ranked.find(x => x.account.id === acctId);
