@@ -66,13 +66,12 @@ body.mdp-page::before{
   height:30px;
   display:grid;
   place-items:center;
-  border-radius:9px;
-  background:transparent;
-  color:transparent;
-  overflow:hidden;
-  box-shadow:0 4px 18px rgba(227,113,63,.22);
+  background:none;
+  overflow:visible;
+  box-shadow:none;
+  line-height:0;
 }
-.mdp-brand-mark img{width:142%;height:auto;max-width:none;object-fit:contain;display:block}
+.mdp-brand-mark img{width:100%;height:100%;max-width:100%;object-fit:contain;display:block}
 
 .mdp-nav-links{
   display:flex;

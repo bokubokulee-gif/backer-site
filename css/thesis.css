@@ -115,11 +115,10 @@ ul,ol{list-style:none}
 }
 .brand{display:inline-flex;align-items:center;gap:10px}
 .brand-mark{
-  width:28px;height:28px;border-radius:8px;display:grid;place-items:center;
-  background:transparent;color:transparent;overflow:hidden;
-  box-shadow:0 4px 16px rgba(227,113,63,.22);flex:none;
+  width:28px;height:28px;display:grid;place-items:center;
+  background:none;overflow:visible;box-shadow:none;flex:none;line-height:0;
 }
-.brand-mark img{width:142%;height:auto;max-width:none;object-fit:contain;display:block;flex:none}
+.brand-mark img{width:100%;height:100%;max-width:100%;object-fit:contain;display:block;flex:none}
 .brand-word{font-size:17.5px;font-weight:600;letter-spacing:-.02em}
 .brand-sub{
   font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
