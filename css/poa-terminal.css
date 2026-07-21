@@ -19,7 +19,7 @@
 .poa-term-root.open{display:block}
 /* No backdrop-filter here: a full-screen fixed overlay with backdrop-filter
    stalls rasterization over this site's WebGL shader canvas. Use an opaque wash. */
-.pt-scrim{ position:absolute; inset:0; background:rgba(4,4,6,.9); }
+.pt-scrim{ position:absolute; inset:0; background:#050507; }
 .poa-term{
   position:absolute; inset:0; margin:auto;
   width:min(1440px,100vw); height:100vh; max-height:100vh;
@@ -35,7 +35,7 @@
 /* ---------- header ---------- */
 .pt-head{
   flex:none; display:flex; align-items:center; gap:14px; padding:12px 16px;
-  border-bottom:1px solid var(--pt-line); background:rgba(10,11,13,.9);
+  border-bottom:1px solid var(--pt-line); background:#0a0b0d;
 }
 .pt-id{display:flex; align-items:center; gap:11px; min-width:0}
 .pt-av{
@@ -67,7 +67,7 @@
 /* ---------- control bar ---------- */
 .pt-controls{
   flex:none; display:flex; align-items:center; gap:10px; padding:9px 16px; flex-wrap:wrap;
-  border-bottom:1px solid var(--pt-line); background:rgba(9,10,12,.7);
+  border-bottom:1px solid var(--pt-line); background:#090a0c;
 }
 .pt-tabs{display:flex;gap:2px;background:var(--pt-bg2);border:1px solid var(--pt-line);border-radius:9px;padding:3px}
 .pt-tab{
@@ -105,7 +105,7 @@
 /* disclaimer strip */
 .pt-disc{
   flex:none; font-size:10.5px; color:var(--pt-muted2); font-family:var(--pt-mono);
-  padding:6px 16px; border-bottom:1px solid var(--pt-line); background:rgba(20,22,27,.4);
+  padding:6px 16px; border-bottom:1px solid var(--pt-line); background:#0e1014;
   display:flex; gap:8px; align-items:center; line-height:1.3;
 }
 .pt-disc svg{width:13px;height:13px;flex:none;fill:none;stroke:var(--pt-warn);stroke-width:1.7}
@@ -115,7 +115,7 @@
 .pt-body{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;display:grid;
   grid-template-columns:minmax(0,1fr) 340px; gap:0}
 .pt-main{min-width:0;border-right:1px solid var(--pt-line);padding:14px 16px 40px}
-.pt-side{min-width:0;padding:14px 15px 40px;background:rgba(10,11,13,.5)}
+.pt-side{min-width:0;padding:14px 15px 40px;background:#0a0b0d}
 @media (max-width:1080px){ .pt-body{grid-template-columns:1fr} .pt-main{border-right:none;border-bottom:1px solid var(--pt-line)} }
 
 /* ---------- summary chips ---------- */
@@ -320,7 +320,7 @@ figure.pt-figure{margin:0;position:relative}
 .pt-dur-note{font-size:10.5px;color:var(--pt-muted);line-height:1.45;margin:8px 0 0;padding:8px 10px;border-radius:8px;background:var(--pt-bg2)}
 
 /* sources footer */
-.pt-sources{font-size:10px;color:var(--pt-muted2);font-family:var(--pt-mono);line-height:1.5;padding:12px 16px;border-top:1px solid var(--pt-line);background:rgba(9,10,12,.7)}
+.pt-sources{font-size:10px;color:var(--pt-muted2);font-family:var(--pt-mono);line-height:1.5;padding:12px 16px;border-top:1px solid var(--pt-line);background:#090a0c}
 .pt-sources .row1{display:flex;flex-wrap:wrap;gap:6px 16px;margin-bottom:7px}
 .pt-sources b{color:var(--pt-muted)}
 .pt-sources .disclosure{color:var(--pt-faint);font-family:var(--pt-sans);font-size:10.5px;line-height:1.5}
