@@ -116,16 +116,17 @@ ul,ol{list-style:none}
 .brand{display:inline-flex;align-items:center;gap:10px}
 .brand-mark{
   width:28px;height:28px;border-radius:8px;display:grid;place-items:center;
-  background:var(--grad);color:#23120a;font-family:var(--serif);font-size:19px;font-weight:700;
-  box-shadow:0 4px 16px rgba(227,113,63,.3);
+  background:transparent;color:transparent;overflow:hidden;
+  box-shadow:0 4px 16px rgba(227,113,63,.22);flex:none;
 }
+.brand-mark img{width:142%;height:auto;max-width:none;object-fit:contain;display:block;flex:none}
 .brand-word{font-size:17.5px;font-weight:600;letter-spacing:-.02em}
 .brand-sub{
   font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
   color:var(--muted-2);padding:3px 7px;border:1px solid var(--line);border-radius:6px;margin-left:2px;
 }
 .brand.small{gap:8px;font-size:15px;color:var(--muted)}
-.brand.small .brand-mark{width:22px;height:22px;font-size:15px}
+.brand.small .brand-mark{width:22px;height:22px}
 
 .topnav{display:flex;gap:26px}
 .topnav a{font-size:13px;color:var(--muted);transition:.2s;position:relative}

@@ -576,7 +576,17 @@
   function initHero() {
     const f = $('#heroSearch'), i = $('#heroSearchInput');
     if (f) f.addEventListener('submit', e => { e.preventDefault(); go('search', i.value.trim() || 'high-retention creators about to break out'); });
-    $$('#heroPills .pill').forEach(p => p.addEventListener('click', () => go('search', p.dataset.q)));
+    const pills = $('#heroPills'), pillsToggle = $('#heroPillsToggle');
+    if (pills) pills.addEventListener('click', e => {
+      const p = e.target.closest('[data-q]');
+      if (p) go('search', p.dataset.q);
+    });
+    if (pills && pillsToggle) pillsToggle.addEventListener('click', () => {
+      const paused = pills.classList.toggle('is-paused');
+      pillsToggle.setAttribute('aria-pressed', String(paused));
+      pillsToggle.setAttribute('aria-label', paused ? 'Resume scrolling suggestions' : 'Pause scrolling suggestions');
+      pillsToggle.querySelector('span').textContent = paused ? '▶' : 'Ⅱ';
+    });
   }
 
   /* ---------------- marketing injections ---------------- */

@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Backer — Invest in People. Before the World Does.</title>
-<meta name="description" content="Backer is the financial infrastructure underneath the creator economy. Back creators at day zero — verified by an open Proof-of-Attention protocol — and earn when they break out." />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23090909'/%3E%3Ctext x='50' y='72' font-family='Georgia,serif' font-size='64' font-weight='700' fill='%23f5f3ee' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E" />
+<title>Backer — Prediction Markets for People's Future Attention</title>
+<meta name="description" content="A financial market where anyone can invest in any online IP's engagement, underwritten by Backer's Proof of Attention." />
+<link rel="icon" type="image/png" href="img/backer-mark.png?v=1" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/styles.css?v=4" />
+<link rel="stylesheet" href="css/styles.css?v=5" />
 <link rel="stylesheet" href="css/search.css?v=3" />
 <link rel="stylesheet" href="css/market.css?v=4" />
 <link rel="stylesheet" href="css/liquid-glass.css?v=6" />
@@ -22,7 +22,7 @@
 <!-- ================= TOP NAV ================= -->
 <header class="nav" id="nav">
   <a class="brand" href="#" data-nav="home" aria-label="Backer home">
-    <span class="brand-mark">B</span>
+    <span class="brand-mark" aria-hidden="true"><img src="img/backer-mark.png?v=1" alt="" /></span>
     <span class="brand-word">Backer</span>
   </a>
   <nav class="nav-links" id="navLinks" aria-label="Primary">
@@ -35,7 +35,7 @@
   </nav>
   <div class="nav-cta">
     <button class="btn btn-ghost" data-view="portfolio">Portfolio</button>
-    <button class="btn btn-primary" data-view="market">Launch App<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    <button class="btn btn-primary" data-view="market">Enter Backer Market<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
     <button class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false">
       <svg viewBox="0 0 24 24" class="ic"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
@@ -49,24 +49,39 @@
   <section class="hero" id="home">
     <div class="hero-inner reveal">
       <div class="eyebrow"><span class="dot"></span> The financial layer of the attention economy</div>
-      <h1 class="hero-title">Invest in People.<br /><em>Before the World Does.</em></h1>
-      <p class="hero-sub">Back creators at day zero — and get paid when they blow up. Every position is underwritten by an open <strong>Proof-of-Attention</strong> protocol, so you know the audience is real before you wager a dollar.</p>
+      <h1 class="hero-title">Prediction markets price events.<br /><em>Backer prices people's future attention.</em></h1>
+      <p class="hero-sub">A financial market where anyone can invest in any online IP's engagement.</p>
 
       <form class="hero-search" id="heroSearch" autocomplete="off">
         <svg viewBox="0 0 24 24" class="ic search-ic"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        <input id="heroSearchInput" type="text" placeholder="Who do you think is going to blow up?" />
+        <input id="heroSearchInput" type="text" placeholder="Who do you want to back?" />
         <button type="submit" class="search-go" aria-label="Search">
           <svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
       </form>
 
-      <div class="pills" id="heroPills">
-        <button class="pill" data-q="indie hackers shipping weekly">Indie hackers</button>
-        <button class="pill" data-q="undiscovered music gems">Music gems</button>
-        <button class="pill" data-q="digital artists">Digital artists</button>
-        <button class="pill" data-q="AI researchers explaining papers">AI researchers</button>
-        <button class="pill" data-q="gaming creators">Gaming</button>
-        <button class="pill" data-q="university fitness creators">Campus fitness</button>
+      <div class="pills-shell">
+        <div class="pills" id="heroPills" role="group" aria-label="Popular Backer searches">
+          <div class="pills-track">
+            <div class="pills-group">
+              <button class="pill" data-q="indie hackers shipping weekly">Indie hackers</button>
+              <button class="pill" data-q="undiscovered music gems">Music gems</button>
+              <button class="pill" data-q="digital artists">Digital artists</button>
+              <button class="pill" data-q="AI researchers explaining papers">AI researchers</button>
+              <button class="pill" data-q="gaming creators">Gaming</button>
+              <button class="pill" data-q="university fitness creators">Campus fitness</button>
+            </div>
+            <div class="pills-group" aria-hidden="true">
+              <span class="pill" data-q="indie hackers shipping weekly">Indie hackers</span>
+              <span class="pill" data-q="undiscovered music gems">Music gems</span>
+              <span class="pill" data-q="digital artists">Digital artists</span>
+              <span class="pill" data-q="AI researchers explaining papers">AI researchers</span>
+              <span class="pill" data-q="gaming creators">Gaming</span>
+              <span class="pill" data-q="university fitness creators">Campus fitness</span>
+            </div>
+          </div>
+        </div>
+        <button class="pills-toggle" id="heroPillsToggle" type="button" aria-pressed="false" aria-label="Pause scrolling suggestions"><span aria-hidden="true">Ⅱ</span></button>
       </div>
     </div>
 
@@ -271,7 +286,10 @@
     <div class="section-head center reveal">
       <span class="kicker kicker-accent">Proof of Attention — an open protocol</span>
       <h2 class="proof-h">Platforms manufacture attention.<br /><span class="grad-text">We verify it.</span></h2>
-      <p class="section-lead">An agentic LLM truth layer that infers audience quality under partial observability. Not bot detection — audience underwriting. Public, auditable, cross-platform, and forkable, because in a market where trust is the only product, the scoring model can't be a black box.</p>
+      <div class="proof-copy">
+        <p class="section-lead">Every number on a creator's profile can be manufactured — fabricated, even. So we learn from the best market makers in the world: quantitative hedge funds monitor the sentiment around a stock by analyzing news channels, analyst reports on Substack and Medium, Reddit, and Twitter. Backer applies the same discipline to attention.</p>
+        <p class="section-lead"><strong>Our own PoA — Proof of Attention — algorithms.</strong> Agents monitor and analyze the publicly available data on every major platform: likes, comments, reposts, views; the frequency of their spikes; the sentiment inside the comments. The output is a whole picture of the composition of attention — per content, per creator.</p>
+      </div>
     </div>
 
     <figure class="quote reveal">
@@ -279,15 +297,74 @@
       <figcaption>— Jack Dorsey, on why the reactions you see can't be trusted</figcaption>
     </figure>
 
-    <div class="scores" id="scoreGrid"><!-- injected by JS --></div>
+    <article class="poa-demo reveal" data-poa-preview="marcus" aria-labelledby="poaDemoTitle" aria-describedby="poaDemoDisclosure">
+      <header class="poa-demo-head">
+        <div class="poa-demo-identity">
+          <span class="poa-demo-avatar" aria-hidden="true">MS</span>
+          <div>
+            <span class="poa-demo-kicker">Illustrative public-data snapshot</span>
+            <h3 id="poaDemoTitle">Marcus Stillwater</h3>
+            <p>@marcus.films · YouTube · 90 days</p>
+          </div>
+        </div>
+        <div class="poa-demo-status" aria-label="Snapshot status">
+          <span><small>PoA band</small><b class="poa-demo-positive">Strong</b></span>
+          <span><small>Evidence</small><b data-poa-confidence>High · 94</b></span>
+          <button type="button" class="poa-demo-open" data-poa="marcus">Open full PoA <span aria-hidden="true">↗</span></button>
+        </div>
+      </header>
 
-    <div class="open-note reveal">
-      <svg viewBox="0 0 24 24" class="ic"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4-6.3-4.6L5.7 21 8 14 2 9.4h7.6z"/></svg>
-      <div>
-        <h4>Why open-source is the product, not a detail</h4>
-        <p>Investors need to know the scoring isn't manipulated. Creators need to know it's fair and improvable. An open model is the difference between a black-box credit score and a public financial standard.</p>
+      <div class="poa-demo-body">
+        <section class="poa-demo-composition" aria-labelledby="poaCompositionTitle">
+          <div class="poa-demo-block-head">
+            <h4 id="poaCompositionTitle">Attention composition</h4>
+            <span>ranges, not a single score</span>
+          </div>
+
+          <div class="poa-demo-band poa-demo-core" data-poa-band="core" aria-label="Credible core estimate: 80 to 95 percent; point estimate 87 percent">
+            <div class="poa-demo-band-label"><span><i></i>Credible core</span><b data-poa-range>87 · 80–95%</b></div>
+            <div class="poa-demo-track"><span class="poa-demo-range" style="--range-left:80%;--range-width:15%"></span><i style="--point-left:87%"></i></div>
+          </div>
+          <div class="poa-demo-band poa-demo-passive" data-poa-band="passive" aria-label="Passive or transient estimate: 0 to 15 percent; point estimate 7 percent">
+            <div class="poa-demo-band-label"><span><i></i>Passive / transient</span><b data-poa-range>7 · 0–15%</b></div>
+            <div class="poa-demo-track"><span class="poa-demo-range" style="--range-left:0%;--range-width:15%"></span><i style="--point-left:7%"></i></div>
+          </div>
+          <div class="poa-demo-band poa-demo-anomalous" data-poa-band="anom" aria-label="Anomalous estimate: 0 to 10 percent; point estimate 2 percent">
+            <div class="poa-demo-band-label"><span><i></i>Anomalous</span><b data-poa-range>2 · 0–10%</b></div>
+            <div class="poa-demo-track"><span class="poa-demo-range" style="--range-left:0%;--range-width:10%"></span><i style="--point-left:2%"></i></div>
+          </div>
+          <div class="poa-demo-band poa-demo-unassessed" data-poa-band="un" aria-label="Unassessed estimate: 0 to 10 percent; point estimate 4 percent">
+            <div class="poa-demo-band-label"><span><i></i>Unassessed</span><b data-poa-range>4 · 0–10%</b></div>
+            <div class="poa-demo-track"><span class="poa-demo-range" style="--range-left:0%;--range-width:10%"></span><i style="--point-left:4%"></i></div>
+          </div>
+          <p class="poa-demo-note">Point estimates total 100%. Ranges may overlap because uncertainty is shown, not hidden.</p>
+        </section>
+
+        <section class="poa-demo-evidence" aria-labelledby="poaEvidenceTitle">
+          <div class="poa-demo-block-head">
+            <h4 id="poaEvidenceTitle">Evidence read</h4>
+            <span>captured public signals</span>
+          </div>
+          <div class="poa-demo-read">
+            <p><b>Evidence for</b> <span data-poa-evidence>Comment breadth held across eight uploads while public-view velocity normalized after the largest spike.</span></p>
+            <p><b>Watch</b> <span data-poa-risk>Low output cadence and incomplete source coverage increase uncertainty.</span></p>
+          </div>
+          <div class="poa-demo-coverage" aria-label="Captured data coverage">
+            <span><small>Videos</small><b data-poa-videos>8</b></span>
+            <span><small>Comments</small><b data-poa-comments>642</b></span>
+            <span><small>Coverage</small><b data-poa-coverage>67%</b></span>
+          </div>
+          <div class="poa-demo-pulse-head"><span>Observed attention velocity</span><small>100 = prior 28d median</small></div>
+          <div class="poa-demo-pulse" data-poa-pulse role="img" aria-label="Illustrative observed public attention velocity over twelve observations; 100 equals the prior 28-day median">
+            <span style="--pulse:32%"></span><span style="--pulse:38%"></span><span style="--pulse:29%"></span><span style="--pulse:44%"></span>
+            <span style="--pulse:41%"></span><span style="--pulse:52%"></span><span style="--pulse:46%"></span><span style="--pulse:61%"></span>
+            <span class="is-spike" style="--pulse:94%"></span><span style="--pulse:58%"></span><span style="--pulse:49%"></span><span style="--pulse:54%"></span>
+          </div>
+        </section>
       </div>
-    </div>
+
+      <p class="poa-demo-disclosure" id="poaDemoDisclosure">Estimated composition from observable public signals. This is creator underwriting—not a creator valuation, market price, probability, or settlement oracle.</p>
+    </article>
   </section>
 
   <!-- PRODUCT -->
@@ -347,7 +424,7 @@
   </section>
 
   <!-- PARTNERS -->
-  <section class="section partners" id="partners">
+  <section class="section partners partners-subtle" id="partners">
     <div class="section-head center reveal">
       <span class="kicker kicker-accent">Settlement &amp; payments infrastructure</span>
       <h2>Investments settle on-chain. Returns flow back transparently.</h2>
@@ -362,15 +439,15 @@
     <h2 class="finale-line">Attention has always been currency.</h2>
     <h2 class="finale-line grad-text">Now it can be equity.</h2>
     <div class="finale-cta">
-      <button class="btn btn-primary btn-lg" data-view="market">Enter the marketplace<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-      <button class="btn btn-ghost btn-lg" data-view="search">Ask the AI agent</button>
+      <button class="btn btn-primary btn-lg" data-view="market">Enter Backer Market<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <button class="btn btn-ghost btn-lg" data-view="search">Chat with Backer AI</button>
     </div>
   </section>
 
   <!-- FOOTER -->
   <footer class="footer">
     <div class="footer-top">
-      <a class="brand" href="#" data-nav="home"><span class="brand-mark">B</span><span class="brand-word">Backer</span></a>
+      <a class="brand" href="#" data-nav="home"><span class="brand-mark" aria-hidden="true"><img src="img/backer-mark.png?v=1" alt="" /></span><span class="brand-word">Backer</span></a>
       <p class="footer-tag">Invest in people. Before the world does.</p>
     </div>
     <div class="footer-cols">
@@ -416,8 +493,9 @@
 <script src="js/market-data.js?v=3"></script>
 <script src="js/market.js?v=4"></script>
 <script src="js/search-engine.js?v=3"></script>
-<script src="js/app.js?v=6"></script>
+<script src="js/app.js?v=7"></script>
 <script src="js/sections.js?v=2"></script>
 <script src="js/poa-terminal.js?v=13"></script>
+<script src="js/poa-preview.js?v=1"></script>
 </body>
 </html>
