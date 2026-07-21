@@ -236,6 +236,7 @@
   .health-row .v{font-weight:600}
 </style>
 <link rel="stylesheet" href="css/liquid-glass.css" />
+<link rel="stylesheet" href="css/poa-terminal.css?v=3" />
 </head>
 <body class="page-portfolio">
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -888,11 +889,13 @@
   $('#shareReport').addEventListener('click',function(){ var b=this; if(navigator.clipboard){navigator.clipboard.writeText(location.href).catch(function(){});} flash(b,'<svg viewBox="0 0 24 24" class="ic"><path d="M5 13l4 4L19 7"/></svg> Report link copied'); });
 
   /* ================= INIT ================= */
+  try{ window.__PORTFOLIO_POSITIONS = POSITIONS; }catch(e){}
   renderPositions(); renderActivity(); drawPerf('YTD');
   renderContracts(); renderTape(); setAI('price'); drawCt('price');
   var params=(location.search||'').toLowerCase();
   setMode(params.indexOf('mode=creator')>=0?'creator':'investor');
 })();
 </script>
+<script src="js/poa-terminal.js?v=3"></script>
 </body>
 </html>
