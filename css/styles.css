@@ -106,7 +106,6 @@ em{font-style:normal}
 .nav-links a{font-size:14px;color:var(--muted);transition:.2s}
 .nav-links a:hover{color:var(--ink)}
 .nav-cta{display:flex;gap:10px;align-items:center}
-.body-app .nav{transform:translateY(-110%);opacity:0;pointer-events:none}
 
 /* ---------- hero ---------- */
 .hero{
@@ -662,7 +661,11 @@ em{font-style:normal}
 .big-search input{flex:1;background:none;border:none;outline:none;color:var(--ink);font-size:16px;font-family:inherit}
 .big-search .ic{color:var(--muted)}
 .big-search .send{width:44px;height:44px;border-radius:13px;background:var(--ink);color:#111;display:grid;place-items:center;flex:none}
-.search-ex{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:34px}
+.search-ex-shell{width:100%;max-width:782px;margin:14px auto 34px}
+.search-ex.pills{display:block;width:100%;max-width:none;margin:0;justify-content:initial;flex-wrap:nowrap}
+.search-ex .pills-track{animation-duration:22s}
+.search-ex .chip{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}
+.search-ex .pills-group[aria-hidden="true"] .chip{cursor:pointer}
 .agent-log{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
 .agent-step{display:flex;align-items:center;gap:11px;font-size:13.5px;color:var(--muted);opacity:0;transform:translateY(6px);animation:stepIn .4s var(--ease) forwards}
 .agent-step .ic{width:16px;height:16px;color:var(--pos)}

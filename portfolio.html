@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/app-pages.css?v=3" />
+<link rel="stylesheet" href="css/app-pages.css?v=20260722-2" />
 <style>
   /* ===== identity header ===== */
   .id-head{display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap;margin-bottom:6px}
@@ -235,7 +235,7 @@
   .health-row .k{color:var(--muted-2)}
   .health-row .v{font-weight:600}
 </style>
-<link rel="stylesheet" href="css/liquid-glass.css" />
+<link rel="stylesheet" href="css/liquid-glass.css?v=20260722-2" />
 <link rel="stylesheet" href="css/poa-terminal.css?v=13" />
 </head>
 <body class="page-portfolio">
@@ -243,14 +243,25 @@
 <div class="vignette" aria-hidden="true"></div>
 <div class="grain" aria-hidden="true"></div>
 
-<!-- top bar -->
-<header class="topbar">
+<!-- canonical Backer navigation -->
+<header class="nav site-nav" id="nav">
   <a class="brand" href="backerdemo.html" aria-label="Backer — demo home">
-    <span class="brand-mark" aria-hidden="true"><img src="img/backer-mark.png?v=2" alt="" /></span><span class="brand-word">Backer</span><span class="brand-sub">Portfolio</span>
+    <span class="brand-mark" aria-hidden="true"><img src="img/backer-mark.png?v=2" alt="" /></span><span class="brand-word">Backer</span>
   </a>
-  <div class="topbar-actions">
-    <a class="tb-link" href="backerdemo.html?view=market">Marketplace</a>
-    <a class="tb-link" href="backerdemo.html">Demo home</a>
+  <nav class="nav-links" id="navLinks" aria-label="Primary">
+    <a href="backerthesis.html">Thesis</a>
+    <a href="backerdemo.html#validation">Validation</a>
+    <a href="backerdemo.html#proof">Proof of Attention</a>
+    <a href="backerdemo.html#product">Product</a>
+    <a href="backerdemo.html#partners">Partners</a>
+    <a href="faq.html">FAQ</a>
+  </nav>
+  <div class="nav-cta">
+    <a class="btn btn-line portfolio-link" href="portfolio.html" aria-current="page">Portfolio</a>
+    <a class="btn btn-fill market-link" href="backerdemo.html?view=market">Enter Backer Market<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <button class="nav-burger" id="navBurger" type="button" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" class="ic"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
   </div>
 </header>
 
@@ -570,6 +581,19 @@
   'use strict';
   var $=function(s,r){return (r||document).querySelector(s);};
   var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+  var siteNav=$('#nav'),navBurger=$('#navBurger');
+  if(siteNav&&navBurger){
+    var closeNav=function(){siteNav.classList.remove('menu-open');navBurger.setAttribute('aria-expanded','false');};
+    navBurger.addEventListener('click',function(e){
+      e.stopPropagation();
+      var open=siteNav.classList.toggle('menu-open');
+      navBurger.setAttribute('aria-expanded',String(open));
+    });
+    $$('#navLinks a').forEach(function(a){a.addEventListener('click',closeNav);});
+    document.addEventListener('click',function(e){if(siteNav.classList.contains('menu-open')&&!siteNav.contains(e.target))closeNav();});
+    window.addEventListener('scroll',function(){siteNav.classList.toggle('scrolled',window.scrollY>20);if(siteNav.classList.contains('menu-open'))closeNav();},{passive:true});
+    siteNav.classList.toggle('scrolled',window.scrollY>20);
+  }
   function money(n){ var s=n<0?'-':'+'; return s+'$'+Math.abs(n).toFixed(2); }
   function plus(n){ return (n>=0?'+':'')+n; }
 

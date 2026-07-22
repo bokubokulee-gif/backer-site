@@ -405,11 +405,24 @@ window.BackerSearch = (function () {
           <input id="sxInput" autocomplete="off" placeholder="e.g. AI educators under 100K followers with loyal audiences" value="${esc(query || '')}"/>
           <button class="send" type="submit" aria-label="Search"><svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
         </form>
-        <div class="search-ex" role="list">
-          <button class="chip" data-ex="AI educators under 100K followers with loyal audiences">AI educators · loyal</button>
-          <button class="chip" data-ex="indie builders shipping weekly on YouTube and X">builders · weekly</button>
-          <button class="chip" data-ex="musicians about to break out, under 50K">music · pre-breakout</button>
-          <button class="chip" data-ex="Spanish-language cooking creators">cooking · Spanish</button>
+        <div class="pills-shell search-ex-shell">
+          <div class="pills search-ex" role="group" aria-label="Suggested creator searches">
+            <div class="pills-track search-ex-track">
+              <div class="pills-group">
+                <button type="button" class="chip" data-ex="AI educators under 100K followers with loyal audiences">AI educators · loyal</button>
+                <button type="button" class="chip" data-ex="indie builders shipping weekly on YouTube and X">builders · weekly</button>
+                <button type="button" class="chip" data-ex="musicians about to break out, under 50K">music · pre-breakout</button>
+                <button type="button" class="chip" data-ex="Spanish-language cooking creators">cooking · Spanish</button>
+              </div>
+              <div class="pills-group" aria-hidden="true">
+                <span class="chip" data-ex="AI educators under 100K followers with loyal audiences">AI educators · loyal</span>
+                <span class="chip" data-ex="indie builders shipping weekly on YouTube and X">builders · weekly</span>
+                <span class="chip" data-ex="musicians about to break out, under 50K">music · pre-breakout</span>
+                <span class="chip" data-ex="Spanish-language cooking creators">cooking · Spanish</span>
+              </div>
+            </div>
+          </div>
+          <button class="pills-toggle search-ex-toggle" type="button" aria-pressed="false" aria-label="Pause scrolling suggestions"><span aria-hidden="true">Ⅱ</span></button>
         </div>
         <div class="sx-plat-filter" role="group" aria-label="Platforms to search">
           <span class="sx-plat-filter-label">Search on</span>
@@ -421,7 +434,7 @@ window.BackerSearch = (function () {
     announcer = root.querySelector('.sx-announce');
     const form = root.querySelector('#sxForm'), input = root.querySelector('#sxInput');
     form.addEventListener('submit', e => { e.preventDefault(); submit(input.value.trim()); });
-    root.querySelectorAll('.search-ex .chip').forEach(ch => ch.addEventListener('click', () => { input.value = ch.dataset.ex; submit(ch.dataset.ex); }));
+    if (window.__backerBindPromptMarquee) window.__backerBindPromptMarquee(root, input, submit);
     root.querySelectorAll('.sx-plat-toggle').forEach(b => b.addEventListener('click', () => togglePlatform(b.dataset.plat)));
     if (query) submit(query);
   }

@@ -701,7 +701,7 @@ window.BackerMarket = (function () {
       <div class="mkt-framing">
         <div class="mkt-framing-l">
           <h1>Creator markets</h1>
-          <p>Milestone contracts underwritten by Proof of Attention.</p>
+          <p>Underwritten by Proof of Attention.</p>
         </div>
         <div class="mkt-framing-r">
           <span class="mkt-pill demo" title="Fixture catalog at a fixed snapshot — never production data.">Demo · simulated data</span>

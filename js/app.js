@@ -23,6 +23,24 @@
   }
   function statusColor(s) { return s === 'ok' ? '#56d39a' : s === 'warn' ? '#f3b44e' : '#ff6f6b'; }
 
+  function bindPromptMarquee(scope, input, onPick) {
+    const examples = $('.search-ex', scope), toggle = $('.search-ex-toggle', scope);
+    if (!examples) return;
+    examples.addEventListener('click', e => {
+      const chip = e.target.closest('[data-ex]');
+      if (!chip || !examples.contains(chip)) return;
+      input.value = chip.dataset.ex;
+      onPick(chip.dataset.ex);
+    });
+    if (toggle) toggle.addEventListener('click', () => {
+      const paused = examples.classList.toggle('is-paused');
+      toggle.setAttribute('aria-pressed', String(paused));
+      toggle.setAttribute('aria-label', paused ? 'Resume scrolling suggestions' : 'Pause scrolling suggestions');
+      toggle.querySelector('span').textContent = paused ? '▶' : 'Ⅱ';
+    });
+  }
+  window.__backerBindPromptMarquee = bindPromptMarquee;
+
   /* ---------------- per-creator cover canvas ---------------- */
   function renderCover(canvas) {
     const ctx = canvas.getContext('2d'); const W = canvas.width, H = canvas.height; const hue = +canvas.dataset.hue;
@@ -157,6 +175,7 @@
       app.classList.add('hidden'); app.setAttribute('aria-hidden', 'true');
       $$('.dock-btn', dock).forEach(b => b.classList.remove('active'));
       $('.dock-home').classList.add('active');
+      try { history.replaceState(null, '', location.pathname); } catch (e) {}
       window.scrollTo({ top: 0, behavior: 'auto' });
       return;
     }
@@ -489,17 +508,30 @@
           <input id="searchInput" placeholder="e.g. fitness creators under 5K, posting 3× a week, retention-heavy, ideally students" value="${(query || '').replace(/"/g, '&quot;')}"/>
           <button class="send" type="submit" aria-label="Search"><svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
         </form>
-        <div class="search-ex">
-          <button class="chip" data-ex="AI researchers under 10K with very loyal audiences">AI researchers · loyal</button>
-          <button class="chip" data-ex="indie hackers shipping weekly with paying audiences">indie hackers · paying</button>
-          <button class="chip" data-ex="undiscovered music artists about to break out">music · pre-breakout</button>
-          <button class="chip" data-ex="show me a creator with fake followers">expose a fake</button>
+        <div class="pills-shell search-ex-shell">
+          <div class="pills search-ex" role="group" aria-label="Suggested creator searches">
+            <div class="pills-track search-ex-track">
+              <div class="pills-group">
+                <button type="button" class="chip" data-ex="AI researchers under 10K with very loyal audiences">AI researchers · loyal</button>
+                <button type="button" class="chip" data-ex="indie hackers shipping weekly with paying audiences">indie hackers · paying</button>
+                <button type="button" class="chip" data-ex="undiscovered music artists about to break out">music · pre-breakout</button>
+                <button type="button" class="chip" data-ex="show me a creator with fake followers">expose a fake</button>
+              </div>
+              <div class="pills-group" aria-hidden="true">
+                <span class="chip" data-ex="AI researchers under 10K with very loyal audiences">AI researchers · loyal</span>
+                <span class="chip" data-ex="indie hackers shipping weekly with paying audiences">indie hackers · paying</span>
+                <span class="chip" data-ex="undiscovered music artists about to break out">music · pre-breakout</span>
+                <span class="chip" data-ex="show me a creator with fake followers">expose a fake</span>
+              </div>
+            </div>
+          </div>
+          <button class="pills-toggle search-ex-toggle" type="button" aria-pressed="false" aria-label="Pause scrolling suggestions"><span aria-hidden="true">Ⅱ</span></button>
         </div>
         <div id="searchOut"></div>
       </div>`;
     const form = $('#searchForm'), input = $('#searchInput');
     form.addEventListener('submit', e => { e.preventDefault(); runAgent(input.value.trim()); });
-    $$('.search-ex .chip', app).forEach(ch => ch.addEventListener('click', () => { input.value = ch.dataset.ex; runAgent(ch.dataset.ex); }));
+    bindPromptMarquee(app, input, runAgent);
     if (query) runAgent(query);
   }
   function runAgent(q) {
@@ -549,6 +581,7 @@
     const creatorEl = t.closest('[data-creator]');
     const viewEl = t.closest('[data-view]');
     const navHome = t.closest('[data-nav="home"]');
+    const navSection = t.closest('#navLinks a[href^="#"]');
     const scrollEl = t.closest('[data-scroll]');
     const filterEl = t.closest('[data-filter]');
     const portMode = t.closest('[data-port-mode]');
@@ -565,6 +598,17 @@
 
     if (filterEl) { activeFilter = filterEl.dataset.filter; renderMarket(); return; }
     if (portMode) { renderPortfolio(portMode.dataset.portMode); return; }
+    if (navSection && document.body.classList.contains('body-app')) {
+      e.preventDefault();
+      const id = navSection.getAttribute('href').slice(1);
+      go('home');
+      try { history.replaceState(null, '', location.pathname + '#' + id); } catch (x) {}
+      requestAnimationFrame(() => {
+        const target = document.getElementById(id);
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      });
+      return;
+    }
     if (navHome) { e.preventDefault(); go('home'); return; }
     if (creatorEl && !viewEl) { go('creator', creatorEl.dataset.creator); return; }
     if (viewEl) { e.preventDefault(); go(viewEl.dataset.view); return; }
