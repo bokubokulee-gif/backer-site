@@ -14,6 +14,11 @@ window.BackerMarket = (function () {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const esc = s => String(s).replace(/</g, '&lt;');
+  function analyticsTrack(event, props) {
+    try {
+      if (window.BackerAnalytics) window.BackerAnalytics.track(event, props || {});
+    } catch (e) {}
+  }
 
   /* ---------------- view state ---------------- */
   const state = {
@@ -49,6 +54,7 @@ window.BackerMarket = (function () {
   function openMarketTerminal(c, trigger) {
     if (!c) return;
     focusTerminalTrigger(trigger);
+    analyticsTrack('market_card_opened', { market_id: c.id, creator_id: c.id, source: 'market' });
     window.location.href = 'backermarket.html?market=' + encodeURIComponent(c.id) + '&source=market';
   }
   function openPoaTerminal(c, trigger) {
@@ -449,7 +455,11 @@ window.BackerMarket = (function () {
       ${bad ? `<p class="mkt-pos-err" role="alert">${bad}</p>` : ''}`;
   }
   function openPosition(c) {
-    if (c.mkt.state !== 'OPEN') return;
+    if (c.mkt.state !== 'OPEN') {
+      analyticsTrack('market_position_blocked', { market_id: c.id, creator_id: c.id, instrument: 'milestone', reason: 'market-closed', source: 'market' });
+      return;
+    }
+    analyticsTrack('market_position_started', { market_id: c.id, creator_id: c.id, instrument: 'milestone', source: 'market' });
     const k = c.contract, m = c.mkt, max = maxFor(c);
     const d = $('#mktPos', root);
     d.classList.add('open'); d.setAttribute('aria-hidden', 'false');
@@ -479,7 +489,18 @@ window.BackerMarket = (function () {
     const inp = $('#mktAmt', root);
     const amt = Math.round(parseFloat(inp && inp.value) || 0);
     const max = maxFor(c);
-    if (!(amt >= 1) || amt > max) { const pv = $('#mktPosPrev', root); if (pv) pv.innerHTML = posPreview(c, amt); return; }
+    if (!(amt >= 1) || amt > max) {
+      analyticsTrack('market_position_blocked', {
+        market_id: c.id,
+        creator_id: c.id,
+        instrument: 'milestone',
+        reason: !(amt >= 1) ? 'below-minimum' : 'above-ceiling',
+        source: 'market'
+      });
+      const pv = $('#mktPosPrev', root);
+      if (pv) pv.innerHTML = posPreview(c, amt);
+      return;
+    }
     try {
       const raw = getPositions();
       const ex = raw.find(p => p.id === c.id);
@@ -487,6 +508,7 @@ window.BackerMarket = (function () {
       localStorage.setItem(PKEY, JSON.stringify(raw));
     } catch (e) {}
     sessionAdds[c.id] = (sessionAdds[c.id] || 0) + amt;
+    analyticsTrack('market_position_completed', { market_id: c.id, creator_id: c.id, instrument: 'milestone', source: 'market' });
     const d = $('#mktPos', root);
     $('.mkt-drawer-panel', d).innerHTML = `<div class="mkt-drawer-h"><div class="mkt-poa-t"><h3>Position recorded</h3><small>${esc(c.name)} · ${esc(c.contract.title)}</small></div><button class="mkt-x" data-close-pos aria-label="Close"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
       <div class="mkt-drawer-b">
@@ -733,6 +755,7 @@ window.BackerMarket = (function () {
     if (state.browse === b) { state.browse = null; state.sort = 'pulse'; }
     else { state.browse = b; const def = BROWSE.find(x => x[0] === b); state.sort = def ? def[2] : 'pulse'; if (state.view !== 'markets') state.view = 'markets'; }
     state.shown = 12; state.featIdx = 0;
+    analyticsTrack('market_filter_changed', { filter: 'browse', value: state.browse || 'all', source: 'market' });
   }
   function bind(app) {
     const rootEl = $('#mktRoot', app);
@@ -771,14 +794,15 @@ window.BackerMarket = (function () {
       }
       if ((el = has('[data-go-portfolio]'))) { e.stopPropagation(); window.location.href = 'portfolio.html'; return; }
       if ((el = has('[data-profile]'))) { e.stopPropagation(); e.preventDefault(); closePoa(); closeDrawer(); closePosition(); window.__backerGo('creator', el.dataset.profile); return; }
-      if ((el = has('[data-tab]'))) { e.stopPropagation(); state.view = el.dataset.tab; state.shown = 12; refreshCanvas(); return; }
+      if ((el = has('[data-tab]'))) { e.stopPropagation(); state.view = el.dataset.tab; state.shown = 12; analyticsTrack('market_filter_changed', { filter: 'tab', value: state.view, source: 'market' }); refreshCanvas(); return; }
       if ((el = has('[data-tab-open-soon]'))) { e.stopPropagation(); state.view = 'markets'; state.quickOpen = false; state.browse = null; state.sort = 'newest'; state.shown = 12; refreshCanvas(); toast('Showing all contract states — opening-soon markets included'); return; }
       if ((el = has('[data-browse]'))) { e.stopPropagation(); setBrowse(el.dataset.browse); refreshAll(); return; }
       if ((el = has('[data-viewall]'))) { e.stopPropagation(); state.view = 'markets'; setBrowse(el.dataset.viewall); if (!state.browse) setBrowse(el.dataset.viewall); refreshAll(); $('#mktCanvas', rootEl).scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
-      if ((el = has('[data-window]'))) { e.stopPropagation(); state.window = el.dataset.window; refreshAll(); return; }
+      if ((el = has('[data-window]'))) { e.stopPropagation(); state.window = el.dataset.window; analyticsTrack('market_filter_changed', { filter: 'window', value: state.window, source: 'market' }); refreshAll(); return; }
       if ((el = has('[data-cat]')) && el.dataset.cat !== undefined) {
         e.stopPropagation();
         state.genre = el.dataset.cat || null; state.shown = 12; state.featIdx = 0;
+        analyticsTrack('market_filter_changed', { filter: 'genre', value: state.genre || 'all', source: 'market' });
         refreshAll(); return;
       }
       if ((el = has('[data-quick]'))) {
@@ -789,6 +813,7 @@ window.BackerMarket = (function () {
         else if (q === 'yt') state.platforms = state.platforms.includes('youtube') ? state.platforms.filter(x => x !== 'youtube') : state.platforms.concat('youtube');
         else if (q === 'u100') state.u100 = !state.u100;
         else if (q === 'ev') state.evidence = state.evidence === 'medium' ? 'all' : 'medium';
+        analyticsTrack('market_filter_changed', { filter: 'quick', value: q, source: 'market' });
         state.shown = 12; refreshCanvas(); return;
       }
       if ((el = has('[data-feat-prev]'))) { e.stopPropagation(); state.featIdx = Math.max(0, state.featIdx - 1); refreshCanvas(); return; }
@@ -801,6 +826,7 @@ window.BackerMarket = (function () {
         state.genre = null; state.platforms = []; state.scale = []; state.poa = []; state.multiple = [];
         state.evidence = 'all'; state.risk = 'all'; state.u100 = false; state.ending = false; state.quickOpen = true;
         state.browse = null; state.sort = 'pulse'; state.shown = 12;
+        analyticsTrack('market_filter_changed', { filter: 'all', value: 'reset', source: 'market' });
         refreshDrawer(); refreshAll(); return;
       }
       if ((el = has('[data-chip-x]'))) { e.stopPropagation(); const fn = window.__mktChipRemove[+el.dataset.chipX]; if (fn) fn(); state.shown = 12; refreshCanvas(); return; }
@@ -816,6 +842,7 @@ window.BackerMarket = (function () {
         else if (g === 'risk') state.risk = v;
         else if (g === 'open') state.quickOpen = !state.quickOpen;
         else if (g === 'ending') state.ending = !state.ending;
+        analyticsTrack('market_filter_changed', { filter: g, value: v, source: 'market' });
         state.shown = 12;
         refreshDrawer(); refreshCanvas(); return;
       }
@@ -830,7 +857,13 @@ window.BackerMarket = (function () {
       if (t.id === 'mktPos') { closePosition(); return; }
     });
     rootEl.addEventListener('change', e => {
-      if (e.target.id === 'mktSort') { state.sort = e.target.value; state.browse = null; state.shown = 12; refreshAll(); }
+      if (e.target.id === 'mktSort') {
+        state.sort = e.target.value;
+        state.browse = null;
+        state.shown = 12;
+        analyticsTrack('market_sort_changed', { sort: state.sort, source: 'market' });
+        refreshAll();
+      }
     });
     rootEl.addEventListener('input', e => {
       if (e.target.id === 'mktAmt') {

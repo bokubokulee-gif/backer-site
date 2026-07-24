@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="backer-public-view-counts" content="true" />
 <title>Backer — Portfolio</title>
 <meta name="description" content="Your conviction, marked to market. A simulated proof-of-taste portfolio of creator-attention positions, and a private Creator Terminal." />
 <meta name="robots" content="noindex,follow" />
@@ -237,6 +238,7 @@
 </style>
 <link rel="stylesheet" href="css/liquid-glass.css?v=20260722-2" />
 <link rel="stylesheet" href="css/poa-terminal.css?v=13" />
+<link rel="stylesheet" href="css/analytics.css?v=1" />
 </head>
 <body class="page-portfolio">
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -546,7 +548,7 @@
     </div>
 
     <p class="legal" style="text-align:center;margin-top:24px;font-size:11.5px;color:var(--muted-2)">
-      Backer V1 is simulated. Prices, backing, contract outcomes and returns are shown for product testing. No real money moves and no settlement occurs. Backers are not shareholders; this is not equity or ownership.
+      Backer V1 is simulated. Prices, backing, contract outcomes and returns are shown for product testing. No real money moves and no settlement occurs. Backers are not shareholders; this is not equity or ownership. <a href="privacy.html" style="color:var(--muted);text-decoration:underline;text-underline-offset:2px">Privacy</a>
     </p>
   </section>
 </main>
@@ -576,6 +578,8 @@
 
 <script src="js/shader.js"></script>
 <script src="js/liquid-glass.js"></script>
+<script src="js/analytics-core.js?v=1"></script>
+<script src="js/analytics.js?v=1"></script>
 <script>
 (function(){
   'use strict';

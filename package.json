@@ -1,0 +1,24 @@
+{
+  "name": "backer-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backer static demo with privacy-preserving first-party analytics.",
+  "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "lint": "node scripts/lint.js",
+    "test": "node --test tests/core*.test.js tests/backend*.test.js",
+    "test:backend": "node --test tests/backend*.test.js",
+    "test:browser": "node --test tests/browser.analytics.test.cjs",
+    "test:core": "node --test tests/core*.test.js",
+    "hash:admin-password": "node scripts/hash-admin-password.js"
+  },
+  "dependencies": {
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "playwright": "^1.61.1"
+  }
+}

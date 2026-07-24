@@ -9,6 +9,17 @@
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const app = $('#app');
 
+  function analyticsView(view, arg) {
+    try {
+      if (window.BackerAnalytics) window.BackerAnalytics.virtualPageView(view, arg);
+    } catch (e) {}
+  }
+  function analyticsTrack(event, props) {
+    try {
+      if (window.BackerAnalytics) window.BackerAnalytics.track(event, props || {});
+    } catch (e) {}
+  }
+
   /* ---------------- small helpers ---------------- */
   function initials(name) {
     return name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
@@ -30,6 +41,7 @@
       const chip = e.target.closest('[data-ex]');
       if (!chip || !examples.contains(chip)) return;
       input.value = chip.dataset.ex;
+      analyticsTrack('search_submitted', { source: 'suggestion' });
       onPick(chip.dataset.ex);
     });
     if (toggle) toggle.addEventListener('click', () => {
@@ -177,6 +189,7 @@
       $('.dock-home').classList.add('active');
       try { history.replaceState(null, '', location.pathname); } catch (e) {}
       window.scrollTo({ top: 0, behavior: 'auto' });
+      analyticsView('home');
       return;
     }
     document.body.classList.add('body-app');
@@ -187,6 +200,7 @@
     else if (view === 'creator') { renderCreator(arg); setDock('market'); }
     else if (view === 'portfolio') { renderPortfolio('investor'); setDock('portfolio'); }
     else if (view === 'search') { renderSearch(arg || ''); setDock('search'); }
+    analyticsView(view, arg);
   }
   window.__backerGo = go;
 
@@ -368,7 +382,12 @@
   /* ---------- INVEST MODAL ---------- */
   function openInvestModal(c) {
     const amt = parseFloat($('#investAmt') ? $('#investAmt').value : 25) || 0;
-    if (amt < 1) { toast('Minimum stake is $1', 'warn'); return; }
+    if (amt < 1) {
+      analyticsTrack('market_position_blocked', { creator_id: c.id, instrument: 'milestone', reason: 'below-minimum', source: 'creator' });
+      toast('Minimum stake is $1', 'warn');
+      return;
+    }
+    analyticsTrack('market_position_started', { creator_id: c.id, instrument: 'milestone', source: 'creator' });
     const payout = amt * c.milestone.mult, profit = amt * (c.milestone.mult - 1);
     const msTarget = c.milestone.money ? B.money(c.milestone.target) : B.fmt(c.milestone.target);
     const partnerLogos = B.partners.map(p => `<span style="color:var(--muted)">${p.svg}</span>`).join('');
@@ -588,7 +607,15 @@
     const raiseSubmit = t.closest('[data-raise-submit]');
     const shareEl = t.closest('[data-share]');
 
-    if (confirmBtn) { const c = B.byId(confirmBtn.dataset.confirm); const amt = parseFloat(confirmBtn.dataset.amt); addPosition(c.id, amt); showSuccess(c, amt); toast(`Position opened in ${c.name.split(' ')[0]}`); return; }
+    if (confirmBtn) {
+      const c = B.byId(confirmBtn.dataset.confirm);
+      const amt = parseFloat(confirmBtn.dataset.amt);
+      addPosition(c.id, amt);
+      analyticsTrack('market_position_completed', { creator_id: c.id, instrument: 'milestone', source: 'creator' });
+      showSuccess(c, amt);
+      toast(`Position opened in ${c.name.split(' ')[0]}`);
+      return;
+    }
     if (raiseSubmit) { closeModal(); toast('Application received — we’ll be in touch'); return; }
     if (backBtn) { openInvestModal(B.byId(backBtn.dataset.backCreator)); return; }
     if (shareEl) { toast('Share link copied to clipboard'); try { navigator.clipboard && navigator.clipboard.writeText(location.href); } catch (x) {} return; }
@@ -623,7 +650,10 @@
     const pills = $('#heroPills'), pillsToggle = $('#heroPillsToggle');
     if (pills) pills.addEventListener('click', e => {
       const p = e.target.closest('[data-q]');
-      if (p) go('search', p.dataset.q);
+      if (p) {
+        analyticsTrack('search_submitted', { source: 'suggestion' });
+        go('search', p.dataset.q);
+      }
     });
     if (pills && pillsToggle) pillsToggle.addEventListener('click', () => {
       const paused = pills.classList.toggle('is-paused');

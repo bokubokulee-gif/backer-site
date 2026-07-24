@@ -2,3 +2,15 @@
 .DS_Store
 *.log
 .tools/
+
+# Local and hosted runtime secrets. Keep the documented template.
+.env
+.env.*
+!.env.example
+
+# Provider links and generated dependencies/artifacts.
+.vercel/
+node_modules/
+coverage/
+test-results/
+playwright-report/

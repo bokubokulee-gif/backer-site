@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow,noarchive" />
+  <title>First-party analytics — Backer</title>
+  <meta name="description" content="Protected first-party consented analytics for Backer administrators." />
+  <link rel="icon" type="image/png" href="/img/backer-mark.png?v=2" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/admin-analytics.css?v=20260724-1" />
+  <script src="/js/admin-analytics.js?v=20260724-1" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#analyticsMain">Skip to analytics</a>
+
+  <div class="ambient" aria-hidden="true">
+    <span class="ambient-orb ambient-orb-a"></span>
+    <span class="ambient-orb ambient-orb-b"></span>
+    <span class="ambient-grid"></span>
+  </div>
+
+  <section class="auth-view" id="authView" aria-labelledby="authTitle">
+    <div class="auth-brand">
+      <a class="brand" href="/backerdemo.html" aria-label="Backer home">
+        <span class="brand-mark"><img src="/img/backer-mark.png?v=2" alt="" /></span>
+        <span class="brand-word">Backer</span>
+      </a>
+      <span class="auth-lock"><span aria-hidden="true"></span> Restricted</span>
+    </div>
+
+    <div class="auth-card">
+      <p class="eyebrow">Administrator access</p>
+      <h1 id="authTitle">See the signal.<br /><em>Protect the people.</em></h1>
+      <p class="auth-copy">First-party consented traffic, separated from GA4 and protected by a server-side session.</p>
+
+      <form class="auth-form" id="loginForm" novalidate>
+        <label for="adminPassword">Administrator password</label>
+        <div class="password-field">
+          <input
+            id="adminPassword"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            minlength="14"
+            required
+            aria-describedby="loginStatus"
+          />
+          <button class="password-toggle" id="passwordToggle" type="button" aria-label="Show password">Show</button>
+        </div>
+        <button class="primary-button auth-submit" id="loginButton" type="submit">
+          <span>Open analytics</span><span aria-hidden="true">→</span>
+        </button>
+        <p class="form-status" id="loginStatus" role="status" aria-live="polite"></p>
+      </form>
+
+      <div class="auth-foot">
+        <span class="status-dot" aria-hidden="true"></span>
+        Credentials are checked by Backer’s server and are never saved in this browser.
+      </div>
+    </div>
+  </section>
+
+  <div class="dashboard" id="dashboard" hidden>
+    <header class="topbar">
+      <a class="brand" href="/backerdemo.html" aria-label="Backer home">
+        <span class="brand-mark"><img src="/img/backer-mark.png?v=2" alt="" /></span>
+        <span class="brand-word">Backer</span>
+      </a>
+      <span class="topbar-divider" aria-hidden="true"></span>
+      <span class="product-name">Analytics</span>
+
+      <div class="topbar-actions">
+        <div class="freshness" id="freshness" title="Last refreshed">
+          <span class="freshness-dot" aria-hidden="true"></span>
+          <span id="freshnessText">Live data</span>
+        </div>
+        <div class="segmented compact" role="group" aria-label="Time display">
+          <button class="segment is-active" type="button" data-timezone="local" aria-pressed="true">Local</button>
+          <button class="segment" type="button" data-timezone="utc" aria-pressed="false">UTC</button>
+        </div>
+        <button class="icon-button" id="refreshButton" type="button" aria-label="Refresh analytics" title="Refresh">
+          <span aria-hidden="true">↻</span>
+        </button>
+        <button class="secondary-button" id="exportButton" type="button">Export CSV</button>
+        <button class="quiet-button" id="logoutButton" type="button">Log out</button>
+      </div>
+    </header>
+
+    <main class="dashboard-main" id="analyticsMain">
+      <section class="page-intro" aria-labelledby="pageTitle">
+        <div>
+          <p class="eyebrow"><span class="pulse" aria-hidden="true"></span> First-party consented analytics</p>
+          <h1 id="pageTitle">Attention, without <em>the blind spots.</em></h1>
+          <p>Human traffic collected with permission. Bot filtering and identity models mean these totals can differ from GA4 and server logs.</p>
+        </div>
+        <div class="session-chip">
+          <span class="session-avatar" aria-hidden="true">A</span>
+          <span>
+            <b id="adminIdentity">Administrator</b>
+            <small id="sessionExpiry">Secure session</small>
+          </span>
+        </div>
+      </section>
+
+      <section class="filterbar" aria-label="Analytics date range">
+        <div class="segmented range-presets" id="rangePresets" role="group" aria-label="Date preset">
+          <button class="segment" type="button" data-range="today" aria-pressed="false">Today</button>
+          <button class="segment is-active" type="button" data-range="7d" aria-pressed="true">7 days</button>
+          <button class="segment" type="button" data-range="30d" aria-pressed="false">30 days</button>
+          <button class="segment" type="button" data-range="90d" aria-pressed="false">90 days</button>
+          <button class="segment" type="button" data-range="custom" aria-pressed="false">Custom</button>
+        </div>
+        <form class="custom-range" id="customRangeForm" hidden>
+          <label>From <input id="dateFrom" type="date" required /></label>
+          <span aria-hidden="true">→</span>
+          <label>To <input id="dateTo" type="date" required /></label>
+          <button class="secondary-button" type="submit">Apply</button>
+        </form>
+        <p class="range-caption" id="rangeCaption">UTC rollups · last 7 days</p>
+      </section>
+
+      <div class="state-banner state-error" id="errorState" role="alert" hidden>
+        <span class="state-icon" aria-hidden="true">!</span>
+        <span><b>Analytics could not be loaded.</b> <span id="errorMessage">Please try again.</span></span>
+        <button class="quiet-button" id="retryButton" type="button">Retry</button>
+      </div>
+
+      <div class="state-banner state-empty" id="emptyState" role="status" hidden>
+        <span class="state-icon" aria-hidden="true">○</span>
+        <span><b>No consented traffic in this range.</b> Choose another period or check the collector configuration.</span>
+      </div>
+
+      <section class="metrics-grid" id="metricsGrid" aria-label="Key metrics" aria-busy="true">
+        <article class="metric-card metric-primary">
+          <div class="metric-head"><span>Human views</span><span class="metric-signal" aria-hidden="true"></span></div>
+          <strong class="metric-value" id="metricHumanViews">—</strong>
+          <p>Accepted views after bot filtering</p>
+        </article>
+        <article class="metric-card">
+          <div class="metric-head"><span>Unique visitors</span><span class="metric-code">VID</span></div>
+          <strong class="metric-value" id="metricVisitors">—</strong>
+          <p>HMACed first-party visitor IDs</p>
+        </article>
+        <article class="metric-card">
+          <div class="metric-head"><span>Unique IPs</span><span class="metric-code">IP</span></div>
+          <strong class="metric-value" id="metricIps">—</strong>
+          <p>Privacy-preserving network estimate</p>
+        </article>
+        <article class="metric-card">
+          <div class="metric-head"><span>Sessions</span><span class="metric-code">30M</span></div>
+          <strong class="metric-value" id="metricSessions">—</strong>
+          <p>Thirty-minute activity windows</p>
+        </article>
+        <article class="metric-card">
+          <div class="metric-head"><span>Views / session</span><span class="metric-code">V/S</span></div>
+          <strong class="metric-value" id="metricViewsPerSession">—</strong>
+          <p>Depth of consented exploration</p>
+        </article>
+      </section>
+
+      <section class="analytics-grid overview-grid">
+        <article class="panel chart-panel">
+          <div class="panel-head">
+            <div>
+              <p class="panel-kicker">Traffic over time</p>
+              <h2>Human attention</h2>
+            </div>
+            <div class="chart-legend" aria-label="Chart legend">
+              <span><i class="legend-human"></i>Human views</span>
+              <span><i class="legend-bot"></i>Filtered bots</span>
+            </div>
+          </div>
+          <div class="chart-wrap" id="chartWrap">
+            <svg id="trafficChart" class="traffic-chart" viewBox="0 0 1000 300" role="img" aria-labelledby="chartTitle chartDescription">
+              <title id="chartTitle">Human and bot views over time</title>
+              <desc id="chartDescription">Waiting for analytics data.</desc>
+            </svg>
+            <div class="chart-loading" id="chartLoading" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel traffic-panel">
+          <div class="panel-head">
+            <div>
+              <p class="panel-kicker">Traffic quality</p>
+              <h2>Human vs. filtered</h2>
+            </div>
+          </div>
+          <div class="donut-layout">
+            <div class="donut" id="trafficDonut" role="img" aria-label="No traffic data yet">
+              <div><strong id="humanShare">—</strong><span>human</span></div>
+            </div>
+            <dl class="traffic-breakdown">
+              <div><dt><i class="legend-human"></i>Human</dt><dd id="breakdownHuman">—</dd></div>
+              <div><dt><i class="legend-bot"></i>Filtered bot</dt><dd id="breakdownBots">—</dd></div>
+              <div><dt>Total screened</dt><dd id="breakdownTotal">—</dd></div>
+            </dl>
+          </div>
+          <p class="panel-note">Likely crawlers, link previewers, prefetches, and headless traffic remain available for diagnostics but are excluded from human metrics.</p>
+        </article>
+      </section>
+
+      <section class="panel table-panel">
+        <div class="panel-head">
+          <div>
+            <p class="panel-kicker">Content</p>
+            <h2>Performance by page</h2>
+          </div>
+          <span class="panel-meta" id="pagesMeta">Canonical routes only</span>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Page</th>
+                <th scope="col" class="number">Views</th>
+                <th scope="col" class="number">Visitors</th>
+                <th scope="col" class="number">Unique IPs</th>
+                <th scope="col" class="number">Sessions</th>
+                <th scope="col">Latest view</th>
+              </tr>
+            </thead>
+            <tbody id="pagesTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="analytics-grid summary-grid">
+        <article class="panel compact-panel">
+          <div class="panel-head"><div><p class="panel-kicker">Acquisition</p><h2>Referrers</h2></div></div>
+          <div class="rank-list" id="referrerList"></div>
+        </article>
+        <article class="panel compact-panel">
+          <div class="panel-head"><div><p class="panel-kicker">Attribution</p><h2>Campaigns</h2></div></div>
+          <div class="rank-list" id="campaignList"></div>
+        </article>
+        <article class="panel compact-panel">
+          <div class="panel-head"><div><p class="panel-kicker">Geography</p><h2>Country / region</h2></div></div>
+          <div class="rank-list" id="countryList"></div>
+        </article>
+        <article class="panel compact-panel">
+          <div class="panel-head"><div><p class="panel-kicker">Experience</p><h2>Devices</h2></div></div>
+          <div class="rank-list" id="deviceList"></div>
+        </article>
+      </section>
+
+      <section class="panel table-panel recent-panel">
+        <div class="panel-head">
+          <div>
+            <p class="panel-kicker">Event stream</p>
+            <h2>Recent consented views</h2>
+          </div>
+          <div class="recent-note">
+            <span class="privacy-shield" aria-hidden="true">✓</span>
+            Masked by default
+          </div>
+        </div>
+        <div class="raw-mode-note" id="rawModeNote" hidden>
+          Exact-IP mode is enabled. Reveals require confirmation, recent password re-authentication, and create an immutable audit record.
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Time</th>
+                <th scope="col">Page</th>
+                <th scope="col">Masked IP</th>
+                <th scope="col">Country / region</th>
+                <th scope="col">Referrer</th>
+                <th scope="col">Device</th>
+                <th scope="col">Class</th>
+                <th scope="col"><span class="sr-only">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody id="recentTable"></tbody>
+          </table>
+        </div>
+        <div class="table-foot">
+          <span id="recentMeta">Up to 100 recent records</span>
+          <button class="quiet-button" id="loadMoreButton" type="button" hidden>Load more</button>
+        </div>
+      </section>
+
+      <footer class="dashboard-foot">
+        <p>Unique visitors and unique IPs are estimates. Shared networks, VPNs, cookie clearing, and multiple devices prevent exact human identification.</p>
+        <a href="/privacy.html">Privacy &amp; analytics details</a>
+      </footer>
+    </main>
+  </div>
+
+  <dialog class="reveal-dialog" id="revealDialog" aria-labelledby="revealTitle">
+    <form method="dialog" class="dialog-card" id="revealForm">
+      <button class="dialog-close" type="button" id="revealClose" aria-label="Close">×</button>
+      <p class="eyebrow">Sensitive action</p>
+      <h2 id="revealTitle">Reveal one exact IP?</h2>
+      <p class="dialog-copy" id="revealCopy">This action is limited to eligible recent records and will be written to the administrator audit log.</p>
+
+      <div class="reveal-context" id="revealContext">
+        <span>Current masked value</span>
+        <strong id="revealMaskedIp">—</strong>
+      </div>
+
+      <label class="reauth-field" for="reauthPassword">
+        Re-enter your administrator password
+        <input id="reauthPassword" type="password" autocomplete="current-password" minlength="14" required />
+      </label>
+
+      <div class="revealed-result" id="revealedResult" hidden>
+        <span>One-time exact IP</span>
+        <strong id="revealedIp"></strong>
+        <small>Close this dialog to clear the value from the page.</small>
+      </div>
+
+      <p class="form-status" id="revealStatus" role="status" aria-live="polite"></p>
+      <div class="dialog-actions">
+        <button class="quiet-button" id="revealCancel" type="button">Cancel</button>
+        <button class="danger-button" id="revealConfirm" type="submit">Re-authenticate &amp; reveal</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

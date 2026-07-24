@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="backer-public-view-counts" content="true" />
 <title>Join Backer — Invest in People. Before the World Does.</title>
 <meta name="description" content="Create your Backer account. Back creators from $1 in the simulated market, or start your creator raise. Every profile is underwritten by Proof of Attention." />
 <meta name="robots" content="noindex,follow" />
@@ -159,6 +160,7 @@
   .modal-msg.err{color:var(--neg)} .modal-msg.warn{color:var(--warn)} .modal-msg.ok{color:var(--pos)}
 </style>
 <link rel="stylesheet" href="css/liquid-glass.css" />
+<link rel="stylesheet" href="css/analytics.css?v=1" />
 </head>
 <body class="page-signup">
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -231,7 +233,7 @@
           <svg viewBox="0 0 24 24" class="ic ic-go"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
       </div>
-      <p class="legal">By continuing, you agree to Backer’s <a href="#">Terms</a> and <a href="#">Privacy Policy</a>. Backer V1 is simulated; no real money moves.</p>
+      <p class="legal">By continuing, you agree to Backer’s <a href="#">Terms</a> and <a href="privacy.html">Privacy Policy</a>. Backer V1 is simulated; no real money moves.</p>
     </div>
 
     <!-- STEP 1 — tabbed forms -->
@@ -263,7 +265,7 @@
             <span class="err">Password must be at least 10 characters.</span>
           </div>
           <button class="btn btn-fill btn-block btn-lg" id="invContinue" style="margin-top:6px">Continue<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-          <p class="legal">By continuing, you agree to Backer’s <a href="#">Terms</a> and <a href="#">Privacy Policy</a>. Backer V1 is simulated; no real money moves.</p>
+          <p class="legal">By continuing, you agree to Backer’s <a href="#">Terms</a> and <a href="privacy.html">Privacy Policy</a>. Backer V1 is simulated; no real money moves.</p>
         </div>
         <!-- step 2 -->
         <div id="invStep2" style="display:none">
@@ -356,6 +358,8 @@
 
 <script src="js/shader.js"></script>
 <script src="js/liquid-glass.js"></script>
+<script src="js/analytics-core.js?v=1"></script>
+<script src="js/analytics.js?v=1"></script>
 <script>
 (function(){
   'use strict';
@@ -364,6 +368,9 @@
   var store = {};
   try{ store = JSON.parse(localStorage.getItem('backer_profile')||'{}'); }catch(e){}
   function save(){ try{ localStorage.setItem('backer_profile', JSON.stringify(store)); }catch(e){} }
+  function analyticsTrack(event,props){
+    try{ if(window.BackerAnalytics) window.BackerAnalytics.track(event,props||{}); }catch(e){}
+  }
 
   /* ---- role chooser → flow ---- */
   var roleStage=$('#roleStage'), authFlow=$('#authFlow'), bothNote=$('#bothNote');
@@ -378,6 +385,7 @@
     c.addEventListener('click', function(){
       var role=c.dataset.role;
       store.rolePreference=role; save();
+      analyticsTrack('signup_started',{role:role,step:'role-choice',source:'signup'});
       roleStage.style.display='none';
       authFlow.classList.add('is-active');
       activateTab(role);
@@ -430,6 +438,7 @@
     $('#ackBox').classList.toggle('has-err',!ack);
     if(!okName||!okHandle||!ack) return;
     store.displayName=name; store.handle=handle; store.acceptedDemoRiskAt=Date.now(); store.onboarding='WAITLISTED'; save();
+    analyticsTrack('signup_completed',{role:'investor',source:'signup'});
     var btn=this; btn.disabled=true; btn.textContent='Reserving your spot…';
     setTimeout(function(){
       $('#invSuccessMsg').textContent='Thanks, '+name+' — your spot is reserved. We’ll email '+(store.email||'you')+' when your Backer account is ready.';
@@ -498,6 +507,7 @@
     store.creatorApplication={ platformUrls:valid.map(function(o){return o.url;}), status:'SUBMITTED', submittedAt:Date.now() };
     if(store.rolePreference==='INVESTOR') store.rolePreference='BOTH';
     save();
+    analyticsTrack('signup_completed',{role:'creator',source:'signup'});
     setTimeout(function(){
       closeModal(); delete submitBtn.dataset.busy; submitBtn.textContent='Submit application';
       // show success state in creator pane
