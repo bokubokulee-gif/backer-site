@@ -14,6 +14,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/styles.css?v=6" />
 <link rel="stylesheet" href="css/liquid-glass.css?v=4" />
+<link rel="stylesheet" href="css/poa-terminal.css?v=13" />
 <style>
 /* ---------- pitch-page additions (aligned to site tokens) ---------- */
 .section-head h2 em{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.01em}
@@ -221,8 +222,8 @@
       <article class="person reveal">
         <img src="img/pitch/altman.jpg" alt="Sam Altman" loading="lazy" />
         <div class="person-body">
-          <span class="person-role">Company → show guest</span>
-          <span class="person-name">OpenAI on TBPN</span>
+          <span class="person-role">Sam Altman → show guest</span>
+          <span class="person-name">OpenAI Acquires TBPN Podcast</span>
           <p>The most valuable AI company routes its biggest announcements through TBPN, a daily talk show — leadership included.</p>
         </div>
       </article>
@@ -235,16 +236,16 @@
         </div>
       </article>
       <article class="person reveal">
-        <img src="img/pitch/creator.jpg" alt="A creator recording talking-head content" loading="lazy" />
+        <img src="https://lsvp.com/wp-content/uploads/2026/05/IMG_0050-810x1024.png" alt="Claire Zau" loading="lazy" />
         <div class="person-body">
           <span class="person-role">Creator → venture partner</span>
           <span class="person-name">Lightspeed</span>
-          <p>Lightspeed's current venture partner built his audience making talking-head videos. The camera is now on the résumé.</p>
+          <p>Lightspeed's current venture partner built her audience making talking-head videos.</p>
         </div>
       </article>
     </div>
 
-    <p class="bigline reveal">Why? Because catching eyeballs — drawing meaningful human attention — <em>converts into real fiscal value.</em></p>
+    <p class="bigline reveal">Why? Because catching eyeballs — drawing meaningful human attention — <em>converts into real fiscal value.</em><br />When the people allocating capital are themselves creators, attention as an asset stops being a metaphor.</p>
 
     <!-- kept exactly from the thesis deck -->
     <div class="attn reveal" id="attn" aria-hidden="true">
@@ -253,7 +254,7 @@
           <span class="attn-k">YOU · THE AUDIENCE</span>
           <div class="attn-crowd" data-scene="crowd"></div>
           <div class="attn-chips">
-            <span>swipe</span><span>like</span><span>comment</span><span>share</span><span>watch-time</span><span>gift</span><span>subscribe</span>
+            <span>gift $</span><span>swipe</span><span>like</span><span>comment</span><span>share</span><span>watch-time</span><span>subscribe</span>
           </div>
           <span class="attn-zero"><span class="az-ic">✕</span> you earn today <b>$0</b></span>
         </div>
@@ -280,7 +281,7 @@
   <section class="section" id="problems">
     <div class="section-head reveal">
       <span class="kicker kicker-warn">The problems</span>
-      <h2>The attention economy is broken in <em>two ways.</em></h2>
+      <h2>The attention economy is broken.</h2>
     </div>
 
     <div class="two-col">
@@ -297,14 +298,14 @@
     </div>
 
     <div class="sin reveal">
-      <p class="sin-label">The original sin of the creator economy</p>
+      <p class="sin-label">An original sin of the creator economy</p>
       <p class="sin-text">There is no aligned upside for the people who matter most — <em>the fans.</em></p>
     </div>
 
     <div class="gifting reveal">
       <div class="gifting-head">
         <h3>Tipping already proves fans will fund creators.</h3>
-        <p>Twitch, Douyin, Bilibili, YouTube — every platform has a money flow from fans to creators. Look at who captures the value.</p>
+        <p>Instagram, Twitch, TikTok/Douyin, Bilibili, YouTube — every platform has a money flow from fans to creators. Look at who captures the value.</p>
       </div>
       <div class="gifting-rows">
         <div class="g-row"><span class="g-who">Platform</span><div class="g-bar"><span style="width:38%"></span></div><span class="g-val">takes 20–50% of every transaction</span></div>
@@ -359,7 +360,7 @@
         <span class="val-lane-tag mono">PROVEN · EVENTS</span>
         <div class="val-flow">
           <div class="val-node">
-            <span class="val-node-k">Attention</span>
+            <span class="val-node-k">Human Attention</span>
             <span class="val-node-d">veers into eyeball-catching events</span>
           </div>
           <div class="val-arrow" aria-hidden="true"><i></i></div>
@@ -378,7 +379,7 @@
         <span class="val-lane-tag mono">NEXT · PEOPLE</span>
         <div class="val-flow">
           <div class="val-node">
-            <span class="val-node-k">Attention</span>
+            <span class="val-node-k">Human Attention</span>
             <span class="val-node-d">veers into eyeball-catching people</span>
           </div>
           <div class="val-arrow" aria-hidden="true"><i></i></div>
@@ -389,7 +390,7 @@
           <div class="val-arrow" aria-hidden="true"><i></i></div>
           <div class="val-node val-node-mkt val-node-bkr">
             <span class="val-node-k">Backer</span>
-            <span class="val-node-d">where belief in people gets priced</span>
+            <span class="val-node-d">where human attention gets priced</span>
           </div>
         </div>
       </div>
@@ -462,12 +463,79 @@
       <p class="section-lead" style="margin-top:14px">Agents monitor and analyze the publicly available data on every major platform: likes, comments, reposts, views; the frequency of their spikes; the sentiment inside the comments. The output is a whole picture of the <strong>composition of attention — per content, per creator.</strong></p>
     </div>
 
-    <div class="scores" id="scoreGrid"><!-- injected by JS --></div>
+    <article class="poa-demo reveal" data-poa-preview="marcus" aria-labelledby="poaDemoTitle" aria-describedby="poaDemoDisclosure">
+      <header class="poa-demo-head">
+        <div class="poa-demo-identity">
+          <span class="poa-demo-avatar" aria-hidden="true">MS</span>
+          <div>
+            <span class="poa-demo-kicker">Illustrative public-data snapshot</span>
+            <h3 id="poaDemoTitle">Marcus Stillwater</h3>
+            <p>@marcus.films · YouTube · 90 days</p>
+          </div>
+        </div>
+        <div class="poa-demo-status" aria-label="Snapshot status">
+          <span><small>PoA band</small><b class="poa-demo-positive">Strong</b></span>
+          <span><small>Evidence</small><b data-poa-confidence>High · 94</b></span>
+          <button type="button" class="poa-demo-open" data-poa="marcus">Open full PoA <span aria-hidden="true">↗</span></button>
+        </div>
+      </header>
+
+      <div class="poa-demo-body">
+        <section class="poa-demo-composition" aria-labelledby="poaCompositionTitle">
+          <div class="poa-demo-block-head">
+            <h4 id="poaCompositionTitle">Attention composition</h4>
+            <span>ranges, not a single score</span>
+          </div>
+
+          <div class="poa-demo-band poa-demo-core" data-poa-band="core" aria-label="Credible core estimate: 80 to 95 percent; point estimate 87 percent">
+            <div class="poa-demo-band-label"><span><i></i>Credible core</span><b data-poa-range>87 · 80–95%</b></div>
+            <div class="poa-demo-track"><span class="poa-demo-range" style="--range-left:80%;--range-width:15%"></span><i style="--point-left:87%"></i></div>
+          </div>
+          <div class="poa-demo-band poa-demo-passive" data-poa-band="passive" aria-label="Passive or transient estimate: 0 to 15 percent; point estimate 7 percent">
+            <div class="poa-demo-band-label"><span><i></i>Passive / transient</span><b data-poa-range>7 · 0–15%</b></div>
+            <div class="poa-demo-track"><span class="poa-demo-range" style="--range-left:0%;--range-width:15%"></span><i style="--point-left:7%"></i></div>
+          </div>
+          <div class="poa-demo-band poa-demo-anomalous" data-poa-band="anom" aria-label="Anomalous estimate: 0 to 10 percent; point estimate 2 percent">
+            <div class="poa-demo-band-label"><span><i></i>Anomalous</span><b data-poa-range>2 · 0–10%</b></div>
+            <div class="poa-demo-track"><span class="poa-demo-range" style="--range-left:0%;--range-width:10%"></span><i style="--point-left:2%"></i></div>
+          </div>
+          <div class="poa-demo-band poa-demo-unassessed" data-poa-band="un" aria-label="Unassessed estimate: 0 to 10 percent; point estimate 4 percent">
+            <div class="poa-demo-band-label"><span><i></i>Unassessed</span><b data-poa-range>4 · 0–10%</b></div>
+            <div class="poa-demo-track"><span class="poa-demo-range" style="--range-left:0%;--range-width:10%"></span><i style="--point-left:4%"></i></div>
+          </div>
+          <p class="poa-demo-note">Point estimates total 100%. Ranges may overlap because uncertainty is shown, not hidden.</p>
+        </section>
+
+        <section class="poa-demo-evidence" aria-labelledby="poaEvidenceTitle">
+          <div class="poa-demo-block-head">
+            <h4 id="poaEvidenceTitle">Evidence read</h4>
+            <span>captured public signals</span>
+          </div>
+          <div class="poa-demo-read">
+            <p><b>Evidence for</b> <span data-poa-evidence>Comment breadth held across eight uploads while public-view velocity normalized after the largest spike.</span></p>
+            <p><b>Watch</b> <span data-poa-risk>Low output cadence and incomplete source coverage increase uncertainty.</span></p>
+          </div>
+          <div class="poa-demo-coverage" aria-label="Captured data coverage">
+            <span><small>Videos</small><b data-poa-videos>8</b></span>
+            <span><small>Comments</small><b data-poa-comments>642</b></span>
+            <span><small>Coverage</small><b data-poa-coverage>67%</b></span>
+          </div>
+          <div class="poa-demo-pulse-head"><span>Observed attention velocity</span><small>100 = prior 28d median</small></div>
+          <div class="poa-demo-pulse" data-poa-pulse role="img" aria-label="Illustrative observed public attention velocity over twelve observations; 100 equals the prior 28-day median">
+            <span style="--pulse:32%"></span><span style="--pulse:38%"></span><span style="--pulse:29%"></span><span style="--pulse:44%"></span>
+            <span style="--pulse:41%"></span><span style="--pulse:52%"></span><span style="--pulse:46%"></span><span style="--pulse:61%"></span>
+            <span class="is-spike" style="--pulse:94%"></span><span style="--pulse:58%"></span><span style="--pulse:49%"></span><span style="--pulse:54%"></span>
+          </div>
+        </section>
+      </div>
+
+      <p class="poa-demo-disclosure" id="poaDemoDisclosure">Estimated composition from observable public signals. This is creator underwriting—not a creator valuation, market price, probability, or settlement oracle.</p>
+    </article>
 
     <div class="open-note reveal">
       <svg viewBox="0 0 24 24" class="ic"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
       <div>
-        <h4>PoA ships as a paid subscription</h4>
+        <h4>PoA can ship to B or as a paid subscription</h4>
         <p>Businesses run it before committing marketing budget to an influencer — instead of spending hundreds of thousands of dollars blind. Investors decide for themselves whether knowing the full composition of attention matters before taking a position.</p>
       </div>
     </div>
@@ -624,7 +692,7 @@
     <div class="calc reveal" id="calc" style="margin-top:clamp(50px,7vw,80px)">
       <div class="calc-head">
         <div class="calc-title">
-          <h3>The payout, live</h3>
+          <h3>Payout calculator for each scenario</h3>
           <p>Put in any numbers, pick a scenario, and watch where every dollar&nbsp;goes — including the creator's cut of the fee.</p>
         </div>
         <div class="calc-tabs" role="tablist" aria-label="Payout scenario">
@@ -724,7 +792,7 @@
   <section class="section" id="competition">
     <div class="section-head reveal">
       <span class="kicker kicker-warn">Competition</span>
-      <h2>The giants are proving the category — <em>next door.</em></h2>
+      <h2>Industry giants continue to prove the category.</h2>
       <p class="section-lead">Prediction markets are already enormous. Look at what they price, and what they leave unpriced.</p>
     </div>
 
@@ -749,7 +817,7 @@
       </div>
     </div>
 
-    <p class="comp-read reveal">None of them touch the attention economy — and not because the upside is limited. Diverging into a whole new sector means a whole new definition of the market: <strong>pricing creators, and collaborating with them to share profit.</strong> That's not a wise detour for platforms defending sports and crypto flow. It's the entire company for us. Their volume proves capital follows eyeballs; their absence leaves the people layer unpriced. <strong>That's Backer's lane.</strong></p>
+    <p class="comp-read reveal">None of them touch the attention economy — and not because the upside is limited. Diverging into a whole new sector means a whole new definition of the market: <strong>pricing creators, and collaborating with them to share profit.</strong> That's not a wise detour for platforms defending sports and crypto flow. It's the entire company for us. Their volume proves capital follows eyeballs; their absence leaves the people layer unpriced. Those markets monetize the bet, not its subject. Backer aligns both sides: viewers can profit from early conviction, while creators share in the value their attention creates. <strong>That's Backer's lane.</strong></p>
   </section>
 
   <!-- FINAL — kept exactly from the demo site -->
@@ -785,23 +853,12 @@
 <script src="js/liquid-glass.js"></script>
 <script src="js/data.js"></script>
 <script>
-/* pitch-page injections: PoA score grid (same cards as the demo),
-   typed search line, and the thesis attention-flow element. */
+/* pitch-page injections: typed search line and the thesis attention-flow element. */
 (function () {
   'use strict';
   var $ = function (s, c) { return (c || document).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  /* PoA score cards — identical to the demo's grid */
-  var sg = $('#scoreGrid');
-  if (sg && window.BACKER) sg.innerHTML = window.BACKER.scoreDefs.map(function (s) {
-    return '<div class="score-card reveal">' +
-      '<div class="score-top"><div class="score-name">' + s.name + '</div><div class="score-ic"><svg viewBox="0 0 24 24" class="ic">' + s.ic + '</svg></div></div>' +
-      '<div class="score-val">' + s.val + '</div>' +
-      '<div class="score-desc">' + s.desc + '</div>' +
-      '<div class="score-meter ' + (s.pos ? 'pos' : '') + '"><i style="width:' + s.meter + '%"></i></div></div>';
-  }).join('');
 
   /* typed line in the AI-search surface */
   $$('.typed').forEach(function (el) {
@@ -867,6 +924,8 @@
   }
 })();
 </script>
+<script src="js/poa-terminal.js?v=13"></script>
+<script src="js/poa-preview.js?v=1"></script>
 <script src="js/sections.js?v=2"></script>
 </body>
 </html>
