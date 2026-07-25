@@ -390,7 +390,6 @@
     analyticsTrack('market_position_started', { creator_id: c.id, instrument: 'milestone', source: 'creator' });
     const payout = amt * c.milestone.mult, profit = amt * (c.milestone.mult - 1);
     const msTarget = c.milestone.money ? B.money(c.milestone.target) : B.fmt(c.milestone.target);
-    const partnerLogos = B.partners.map(p => `<span style="color:var(--muted)">${p.svg}</span>`).join('');
     openModal(`
       <button class="modal-x" data-close aria-label="Close"><svg viewBox="0 0 24 24" class="ic"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       <div class="modal-ic" style="background:rgba(244,171,99,.14);color:var(--accent)"><svg viewBox="0 0 24 24" class="ic"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4-6.3-4.6L5.7 21 8 14 2 9.4h7.6z"/></svg></div>
@@ -404,7 +403,7 @@
         <div class="receipt-row"><span>Potential profit</span><b class="pos">+${B.money(profit)}</b></div>
       </div>
       <button class="btn btn-accent" data-confirm="${c.id}" data-amt="${amt}">Confirm simulated position · ${B.money(amt)}</button>
-      <div class="modal-pay">Simulated · no real money moves · ${partnerLogos}</div>
+      <div class="modal-pay">Simulated · no real money moves</div>
     `);
   }
   function showSuccess(c, amt) {
@@ -673,9 +672,6 @@
         <div class="score-desc">${s.desc}</div>
         <div class="score-meter ${s.pos ? 'pos' : ''}"><i style="width:${s.meter}%"></i></div>
       </div>`).join('');
-    const ls = $('#logoStrip');
-    if (ls) ls.innerHTML = B.partners.map(p => `
-      <div class="logo-card reveal">${p.svg}<div class="logo-role">${p.role}</div><div class="logo-badge">${p.badge}</div></div>`).join('');
   }
 
   /* ---------------- nav scroll state + reveal ---------------- */

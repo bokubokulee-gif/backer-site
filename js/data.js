@@ -1,6 +1,6 @@
 /* =========================================================
    BACKER — mock data layer
-   Creators (incl. ones the algorithm flags), partners, helpers.
+   Creators (incl. ones the algorithm flags), scoring definitions, helpers.
    No network, no build. Everything is inline.
    ========================================================= */
 window.BACKER = (function () {
@@ -198,22 +198,6 @@ window.BACKER = (function () {
     { id: 'elena', invested: 2500, value: 2650, when: 'Jan 2026' }
   ];
 
-  /* ---- strategic partners (settlement / on-ramp / attestation) ---- */
-  const partners = [
-    {
-      name: 'MoonPay', role: 'Fiat on-ramp & off-ramp', badge: 'Card → crypto in seconds',
-      svg: '<svg viewBox="0 0 210 44" role="img" aria-label="MoonPay"><path d="M21 5a16 16 0 1 0 9.5 28.9A12.5 12.5 0 1 1 21 5Z" fill="currentColor"/><circle cx="33" cy="14" r="3.4" fill="currentColor"/><text x="46" y="30.5" font-family="Inter,sans-serif" font-size="25" font-weight="700" letter-spacing="-0.6" fill="currentColor">moonpay</text></svg>'
-    },
-    {
-      name: 'Sign', role: 'On-chain attestation & payouts', badge: 'Backed by Binance',
-      svg: '<svg viewBox="0 0 150 44" role="img" aria-label="Sign"><rect x="5" y="9" width="27" height="27" rx="9" fill="currentColor"/><path d="M12.5 23l4.6 4.6L26 16.5" fill="none" stroke="#0b0b0d" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><text x="44" y="31" font-family="Inter,sans-serif" font-size="25" font-weight="700" letter-spacing="-0.4" fill="currentColor">Sign</text></svg>'
-    },
-    {
-      name: 'Infinipay', role: 'Programmable settlement rails', badge: 'Milestone escrow',
-      svg: '<svg viewBox="0 0 220 44" role="img" aria-label="Infinipay"><path d="M24 22c0-5-3.6-8.5-8-8.5S8 17 8 22s3.6 8.5 8 8.5c4.4 0 6.5-3.5 8-8.5m0 0c1.5 5 3.6 8.5 8 8.5 4.4 0 8-3.5 8-8.5s-3.6-8.5-8-8.5c-4.4 0-6.5 3.5-8 8.5Z" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/><text x="52" y="31" font-family="Inter,sans-serif" font-size="25" font-weight="700" letter-spacing="-0.6" fill="currentColor">Infinipay</text></svg>'
-    }
-  ];
-
   /* ---- the six algorithm outputs (for the marketing "Proof of Attention" grid) ---- */
   const scoreDefs = [
     { name: 'Authenticity Score', val: '91<span class="unit">%</span>', meter: 91, pos: true,
@@ -248,5 +232,5 @@ window.BACKER = (function () {
   function byId(id) { return creators.find(c => c.id === id); }
   function fundPct(c) { return Math.min(100, Math.round((c.raised / c.goal) * 100)); }
 
-  return { creators, seedPortfolio, partners, scoreDefs, PLAT_IC, fmt, money, byId, fundPct };
+  return { creators, seedPortfolio, scoreDefs, PLAT_IC, fmt, money, byId, fundPct };
 })();

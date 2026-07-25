@@ -317,13 +317,12 @@ test('an explicit static-page flag keeps the formula badge on when runtime confi
     const countText = await page.locator('.backer-view-count').textContent();
     assert.match(countText, /^[\d,]+ views$/);
     assert.ok(Number(countText.replace(/\D/g, '')) >= 2049);
-    await page.click('.backer-consent-reject');
-    await page.reload({ waitUntil: 'domcontentloaded' });
     assert.equal(
       await page.locator('.backer-consent-panel').count(),
       0,
-      'the static preview must remember a rejection instead of prompting on every page'
+      'the static preview must not show an inoperative analytics prompt'
     );
+    assert.equal(await page.locator('.backer-privacy-settings').count(), 0);
     assert.equal(state.views.length, 0);
   } finally {
     state.configAvailable = true;

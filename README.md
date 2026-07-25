@@ -58,7 +58,7 @@ backer-site/
 
 **Marketing site** (scroll): the first-principles thesis, the broken-metrics problem,
 the Proof-of-Attention algorithm (six outputs), the three product surfaces,
-who benefits, and the settlement partners.
+and who benefits.
 
 **Interactive app** (Launch App / bottom dock):
 
@@ -108,12 +108,6 @@ clearing, and multiple devices.
 4. In the Marketplace, open **Jordan Cole** — the profile the protocol *flags* as fake.
    That contrast is the whole thesis: you can't invest where metrics can't be trusted.
 
-## Strategic partners (settlement & payments)
-
-- **MoonPay** — fiat on-ramp / off-ramp
-- **Sign** (backed by Binance) — on-chain attestation & milestone payouts
-- **Infinipay** — programmable settlement rails / milestone escrow
-
 ## Deploy
 
 The complete analytics build deploys on **Vercel** with **Supabase PostgreSQL**. Apply
@@ -129,9 +123,9 @@ production analytics deployment.
 
 ## Notes
 
-Illustrative demo only — not investment advice. Creator data, scores, returns, and
-partner integrations are mocked for demonstration. Backing early creators carries real
-risk of total loss; that framing is kept honest throughout the UI.
+Illustrative demo only — not investment advice. Creator data, scores, and returns are
+mocked for demonstration. Backing early creators carries real risk of total loss; that
+framing is kept honest throughout the UI.
 
 The analytics implementation is not a completed production installation until real
 credentials are supplied, `migrations/001_analytics.sql` succeeds against the intended

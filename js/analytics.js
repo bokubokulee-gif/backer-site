@@ -20,6 +20,7 @@
   var runtimeConfigAvailable = false;
   var runtimePolicyMatches = false;
   var publicViewCountsEnabled = false;
+  var hideUnavailableAnalyticsUI = false;
   var runtimeConfigPromise = null;
   var runtimeReady = null;
   var initialCampaigns = Core.campaigns(window.location);
@@ -82,6 +83,15 @@
       !!(meta && String(meta.getAttribute('content')).trim().toLowerCase() === 'true');
   }
 
+  function configuredUnavailableAnalyticsUIFlag() {
+    var meta = document.querySelector('meta[name="backer-hide-unavailable-analytics-ui"]');
+    return !!(meta && String(meta.getAttribute('content')).trim().toLowerCase() === 'true');
+  }
+
+  function analyticsUIEnabled() {
+    return runtimeConfigAvailable || !hideUnavailableAnalyticsUI;
+  }
+
   function fallbackRuntimeConfig() {
     return {
       ga4MeasurementId: configuredMeasurementId(),
@@ -93,6 +103,7 @@
 
   function applyRuntimeConfig(config) {
     config = config || fallbackRuntimeConfig();
+    hideUnavailableAnalyticsUI = configuredUnavailableAnalyticsUIFlag();
     runtimeConfigAvailable = config.configurationAvailable === true;
     runtimePolicyMatches = runtimeConfigAvailable &&
       String(config.consentPolicyVersion || '').trim() === Core.POLICY_VERSION;
@@ -575,8 +586,8 @@
       if (bannerEl) hideConsentPanel();
     } else {
       stopAnalytics(wasAccepted);
-      if (!storedConsent || (runtimeConfigAvailable && !runtimePolicyMatches)) showConsentPanel(false);
-      else if (bannerEl && bannerEl.classList.contains('is-settings')) showConsentPanel(true);
+      if (analyticsUIEnabled() && (!storedConsent || !runtimePolicyMatches)) showConsentPanel(false);
+      else if (analyticsUIEnabled() && bannerEl && bannerEl.classList.contains('is-settings')) showConsentPanel(true);
       else hideConsentPanel();
     }
     dispatchConsentChange();
@@ -592,9 +603,11 @@
   function bootDOM() {
     runtimeReady.then(function () {
       mountBrandCount();
-      mountPrivacySettings();
+      if (analyticsUIEnabled()) {
+        mountPrivacySettings();
+        if (!storedConsent || !runtimePolicyMatches) showConsentPanel(false);
+      }
       bindSearchEvents();
-      if (!storedConsent || (runtimeConfigAvailable && !runtimePolicyMatches)) showConsentPanel(false);
       if (accepted()) {
         enableGA();
         recordRoute(currentRoute);
@@ -607,7 +620,11 @@
     track: track,
     virtualPageView: virtualPageView,
     openPrivacySettings: function () {
-      return runtimeReady.then(function () { showConsentPanel(true); });
+      return runtimeReady.then(function () {
+        if (!analyticsUIEnabled()) return false;
+        showConsentPanel(true);
+        return true;
+      });
     },
     consentDecision: function () { return accepted() ? 'accepted' : 'rejected'; },
     currentRoute: function () { return currentRoute; },
