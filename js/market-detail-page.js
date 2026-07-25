@@ -97,6 +97,9 @@
     }
     var close = root.querySelector('.pt-x[data-close]');
     if (close) close.setAttribute('aria-label', document.body.dataset.returnSource === 'portfolio' ? 'Back to portfolio' : 'Back to markets');
+    if (window.BackerMarketCommunity && typeof window.BackerMarketCommunity.mount === 'function') {
+      window.BackerMarketCommunity.mount(root);
+    }
 
     var status = byId('marketPageStatus');
     if (status) { status.hidden = true; status.setAttribute('aria-busy', 'false'); }

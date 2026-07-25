@@ -1155,6 +1155,37 @@
     }
     /* outcome table */
     h += outcomeTable(m);
+    /* community + market-wide activity are mounted by market-community.js.
+       Keeping the fixture renderer separate lets the shared terminal repaint
+       without mixing public discussion with the user's private fill ledger. */
+    var communityOutcomes = mt === 'perps'
+      ? ['Long', 'Short']
+      : mk.outcomes.map(function (outcome) { return outcome.name; });
+    var communityPrice = mt === 'perps'
+      ? (perpQuote ? perpQuote.mark : '')
+      : (selectedQuote ? selectedQuote.cur : '');
+    var communityOutcomePrices = mt === 'perps'
+      ? [communityPrice, communityPrice]
+      : mk.outcomes.map(function (outcome) { return outcomeQuoteAt(outcome, S.asOf).cur; });
+    h += '<section class="bmc-shell" data-bmc-slot'
+      + ' data-market-key="' + esc(mk.id + ':' + mt) + '"'
+      + ' data-market-id="' + esc(mk.id) + '"'
+      + ' data-creator="' + esc(m.name) + '"'
+      + ' data-handle="' + esc(m.handle) + '"'
+      + ' data-question="' + esc(mk.question) + '"'
+      + ' data-instrument="' + esc(mt) + '"'
+      + ' data-outcomes="' + esc(JSON.stringify(communityOutcomes)) + '"'
+      + ' data-outcome-prices="' + esc(JSON.stringify(communityOutcomePrices)) + '"'
+      + ' data-selected-outcome="' + esc(selected ? selected.name : (S.side || 'Long')) + '"'
+      + ' data-current-price="' + esc(communityPrice) + '"'
+      + ' data-deadline="' + esc(mk.deadline || 'Continuous') + '"'
+      + ' data-target="' + esc(mk.targetLabel || mk.indexName || 'the rule-defined target') + '"'
+      + ' data-source="' + esc(mk.source || 'the settlement source') + '"'
+      + ' data-market-status="' + esc(lifecycle.label) + '"'
+      + ' data-market-open="' + (lifecycle.open ? 'true' : 'false') + '"'
+      + ' data-has-history="' + (mk.hasTradeHistory === false ? 'false' : 'true') + '"'
+      + ' aria-label="Market community and activity">'
+      + '<div class="bmc-loading" aria-live="polite">Opening community…</div></section>';
     /* contract observation / reference index — deliberately separate from traded odds */
     h += underlyingBlock(m);
     /* about + rules */
@@ -1182,7 +1213,7 @@
 
     /* footer */
     h += '<div class="pt-sources"><div class="row1"><span>Contract <b>' + esc(mk.id) + ' · ' + esc(mk.version) + '</b></span><span>' + (mk.hasTradeHistory === false ? 'Listed' : 'Opened') + ' <b>' + esc(mk.hasTradeHistory === false ? (mk.listedAt || 'Pre-open listing') : mk.openedAt) + '</b></span><span>' + (mt === 'perps' ? 'Instrument' : 'Expiry / resolution') + ' <b>' + esc(mk.deadline || 'Continuous') + '</b></span><span>Settlement <b>' + esc((mk.source || 'YouTube public data')) + '</b></span><span>Price basis <b>' + (mk.hasTradeHistory === false ? 'No executions or quotes yet' : isSettledAtPlayhead ? 'Final settlement value; no executable quote' : mt === 'perps' ? 'Executed / mark / index' : 'Last trade; normalized probability is non-executable') + '</b></span><span>As of <b>' + fdatetime(asOfT) + ' · ' + esc(mk.dataLatency) + '</b></span></div>';
-    h += '<div class="disclosure">Market odds reflect traded prices, not Backer’s independent probability estimate. Creator-attention signals provide context and do not settle this contract. Simulated demo — no real money moves.</div>';
+    h += '<div class="disclosure">Market odds reflect traded prices, not Backer’s independent probability estimate. Creator-attention signals provide context and do not settle this contract. Seeded community profiles, comments, reactions, and market activity are generated demo fixtures and do not represent real users or trades; browser-session posts are local. No real money moves.</div>';
     h += '<div class="acts"><button data-goto-poa>Proof of Attention</button><button data-datatable>Open data table</button><button data-correction2>Report incorrect data</button></div></div>';
     h += '<div class="pt-evcard" id="ptEvCard" aria-hidden="true"></div><div class="pt-sr" aria-live="polite" id="ptLive"></div></div>';
     return h;
