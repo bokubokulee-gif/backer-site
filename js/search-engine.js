@@ -569,7 +569,6 @@ window.BackerSearch = (function () {
     const out = root.querySelector('#sxOut');
     const s = session;
     out.innerHTML = `
-      <div class="sx-demo-note">Demo catalog — ${CATALOG.length} simulated accounts with full provenance modeling. Production search requires licensed platform data paths (see launch gates); no real accounts are shown here.</div>
       ${chipRow(s.intent)}
       <div class="sx-strip" role="navigation" aria-label="Platform results">${s.intent.platforms.map(p => `<button class="sx-strip-tab" data-goto="${p}"><svg viewBox="0 0 24 24" class="ic">${(window.BACKER.PLAT_IC[p] || "")}</svg>${PLAT_LABEL[p]} <span class="sx-strip-n" id="sxN-${p}">…</span></button>`).join('')}</div>
       ${s.intent.platforms.map(p => sectionShell(p)).join('')}
