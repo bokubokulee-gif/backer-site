@@ -13,10 +13,14 @@
 <link rel="stylesheet" href="css/styles.css?v=6" />
 <link rel="stylesheet" href="css/liquid-glass.css?v=4" />
 <link rel="stylesheet" href="css/analytics.css?v=1" />
+<link rel="stylesheet" href="css/faq.css?v=1" />
 </head>
-<body class="page-product">
+<body class="page-product page-faq">
 <canvas id="bg" aria-hidden="true"></canvas>
 <div class="vignette" aria-hidden="true"></div>
+<div class="faq-spiral-scene" aria-hidden="true">
+  <div class="faq-spiral" id="faqSpiral"></div>
+</div>
 
 <!-- ================= TOP NAV ================= -->
 <header class="nav" id="nav">
@@ -43,15 +47,30 @@
 <main id="site">
 
   <!-- FAQ -->
-  <section class="section" id="faq" style="padding-top:clamp(120px,16vw,170px)">
-    <div class="section-head reveal">
-      <span class="kicker">FAQ</span>
-      <h2>The questions everyone asks.</h2>
-      <p class="section-lead">Especially the one that matters most: how the money moves — for backers and for&nbsp;creators.</p>
+  <section class="section faq-section" id="faq">
+    <div class="faq-masthead reveal">
+      <div class="faq-masthead-copy">
+        <span class="kicker">FAQ</span>
+        <h1>The questions <em>everyone asks.</em></h1>
+        <p>Especially the one that matters most: how the money moves — for backers and for&nbsp;creators.</p>
+      </div>
+      <div class="faq-search-panel" role="search">
+        <label for="faqSearch">Find an answer</label>
+        <div class="faq-search-field">
+          <span class="faq-search-icon" aria-hidden="true"></span>
+          <input id="faqSearch" type="search" autocomplete="off" placeholder="Search questions…" />
+          <button class="faq-search-clear" id="faqSearchClear" type="button" aria-label="Clear FAQ search" hidden>Clear</button>
+        </div>
+        <span class="faq-search-status mono" id="faqSearchStatus" aria-live="polite">10 questions</span>
+      </div>
     </div>
 
     <!-- PAYOUT LAB -->
     <div class="calc reveal" id="calc">
+      <div class="calc-meta">
+        <span>Interactive payout lab</span>
+        <span class="mono"><i aria-hidden="true"></i> updates live</span>
+      </div>
       <div class="calc-head">
         <div class="calc-title">
           <h3>The payout, live</h3>
@@ -152,6 +171,13 @@
     </div>
 
     <!-- Q&A -->
+    <div class="faq-directory-head reveal">
+      <div>
+        <span class="kicker">Questions &amp; answers</span>
+        <h2>Start with the mechanics.</h2>
+      </div>
+      <p>Open any question. Search looks through both questions and answers.</p>
+    </div>
     <div class="faq-list reveal" id="faqList">
       <div class="faq-item">
         <button class="faq-q" aria-expanded="false">What exactly am I doing when I back a creator?<span class="faq-x" aria-hidden="true">+</span></button>
@@ -194,6 +220,10 @@
         <div class="faq-a"><div class="faq-a-inner"><p>V1 runs as a simulated layer: positions and portfolios are tracked, no real capital moves. The mechanics and the score get proven before money goes live. When it does, settlement runs on programmable, auditable rails — with fiat on-ramps so anyone can join with a card. Everything on this page is a design proposal, not investment advice.</p></div></div>
       </div>
     </div>
+    <div class="faq-empty" id="faqEmpty" hidden>
+      <span class="mono">No match</span>
+      <p>Try “payout”, “creator”, “perp”, or “real money”.</p>
+    </div>
   </section>
 
   <!-- FOOTER -->
@@ -219,5 +249,6 @@
 <script src="js/analytics-core.js?v=1"></script>
 <script src="js/analytics.js?v=1"></script>
 <script src="js/sections.js?v=2"></script>
+<script src="js/faq-page.js?v=1"></script>
 </body>
 </html>
