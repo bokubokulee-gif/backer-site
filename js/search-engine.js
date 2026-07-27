@@ -390,43 +390,65 @@ window.BackerSearch = (function () {
   /* ---------------- rendering ---------------- */
   let root = null, announcer = null;
 
+  function orbitRing(size, duration, reverse, offset) {
+    const tier = size > 1000 ? ' is-outer' : size > 700 ? ' is-middle' : ' is-inner';
+    const nodes = PLATFORMS.map((platform, index) => {
+      const angle = offset + (Math.PI * 2 * index / PLATFORMS.length);
+      const x = (Math.cos(angle) * 46).toFixed(3);
+      const y = (Math.sin(angle) * 46).toFixed(3);
+      return `<span class="sx-orbit-node" data-platform="${platform}" style="--sx-node-x:${x}%;--sx-node-y:${y}%"><span class="sx-app-icon"><svg viewBox="0 0 24 24" class="ic">${(window.BACKER.PLAT_IC[platform] || '')}</svg></span></span>`;
+    }).join('');
+    return `<div class="sx-orbit-ring${tier}${reverse ? ' is-reverse' : ''}" style="--sx-orbit-size:${size}px;--sx-orbit-duration:${duration}s">${nodes}</div>`;
+  }
+
   function render(container, query) {
     root = container;
     session = null;
     container.innerHTML = `
       <div class="search-view sx">
-        <div class="search-hero">
-          <h1>Backer AI — Creator Discovery Agent</h1>
-          <p class="sx-lede">Describe what creators you want to back in natural language.</p>
-          <p class="sx-sub">Backer parses the request into editable constraints, searches five platforms independently, and keeps four signals separate: Match Confidence, Observed Attention, Proof of Attention, and Evidence Confidence.</p>
-        </div>
-        <form class="big-search" id="sxForm">
-          <svg viewBox="0 0 24 24" class="ic" style="width:20px;height:20px"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-          <input id="sxInput" autocomplete="off" placeholder="e.g. AI educators under 100K followers with loyal audiences" value="${esc(query || '')}"/>
-          <button class="send" type="submit" aria-label="Search"><svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-        </form>
-        <div class="pills-shell search-ex-shell">
-          <div class="pills search-ex" role="group" aria-label="Suggested creator searches">
-            <div class="pills-track search-ex-track">
-              <div class="pills-group">
-                <button type="button" class="chip" data-ex="AI educators under 100K followers with loyal audiences">AI educators · loyal</button>
-                <button type="button" class="chip" data-ex="indie builders shipping weekly on YouTube and X">builders · weekly</button>
-                <button type="button" class="chip" data-ex="musicians about to break out, under 50K">music · pre-breakout</button>
-                <button type="button" class="chip" data-ex="Spanish-language cooking creators">cooking · Spanish</button>
-              </div>
-              <div class="pills-group" aria-hidden="true">
-                <span class="chip" data-ex="AI educators under 100K followers with loyal audiences">AI educators · loyal</span>
-                <span class="chip" data-ex="indie builders shipping weekly on YouTube and X">builders · weekly</span>
-                <span class="chip" data-ex="musicians about to break out, under 50K">music · pre-breakout</span>
-                <span class="chip" data-ex="Spanish-language cooking creators">cooking · Spanish</span>
-              </div>
+        <div class="sx-hero-stage">
+          <div class="sx-orbit-scene" aria-hidden="true">
+            <div class="sx-orbit-plane">
+              ${orbitRing(1360, 92, false, -0.42)}
+              ${orbitRing(920, 74, true, 0.2)}
+              ${orbitRing(570, 58, false, -0.08)}
             </div>
           </div>
-          <button class="pills-toggle search-ex-toggle" type="button" aria-pressed="false" aria-label="Pause scrolling suggestions"><span aria-hidden="true">Ⅱ</span></button>
-        </div>
-        <div class="sx-plat-filter" role="group" aria-label="Platforms to search">
-          <span class="sx-plat-filter-label">Search on</span>
-          ${PLATFORMS.map(p => `<button type="button" class="sx-plat-toggle" data-plat="${p}" aria-pressed="${platformFilter.has(p)}"><svg viewBox="0 0 24 24" class="ic">${(window.BACKER.PLAT_IC[p] || "")}</svg>${PLAT_LABEL[p]}</button>`).join('')}
+          <div class="sx-hero-shade" aria-hidden="true"></div>
+          <div class="sx-hero-content">
+            <div class="search-hero">
+              <h1>Backer AI — Creator Discovery Agent</h1>
+              <p class="sx-lede">Describe what creators you want to back in natural language.</p>
+            </div>
+            <form class="big-search" id="sxForm">
+              <svg viewBox="0 0 24 24" class="ic" style="width:20px;height:20px"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input id="sxInput" autocomplete="off" placeholder="e.g. AI educators under 100K followers with loyal audiences" value="${esc(query || '')}"/>
+              <button class="send" type="submit" aria-label="Search"><svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+            </form>
+            <div class="pills-shell search-ex-shell">
+              <div class="pills search-ex" role="group" aria-label="Suggested creator searches">
+                <div class="pills-track search-ex-track">
+                  <div class="pills-group">
+                    <button type="button" class="chip" data-ex="AI educators under 100K followers with loyal audiences">AI educators · loyal</button>
+                    <button type="button" class="chip" data-ex="indie builders shipping weekly on YouTube and X">builders · weekly</button>
+                    <button type="button" class="chip" data-ex="musicians about to break out, under 50K">music · pre-breakout</button>
+                    <button type="button" class="chip" data-ex="Spanish-language cooking creators">cooking · Spanish</button>
+                  </div>
+                  <div class="pills-group" aria-hidden="true">
+                    <span class="chip" data-ex="AI educators under 100K followers with loyal audiences">AI educators · loyal</span>
+                    <span class="chip" data-ex="indie builders shipping weekly on YouTube and X">builders · weekly</span>
+                    <span class="chip" data-ex="musicians about to break out, under 50K">music · pre-breakout</span>
+                    <span class="chip" data-ex="Spanish-language cooking creators">cooking · Spanish</span>
+                  </div>
+                </div>
+              </div>
+              <button class="pills-toggle search-ex-toggle" type="button" aria-pressed="false" aria-label="Pause scrolling suggestions"><span aria-hidden="true">Ⅱ</span></button>
+            </div>
+            <div class="sx-plat-filter" role="group" aria-label="Platforms to search">
+              <span class="sx-plat-filter-label">Search on</span>
+              ${PLATFORMS.map(p => `<button type="button" class="sx-plat-toggle" data-plat="${p}" aria-pressed="${platformFilter.has(p)}"><svg viewBox="0 0 24 24" class="ic">${(window.BACKER.PLAT_IC[p] || "")}</svg>${PLAT_LABEL[p]}</button>`).join('')}
+            </div>
+          </div>
         </div>
         <div id="sxOut"></div>
         <div class="sx-announce" aria-live="polite"></div>
@@ -463,6 +485,12 @@ window.BackerSearch = (function () {
 
   function announce(msg) { if (announcer) announcer.textContent = msg; }
 
+  function revealResults(out) {
+    requestAnimationFrame(() => {
+      out.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' });
+    });
+  }
+
   function submit(q) {
     if (!q) return;
     const expand = parseExpansion(q, session);
@@ -471,14 +499,17 @@ window.BackerSearch = (function () {
     const out = root.querySelector('#sxOut');
     if (intent.blocked.length) {
       out.innerHTML = `<div class="sx-notice sx-notice-block" role="alert"><b>This request can’t be used for targeting.</b> Backer doesn’t search by ${esc(intent.blocked.join(', '))} — protected and sensitive traits are never inferred for creator or audience targeting. Content-topic searches (what a creator publishes about) are supported.</div>`;
+      revealResults(out);
       return;
     }
     if (intent.followerMin !== null && intent.followerMax !== null && intent.followerMin > intent.followerMax) {
       out.innerHTML = `<div class="sx-notice sx-notice-block" role="alert"><b>Conflicting constraints.</b> “At least ${fmtK(intent.followerMin)}” and “under ${fmtK(intent.followerMax)}” can’t both hold. Edit the query to resolve the range.</div>`;
+      revealResults(out);
       return;
     }
     session = newSession(intent);
     renderSession();
+    revealResults(out);
   }
 
   /* ---------- chips ---------- */
