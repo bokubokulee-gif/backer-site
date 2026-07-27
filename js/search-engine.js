@@ -417,7 +417,10 @@ window.BackerSearch = (function () {
           <div class="sx-hero-shade" aria-hidden="true"></div>
           <div class="sx-hero-content">
             <div class="search-hero">
-              <h1>Backer AI — Creator Discovery Agent</h1>
+              <h1 aria-label="Backer AI — Creator Discovery Agent">
+                <span class="sx-hero-title-main">Backer AI</span>
+                <em class="sx-hero-title-sub">Creator Discovery Agent</em>
+              </h1>
               <p class="sx-lede">Describe what creators you want to back in natural language.</p>
             </div>
             <form class="big-search" id="sxForm">
