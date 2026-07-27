@@ -27,78 +27,45 @@
 .bigline em{font-family:var(--serif);font-style:italic;font-weight:400}
 .shift-thesis{max-width:none}
 
-/* consensus carousel — adapted from the supplied circular-gallery reference */
-.visually-hidden{
-  position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;
-  overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
-}
+/* consensus carousel — manual, unframed coverflow */
 .consensus-gallery{
-  --orbit-card-w:clamp(270px,27vw,310px);
-  --orbit-card-h:clamp(370px,58vh,430px);
-  --orbit-radius:clamp(300px,39vw,470px);
-  min-height:220svh;margin:clamp(42px,7vw,76px) 0 clamp(34px,5vw,56px);position:relative;
+  --orbit-card-w:clamp(270px,30vw,340px);
+  --orbit-card-h:clamp(380px,50vw,440px);
+  --orbit-side-shift:clamp(190px,24vw,280px);
+  position:relative;height:var(--orbit-card-h);overflow:hidden;isolation:isolate;
+  margin:clamp(34px,5vw,58px) 0 clamp(30px,4vw,46px);
 }
-.consensus-gallery-sticky{
-  position:sticky;top:72px;height:calc(100svh - 84px);min-height:560px;overflow:hidden;isolation:isolate;
-  display:grid;grid-template-rows:auto minmax(0,1fr) auto;border:1px solid var(--lg-bd,var(--line));
-  border-radius:var(--r-lg);background:
-    radial-gradient(70% 62% at 50% 48%,rgba(126,166,255,.09),transparent 68%),
-    var(--lg-fg-dark,linear-gradient(135deg,rgba(22,22,27,.74),rgba(12,12,15,.56)));
-  -webkit-backdrop-filter:blur(var(--lg-blur,20px)) saturate(var(--lg-sat,180%));
-  backdrop-filter:blur(var(--lg-blur,20px)) saturate(var(--lg-sat,180%)) url(#liquid-glass);
-  box-shadow:var(--lg-rim);
-}
-.consensus-gallery-sticky::before{
-  content:"";position:absolute;inset:0;pointer-events:none;z-index:3;
-  background:linear-gradient(135deg,rgba(255,255,255,.09),transparent 24%,transparent 76%,rgba(255,255,255,.025));
-}
-.consensus-gallery-head,.consensus-gallery-foot{
-  position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:18px;
-  padding:16px 20px;border-color:var(--line-2);background:rgba(8,8,10,.28);
-}
-.consensus-gallery-head{border-bottom:1px solid var(--line-2)}
-.consensus-gallery-foot{border-top:1px solid var(--line-2)}
-.consensus-gallery-kicker,.consensus-gallery-hint,.orbit-counter{
-  font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;
-}
-.consensus-gallery-kicker{color:var(--accent)}
-.consensus-gallery-hint{color:var(--muted-2)}
-.consensus-gallery-actions{display:flex;align-items:center;gap:10px}
-.consensus-gallery-hint-mobile{display:none}
-.consensus-gallery-motion{
-  min-height:34px;padding:0 12px;border:1px solid var(--line);border-radius:999px;
-  background:rgba(255,255,255,.04);color:var(--muted);font-family:var(--mono);
-  font-size:9px;letter-spacing:.08em;text-transform:uppercase;transition:.2s var(--ease);
-}
-.consensus-gallery-motion:hover{color:var(--ink);background:rgba(255,255,255,.07);border-color:var(--lg-bd)}
-.consensus-gallery-motion:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-.consensus-gallery-motion[aria-pressed="true"]{color:var(--accent);border-color:rgba(233,189,134,.35);background:rgba(233,189,134,.08)}
 .people-orbit{
-  position:relative;min-height:0;perspective:2000px;overflow:hidden;outline:none;touch-action:pan-y;
+  position:absolute;inset:0;perspective:1500px;overflow:hidden;
 }
-.people-orbit:focus-visible{box-shadow:inset 0 0 0 2px var(--accent)}
-.people-orbit::after{
-  content:"";position:absolute;z-index:0;left:18%;right:18%;bottom:6%;height:22%;
-  border-radius:50%;background:radial-gradient(ellipse,rgba(244,171,99,.12),transparent 70%);
-  filter:blur(18px);transform:rotateX(72deg);pointer-events:none;
-}
-.people-ring{position:absolute;inset:0;transform-style:preserve-3d;will-change:transform}
+.people-ring{position:absolute;inset:0;transform-style:preserve-3d}
 .people-orbit .person{
-  position:absolute;z-index:1;left:50%;top:50%;width:var(--orbit-card-w);height:var(--orbit-card-h);
+  position:absolute;left:50%;top:50%;width:var(--orbit-card-w);height:var(--orbit-card-h);
   margin-left:calc(var(--orbit-card-w) / -2);margin-top:calc(var(--orbit-card-h) / -2);
-  transform:rotateY(var(--orbit-angle)) translateZ(var(--orbit-radius));transform-style:preserve-3d;
-  backface-visibility:hidden;border-radius:22px;overflow:hidden;transition:opacity .25s linear,filter .25s linear,border-color .25s var(--ease);
+  transform:translate3d(0,0,-220px) scale(.78);transform-style:preserve-3d;
+  backface-visibility:hidden;border:1px solid var(--line);border-radius:22px;overflow:hidden;
+  background:#0d0d10;box-shadow:0 24px 64px rgba(0,0,0,.42);
+  opacity:0;pointer-events:none;transition:
+    transform .56s cubic-bezier(.22,.7,.18,1),
+    opacity .34s ease,
+    filter .34s ease;
 }
-.people-orbit .person.is-front{border-color:rgba(233,189,134,.45)}
-.people-orbit .person::after{
-  content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
-  background:linear-gradient(135deg,rgba(255,255,255,.13),transparent 24%,transparent 72%,rgba(255,255,255,.035));
+.people-orbit .person.is-active{
+  z-index:4;opacity:1;pointer-events:auto;filter:none;
+  transform:translate3d(0,0,80px) rotateY(0deg) scale(1);
+}
+.people-orbit .person.is-prev{
+  z-index:2;opacity:.62;filter:brightness(.68) saturate(.72);
+  transform:translate3d(calc(var(--orbit-side-shift) * -1),0,-80px) rotateY(28deg) scale(.9);
+}
+.people-orbit .person.is-next{
+  z-index:2;opacity:.62;filter:brightness(.68) saturate(.72);
+  transform:translate3d(var(--orbit-side-shift),0,-80px) rotateY(-28deg) scale(.9);
 }
 .people-orbit .person img{
   position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:var(--photo-position,center top);
-  display:block;border:0;filter:saturate(.86) contrast(1.04) brightness(.86);transition:filter .3s var(--ease),transform .5s var(--ease);
+  display:block;border:0;filter:saturate(.94) contrast(1.04) brightness(.92);
 }
-.people-orbit .person.is-front img{filter:saturate(.96) contrast(1.04) brightness(.96);transform:scale(1.015)}
 .people-orbit .person-body{
   position:absolute;z-index:3;inset:auto 0 0;padding:76px 20px 21px;
   background:linear-gradient(180deg,transparent,rgba(5,5,7,.78) 28%,rgba(5,5,7,.97));
@@ -112,74 +79,31 @@
   margin-top:9px;font-size:13px;font-weight:500;color:#cdcac3;line-height:1.52;
   display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden;
 }
-.orbit-progress{display:flex;align-items:center;gap:7px}
-.orbit-progress i{
-  width:6px;height:6px;border-radius:50%;background:var(--muted-2);opacity:.5;
-  transition:.25s var(--ease);box-shadow:none;
+.orbit-controls{
+  position:absolute;z-index:10;left:0;right:0;top:50%;transform:translateY(-50%);
+  display:flex;align-items:center;justify-content:space-between;pointer-events:none;
 }
-.orbit-progress i.is-active{width:18px;border-radius:999px;background:var(--accent);opacity:1;box-shadow:0 0 14px rgba(233,189,134,.28)}
-.orbit-counter{color:var(--muted)}
-.orbit-controls{display:flex;align-items:center;gap:8px}
 .orbit-controls button{
-  width:40px;height:40px;display:grid;place-items:center;border:1px solid var(--lg-bd,var(--line));
-  border-radius:50%;background:var(--lg-fg);box-shadow:var(--lg-rim-pill);color:var(--ink);
-  font-family:var(--mono);font-size:15px;transition:.2s var(--ease);
+  width:44px;height:44px;display:grid;place-items:center;pointer-events:auto;
+  border:1px solid var(--line);border-radius:50%;background:#0d0d10;color:var(--ink);
+  box-shadow:0 10px 28px rgba(0,0,0,.4);font-family:var(--mono);font-size:16px;
+  transition:transform .2s var(--ease),border-color .2s var(--ease),background .2s var(--ease);
 }
-.orbit-controls button:hover{background:var(--lg-fg-hi);border-color:rgba(255,255,255,.25);transform:translateY(-1px)}
+.orbit-controls button:hover{background:#18181d;border-color:rgba(255,255,255,.26);transform:scale(1.04)}
 .orbit-controls button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-@media(max-width:760px){
+@media(max-width:700px){
   .consensus-gallery{
-    --orbit-card-w:min(72vw,280px);--orbit-card-h:min(61svh,390px);--orbit-radius:clamp(230px,62vw,305px);
-    min-height:190svh;margin-top:38px;
+    --orbit-card-w:min(76vw,300px);--orbit-card-h:min(61svh,390px);--orbit-side-shift:48vw;
+    height:var(--orbit-card-h);margin:34px 0 38px;
   }
-  .consensus-gallery-sticky{top:68px;height:calc(100svh - 76px);min-height:520px;border-radius:22px}
-  .consensus-gallery-head,.consensus-gallery-foot{padding:13px 15px}
-  .consensus-gallery-hint{font-size:9px;letter-spacing:.09em}
-  .people-orbit{perspective:1600px}
   .people-orbit .person-body{padding:68px 17px 18px}
   .person-name{font-size:18px}
   .person-body p{font-size:12.5px}
-}
-@media(max-width:430px){
-  .consensus-gallery{--orbit-card-w:72vw;--orbit-card-h:min(58svh,360px);--orbit-radius:61vw}
-  .consensus-gallery-hint{display:none}
-  .orbit-controls button{width:38px;height:38px}
-}
-@media(max-width:600px){
-  .consensus-gallery{min-height:auto;margin:38px 0 42px}
-  .consensus-gallery-sticky{position:relative;top:auto;height:auto;min-height:0;overflow:hidden}
-  .consensus-gallery-hint-desktop{display:none}
-  .consensus-gallery-hint-mobile{display:inline}
-  .consensus-gallery-motion{display:none}
-  .people-orbit{
-    height:auto;perspective:none;overflow-x:auto;padding:18px;
-    scroll-snap-type:x mandatory;overscroll-behavior-inline:contain;scrollbar-width:none;
-  }
-  .people-orbit::-webkit-scrollbar{display:none}
-  .people-ring{
-    position:relative;inset:auto;display:grid;grid-auto-flow:column;
-    grid-auto-columns:min(78vw,300px);gap:14px;width:max-content;transform:none!important;
-  }
-  .people-orbit .person{
-    position:relative;left:auto;top:auto;width:auto;height:390px;margin:0;transform:none!important;
-    opacity:1!important;filter:none!important;pointer-events:auto!important;scroll-snap-align:center;
-  }
-  .consensus-gallery-foot{display:none}
-}
-@media(max-height:700px) and (min-width:761px){
-  .consensus-gallery-sticky{min-height:500px}
-  .consensus-gallery{--orbit-card-h:350px}
+  .orbit-controls{left:2px;right:2px}
+  .orbit-controls button{width:40px;height:40px;font-size:15px}
 }
 @media(prefers-reduced-motion:reduce){
-  .consensus-gallery{min-height:auto}
-  .consensus-gallery-sticky{position:relative;top:auto;height:auto;min-height:0}
-  .people-orbit{height:auto;perspective:none;overflow-x:auto;padding:18px;scroll-snap-type:x mandatory}
-  .people-ring{position:relative;inset:auto;display:flex;gap:14px;width:max-content;transform:none!important}
-  .people-orbit .person{
-    position:relative;left:auto;top:auto;flex:0 0 min(78vw,300px);width:min(78vw,300px);height:390px;
-    margin:0;transform:none!important;opacity:1!important;filter:none!important;scroll-snap-align:center;
-  }
-  .consensus-gallery-motion,.consensus-gallery-foot{display:none}
+  .people-orbit .person{transition:none}
 }
 
 /* problem 02 — Dorsey */
@@ -358,63 +282,45 @@
     </div>
 
     <div class="consensus-gallery" data-circular-gallery>
-      <div class="consensus-gallery-sticky">
-        <div class="consensus-gallery-head">
-          <span class="consensus-gallery-kicker">Four signals from the people layer</span>
-          <div class="consensus-gallery-actions">
-            <span class="consensus-gallery-hint"><span class="consensus-gallery-hint-desktop">Scroll to rotate</span><span class="consensus-gallery-hint-mobile">Swipe to explore</span></span>
-            <button type="button" class="consensus-gallery-motion" data-gallery-toggle aria-pressed="false">Pause drift</button>
-          </div>
+      <div class="people-orbit" role="region" aria-roledescription="carousel" aria-label="Creators, companies, and investors becoming media">
+        <div class="people-ring">
+          <article class="person is-active" role="group" aria-label="1 of 4: Andrej Karpathy" aria-posinset="1" aria-setsize="4" aria-current="true" style="--photo-position:50% center">
+            <img src="img/pitch/karpathy.jpeg" alt="Andrej Karpathy speaking into a studio microphone" loading="lazy" />
+            <div class="person-body">
+              <span class="person-role">Researcher → creator</span>
+              <span class="person-name">Andrej Karpathy</span>
+              <p>One of the most-cited AI researchers now publishes multi-hour lectures on YouTube and posts on X almost everyday.</p>
+            </div>
+          </article>
+          <article class="person is-next" role="group" aria-label="2 of 4: OpenAI Acquires TBPN Podcast" aria-posinset="2" aria-setsize="4" style="--photo-position:center top">
+            <img src="img/pitch/altman.jpg" alt="Sam Altman" loading="lazy" />
+            <div class="person-body">
+              <span class="person-role">Sam Altman → show guest</span>
+              <span class="person-name">OpenAI Acquires TBPN Podcast</span>
+              <p>The most valuable AI company routes its biggest announcements through TBPN, a daily talk show — leadership included.</p>
+            </div>
+          </article>
+          <article class="person" role="group" aria-label="3 of 4: a16z" aria-posinset="3" aria-setsize="4" style="--photo-position:center top">
+            <img src="img/pitch/andreessen.jpg" alt="Marc Andreessen" loading="lazy" />
+            <div class="person-body">
+              <span class="person-role">VC → media network</span>
+              <span class="person-name">a16z</span>
+              <p>Marc Andreessen's firm runs a full in-house media operation — podcasts, shows, essays — publishing more than the outlets that used to cover it.</p>
+            </div>
+          </article>
+          <article class="person is-prev" role="group" aria-label="4 of 4: Lightspeed" aria-posinset="4" aria-setsize="4" style="--photo-position:center top">
+            <img src="https://lsvp.com/wp-content/uploads/2026/05/IMG_0050-810x1024.png" alt="Claire Zau" loading="lazy" />
+            <div class="person-body">
+              <span class="person-role">Creator → venture partner</span>
+              <span class="person-name">Lightspeed</span>
+              <p>Lightspeed's current venture partner built her audience making talking-head videos.</p>
+            </div>
+          </article>
         </div>
-
-        <div class="people-orbit" role="region" aria-roledescription="carousel" aria-label="Creators, companies, and investors becoming media" aria-describedby="consensusGalleryHelp" tabindex="0">
-          <span class="visually-hidden" id="consensusGalleryHelp">Scroll through the gallery or use the previous and next buttons. Use the left and right arrow keys when the gallery is focused.</span>
-          <div class="people-ring">
-            <article class="person" role="group" aria-label="1 of 4: Andrej Karpathy" aria-posinset="1" aria-setsize="4" style="--orbit-angle:0deg;--photo-position:50% center">
-              <img src="img/pitch/karpathy.jpeg" alt="Andrej Karpathy speaking into a studio microphone" loading="lazy" />
-              <div class="person-body">
-                <span class="person-role">Researcher → creator</span>
-                <span class="person-name">Andrej Karpathy</span>
-                <p>One of the most-cited AI researchers now publishes multi-hour lectures on YouTube and posts on X almost everyday.</p>
-              </div>
-            </article>
-            <article class="person" role="group" aria-label="2 of 4: OpenAI Acquires TBPN Podcast" aria-posinset="2" aria-setsize="4" style="--orbit-angle:90deg;--photo-position:center top">
-              <img src="img/pitch/altman.jpg" alt="Sam Altman" loading="lazy" />
-              <div class="person-body">
-                <span class="person-role">Sam Altman → show guest</span>
-                <span class="person-name">OpenAI Acquires TBPN Podcast</span>
-                <p>The most valuable AI company routes its biggest announcements through TBPN, a daily talk show — leadership included.</p>
-              </div>
-            </article>
-            <article class="person" role="group" aria-label="3 of 4: a16z" aria-posinset="3" aria-setsize="4" style="--orbit-angle:180deg;--photo-position:center top">
-              <img src="img/pitch/andreessen.jpg" alt="Marc Andreessen" loading="lazy" />
-              <div class="person-body">
-                <span class="person-role">VC → media network</span>
-                <span class="person-name">a16z</span>
-                <p>Marc Andreessen's firm runs a full in-house media operation — podcasts, shows, essays — publishing more than the outlets that used to cover it.</p>
-              </div>
-            </article>
-            <article class="person" role="group" aria-label="4 of 4: Lightspeed" aria-posinset="4" aria-setsize="4" style="--orbit-angle:270deg;--photo-position:center top">
-              <img src="https://lsvp.com/wp-content/uploads/2026/05/IMG_0050-810x1024.png" alt="Claire Zau" loading="lazy" />
-              <div class="person-body">
-                <span class="person-role">Creator → venture partner</span>
-                <span class="person-name">Lightspeed</span>
-                <p>Lightspeed's current venture partner built her audience making talking-head videos.</p>
-              </div>
-            </article>
-          </div>
-        </div>
-
-        <div class="consensus-gallery-foot">
-          <div class="orbit-progress" aria-hidden="true">
-            <i class="is-active"></i><i></i><i></i><i></i>
-          </div>
-          <span class="orbit-counter" data-orbit-counter>01 / 04</span>
-          <div class="orbit-controls">
-            <button type="button" data-orbit-prev aria-label="Show previous example">←</button>
-            <button type="button" data-orbit-next aria-label="Show next example">→</button>
-          </div>
-        </div>
+      </div>
+      <div class="orbit-controls">
+        <button type="button" data-orbit-prev aria-label="Show previous example">←</button>
+        <button type="button" data-orbit-next aria-label="Show next example">→</button>
       </div>
     </div>
 
@@ -1034,188 +940,35 @@
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* circular consensus gallery — section-scoped scroll rotation with an idle drift */
+  /* circular consensus gallery — manual button rotation */
   var circularGallery = $('[data-circular-gallery]');
   if (circularGallery) {
-    var orbit = $('.people-orbit', circularGallery);
-    var ring = $('.people-ring', circularGallery);
-    var cards = $$('.person', ring);
-    var dots = $$('.orbit-progress i', circularGallery);
-    var counter = $('[data-orbit-counter]', circularGallery);
+    var cards = $$('.person', circularGallery);
     var previous = $('[data-orbit-prev]', circularGallery);
     var next = $('[data-orbit-next]', circularGallery);
-    var motionToggle = $('[data-gallery-toggle]', circularGallery);
-    var sticky = $('.consensus-gallery-sticky', circularGallery);
-    var galleryMotion = window.matchMedia('(min-width:601px) and (prefers-reduced-motion:no-preference)');
-    var step = 360 / cards.length;
-    var scrollRotation = 0;
-    var manualRotation = 0;
-    var idleRotation = 0;
-    var currentRotation = 0;
-    var hoverPaused = false;
-    var focusPaused = false;
-    var userPaused = false;
-    var visible = false;
-    var activeIndex = -1;
-    var frameId = 0;
-    var lastFrame = 0;
-    var idleAfter = 0;
+    var activeIndex = 0;
 
-    function clamp01(n) { return Math.max(0, Math.min(1, n)); }
-    function wrappedAngle(n) { return ((n + 180) % 360 + 360) % 360 - 180; }
-    function galleryProgress() {
-      var rect = circularGallery.getBoundingClientRect();
-      var stickyTop = parseFloat(window.getComputedStyle(sticky).top) || 0;
-      var travel = Math.max(circularGallery.offsetHeight - sticky.offsetHeight, 1);
-      return clamp01((stickyTop - rect.top) / travel);
-    }
-    function scheduleIdle() {
-      idleAfter = window.performance.now() + 1800;
-    }
-    function updateScrollRotation() {
-      if (!galleryMotion.matches || !visible) return;
-      scrollRotation = galleryProgress() * -((cards.length - 1) * step);
-      scheduleIdle();
-      startOrbit();
-    }
-    function renderOrbit(rotation) {
-      var nearest = 0;
-      var nearestDistance = Infinity;
+    function renderGallery() {
       cards.forEach(function (card, index) {
-        var relative = wrappedAngle(index * step + rotation);
-        var distance = Math.abs(relative);
-        var opacity = Math.max(.08, 1 - distance / 105);
-        var brightness = .6 + .4 * (1 - distance / 180);
-        card.style.opacity = opacity.toFixed(3);
-        card.style.filter = 'brightness(' + brightness.toFixed(3) + ')';
-        card.style.zIndex = String(100 - Math.round(distance));
-        card.style.pointerEvents = distance < 66 ? 'auto' : 'none';
-        card.classList.toggle('is-front', distance < 44);
-        if (distance < 44) card.setAttribute('aria-current', 'true');
-        else card.removeAttribute('aria-current');
-        if (distance < nearestDistance) {
-          nearestDistance = distance;
-          nearest = index;
-        }
-      });
-      if (nearest !== activeIndex) {
-        activeIndex = nearest;
-        dots.forEach(function (dot, index) { dot.classList.toggle('is-active', index === nearest); });
-        if (counter) counter.textContent = String(nearest + 1).padStart(2, '0') + ' / ' + String(cards.length).padStart(2, '0');
-      }
-    }
-    function nudge(direction) {
-      manualRotation += direction * step;
-      scheduleIdle();
-      startOrbit();
-    }
-    function canRun() {
-      return galleryMotion.matches && visible && document.visibilityState !== 'hidden';
-    }
-    function stopOrbit() {
-      if (frameId) window.cancelAnimationFrame(frameId);
-      frameId = 0;
-      lastFrame = 0;
-      ring.style.willChange = 'auto';
-    }
-    function animateOrbit(now) {
-      frameId = 0;
-      if (!canRun()) return;
-      var delta = Math.min(50, now - (lastFrame || now));
-      lastFrame = now;
-      if (now >= idleAfter && !hoverPaused && !focusPaused && !userPaused) {
-        idleRotation -= 1.08 * delta / 1000;
-      }
-      var targetRotation = scrollRotation + manualRotation + idleRotation;
-      currentRotation += (targetRotation - currentRotation) * .085;
-      ring.style.transform = 'rotateY(' + currentRotation.toFixed(3) + 'deg)';
-      renderOrbit(currentRotation);
-      frameId = window.requestAnimationFrame(animateOrbit);
-    }
-    function startOrbit() {
-      if (!canRun() || frameId) return;
-      ring.style.willChange = 'transform';
-      lastFrame = 0;
-      frameId = window.requestAnimationFrame(animateOrbit);
-    }
-    function resetStaticGallery() {
-      stopOrbit();
-      ring.style.transform = '';
-      cards.forEach(function (card) {
-        card.style.opacity = '';
-        card.style.filter = '';
-        card.style.zIndex = '';
-        card.style.pointerEvents = '';
-        card.classList.remove('is-front');
-        card.removeAttribute('aria-current');
-      });
-      activeIndex = -1;
-      if (counter) counter.textContent = '01 / ' + String(cards.length).padStart(2, '0');
-    }
-    function syncGalleryMode() {
-      if (galleryMotion.matches) {
-        scheduleIdle();
-        updateScrollRotation();
-        startOrbit();
-      } else {
-        resetStaticGallery();
-      }
-    }
-
-    window.addEventListener('scroll', updateScrollRotation, { passive: true });
-    window.addEventListener('resize', updateScrollRotation);
-    document.addEventListener('visibilitychange', function () {
-      if (document.visibilityState === 'hidden') stopOrbit();
-      else {
-        updateScrollRotation();
-        startOrbit();
-      }
-    });
-    circularGallery.addEventListener('mouseenter', function () { hoverPaused = true; });
-    circularGallery.addEventListener('mouseleave', function () {
-      hoverPaused = false;
-      scheduleIdle();
-    });
-    circularGallery.addEventListener('focusin', function () { focusPaused = true; });
-    circularGallery.addEventListener('focusout', function (event) {
-      if (!circularGallery.contains(event.relatedTarget)) {
-        focusPaused = false;
-        scheduleIdle();
-      }
-    });
-    orbit.addEventListener('keydown', function (event) {
-      if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-        event.preventDefault();
-        nudge(event.key === 'ArrowLeft' ? 1 : -1);
-      }
-    });
-    previous.addEventListener('click', function () { nudge(1); });
-    next.addEventListener('click', function () { nudge(-1); });
-    motionToggle.addEventListener('click', function () {
-      userPaused = !userPaused;
-      motionToggle.setAttribute('aria-pressed', String(userPaused));
-      motionToggle.textContent = userPaused ? 'Resume drift' : 'Pause drift';
-      if (!userPaused) scheduleIdle();
-    });
-    if ('IntersectionObserver' in window) {
-      var galleryObserver = new IntersectionObserver(function (entries) {
-        visible = entries[0].isIntersecting;
-        if (visible) {
-          updateScrollRotation();
-          startOrbit();
+        var offset = (index - activeIndex + cards.length) % cards.length;
+        card.classList.remove('is-active', 'is-prev', 'is-next');
+        if (offset === 0) {
+          card.classList.add('is-active');
+          card.setAttribute('aria-current', 'true');
         } else {
-          stopOrbit();
+          card.removeAttribute('aria-current');
+          if (offset === 1) card.classList.add('is-next');
+          if (offset === cards.length - 1) card.classList.add('is-prev');
         }
-      }, { rootMargin: '-10% 0px -10% 0px', threshold: .01 });
-      galleryObserver.observe(circularGallery);
-    } else {
-      visible = true;
+      });
     }
-    if (galleryMotion.addEventListener) galleryMotion.addEventListener('change', syncGalleryMode);
-    else galleryMotion.addListener(syncGalleryMode);
-    scheduleIdle();
-    renderOrbit(0);
-    syncGalleryMode();
+    function rotateGallery(direction) {
+      activeIndex = (activeIndex + direction + cards.length) % cards.length;
+      renderGallery();
+    }
+    previous.addEventListener('click', function () { rotateGallery(-1); });
+    next.addEventListener('click', function () { rotateGallery(1); });
+    renderGallery();
   }
 
   /* typed line in the AI-search surface */
