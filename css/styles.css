@@ -255,6 +255,37 @@ em{font-style:normal}
 .gifting-foot{font-size:clamp(16px,2vw,19px);color:var(--ink);border-top:1px solid var(--line-2);padding-top:24px}
 .gifting-foot strong{color:var(--accent);font-weight:600}
 
+/* ---------- reading bridge ---------- */
+.first-principles-section{padding-bottom:clamp(42px,6vw,70px)}
+.reading-bridge{padding-top:0;padding-bottom:clamp(32px,4vw,52px);scroll-margin-top:92px}
+.reading-bridge + .section{padding-top:clamp(48px,6vw,72px)}
+.reading-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.reading-link{
+  position:relative;min-height:132px;padding:26px 28px;overflow:hidden;
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+  border:1px solid var(--line);border-radius:var(--r-lg);background:var(--card);
+  transition:transform .25s var(--ease),border-color .25s var(--ease),background .25s var(--ease),box-shadow .25s var(--ease);
+}
+.reading-link::before{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.7;
+  background:radial-gradient(90% 130% at 0% 0%,rgba(233,189,134,.09),transparent 60%);
+  transition:opacity .25s var(--ease);
+}
+.reading-link:hover{
+  transform:translateY(-3px);border-color:rgba(233,189,134,.34);background:var(--card-2);
+  box-shadow:0 20px 52px rgba(0,0,0,.28);
+}
+.reading-link:hover::before{opacity:1}
+.reading-link:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.reading-link-label{position:relative;font-size:clamp(22px,3vw,32px);font-weight:600;letter-spacing:-.035em}
+.reading-link-arrow{
+  position:relative;width:46px;height:46px;flex:none;display:grid;place-items:center;
+  border:1px solid var(--line);border-radius:50%;background:rgba(255,255,255,.035);color:var(--accent);
+  transition:transform .25s var(--ease),background .25s var(--ease),color .25s var(--ease);
+}
+.reading-link-arrow .ic{width:19px;height:19px}
+.reading-link:hover .reading-link-arrow{transform:translateX(3px);background:var(--ink);color:#111}
+
 /* ---------- broken metrics questions ---------- */
 .question-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 .q-card{padding:26px 22px;border:1px solid var(--line);border-radius:var(--r);background:var(--card);transition:.25s var(--ease)}
@@ -997,6 +1028,8 @@ p,li,figcaption,.section-lead,.val-node-d,.val-fact span,.val-big span,.vc-c spa
 }
 @media(max-width:760px){
   .question-grid,.two-col{grid-template-columns:1fr}
+  .reading-links{grid-template-columns:1fr}
+  .reading-link{min-height:104px;padding:22px}
   .scores,.surfaces,.benefit-grid,.creator-grid,.port-stats,.metric-grid{grid-template-columns:1fr}
   .g-row{grid-template-columns:70px 1fr}
   .nav-cta .btn-ghost{display:none}

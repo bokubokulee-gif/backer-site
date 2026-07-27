@@ -7,12 +7,16 @@
 .sx-announce{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
 /* ---- search hero + social platform orbit ---- */
-.search-view.sx{max-width:none}
+.search-view.sx{max-width:none;position:relative}
 .sx-hero-stage{
   position:relative;isolation:isolate;width:100vw;min-height:calc(100svh - 84px);
   margin-left:calc(50% - 50vw);overflow:hidden;display:flex;align-items:flex-end;justify-content:center;
+  scroll-margin-top:64px;transition:min-height .7s var(--ease);
 }
-.sx-orbit-scene{position:absolute;z-index:-3;inset:-7% -4% 0;pointer-events:none;overflow:hidden}
+.sx-orbit-scene{
+  position:absolute;z-index:-3;inset:-7% -4% 0;pointer-events:none;overflow:hidden;
+  transition:opacity .55s var(--ease),inset .7s var(--ease);
+}
 .sx-orbit-plane{
   position:absolute;left:50%;top:41%;width:1px;height:1px;
   transform:perspective(1200px) rotateX(14deg);transform-origin:center bottom;
@@ -55,10 +59,12 @@
   background:
     radial-gradient(54% 46% at 50% 46%,rgba(8,8,10,.16),rgba(8,8,10,.6) 72%,transparent),
     linear-gradient(180deg,rgba(8,8,10,.12) 0%,rgba(8,8,10,.34) 48%,var(--bg) 92%);
+  transition:opacity .55s var(--ease);
 }
 .sx-hero-content{
   width:min(880px,calc(100% - 32px));padding:clamp(330px,47vh,520px) 0 clamp(112px,14vh,144px);
   text-align:center;transform:translateY(clamp(-90px,-9svh,-60px));
+  transition:padding .7s var(--ease),transform .7s var(--ease);
 }
 .sx-hero-content .search-hero{margin-bottom:26px}
 .sx-hero-content .search-hero h1{
@@ -89,7 +95,37 @@
 }
 .sx-hero-content .search-ex-shell{max-width:760px;margin-inline:auto}
 .sx-hero-content .sx-plat-filter{margin-top:17px}
-#sxOut{max-width:840px;margin:30px auto 0;scroll-margin-top:78px}
+#sxOut{
+  display:flow-root;max-width:840px;margin:30px auto 0;scroll-margin-top:78px;
+  opacity:0;transform:translateY(12px);
+  transition:margin .7s var(--ease),opacity .35s ease .12s,transform .45s var(--ease) .08s;
+}
+
+/* Results replace the full-viewport presentation with one continuous search workspace. */
+.search-view.sx.has-results .sx-hero-stage{min-height:0}
+.search-view.sx.has-results .sx-orbit-scene{
+  inset:-16% -4% -32%;opacity:.26;
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 68%,transparent 96%);
+  mask-image:linear-gradient(180deg,#000 0%,#000 68%,transparent 96%);
+}
+.search-view.sx.has-results .sx-hero-shade{
+  opacity:.72;
+  background:
+    radial-gradient(58% 70% at 50% 40%,rgba(8,8,10,.18),rgba(8,8,10,.36) 68%,transparent 100%),
+    linear-gradient(180deg,rgba(8,8,10,.18),rgba(8,8,10,.08) 72%,transparent 100%);
+}
+.search-view.sx.has-results .sx-hero-content{
+  padding:clamp(96px,13vh,132px) 0 clamp(24px,4vh,38px);
+  transform:none;
+}
+.search-view.sx.has-results .sx-hero-content .search-hero{margin-bottom:18px}
+.search-view.sx.has-results .sx-hero-content .search-hero h1{font-size:clamp(34px,4.4vw,48px)}
+.search-view.sx.has-results .sx-lede{margin-top:12px;font-size:clamp(14px,1.4vw,16px)}
+.search-view.sx.has-results .big-search{min-height:60px;margin-bottom:10px}
+.search-view.sx.has-results .big-search .send{width:46px;height:46px}
+.search-view.sx.has-results .sx-plat-filter{margin-top:13px}
+.search-view.sx.has-results #sxOut{margin-top:0;padding-top:18px;opacity:1;transform:none}
+.search-view.sx.has-results .sx-demo-note{margin-top:0}
 
 /* ---- pre-search platform filter ---- */
 .sx-plat-filter{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:16px 0 4px}
@@ -247,8 +283,19 @@
   .sx-hero-content .big-search .send{width:44px;height:44px}
   .sx-hero-content .sx-plat-filter{gap:6px}
   .sx-hero-content .sx-plat-toggle{padding:6px 10px;font-size:11.5px}
+  .search-view.sx.has-results .sx-hero-content{
+    width:min(calc(100% - 24px),880px);
+    padding:clamp(84px,12vh,104px) 0 24px;
+  }
+  .search-view.sx.has-results .sx-hero-content .search-hero h1{font-size:clamp(30px,9vw,38px)}
+  .search-view.sx.has-results .sx-lede{font-size:13px}
+  .search-view.sx.has-results .big-search{min-height:56px}
+  .search-view.sx.has-results .big-search .send{width:42px;height:42px}
+  .search-view.sx.has-results .sx-orbit-scene{inset:-10% -34% -24%;opacity:.22}
+  .search-view.sx.has-results #sxOut{padding-top:14px}
 }
 
 @media (prefers-reduced-motion:reduce){
   .sx-orbit-ring,.sx-app-icon{animation:none}
+  .sx-hero-stage,.sx-orbit-scene,.sx-hero-shade,.sx-hero-content,#sxOut{transition:none}
 }

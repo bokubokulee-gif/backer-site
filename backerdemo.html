@@ -11,8 +11,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/styles.css?v=20260722-2" />
-<link rel="stylesheet" href="css/search.css?v=5" />
+<link rel="stylesheet" href="css/styles.css?v=20260728-1" />
+<link rel="stylesheet" href="css/search.css?v=6" />
 <link rel="stylesheet" href="css/market.css?v=4" />
 <link rel="stylesheet" href="css/liquid-glass.css?v=20260722-2" />
 <link rel="stylesheet" href="css/poa-terminal.css?v=13" />
@@ -28,17 +28,9 @@
     <span class="brand-mark" aria-hidden="true"><img src="img/backer-mark.png?v=2" alt="" /></span>
     <span class="brand-word">Backer</span>
   </a>
-  <nav class="nav-links" id="navLinks" aria-label="Primary">
-    <a href="backerthesis.html">Thesis</a>
-    <a href="#validation">Validation</a>
-    <a href="faq.html">FAQ</a>
-  </nav>
   <div class="nav-cta">
     <button class="btn btn-ghost" data-view="portfolio">Portfolio</button>
     <button class="btn btn-primary" data-view="market">Enter Backer Market<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-    <button class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false">
-      <svg viewBox="0 0 24 24" class="ic"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-    </button>
   </div>
 </header>
 
@@ -92,7 +84,7 @@
   </section>
 
   <!-- THESIS / PROBLEM -->
-  <section class="section" id="thesis">
+  <section class="section first-principles-section" id="thesis">
     <div class="section-head reveal">
       <span class="kicker">First principles</span>
       <h2>Two things are undeniably true.</h2>
@@ -128,6 +120,24 @@
         <div class="g-row g-zero"><span class="g-who">Fan</span><div class="g-bar"><span style="width:2%" class="g-neg"></span></div><span class="g-val">receives nothing — no return, no ownership, no upside</span></div>
       </div>
       <p class="gifting-foot">The question was never whether fans will fund creators. They already do. The question is: <strong>what if funding came with upside?</strong></p>
+    </div>
+  </section>
+
+  <!-- READING PATHS -->
+  <section class="section reading-bridge" id="reading" aria-label="Backer reading">
+    <div class="reading-links reveal">
+      <a class="reading-link" href="backerthesis.html">
+        <span class="reading-link-label">Read the thesis</span>
+        <span class="reading-link-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+      <a class="reading-link" href="pitch.html">
+        <span class="reading-link-label">See the pitch</span>
+        <span class="reading-link-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </a>
     </div>
   </section>
 
@@ -481,7 +491,7 @@
 <script src="js/data.js"></script>
 <script src="js/market-data.js?v=3"></script>
 <script src="js/market.js?v=20260722-2"></script>
-<script src="js/search-engine.js?v=20260727-2"></script>
+<script src="js/search-engine.js?v=20260728-1"></script>
 <script src="js/analytics-core.js?v=1"></script>
 <script src="js/analytics.js?v=1"></script>
 <script src="js/app.js?v=20260722-2"></script>

@@ -489,8 +489,13 @@ window.BackerSearch = (function () {
   function announce(msg) { if (announcer) announcer.textContent = msg; }
 
   function revealResults(out) {
+    const view = root.querySelector('.search-view.sx');
+    const stage = view && view.querySelector('.sx-hero-stage');
+    if (view) view.classList.add('has-results');
     requestAnimationFrame(() => {
-      out.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' });
+      requestAnimationFrame(() => {
+        (stage || out).scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' });
+      });
     });
   }
 
