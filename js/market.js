@@ -227,7 +227,7 @@ window.BackerMarket = (function () {
   }
   function cardCTA(c) {
     const st = c.mkt.state;
-    if (st === 'OPEN') return `<button type="button" class="mkt-cta" data-market-open="${c.id}" aria-label="Open market and back ${esc(c.name)} from $1">Back $1+</button>`;
+    if (st === 'OPEN') return `<button type="button" class="mkt-cta" data-market-open="${c.id}" aria-label="Open a simulated position on ${esc(c.name)}">Open position</button>`;
     if (st === 'OPENING_SOON') return watchBtn(c, true);
     if (st === 'CLOSED') return `<button type="button" class="mkt-btn ghost sm" data-market-open="${c.id}">View contract</button>`;
     if (st === 'RESOLVED') return `<button type="button" class="mkt-btn ghost sm" data-market-open="${c.id}">View result</button>`;
@@ -262,7 +262,7 @@ window.BackerMarket = (function () {
         <em title="Milestone progress — completion toward the target, not chance of success">${k.progressPct}%</em>
       </div>
       <div class="mkt-terms">
-        <span class="t-mult"><b>${k.mult}×</b><small>payout</small></span>
+        <span class="t-mult"><b>${k.mult}×</b><small>fixed term</small></span>
         <span class="t-pulse">${deltaTag(c)}<small>Pulse ${state.window.toUpperCase()}</small></span>
         ${poaPill(c)}
         ${riskTag(c)}
@@ -300,7 +300,7 @@ window.BackerMarket = (function () {
         ${sparkline(c, 560, 64)}
       </div>
       <div class="mkt-terms big">
-        <span class="t-mult"><b>${k.mult}×</b><small>payout multiple</small></span>
+        <span class="t-mult"><b>${k.mult}×</b><small>fixed sim term</small></span>
         <span class="t-pulse">${deltaTag(c)}<small>Pulse ${state.window.toUpperCase()}</small></span>
         ${poaPill(c)}
         ${riskTag(c)}
@@ -309,7 +309,7 @@ window.BackerMarket = (function () {
       <p class="mkt-feat-ev">+ ${esc(safePublicEvidence(c))}</p>
       <footer class="mkt-card-f">
         <span class="f-act">${B.money(simVolOf(c))} <em>sim. vol.</em> · ${backersOf(c)} backers · ${freshTag(c)}</span>
-        <span class="f-cta"><button type="button" class="mkt-btn ghost sm" data-market-open="${c.id}">Details</button><button type="button" class="mkt-cta" data-market-open="${c.id}" aria-label="Open market and back ${esc(c.name)} from $1">Back $1+</button></span>
+        <span class="f-cta"><button type="button" class="mkt-btn ghost sm" data-market-open="${c.id}">Details</button><button type="button" class="mkt-cta" data-market-open="${c.id}" aria-label="Open a simulated position on ${esc(c.name)}">Open position</button></span>
       </footer>
     </article>`;
   }
@@ -626,12 +626,11 @@ window.BackerMarket = (function () {
     const featured = feats.length ? feats[Math.max(0, Math.min(state.featIdx, feats.length - 1))] : null;
     let list = marketList();
     if (featured) list = list.filter(c => c.id !== featured.id);
-    const side = featured && list.length ? list[0] : null;      // side card leaves the grid — no duplicate contracts
-    const gridItems = side ? list.slice(1) : list;
+    const gridItems = list;
     const slice = gridItems.slice(0, state.shown);
     const cardsHTML = slice.map((c, i) => card(c) + (i === 3 ? inlinePulse() : '')).join('');
     return `<div class="mkt-gridwrap">
-      ${featured ? `<div class="mkt-featrow">${featuredHTML()}${side ? `<div class="mkt-feat-side">${card(side)}</div>` : ''}</div>` : ''}
+      ${featured ? `<div class="mkt-featrow">${featuredHTML()}</div>` : ''}
       <div class="mkt-grid-h"><h2>All markets</h2><span>${list.length} contract${list.length === 1 ? '' : 's'}${state.browse ? ' · ' + BROWSE.find(b => b[0] === state.browse)[1] : ''} · sorted by ${SORTS.find(s => s[0] === state.sort)[1]}</span></div>
       ${gridItems.length ? `<div class="mkt-grid">${cardsHTML}</div>` : list.length ? '' : emptyState()}
       ${gridItems.length > state.shown ? `<div class="mkt-more"><button class="mkt-btn" data-load-more>Show ${Math.min(12, gridItems.length - state.shown)} more</button><span>${slice.length} of ${gridItems.length} eligible</span></div>` : list.length ? `<div class="mkt-more"><span>All ${list.length + (featured ? 1 : 0)} eligible contracts shown — empty inventory is honest inventory.</span></div>` : ''}

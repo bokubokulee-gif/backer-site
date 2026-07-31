@@ -13,10 +13,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/styles.css?v=20260728-1" />
 <link rel="stylesheet" href="css/search.css?v=7" />
-<link rel="stylesheet" href="css/market.css?v=4" />
-<link rel="stylesheet" href="css/liquid-glass.css?v=20260722-2" />
+<link rel="stylesheet" href="css/market.css?v=20260731-1" />
+<link rel="stylesheet" href="css/liquid-glass.css?v=20260731-2" />
 <link rel="stylesheet" href="css/poa-terminal.css?v=13" />
 <link rel="stylesheet" href="css/analytics.css?v=1" />
+<link rel="stylesheet" href="css/theme.css?v=20260731-1" />
+<script src="js/theme.js?v=20260731-1"></script>
 </head>
 <body class="page-product">
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -29,8 +31,12 @@
     <span class="brand-word">Backer</span>
   </a>
   <div class="nav-cta">
-    <button class="btn btn-ghost" data-view="portfolio">Portfolio</button>
-    <button class="btn btn-primary" data-view="market">Enter Backer Market<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    <button class="btn btn-ghost" data-liquid-cta="neutral" data-view="portfolio">Portfolio</button>
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to light theme" aria-pressed="false">
+      <span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☼</span>
+      <span class="theme-toggle-label" data-theme-label>Light</span>
+    </button>
+    <button class="btn btn-primary" data-liquid-cta="primary" data-view="market">Enter Backer Market<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
   </div>
 </header>
 
@@ -126,13 +132,13 @@
   <!-- READING PATHS -->
   <section class="section reading-bridge" id="reading" aria-label="Backer reading">
     <div class="reading-links reveal">
-      <a class="reading-link" href="backerthesis.html">
+      <a class="reading-link" data-liquid-cta="panel" href="backerthesis.html">
         <span class="reading-link-label">Read Backer Thesis 1.0</span>
         <span class="reading-link-arrow" aria-hidden="true">
           <svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </span>
       </a>
-      <a class="reading-link" href="pitch.html">
+      <a class="reading-link" data-liquid-cta="panel" href="pitch.html">
         <span class="reading-link-label">See the pitch</span>
         <span class="reading-link-arrow" aria-hidden="true">
           <svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
@@ -438,8 +444,8 @@
     <h2 class="finale-line">Attention has always been currency.</h2>
     <h2 class="finale-line grad-text">Now it can be equity.</h2>
     <div class="finale-cta">
-      <button class="btn btn-primary btn-lg" data-view="market">Enter Backer Market<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-      <button class="btn btn-ghost btn-lg" data-view="search">Chat with Backer AI</button>
+      <button class="btn btn-primary btn-lg" data-liquid-cta="primary" data-view="market">Enter Backer Market<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <button class="btn btn-ghost btn-lg" data-liquid-cta="neutral" data-view="search">Chat with Backer AI</button>
     </div>
   </section>
 
@@ -490,7 +496,7 @@
 <script src="js/liquid-glass.js"></script>
 <script src="js/data.js"></script>
 <script src="js/market-data.js?v=3"></script>
-<script src="js/market.js?v=20260722-2"></script>
+<script src="js/market.js?v=20260731-1"></script>
 <script src="js/search-engine.js?v=20260728-2"></script>
 <script src="js/analytics-core.js?v=1"></script>
 <script src="js/analytics.js?v=1"></script>

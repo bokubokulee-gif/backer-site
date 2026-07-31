@@ -236,9 +236,11 @@
   .health-row .k{color:var(--muted-2)}
   .health-row .v{font-weight:600}
 </style>
-<link rel="stylesheet" href="css/liquid-glass.css?v=20260722-2" />
+<link rel="stylesheet" href="css/liquid-glass.css?v=20260731-2" />
 <link rel="stylesheet" href="css/poa-terminal.css?v=13" />
 <link rel="stylesheet" href="css/analytics.css?v=1" />
+<link rel="stylesheet" href="css/theme.css?v=20260731-1" />
+<script src="js/theme.js?v=20260731-1"></script>
 </head>
 <body class="page-portfolio">
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -256,8 +258,12 @@
     <a href="faq.html">FAQ</a>
   </nav>
   <div class="nav-cta">
-    <a class="btn btn-line portfolio-link" href="portfolio.html" aria-current="page">Portfolio</a>
-    <a class="btn btn-fill market-link" href="backerdemo.html?view=market">Enter Backer Market<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="btn btn-line portfolio-link" data-liquid-cta="neutral" href="portfolio.html" aria-current="page">Portfolio</a>
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to light theme" aria-pressed="false">
+      <span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☼</span>
+      <span class="theme-toggle-label" data-theme-label>Light</span>
+    </button>
+    <a class="btn btn-fill market-link" data-liquid-cta="primary" href="backerdemo.html?view=market">Enter Backer Market<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     <button class="nav-burger" id="navBurger" type="button" aria-label="Menu" aria-expanded="false">
       <svg viewBox="0 0 24 24" class="ic"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>

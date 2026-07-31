@@ -330,3 +330,181 @@ body.mkt-full .app{max-width:1920px;padding-left:clamp(14px,1.8vw,26px);padding-
   .mkt-drawer-panel{transition:none}
   .mkt-card,.mkt-btn{transition:none}
 }
+
+/* =========================================================
+   2026-07-31 readability pass
+   Keep exchange density, but give every contract enough
+   width, type size, and vertical rhythm to compare calmly.
+   ========================================================= */
+body.mkt-full .app{
+  max-width:1760px;
+  padding:96px clamp(18px,2.2vw,34px) 132px;
+}
+.mkt{font-size:14px}
+.mkt-framing{align-items:center;padding:14px 0 20px;gap:24px}
+.mkt-framing h1{font-size:clamp(34px,3vw,42px);line-height:1}
+.mkt-framing-l p{font-size:15px;margin-top:8px}
+.mkt-framing-r{gap:12px}
+.mkt-pill{font-size:11.5px;padding:7px 12px}
+.mkt-search{min-width:360px;min-height:44px;padding:10px 16px}
+.mkt-search input{font-size:14px}
+
+.mkt-browse{margin-bottom:12px}
+.mkt-browse-in{gap:7px;padding:10px 2px}
+.bchip{font-size:13px;padding:7px 12px}
+.mkt-ticker{gap:12px;font-size:11.5px;padding:3px 2px 12px}
+
+.mkt-controls-wrap{top:72px;padding:8px 0 10px;margin-bottom:20px}
+.mkt-controls{gap:16px}
+.mkt-tabs button{font-size:14px;padding:10px 15px}
+.mkt-tabs button em{font-size:11.5px;margin-left:5px}
+.mkt-tools{gap:9px}
+.mkt-windows button{font-size:11.5px;padding:6px 11px}
+.qchip{font-size:12px;padding:7px 11px}
+.mkt-sort{font-size:12.5px}
+.mkt-sort select{font-size:13px;padding:8px 10px}
+.mkt-btn{min-height:40px;font-size:13px;padding:9px 16px}
+.mkt-btn.sm{min-height:36px;font-size:12.5px;padding:8px 13px}
+
+.mkt-stage.has-rail{grid-template-columns:minmax(0,1fr) 336px;gap:22px}
+.mkt-tab-lead{font-size:13.5px;line-height:1.6;margin-bottom:16px}
+.mkt-featrow{display:block;margin-bottom:28px}
+.mkt-feat-side{display:none}
+.mkt-grid-h{margin:8px 0 14px}
+.mkt-grid-h h2{font-size:24px}
+.mkt-grid-h span{font-size:11.5px}
+.mkt-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+
+.mkt-card{
+  gap:12px;
+  min-width:0;
+  min-height:286px;
+  padding:18px;
+  border-radius:17px;
+}
+.mkt-card-h{gap:10px}
+.mkt-name{gap:10px}
+.mkt-name b{font-size:14px}
+.mkt-name small{font-size:11.5px;margin-top:1px}
+.mkt-badge{font-size:10.5px;padding:4px 8px}
+.mkt-watch{min-width:36px;min-height:36px;justify-content:center}
+.mkt-card-title{min-height:46px}
+.mkt-card-title button{font-size:16px;line-height:1.38}
+.mkt-prog{gap:9px;font-size:12.5px}
+.mkt-prog em{font-size:11px}
+.mkt-bar{height:7px;min-width:52px}
+.mkt-card .mkt-terms{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:11px 16px;
+  align-items:center;
+  padding:2px 0;
+}
+.mkt-card .mkt-terms .t-mult b{font-size:21px}
+.mkt-terms small{font-size:10.5px;margin-top:1px}
+.mkt-delta{font-size:14px}
+.mkt-risk{font-size:12px;white-space:normal;line-height:1.35}
+.mkt-poa{width:max-content;font-size:13px;padding:5px 10px}
+.mkt-poa em{font-size:10.5px}
+.mkt-card-f{gap:12px;padding-top:12px}
+.f-act{font-size:11.5px;line-height:1.45}
+.mkt-link{font-size:12.5px}
+.mkt-cta{
+  min-height:40px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:13px;
+  padding:9px 15px;
+}
+
+.mkt-feat{
+  gap:14px;
+  min-height:352px;
+  padding:22px 24px;
+  border-radius:19px;
+}
+.mkt-feat-tag{font-size:10.5px;padding:5px 8px}
+.mkt-feat-title button{font-size:clamp(22px,2vw,28px);line-height:1.22}
+.mkt-feat-nav{font-size:11px}
+.mkt-feat-chart small{font-size:11.5px;margin-bottom:8px}
+.mkt-spark{height:96px}
+.mkt-feat .mkt-terms{display:flex;gap:18px}
+.mkt-terms.big .t-mult b{font-size:25px}
+.mkt-terms .t-close b{font-size:14px}
+.mkt-feat-ev{font-size:13.5px}
+
+.mkt-rail{gap:16px}
+.mkt-rmod{padding:17px 18px;border-radius:16px}
+.mkt-rmod h4{font-size:14px;margin-bottom:12px}
+.rm-note{font-size:10.5px}
+.rm-copy{font-size:13px;line-height:1.55;margin-bottom:12px}
+.rm-bullets{gap:9px}
+.rm-bullets li{font-size:12.5px;line-height:1.5;padding-left:12px}
+.rm-bullets small{font-size:10.5px}
+.rm-stamp{font-size:10px;margin-top:10px}
+.mkt-rrow{min-height:56px;padding:8px 4px}
+.rr-rank{font-size:11px;width:22px}
+.rr-body b{font-size:13px}
+.rr-body small{font-size:11px;margin-top:2px}
+.rr-val b{font-size:13px}
+.rr-val small{font-size:10px}
+.rm-all{font-size:12px;margin-top:8px}
+
+.mkt-foot{padding-top:28px;margin-top:42px}
+.mkt-foot-grid{gap:32px}
+.mkt-foot h4{font-size:11.5px}
+.mkt-foot p{font-size:13px}
+.mkt-foot-vers span{font-size:10.5px}
+
+.mkt-drawer-h{padding:20px 24px}
+.mkt-drawer-h h3{font-size:24px}
+.mkt-drawer-b{padding:20px 24px}
+.mkt-drawer-b h5{font-size:11.5px}
+.mkt-fchip{font-size:13px;padding:8px 14px}
+.mkt-kv,.mkt-kv b{font-size:13px}
+.mkt-kv em{font-size:11px}
+.mkt-ev{font-size:13px}
+.mkt-vers,.mkt-sim{font-size:11px}
+.mkt-amt{min-height:52px}
+.mkt-pos-max{font-size:12px}
+.mkt-poa-hero small{font-size:10.5px}
+.mkt-limits li{font-size:13px}
+
+@media (min-width:2100px){
+  .mkt-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media (max-width:1399px){
+  .mkt-stage.has-rail{display:block}
+  .mkt-rail{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin-top:24px}
+}
+@media (max-width:1023px){
+  body.mkt-full .app{padding-top:84px}
+  .mkt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .mkt-framing{align-items:flex-start}
+  .mkt-framing-r{width:100%}
+  .mkt-search{min-width:260px;flex:1}
+  .mkt-controls-wrap{top:64px}
+}
+@media (max-width:767px){
+  body.mkt-full .app{padding:78px 14px 112px}
+  .mkt-framing{padding-top:8px}
+  .mkt-framing h1{font-size:32px}
+  .mkt-framing-l p{font-size:14px}
+  .mkt-framing-r{gap:8px}
+  .mkt-pill{font-size:10.5px}
+  .mkt-search{order:3;flex-basis:100%;min-width:0}
+  .mkt-controls-wrap{position:static}
+  .mkt-tools{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;scrollbar-width:none}
+  .mkt-tools > *{flex:0 0 auto}
+  .mkt-tools .mkt-quick{flex-wrap:nowrap}
+  .mkt-tools::-webkit-scrollbar{display:none}
+  .mkt-grid{grid-template-columns:minmax(0,1fr)}
+  .mkt-card{min-height:276px}
+  .mkt-inline{min-width:0}
+  .mkt-feat{min-height:330px;padding:19px}
+  .mkt-feat .mkt-terms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  #mktRailBox{display:none}
+  .mkt-inline{display:block}
+  .mkt-foot-grid{grid-template-columns:1fr}
+}
