@@ -23,6 +23,13 @@
     return 27;
   }
 
+  function preferredStageHeight(width) {
+    if (width <= 390) return 176;
+    if (width <= 620) return 184;
+    if (width <= 900) return 208;
+    return 256;
+  }
+
   function textLines(text, width) {
     if (width >= 620 || text.indexOf(',') === -1) return [text];
     var parts = text.split(',');
@@ -58,7 +65,7 @@
     function setup() {
       var rect = stage.getBoundingClientRect();
       var width = Math.max(1,Math.round(rect.width));
-      var height = Math.max(1,Math.round(rect.height));
+      var height = preferredStageHeight(width);
       var dpr = Math.min(window.devicePixelRatio || 1,1.5);
       var square = 2;
       var gap = width <= 1024 ? 2 : 3;
@@ -71,6 +78,9 @@
       var text = canvas.getAttribute('data-text') || 'Invest in people, before the world does';
       var lines = textLines(text,width);
 
+      // Mirror the CSS breakpoint heights inline so a late/missing stylesheet
+      // cannot let the canvas participate in layout and trigger resize growth.
+      stage.style.height = height + 'px';
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       canvas.style.width = width + 'px';
