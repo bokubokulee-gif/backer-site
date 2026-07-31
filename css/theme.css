@@ -277,10 +277,6 @@ html[data-theme="light"] body.page-portfolio .mode-toggle button.is-on,
 html[data-theme="light"] body.page-portfolio .seg button.is-on{
   color:#fffdf8;
 }
-html[data-theme="light"] body.mkt-full [data-liquid-cta],
-html[data-theme="light"] body.page-portfolio [data-liquid-cta]{
-  color:var(--cta-glass-text);
-}
 html[data-theme="light"] body.page-portfolio .drawer-overlay{background:rgba(23,19,14,.28)}
 html[data-theme="light"] body.page-portfolio .dr-note.warn{background:#fff4df;color:var(--warn)}
 html[data-theme="light"] body.page-portfolio .tooltip-trigger,
