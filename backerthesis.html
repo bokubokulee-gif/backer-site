@@ -15,7 +15,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/thesis.css?v=3" />
 <link rel="stylesheet" href="css/liquid-glass.css?v=20260731-2" />
-<link rel="stylesheet" href="css/analytics.css?v=1" />
+<link rel="stylesheet" href="css/analytics.css?v=2" />
+<link rel="stylesheet" href="css/footer.css?v=20260731-1" />
 <noscript><style>
   /* No-JS fallback: every chapter stays fully readable */
   .reveal{opacity:1 !important;transform:none !important}
@@ -558,15 +559,53 @@
         </div>
       </div>
 
-      <footer class="deck-foot">
-        <span class="brand small"><span class="brand-mark" aria-hidden="true"><img src="img/backer-mark.png?v=2" alt="" /></span> Backer</span>
-        <span class="foot-tag">The trust + capital infrastructure layer for human attention.</span>
-        <span class="foot-disc">Conceptual pitch experience · Not investment advice · Simulated market language · <a href="privacy.html">Privacy</a></span>
-      </footer>
     </div>
   </section>
 
 </main>
+
+<!-- SHARED FLICKERING FOOTER -->
+<footer class="backer-footer">
+  <div class="backer-footer__inner">
+    <div class="backer-footer__top">
+      <a class="backer-footer__brand" href="backerdemo.html" aria-label="Backer home">
+        <span class="backer-footer__mark" aria-hidden="true"><img src="img/backer-mark.png?v=2" alt="" /></span>
+        <span class="backer-footer__word">Backer</span>
+      </a>
+      <div class="backer-footer__nav">
+        <nav class="backer-footer__group" aria-label="Product">
+          <h2>Product</h2>
+          <ul>
+            <li><a class="backer-footer__link" href="backerdemo.html?view=market">Marketplace<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+            <li><a class="backer-footer__link" href="backerdemo.html?view=search">AI Search<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+            <li><a class="backer-footer__link" href="portfolio.html">Portfolio<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+          </ul>
+        </nav>
+        <nav class="backer-footer__group" aria-label="Protocol">
+          <h2>Protocol</h2>
+          <ul>
+            <li><a class="backer-footer__link" href="backerdemo.html#proof">Proof of Attention<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+            <li><a class="backer-footer__link" href="backerdemo.html#proof">Open methodology<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+            <li><a class="backer-footer__link" href="backerdemo.html#metrics">Why metrics break<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+          </ul>
+        </nav>
+        <nav class="backer-footer__group" aria-label="Company">
+          <h2>Company</h2>
+          <ul>
+            <li><a class="backer-footer__link" href="backerthesis.html" aria-current="page">Thesis<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+            <li><a class="backer-footer__link" href="pitch.html">Pitch<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+            <li><a class="backer-footer__link" href="faq.html">FAQ<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+            <li><a class="backer-footer__link" href="privacy.html">Privacy<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <div class="backer-footer__flicker">
+    <span class="backer-footer__fallback">Invest in people, before the world does</span>
+    <canvas class="backer-footer__canvas" data-footer-flicker data-text="Invest in people, before the world does" aria-hidden="true"></canvas>
+  </div>
+</footer>
 
 <!-- ================= MEMO OVERLAY ================= -->
 <div class="memo-overlay" id="memoOverlay" hidden>
@@ -584,7 +623,8 @@
 <script src="js/shader.js"></script>
 <script src="js/liquid-glass.js"></script>
 <script src="js/analytics-core.js?v=1"></script>
-<script src="js/analytics.js?v=1"></script>
+<script src="js/analytics.js?v=2"></script>
 <script src="js/thesis.js"></script>
+<script src="js/flickering-footer.js?v=20260731-1"></script>
 </body>
 </html>

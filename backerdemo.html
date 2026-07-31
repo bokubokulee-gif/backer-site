@@ -16,8 +16,9 @@
 <link rel="stylesheet" href="css/market.css?v=20260731-1" />
 <link rel="stylesheet" href="css/liquid-glass.css?v=20260731-2" />
 <link rel="stylesheet" href="css/poa-terminal.css?v=13" />
-<link rel="stylesheet" href="css/analytics.css?v=1" />
-<link rel="stylesheet" href="css/theme.css?v=20260731-1" />
+<link rel="stylesheet" href="css/analytics.css?v=2" />
+<link rel="stylesheet" href="css/theme.css?v=20260731-2" />
+<link rel="stylesheet" href="css/footer.css?v=20260731-1" />
 <script src="js/theme.js?v=20260731-1"></script>
 </head>
 <body class="page-product">
@@ -449,20 +450,46 @@
     </div>
   </section>
 
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="footer-top">
-      <a class="brand" href="#" data-nav="home"><span class="brand-mark" aria-hidden="true"><img src="img/backer-mark.png?v=2" alt="" /></span><span class="brand-word">Backer</span></a>
-      <p class="footer-tag">Invest in people. Before the world does.</p>
+  <!-- SHARED FLICKERING FOOTER -->
+  <footer class="backer-footer backer-footer--dock">
+    <div class="backer-footer__inner">
+      <div class="backer-footer__top">
+        <a class="backer-footer__brand" href="#" data-nav="home" aria-label="Backer home">
+          <span class="backer-footer__mark" aria-hidden="true"><img src="img/backer-mark.png?v=2" alt="" /></span>
+          <span class="backer-footer__word">Backer</span>
+        </a>
+        <div class="backer-footer__nav">
+          <nav class="backer-footer__group" aria-label="Product">
+            <h2>Product</h2>
+            <ul>
+              <li><a class="backer-footer__link" href="backerdemo.html?view=market" data-view="market">Marketplace<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+              <li><a class="backer-footer__link" href="backerdemo.html?view=search" data-view="search">AI Search<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+              <li><a class="backer-footer__link" href="portfolio.html" data-view="portfolio">Portfolio<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+            </ul>
+          </nav>
+          <nav class="backer-footer__group" aria-label="Protocol">
+            <h2>Protocol</h2>
+            <ul>
+              <li><a class="backer-footer__link" href="#proof">Proof of Attention<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+              <li><a class="backer-footer__link" href="#proof">Open methodology<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+              <li><a class="backer-footer__link" href="#metrics">Why metrics break<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+            </ul>
+          </nav>
+          <nav class="backer-footer__group" aria-label="Company">
+            <h2>Company</h2>
+            <ul>
+              <li><a class="backer-footer__link" href="backerthesis.html">Thesis<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+              <li><a class="backer-footer__link" href="pitch.html">Pitch<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+              <li><a class="backer-footer__link" href="faq.html">FAQ<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+              <li><a class="backer-footer__link" href="privacy.html">Privacy<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
     </div>
-    <div class="footer-cols">
-      <div class="fcol"><span>Product</span><button data-view="market">Marketplace</button><button data-view="search">AI Search</button><button data-view="portfolio">Portfolio</button></div>
-      <div class="fcol"><span>Protocol</span><a href="#proof">Proof of Attention</a><a href="#proof">Open methodology</a><a href="#metrics">Why metrics break</a></div>
-      <div class="fcol"><span>Company</span><a href="backerthesis.html">Thesis</a><a href="#validation">Market validation</a><a href="faq.html">FAQ</a><a href="privacy.html">Privacy</a></div>
-    </div>
-    <div class="footer-bottom">
-      <span>© 2026 Backer. A demo experience. Not investment advice.</span>
-      <span class="footer-disc">Returns shown are illustrative. Backing early creators carries risk of total loss.</span>
+    <div class="backer-footer__flicker">
+      <span class="backer-footer__fallback">Invest in people, before the world does</span>
+      <canvas class="backer-footer__canvas" data-footer-flicker data-text="Invest in people, before the world does" aria-hidden="true"></canvas>
     </div>
   </footer>
 </main>
@@ -499,10 +526,11 @@
 <script src="js/market.js?v=20260731-1"></script>
 <script src="js/search-engine.js?v=20260728-2"></script>
 <script src="js/analytics-core.js?v=1"></script>
-<script src="js/analytics.js?v=1"></script>
+<script src="js/analytics.js?v=2"></script>
 <script src="js/app.js?v=20260722-2"></script>
 <script src="js/sections.js?v=2"></script>
 <script src="js/poa-terminal.js?v=14"></script>
 <script src="js/poa-preview.js?v=1"></script>
+<script src="js/flickering-footer.js?v=20260731-1"></script>
 </body>
 </html>

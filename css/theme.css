@@ -286,9 +286,7 @@ html[data-theme="light"] body.page-portfolio .dr-note.warn{background:#fff4df;co
 html[data-theme="light"] body.page-portfolio .tooltip-trigger,
 html[data-theme="light"] body.page-portfolio [data-tip]:hover::after{color:var(--ink)}
 html[data-theme="light"] body.mkt-full .backer-consent-reject,
-html[data-theme="light"] body.page-portfolio .backer-consent-reject,
-html[data-theme="light"] body.mkt-full .backer-privacy-settings,
-html[data-theme="light"] body.page-portfolio .backer-privacy-settings{
+html[data-theme="light"] body.page-portfolio .backer-consent-reject{
   color:var(--muted);
   background:var(--surface);
   border-color:var(--line);

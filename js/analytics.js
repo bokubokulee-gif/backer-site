@@ -483,28 +483,6 @@
     }
   }
 
-  function mountPrivacySettings() {
-    if (document.querySelector('.backer-privacy-settings')) return;
-    var footerHost = document.querySelector('.footer .footer-bottom, footer.deck-foot, .privacy-footer .footer-bottom');
-    if (footerHost) {
-      var footerButton = document.createElement('button');
-      footerButton.type = 'button';
-      footerButton.id = 'backerPrivacySettings';
-      footerButton.className = 'backer-privacy-settings is-footer';
-      footerButton.textContent = 'Privacy settings';
-      footerButton.addEventListener('click', function () { showConsentPanel(true); });
-      footerHost.appendChild(footerButton);
-    }
-    if (footerHost && !document.getElementById('app')) return;
-    var button = document.createElement('button');
-    button.type = 'button';
-    button.id = footerHost ? 'backerPrivacySettingsFloating' : 'backerPrivacySettings';
-    button.className = 'backer-privacy-settings';
-    button.textContent = 'Privacy settings';
-    button.addEventListener('click', function () { showConsentPanel(true); });
-    document.body.appendChild(button);
-  }
-
   function formatCount(value) {
     try { return Math.round(value).toLocaleString('en-US') + ' views'; }
     catch (e) { return String(Math.round(value)) + ' views'; }
@@ -604,7 +582,6 @@
     runtimeReady.then(function () {
       mountBrandCount();
       if (analyticsUIEnabled()) {
-        mountPrivacySettings();
         if (!storedConsent || !runtimePolicyMatches) showConsentPanel(false);
       }
       bindSearchEvents();
