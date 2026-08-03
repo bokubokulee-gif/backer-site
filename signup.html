@@ -4,8 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="backer-public-view-counts" content="true" />
-<title>Join Backer — Invest in People. Before the World Does.</title>
-<meta name="description" content="Create your Backer account. Back creators from $1 in the simulated market, or start your creator raise. Every profile is underwritten by Proof of Attention." />
+<meta name="backer-hide-unavailable-analytics-ui" content="true" />
+<title>Join Backer — Price Attention</title>
+<meta name="description" content="Join Backer, a financial market where you can bet on anyone on the internet. Every profile is underwritten by Proof of Attention." />
 <meta name="robots" content="noindex,follow" />
 <link rel="icon" type="image/png" href="img/backer-mark.png?v=2" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -160,6 +161,7 @@
   .modal-msg.err{color:var(--neg)} .modal-msg.warn{color:var(--warn)} .modal-msg.ok{color:var(--pos)}
 </style>
 <link rel="stylesheet" href="css/liquid-glass.css?v=20260731-2" />
+<link rel="stylesheet" href="css/signup-refine.css?v=1" />
 <link rel="stylesheet" href="css/analytics.css?v=2" />
 </head>
 <body class="page-signup">
@@ -175,7 +177,8 @@
     <span class="brand-sub">Join Beta</span>
   </a>
   <div class="topbar-actions">
-    <a class="tb-link" href="backerdemo.html" target="_blank" rel="noopener noreferrer"><span class="dm-dot"></span>View the demo</a>
+    <a class="tb-link" href="waitlist.html">Join waitlist</a>
+    <a class="tb-link tb-link-demo" href="backerdemo.html" target="_blank" rel="noopener noreferrer"><span class="dm-dot"></span>View the demo</a>
   </div>
 </header>
 
@@ -195,14 +198,12 @@
       <circle cx="280" cy="280" r="6" fill="#f4ab63"/>
     </svg>
     <span class="al-brand"><span class="brand-mark" aria-hidden="true"><img src="img/backer-mark.png?v=2" alt="" /></span><span class="brand-word">Backer</span></span>
-    <h1 class="al-head">Invest in people.<br/><em>Before the world does.</em></h1>
-    <p class="al-sub">Create a simulated portfolio of early creator positions, underwritten by Proof of Attention.</p>
+    <h1 class="al-head"><strong>Prediction markets price events.</strong><br/><em>Backer prices attention.</em></h1>
+    <p class="al-sub">A financial market where you can bet on anyone on the internet.</p>
     <ul class="al-proof">
       <li><span class="pdot"></span>$1 minimum to take a position</li>
       <li><span class="pdot"></span>Every profile underwritten by Proof of Attention</li>
-      <li><span class="pdot"></span>Demo market · no real money moves</li>
     </ul>
-    <p class="al-quote">where belief gets priced</p>
   </section>
 
   <!-- RIGHT — account creation -->
@@ -215,24 +216,20 @@
     <!-- STEP 0 — role chooser -->
     <div id="roleStage">
       <h2 class="role-q">What brings you to Backer?</h2>
-      <p class="role-help">One account can do both — you can switch anytime.</p>
+      <p class="role-help">Choose how you want to start. A few optional questions help Backer AI tune what you see.</p>
       <div class="role-grid">
         <button class="role-card" data-role="INVESTOR">
           <span class="role-ic"><svg viewBox="0 0 24 24" class="ic"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v6h-6"/></svg></span>
-          <span><h4>Back creators</h4><p>Take simulated positions in creators before the world catches on.</p></span>
+          <span><h4>Back creators</h4><p>Discover people early and build your proof-of-taste portfolio.</p></span>
           <svg viewBox="0 0 24 24" class="ic ic-go"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
         <button class="role-card" data-role="CREATOR">
           <span class="role-ic"><svg viewBox="0 0 24 24" class="ic"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6L5.7 21 8 14 2 9.6h7.6z"/></svg></span>
-          <span><h4>Raise as a creator / IP</h4><p>Turn your audience into early capital with a Personal IPO.</p></span>
-          <svg viewBox="0 0 24 24" class="ic ic-go"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </button>
-        <button class="role-card" data-role="BOTH">
-          <span class="role-ic"><svg viewBox="0 0 24 24" class="ic"><path d="M8 7h13M8 12h13M8 17h13"/><circle cx="3.5" cy="7" r="1.4"/><circle cx="3.5" cy="12" r="1.4"/><circle cx="3.5" cy="17" r="1.4"/></svg></span>
-          <span><h4>Both</h4><p>Invest in others and raise for yourself from one account.</p></span>
+          <span><h4>Raise as a creator</h4><p>Help Backer understand your work and the audience behind it.</p></span>
           <svg viewBox="0 0 24 24" class="ic ic-go"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
       </div>
+      <p class="signup-privacy"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M7 10V7a5 5 0 0110 0v3"/><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M12 14v3"/></svg><span>Your optional setup answers stay private, never enter product analytics, and are used only to improve recommendations. You can skip every question.</span></p>
       <p class="legal">By continuing, you agree to Backer’s <a href="#">Terms</a> and <a href="privacy.html">Privacy Policy</a>. Backer V1 is simulated; no real money moves.</p>
     </div>
 
@@ -374,6 +371,7 @@
 
   /* ---- role chooser → flow ---- */
   var roleStage=$('#roleStage'), authFlow=$('#authFlow'), bothNote=$('#bothNote');
+  var signupParams=new URLSearchParams(window.location.search);
   function activateTab(role){
     var inv = role!=='CREATOR';
     $$('.tab').forEach(function(t){ t.classList.toggle('is-on', t.dataset.tab===(role==='CREATOR'?'CREATOR':'INVESTOR')); });
@@ -381,20 +379,24 @@
     $('#paneCreator').classList.toggle('is-on', role==='CREATOR');
     bothNote.hidden = role!=='BOTH';
   }
+  function startRoleFlow(role){
+    store.rolePreference=role; save();
+    roleStage.style.display='none';
+    authFlow.classList.add('is-active');
+    activateTab(role);
+    $$('#rolePref .pref').forEach(function(p){ p.classList.toggle('is-on', p.dataset.pref===role); });
+  }
   $$('.role-card').forEach(function(c){
     c.addEventListener('click', function(){
       var role=c.dataset.role;
       store.rolePreference=role; save();
       analyticsTrack('signup_started',{role:role,step:'role-choice',source:'signup'});
-      roleStage.style.display='none';
-      authFlow.classList.add('is-active');
-      activateTab(role);
-      // preselect role preference chip in investor step 2
-      $$('#rolePref .pref').forEach(function(p){ p.classList.toggle('is-on', p.dataset.pref===role); });
+      window.location.href='onboarding.html?role='+(role==='CREATOR'?'creator':'backer');
     });
   });
   $('#backToRole').addEventListener('click', function(){
     authFlow.classList.remove('is-active'); roleStage.style.display='';
+    if(window.history&&window.history.replaceState) window.history.replaceState({},'', 'signup.html');
   });
   $$('.tab').forEach(function(t){
     t.addEventListener('click', function(){
@@ -405,6 +407,11 @@
       $('#paneCreator').classList.toggle('is-on',!inv);
     });
   });
+  if(signupParams.get('onboarded')==='1'){
+    var returnedRole=String(signupParams.get('role')||'').toUpperCase();
+    if(returnedRole==='BACKER') returnedRole='INVESTOR';
+    if(returnedRole==='INVESTOR'||returnedRole==='CREATOR') startRoleFlow(returnedRole);
+  }
 
   /* ---- investor: password toggle ---- */
   $('#pwToggle').addEventListener('click', function(){

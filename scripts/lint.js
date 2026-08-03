@@ -14,6 +14,8 @@ const CANONICAL_PAGES = [
   'backerthesis.html',
   'pitch.html',
   'faq.html',
+  'waitlist.html',
+  'onboarding.html',
   'signup.html',
   'portfolio.html',
   'privacy.html'

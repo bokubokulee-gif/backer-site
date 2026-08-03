@@ -84,6 +84,11 @@ test('virtual routes sanitize public IDs and never place free-form search text i
     publicId: ''
   });
   assert.equal(Core.canonicalRoute('creator', 'Kai Nakamura?email=x').path, '/creator');
+  assert.equal(Core.initialRoute('https://backer.example/waitlist.html').path, '/waitlist');
+  assert.equal(
+    Core.initialRoute('https://backer.example/onboarding.html?role=creator&answer=private').path,
+    '/onboarding'
+  );
   assert.deepEqual(
     Core.initialRoute('https://backer.example/backermarket.html?position=private-holding-42'),
     {
