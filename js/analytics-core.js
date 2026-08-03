@@ -173,6 +173,8 @@
     } else if (file === 'backerthesis.html') view = 'thesis';
     else if (file === 'pitch.html') view = 'pitch';
     else if (file === 'faq.html') view = 'faq';
+    else if (file === 'waitlist.html') view = 'waitlist';
+    else if (file === 'onboarding.html') view = 'onboarding';
     else if (file === 'signup.html') view = 'signup';
     else if (file === 'portfolio.html') view = 'portfolio';
     else if (file === 'privacy.html') view = 'privacy';
@@ -196,6 +198,8 @@
     else if (view === 'thesis') path = '/thesis';
     else if (view === 'pitch') path = '/pitch';
     else if (view === 'faq') path = '/faq';
+    else if (view === 'waitlist') path = '/waitlist';
+    else if (view === 'onboarding') path = '/onboarding';
     else if (view === 'signup') path = '/signup';
     else if (view === 'privacy') path = '/privacy';
     else path = '/page';
