@@ -161,7 +161,7 @@
   .modal-msg.err{color:var(--neg)} .modal-msg.warn{color:var(--warn)} .modal-msg.ok{color:var(--pos)}
 </style>
 <link rel="stylesheet" href="css/liquid-glass.css?v=20260731-2" />
-<link rel="stylesheet" href="css/signup-refine.css?v=1" />
+<link rel="stylesheet" href="css/signup-refine.css?v=2" />
 <link rel="stylesheet" href="css/analytics.css?v=2" />
 </head>
 <body class="page-signup">
@@ -183,8 +183,8 @@
 </header>
 
 <main class="auth">
-  <!-- LEFT — identity / trust -->
-  <section class="auth-left">
+  <section class="auth-unified" aria-labelledby="signupPitchTitle">
+    <div class="auth-pitch">
     <svg class="ring" viewBox="0 0 560 560" aria-hidden="true">
       <defs>
         <linearGradient id="rgrad" x1="0" y1="0" x2="1" y2="1">
@@ -198,19 +198,17 @@
       <circle cx="280" cy="280" r="6" fill="#f4ab63"/>
     </svg>
     <span class="al-brand"><span class="brand-mark" aria-hidden="true"><img src="img/backer-mark.png?v=2" alt="" /></span><span class="brand-word">Backer</span></span>
-    <h1 class="al-head"><strong>Prediction markets price events.</strong><br/><em>Backer prices attention.</em></h1>
+    <h1 class="al-head" id="signupPitchTitle"><strong>Prediction markets price events.</strong><br/><em>Backer prices attention.</em></h1>
     <p class="al-sub">A financial market where you can bet on anyone on the internet.</p>
     <ul class="al-proof">
       <li><span class="pdot"></span>$1 minimum to take a position</li>
       <li><span class="pdot"></span>Every profile underwritten by Proof of Attention</li>
     </ul>
-  </section>
+    </div>
 
-  <!-- RIGHT — account creation -->
-  <section class="auth-right">
+    <div class="auth-panel">
     <div class="ar-top">
       <span class="kicker">Join the beta</span>
-      <span class="ar-login">Invite-only beta · we’ll email you when your spot opens</span>
     </div>
 
     <!-- STEP 0 — role chooser -->
@@ -220,12 +218,12 @@
       <div class="role-grid">
         <button class="role-card" data-role="INVESTOR">
           <span class="role-ic"><svg viewBox="0 0 24 24" class="ic"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v6h-6"/></svg></span>
-          <span><h4>Back creators</h4><p>Discover people early and build your proof-of-taste portfolio.</p></span>
+          <span class="role-card-copy">Back creators</span>
           <svg viewBox="0 0 24 24" class="ic ic-go"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
         <button class="role-card" data-role="CREATOR">
           <span class="role-ic"><svg viewBox="0 0 24 24" class="ic"><path d="M12 2l2.4 7.4H22l-6 4.4 2.3 7.2-6.3-4.6L5.7 21 8 14 2 9.6h7.6z"/></svg></span>
-          <span><h4>Raise as a creator</h4><p>Help Backer understand your work and the audience behind it.</p></span>
+          <span class="role-card-copy">Raise as a creator</span>
           <svg viewBox="0 0 24 24" class="ic ic-go"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
       </div>
@@ -333,6 +331,7 @@
         </div>
       </div>
     </div>
+    </div>
   </section>
 </main>
 
@@ -381,6 +380,7 @@
   }
   function startRoleFlow(role){
     store.rolePreference=role; save();
+    document.body.classList.add('signup-flow-active');
     roleStage.style.display='none';
     authFlow.classList.add('is-active');
     activateTab(role);
@@ -395,6 +395,7 @@
     });
   });
   $('#backToRole').addEventListener('click', function(){
+    document.body.classList.remove('signup-flow-active');
     authFlow.classList.remove('is-active'); roleStage.style.display='';
     if(window.history&&window.history.replaceState) window.history.replaceState({},'', 'signup.html');
   });
