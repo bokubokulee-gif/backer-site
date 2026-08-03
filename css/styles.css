@@ -285,6 +285,12 @@ em{font-style:normal}
 }
 .reading-link-arrow .ic{width:19px;height:19px}
 .reading-link:hover .reading-link-arrow{transform:translateX(3px);background:var(--ink);color:#111}
+.reading-scroll-cue{
+  position:relative;bottom:auto;left:auto;transform:none;
+  width:max-content;margin:clamp(34px,5vw,54px) auto 0;
+}
+.reading-scroll-cue:hover{color:var(--ink)}
+.reading-scroll-cue:focus-visible{outline:2px solid var(--accent);outline-offset:6px;border-radius:8px}
 
 /* ---------- broken metrics questions ---------- */
 .question-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
