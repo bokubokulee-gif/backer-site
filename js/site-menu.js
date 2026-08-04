@@ -12,7 +12,7 @@
     },
     {
       key: 'research', label: 'Research', items: [
-        { label: 'Proof of Attention', description: 'Backer analyzes attention composition.', href: BASE + 'research.html', icon: 'proof' }
+        { label: 'Proof of Attention', description: 'Backer analyzes attention composition', href: BASE + 'research.html', icon: 'proof' }
       ]
     },
     {
