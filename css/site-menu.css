@@ -29,7 +29,7 @@
   content:"";position:absolute;left:50%;bottom:4px;width:3px;height:3px;border-radius:50%;
   background:var(--accent,#e9bd86);transform:translateX(-50%);
 }
-.backer-menu__label{display:inline-block;text-align:center}
+.backer-menu__label{display:inline-block;width:66px;text-align:center}
 .backer-menu__chevron{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:transform .18s var(--ease,cubic-bezier(.22,.61,.36,1))}
 .backer-menu__trigger[aria-expanded="true"] .backer-menu__chevron{transform:rotate(180deg)}
 .backer-menu__trigger:focus-visible,.backer-menu__mobile-trigger:focus-visible,.backer-menu__mobile-close:focus-visible,.backer-menu__accordion-trigger:focus-visible,.backer-menu__link:focus-visible,.backer-menu__launch:focus-visible{
@@ -51,9 +51,8 @@
   overflow:hidden;border:1px solid var(--line-2,rgba(255,255,255,.06));border-radius:16px;
   background:var(--bg-2,#0d0d10);
 }
-.backer-menu__panel-head{display:flex;align-items:center;justify-content:space-between;padding:15px 17px 12px;border-bottom:1px solid var(--line-2,rgba(255,255,255,.06))}
+.backer-menu__panel-head{display:flex;align-items:center;padding:15px 17px 12px;border-bottom:1px solid var(--line-2,rgba(255,255,255,.06))}
 .backer-menu__panel-kicker{font-family:var(--mono,monospace);font-size:9.5px;font-weight:500;letter-spacing:.19em;text-transform:uppercase;color:var(--accent,#e9bd86)}
-.backer-menu__panel-count{font-family:var(--mono,monospace);font-size:9.5px;letter-spacing:.08em;color:var(--muted-2,#6d6a64)}
 .backer-menu__group[hidden]{display:none}
 .backer-menu__list{list-style:none;margin:0;padding:5px}
 .backer-menu__item+.backer-menu__item{border-top:1px solid var(--line-2,rgba(255,255,255,.06))}
@@ -63,6 +62,7 @@
   transition:background .16s var(--ease,cubic-bezier(.22,.61,.36,1));
 }
 .backer-menu__link:hover{background:var(--card-2,rgba(255,255,255,.055))}
+.backer-menu__link--compact{min-height:58px}
 .backer-menu__icon{display:grid;place-items:center;width:30px;height:30px;color:var(--muted,#a6a39c);transition:color .16s var(--ease,cubic-bezier(.22,.61,.36,1))}
 .backer-menu__icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.35;stroke-linecap:round;stroke-linejoin:round}
 .backer-menu__link:hover .backer-menu__icon,.backer-menu__link[aria-current="page"] .backer-menu__icon{color:var(--accent,#e9bd86)}

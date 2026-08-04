@@ -7,14 +7,12 @@
       key: 'product', label: 'Product', items: [
         { label: 'Marketplace', description: 'Back emerging creators before consensus.', href: BASE + 'backerdemo.html?view=market', icon: 'market' },
         { label: 'AI Search', description: 'Discover people through attention signals.', href: BASE + 'backerdemo.html?view=search', icon: 'search' },
-        { label: 'Portfolio', description: 'Track positions and your proof of taste.', href: BASE + 'portfolio.html', icon: 'portfolio' }
+        { label: 'Portfolio', href: BASE + 'portfolio.html', icon: 'portfolio' }
       ]
     },
     {
-      key: 'protocol', label: 'Protocol', items: [
-        { label: 'Proof of Attention', description: 'See how Backer underwrites attention.', href: BASE + 'backerdemo.html#proof', icon: 'proof' },
-        { label: 'Open methodology', description: 'Inspect the model, inputs, and limits.', href: BASE + 'backerdemo.html#proof', icon: 'method' },
-        { label: 'Why metrics break', description: 'Learn why raw engagement misleads.', href: BASE + 'backerdemo.html#metrics', icon: 'metrics' }
+      key: 'research', label: 'Research', items: [
+        { label: 'Proof of Attention', description: 'Backer analyzes attention composition.', href: BASE + 'research.html', icon: 'proof' }
       ]
     },
     {
@@ -32,8 +30,6 @@
     search: '<circle cx="10.5" cy="10.5" r="5.5"/><path d="m15 15 4.5 4.5"/><path d="M8.2 10.8 10 12l3-3"/>',
     portfolio: '<path d="M4 19V5"/><path d="M4 19h16"/><path d="m7 15 3.5-4 3 2 4-6"/>',
     proof: '<path d="M2.8 12s3.3-5.2 9.2-5.2 9.2 5.2 9.2 5.2-3.3 5.2-9.2 5.2S2.8 12 2.8 12Z"/><circle cx="12" cy="12" r="2.2"/>',
-    method: '<path d="M6 3.5h8l4 4V20H6z"/><path d="M14 3.5V8h4"/><path d="m9 14 1.8 1.8L15 11.5"/>',
-    metrics: '<path d="M3.5 17.5 7.5 13l3 2.4 2.5-5 2.4 2.3 5.1-6"/><path d="m13.7 15.4 5.4 5.1"/><path d="m19.1 15.4-5.4 5.1"/>',
     thesis: '<path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H11v17H7.5A3.5 3.5 0 0 0 4 22z"/><path d="M20 5.5A3.5 3.5 0 0 0 16.5 2H13v17h3.5A3.5 3.5 0 0 1 20 22z"/>',
     pitch: '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/><path d="m7.5 13 3-3 2.5 2 3.5-4"/>',
     faq: '<circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.3 2.3 0 1 1 3.7 1.8c-1 .7-1.5 1.1-1.5 2.2"/><path d="M12 17h.01"/>',
@@ -65,10 +61,12 @@
 
   function linkMarkup(item) {
     var current = isCurrent(item.href) ? ' aria-current="page"' : '';
-    return '<li class="backer-menu__item"><a class="backer-menu__link" href="' + item.href + '"' + current + '>' +
+    var compact = item.description ? '' : ' backer-menu__link--compact';
+    var description = item.description ? '<span class="backer-menu__description">' + item.description + '</span>' : '';
+    return '<li class="backer-menu__item"><a class="backer-menu__link' + compact + '" href="' + item.href + '"' + current + '>' +
       '<span class="backer-menu__icon">' + icon(item.icon) + '</span>' +
       '<span class="backer-menu__copy"><span class="backer-menu__name">' + item.label + '</span>' +
-      '<span class="backer-menu__description">' + item.description + '</span></span>' + arrow() + '</a></li>';
+      description + '</span>' + arrow() + '</a></li>';
   }
 
   function groupMarkup(group, id, mobile) {
@@ -95,7 +93,7 @@
     root.innerHTML = '<div class="backer-menu" data-backer-menu-root>' +
       '<nav class="backer-menu__rail" aria-label="Backer navigation">' + triggers + '</nav>' +
       '<div class="backer-menu__panel" id="' + id + '-panel" aria-hidden="true">' +
-        '<div class="backer-menu__panel-inner"><div class="backer-menu__panel-head"><span class="backer-menu__panel-kicker" data-panel-label>Product</span><span class="backer-menu__panel-count" data-panel-count>03 destinations</span></div>' + desktopGroups + '</div></div>' +
+        '<div class="backer-menu__panel-inner"><div class="backer-menu__panel-head"><span class="backer-menu__panel-kicker" data-panel-label>Product</span></div>' + desktopGroups + '</div></div>' +
       '<button class="backer-menu__mobile-trigger" type="button" aria-label="Open Backer menu" aria-haspopup="dialog" aria-expanded="false" aria-controls="' + id + '-sheet"><span>Menu</span><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 5h12M3 9h12M3 13h12"/></svg></button>' +
       '<div class="backer-menu__scrim" data-menu-scrim aria-hidden="true"></div>' +
       '<div class="backer-menu__sheet" id="' + id + '-sheet" role="dialog" aria-modal="true" aria-label="Backer navigation" aria-hidden="true">' +
@@ -112,7 +110,6 @@
     var panel = root.querySelector('.backer-menu__panel');
     var triggers = Array.prototype.slice.call(root.querySelectorAll('[data-menu-trigger]'));
     var panelLabel = root.querySelector('[data-panel-label]');
-    var panelCount = root.querySelector('[data-panel-count]');
     var mobileTrigger = root.querySelector('.backer-menu__mobile-trigger');
     var sheet = root.querySelector('.backer-menu__sheet');
     var closeButton = root.querySelector('.backer-menu__mobile-close');
@@ -137,7 +134,6 @@
       }
       var data = NAV.find(function (group) { return group.key === key; });
       panelLabel.textContent = data.label;
-      panelCount.textContent = String(data.items.length).padStart(2, '0') + ' destinations';
       panel.classList.add('is-open');
       panel.setAttribute('aria-hidden', 'false');
       if (focusFirst) {
@@ -153,22 +149,28 @@
       var span = button.querySelector('[data-swap-label]');
       var label = button.getAttribute('aria-label');
       var glyphs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      var frame = 0;
+      var start = 0;
+      var stagger = 46;
+      var scrambleFor = 260;
+      var total = ((label.length - 1) * stagger) + scrambleFor;
       button.dataset.swapping = 'true';
-      function tick() {
-        if (frame >= 4) {
+      function tick(now) {
+        if (!start) start = now;
+        var elapsed = now - start;
+        if (elapsed >= total) {
           span.textContent = label;
           button.dataset.swapping = 'false';
           return;
         }
         span.textContent = label.split('').map(function (letter, index) {
-          if (letter === ' ' || index > frame + 1) return letter;
-          return glyphs[(index * 7 + frame * 5 + label.length) % glyphs.length];
+          var local = elapsed - (index * stagger);
+          if (letter === ' ' || local <= 0 || local >= scrambleFor) return letter;
+          var phase = Math.floor(local / 65);
+          return glyphs[(index * 7 + phase * 5 + label.length) % glyphs.length];
         }).join('');
-        frame += 1;
-        window.setTimeout(tick, 42);
+        window.requestAnimationFrame(tick);
       }
-      tick();
+      window.requestAnimationFrame(tick);
     }
 
     triggers.forEach(function (button, index) {
