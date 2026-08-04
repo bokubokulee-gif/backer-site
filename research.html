@@ -4,15 +4,15 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Backer Research — Coming Soon</title>
-<meta name="description" content="Backer Research is coming soon. Backer analyzes attention composition." />
+<meta name="description" content="Backer Research is coming soon. Backer analyzes and predicts human attention." />
 <link rel="icon" type="image/png" href="img/backer-mark.png?v=2" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/styles.css?v=20260803-1" />
 <link rel="stylesheet" href="css/site-menu.css?v=2" />
-<link rel="stylesheet" href="css/research.css?v=1" />
-<script src="js/site-menu.js?v=2" defer></script>
+<link rel="stylesheet" href="css/research.css?v=2" />
+<script src="js/site-menu.js?v=3" defer></script>
 </head>
 <body class="page-product page-research">
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -31,14 +31,18 @@
 
 <main class="research-main">
   <section class="research-stage" aria-labelledby="research-title">
-    <div class="research-orbit" aria-hidden="true"><span></span><i></i></div>
+    <div class="research-orbit" aria-hidden="true">
+      <span class="research-orbit__runner research-orbit__runner--amber" data-orbit-runner><b></b></span>
+      <span class="research-orbit__runner research-orbit__runner--green" data-orbit-runner><b></b></span>
+    </div>
     <p class="research-kicker"><span aria-hidden="true"></span> Backer Research</p>
     <h1 id="research-title">Backer Research<br /><em>coming soon...</em></h1>
-    <p class="research-copy">Backer analyzes attention composition</p>
+    <p class="research-copy">Backer analyzes and predicts human attention.</p>
     <a class="btn btn-ghost btn-lg research-home" href="backerdemo.html">Back to home<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></a>
   </section>
 </main>
 
 <script src="js/shader.js"></script>
+<script src="js/research.js?v=1"></script>
 </body>
 </html>

@@ -148,10 +148,10 @@
       if (mobileQuery.matches || button.dataset.swapping === 'true' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       var span = button.querySelector('[data-swap-label]');
       var label = button.getAttribute('aria-label');
-      var glyphs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      var wordLetters = label.split('');
       var start = 0;
-      var stagger = 46;
-      var scrambleFor = 260;
+      var stagger = 75;
+      var scrambleFor = 560;
       var total = ((label.length - 1) * stagger) + scrambleFor;
       button.dataset.swapping = 'true';
       function tick(now) {
@@ -165,8 +165,8 @@
         span.textContent = label.split('').map(function (letter, index) {
           var local = elapsed - (index * stagger);
           if (letter === ' ' || local <= 0 || local >= scrambleFor) return letter;
-          var phase = Math.floor(local / 65);
-          return glyphs[(index * 7 + phase * 5 + label.length) % glyphs.length];
+          var phase = Math.floor(local / 112);
+          return wordLetters[(index + phase + 1) % wordLetters.length];
         }).join('');
         window.requestAnimationFrame(tick);
       }
