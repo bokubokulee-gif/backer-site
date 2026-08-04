@@ -125,7 +125,7 @@
       if (!endpoint) {
         try {
           savePreviewRecord(email, submittedAt);
-          complete('Saved privately in this browser for the beta preview. No email was sent anywhere.');
+          complete('We will send you an email when Backer is ready!');
         } catch (error) {
           setBusy(false);
           setStatus('Your browser blocked private preview storage, so this email was not saved or sent.', 'error', true);
