@@ -10,6 +10,8 @@
   function mountBubbleText(root) {
     var text = root.textContent;
     var fragment = document.createDocumentFragment();
+    var letters = [];
+    var activeIndex = -1;
 
     root.setAttribute('aria-label', text);
     root.textContent = '';
@@ -17,21 +19,32 @@
     Array.from(text).forEach(function (character, index) {
       var letter = document.createElement('span');
       letter.className = 'bubble-letter';
+      letter.dataset.bubbleIndex = String(index);
       letter.setAttribute('aria-hidden', 'true');
       letter.textContent = character === ' ' ? '\u00a0' : character;
-      letter.addEventListener('pointerenter', function () {
-        root.querySelectorAll('.bubble-letter').forEach(function (item, itemIndex) {
-          var distance = Math.abs(itemIndex - index);
-          if (distance <= 2) item.setAttribute('data-distance', String(distance));
-          else item.removeAttribute('data-distance');
-        });
-      });
+      letters.push(letter);
       fragment.appendChild(letter);
     });
 
     root.appendChild(fragment);
-    var letters = root.querySelectorAll('.bubble-letter');
+
+    function applyDistance(index) {
+      if (activeIndex === index) return;
+      activeIndex = index;
+      letters.forEach(function (letter, letterIndex) {
+        var distance = Math.abs(letterIndex - index);
+        if (distance <= 2) letter.setAttribute('data-distance', String(distance));
+        else letter.removeAttribute('data-distance');
+      });
+    }
+
+    root.addEventListener('pointerover', function (event) {
+      var letter = event.target.closest('.bubble-letter');
+      if (!letter || !root.contains(letter)) return;
+      applyDistance(Number(letter.dataset.bubbleIndex));
+    });
     root.addEventListener('pointerleave', function () {
+      activeIndex = -1;
       clearDistance(letters);
     });
   }
