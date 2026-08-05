@@ -1,0 +1,23 @@
+[data-bubble-text] {
+  cursor: default;
+  white-space: nowrap;
+}
+
+[data-bubble-text] .bubble-letter {
+  display: inline-block;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-style: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  transition: font-weight 300ms ease-in-out;
+}
+
+[data-bubble-text] .bubble-letter[data-distance="0"] { font-weight: 900; }
+[data-bubble-text] .bubble-letter[data-distance="1"] { font-weight: 600; }
+[data-bubble-text] .bubble-letter[data-distance="2"] { font-weight: 300; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-bubble-text] .bubble-letter { transition: none; }
+}
