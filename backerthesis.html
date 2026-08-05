@@ -14,11 +14,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/thesis.css?v=3" />
-<link rel="stylesheet" href="css/liquid-glass.css?v=20260731-2" />
-<link rel="stylesheet" href="css/analytics.css?v=2" />
-<link rel="stylesheet" href="css/footer.css?v=20260731-1" />
-<link rel="stylesheet" href="css/site-menu.css?v=2" />
-<script src="js/site-menu.js?v=3" defer></script>
+<link rel="stylesheet" href="css/liquid-glass.css" />
+<link rel="stylesheet" href="css/analytics.css?v=1" />
 <noscript><style>
   /* No-JS fallback: every chapter stays fully readable */
   .reveal{opacity:1 !important;transform:none !important}
@@ -29,6 +26,8 @@
   .arch-step{transform:none !important}
   #ticker,.rail,.scan,.deckmode-toggle{display:none !important}
 </style></noscript>
+<link rel="stylesheet" href="css/bubble-text.css?v=1" />
+<script defer src="js/bubble-text.js?v=1"></script>
 </head>
 <body class="deck">
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -45,7 +44,13 @@
     <span class="brand-word">Backer</span>
     <span class="brand-sub">Thesis</span>
   </a>
-  <div class="site-menu-host" data-backer-site-menu></div>
+  <nav class="topnav" aria-label="Sections">
+    <a href="#ch1" data-jump="0">Thesis</a>
+    <a href="#ch3" data-jump="2">Why Now</a>
+    <a href="#ch8" data-jump="7">Trust Layer</a>
+    <a href="#ch5" data-jump="4">Market</a>
+    <a href="#ch10" data-jump="9">Ask</a>
+  </nav>
   <div class="topbar-actions">
     <a class="deckmode-toggle demo-link" href="backerdemo.html" target="_blank" rel="noopener noreferrer" title="Open the Backer product demo">
       <span class="dm-dot" aria-hidden="true"></span> Demo
@@ -107,7 +112,7 @@
 
     <div class="cold-inner">
       <p class="eyebrow"><span class="dot"></span> The Trust Layer for Human Attention</p>
-      <h1 class="cold-h" id="ch1-h">The last human job<br/>is <em>judgment.</em></h1>
+      <h1 class="cold-h" id="ch1-h">The last human job<br/>is <em><span data-bubble-text>judgment.</span></em></h1>
       <p class="cold-sub">AI is compressing the middle of knowledge work. What remains scarce is taste, trust, allocation, and early belief.</p>
       <p class="cold-line"><span class="mono-tag">→</span> Backer turns belief into a market.</p>
       <div class="cold-cta">
@@ -555,51 +560,15 @@
         </div>
       </div>
 
+      <footer class="deck-foot">
+        <span class="brand small"><span class="brand-mark" aria-hidden="true"><img src="img/backer-mark.png?v=2" alt="" /></span> Backer</span>
+        <span class="foot-tag">The trust + capital infrastructure layer for human attention.</span>
+        <span class="foot-disc">Conceptual pitch experience · Not investment advice · Simulated market language · <a href="privacy.html">Privacy</a></span>
+      </footer>
     </div>
   </section>
 
 </main>
-
-<!-- SHARED FLICKERING FOOTER -->
-<footer class="backer-footer">
-  <div class="backer-footer__inner">
-    <div class="backer-footer__top">
-      <a class="backer-footer__brand" href="backerdemo.html" aria-label="Backer home">
-        <span class="backer-footer__mark" aria-hidden="true"><img src="img/backer-mark.png?v=2" alt="" /></span>
-        <span class="backer-footer__word">Backer</span>
-      </a>
-      <div class="backer-footer__nav">
-        <nav class="backer-footer__group" aria-label="Product">
-          <h2>Product</h2>
-          <ul>
-            <li><a class="backer-footer__link" href="backerdemo.html?view=market">Marketplace<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
-            <li><a class="backer-footer__link" href="backerdemo.html?view=search">AI Search<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
-            <li><a class="backer-footer__link" href="portfolio.html">Portfolio<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
-          </ul>
-        </nav>
-        <nav class="backer-footer__group" aria-label="Research">
-          <h2>Research</h2>
-          <ul>
-            <li><a class="backer-footer__link" href="research.html">Proof of Attention<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
-          </ul>
-        </nav>
-        <nav class="backer-footer__group" aria-label="Company">
-          <h2>Company</h2>
-          <ul>
-            <li><a class="backer-footer__link" href="backerthesis.html" aria-current="page">Thesis<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
-            <li><a class="backer-footer__link" href="pitch.html">Pitch<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
-            <li><a class="backer-footer__link" href="faq.html">FAQ<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
-            <li><a class="backer-footer__link" href="privacy.html">Privacy<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
-          </ul>
-        </nav>
-      </div>
-    </div>
-  </div>
-  <div class="backer-footer__flicker">
-    <span class="backer-footer__fallback">Invest in people, before the world does</span>
-    <canvas class="backer-footer__canvas" data-footer-flicker data-text="Invest in people, before the world does" aria-hidden="true"></canvas>
-  </div>
-</footer>
 
 <!-- ================= MEMO OVERLAY ================= -->
 <div class="memo-overlay" id="memoOverlay" hidden>
@@ -617,8 +586,7 @@
 <script src="js/shader.js"></script>
 <script src="js/liquid-glass.js"></script>
 <script src="js/analytics-core.js?v=1"></script>
-<script src="js/analytics.js?v=2"></script>
+<script src="js/analytics.js?v=1"></script>
 <script src="js/thesis.js"></script>
-<script src="js/flickering-footer.js?v=20260731-2"></script>
 </body>
 </html>
