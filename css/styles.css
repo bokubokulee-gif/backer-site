@@ -127,9 +127,14 @@ em{font-style:normal}
 }
 .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--pos);box-shadow:0 0 10px var(--pos)}
 .hero-title{
-  font-size:clamp(44px,6.6vw,78px);line-height:.98;font-weight:700;letter-spacing:-.035em;
+  display:flex;flex-direction:column;align-items:center;gap:18px;
+  font-size:clamp(58px,8vw,96px);line-height:.92;font-weight:700;letter-spacing:-.045em;
 }
-.hero-title em{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.01em}
+.hero-title .hero-thesis{
+  display:flex;flex-direction:column;align-items:center;gap:.08em;
+  font-family:var(--serif);font-size:clamp(26px,3.5vw,42px);font-style:italic;
+  font-weight:400;line-height:1.04;letter-spacing:-.01em;
+}
 .hero-sub{
   max-width:700px;margin:26px auto 0;color:var(--muted);font-size:clamp(15px,1.7vw,18px);
 }
@@ -1039,7 +1044,8 @@ p,li,figcaption,.section-lead,.val-node-d,.val-fact span,.val-big span,.vc-c spa
   .scores,.surfaces,.benefit-grid,.creator-grid,.port-stats,.metric-grid{grid-template-columns:1fr}
   .g-row{grid-template-columns:70px 1fr}
   .nav-cta .btn-ghost{display:none}
-  .hero-title{font-size:clamp(34px,8.8vw,46px)}
+  .hero-title{gap:14px;font-size:clamp(48px,13.5vw,68px)}
+  .hero-title .hero-thesis{font-size:clamp(22px,6.1vw,31px)}
   .dhero-body{margin-top:-30px}
   .sin{padding:30px 22px}
   .gifting{padding:26px 20px}
