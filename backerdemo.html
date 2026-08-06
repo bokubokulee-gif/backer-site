@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/styles.css?v=20260806-1" />
+<link rel="stylesheet" href="css/styles.css?v=20260806-2" />
 <link rel="stylesheet" href="css/search.css?v=7" />
 <link rel="stylesheet" href="css/market.css?v=20260806-1" />
 <link rel="stylesheet" href="css/liquid-glass.css?v=20260731-2" />
@@ -270,22 +270,59 @@
     <!-- asset base -->
     <div class="val-asset reveal">
       <div class="val-asset-head">
-        <h3>And the asset base is already funded.</h3>
+        <span class="val-asset-kicker mono"><i aria-hidden="true"></i> Global creator support</span>
+        <h3>People already fund creators with no return.</h3>
         <p>The money isn't hypothetical. It already moves from believers to people — today, with zero return attached.</p>
       </div>
-      <div class="val-asset-grid">
-        <div class="val-big">
-          <b><span data-countup data-to="40" data-prefix="$" data-dur="1200">$0</span>–60B+</b>
-          <span>flows from fans directly to creators every year, globally — gifts, tips, memberships. No upside expected, sent&nbsp;anyway.</span>
-        </div>
-        <div class="val-big">
-          <b>$250B → <span data-countup data-to="480" data-prefix="$" data-suffix="B" data-dur="1400">$0B</span></b>
-          <span>creator-economy market value today — and where Goldman Sachs projects it lands by&nbsp;2027.</span>
-        </div>
-        <div class="val-big">
-          <b><span data-countup data-to="207" data-suffix="M" data-dur="1400">0M</span></b>
-          <span>people worldwide identify as creators — before counting professionals with a creator side&nbsp;gig.</span>
-        </div>
+      <div class="val-asset-network">
+        <svg class="val-branch-map" viewBox="0 0 1140 520" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="branch-left" x1="100%" x2="0%"><stop offset="0%" stop-color="#f5f3ee" stop-opacity=".5"/><stop offset="100%" stop-color="#e9bd86" stop-opacity=".12"/></linearGradient>
+            <linearGradient id="branch-right" x1="0%" x2="100%"><stop offset="0%" stop-color="#f5f3ee" stop-opacity=".5"/><stop offset="100%" stop-color="#e9bd86" stop-opacity=".12"/></linearGradient>
+          </defs>
+          <path pathLength="1" d="M 398 220 C 366 220 350 220 328 220" stroke="url(#branch-left)"/>
+          <path pathLength="1" d="M 692 148 C 744 118 772 84 820 72" stroke="url(#branch-right)"/>
+          <path pathLength="1" d="M 694 354 C 748 370 772 382 820 386" stroke="url(#branch-right)"/>
+          <circle cx="398" cy="220" r="3"/><circle cx="328" cy="220" r="3"/>
+          <circle cx="692" cy="148" r="3"/><circle cx="820" cy="72" r="3"/>
+          <circle cx="694" cy="354" r="3"/><circle cx="820" cy="386" r="3"/>
+        </svg>
+
+        <article class="val-branch-stat val-branch-stat-funding">
+          <div class="val-branch-stat-core">
+            <b><span data-countup data-to="40" data-prefix="$" data-dur="1200">$0</span>–60B+</b>
+            <p>flows from fans directly to creators every year, globally — gifts, tips, memberships. No upside expected, sent&nbsp;anyway.</p>
+          </div>
+        </article>
+
+        <figure class="val-globe-shell" data-globe-live aria-label="Live global creator support">
+          <div class="val-globe-bezel" aria-hidden="true">
+            <div class="val-globe-stage">
+              <canvas class="val-globe-canvas" data-globe-canvas></canvas>
+              <div class="val-globe-labels" data-globe-labels></div>
+            </div>
+          </div>
+          <figcaption class="val-globe-status">
+            <span class="val-globe-status-dot" aria-hidden="true"></span>
+            <span class="mono">LIVE SUPPORT</span>
+            <strong data-globe-viewers>2,847</strong>
+            <span>watching</span>
+          </figcaption>
+        </figure>
+
+        <article class="val-branch-stat val-branch-stat-market">
+          <div class="val-branch-stat-core">
+            <b>$250B → <span data-countup data-to="480" data-prefix="$" data-suffix="B" data-dur="1400">$0B</span></b>
+            <p>creator-economy market value today — and where Goldman Sachs projects it lands by&nbsp;2027.</p>
+          </div>
+        </article>
+
+        <article class="val-branch-stat val-branch-stat-creators">
+          <div class="val-branch-stat-core">
+            <b><span data-countup data-to="207" data-suffix="M" data-dur="1400">0M</span></b>
+            <p>people worldwide identify as creators — before counting professionals with a creator side&nbsp;gig.</p>
+          </div>
+        </article>
       </div>
     </div>
   </section>
@@ -535,6 +572,7 @@
 <script src="js/analytics.js?v=2"></script>
 <script src="js/app.js?v=20260722-2"></script>
 <script src="js/sections.js?v=2"></script>
+<script type="module" src="js/globe-live.mjs?v=20260806-1"></script>
 <script src="js/poa-terminal.js?v=14"></script>
 <script src="js/poa-preview.js?v=1"></script>
 <script src="js/flickering-footer.js?v=20260731-2"></script>

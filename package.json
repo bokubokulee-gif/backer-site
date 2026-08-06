@@ -8,6 +8,7 @@
     "node": ">=20"
   },
   "scripts": {
+    "build:globe": "node scripts/vendor-cobe.js",
     "lint": "node scripts/lint.js",
     "test": "node --test tests/core*.test.js tests/backend*.test.js",
     "test:backend": "node --test tests/backend*.test.js",
@@ -16,6 +17,7 @@
     "hash:admin-password": "node scripts/hash-admin-password.js"
   },
   "dependencies": {
+    "cobe": "2.0.1",
     "pg": "^8.16.3"
   },
   "devDependencies": {
