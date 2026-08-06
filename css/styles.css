@@ -437,6 +437,7 @@ em{font-style:normal}
 
 /* ---------- benefits ---------- */
 .benefit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.benefit-grid-two{grid-template-columns:repeat(2,1fr)}
 .benefit{padding:30px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--card)}
 .benefit h4{font-size:19px;font-weight:600;margin-bottom:12px;letter-spacing:-.01em}
 .benefit:nth-child(1) h4{color:var(--accent)}
