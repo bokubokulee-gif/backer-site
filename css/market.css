@@ -332,31 +332,31 @@ body.mkt-full .app{max-width:1920px;padding-left:clamp(14px,1.8vw,26px);padding-
 }
 
 /* =========================================================
-   2026-07-31 readability pass
-   Keep exchange density, but give every contract enough
-   width, type size, and vertical rhythm to compare calmly.
+   2026-08-06 90%-zoom ratio refinement
+   Center the exchange in a calmer market-width shell, while
+   preserving legible cards, rail modules, and responsive flow.
    ========================================================= */
 body.mkt-full .app{
-  max-width:1760px;
-  padding:96px clamp(18px,2.2vw,34px) 132px;
+  max-width:1280px;
+  padding:104px 28px 148px;
 }
-.mkt{font-size:14px}
-.mkt-framing{align-items:center;padding:14px 0 20px;gap:24px}
-.mkt-framing h1{font-size:clamp(34px,3vw,42px);line-height:1}
+.mkt{font-size:15px}
+.mkt-framing{align-items:center;padding:18px 0 28px;gap:28px}
+.mkt-framing h1{font-size:clamp(38px,3vw,46px);line-height:1}
 .mkt-framing-l p{font-size:15px;margin-top:8px}
 .mkt-framing-r{gap:12px}
 .mkt-pill{font-size:11.5px;padding:7px 12px}
-.mkt-search{min-width:360px;min-height:44px;padding:10px 16px}
-.mkt-search input{font-size:14px}
+.mkt-search{min-width:420px;min-height:50px;padding:12px 18px}
+.mkt-search input{font-size:15px}
 
-.mkt-browse{margin-bottom:12px}
-.mkt-browse-in{gap:7px;padding:10px 2px}
-.bchip{font-size:13px;padding:7px 12px}
-.mkt-ticker{gap:12px;font-size:11.5px;padding:3px 2px 12px}
+.mkt-browse{margin-bottom:16px}
+.mkt-browse-in{gap:8px;padding:12px 2px}
+.bchip{font-size:13.5px;padding:8px 13px}
+.mkt-ticker{gap:13px;font-size:12.25px;padding:4px 2px 16px}
 
-.mkt-controls-wrap{top:72px;padding:8px 0 10px;margin-bottom:20px}
-.mkt-controls{gap:16px}
-.mkt-tabs button{font-size:14px;padding:10px 15px}
+.mkt-controls-wrap{top:72px;padding:10px 0 14px;margin-bottom:26px}
+.mkt-controls{gap:18px}
+.mkt-tabs button{font-size:15px;padding:11px 17px}
 .mkt-tabs button em{font-size:11.5px;margin-left:5px}
 .mkt-tools{gap:9px}
 .mkt-windows button{font-size:11.5px;padding:6px 11px}
@@ -366,30 +366,30 @@ body.mkt-full .app{
 .mkt-btn{min-height:40px;font-size:13px;padding:9px 16px}
 .mkt-btn.sm{min-height:36px;font-size:12.5px;padding:8px 13px}
 
-.mkt-stage.has-rail{grid-template-columns:minmax(0,1fr) 336px;gap:22px}
+.mkt-stage.has-rail{grid-template-columns:minmax(0,1fr) 320px;gap:24px}
 .mkt-tab-lead{font-size:13.5px;line-height:1.6;margin-bottom:16px}
-.mkt-featrow{display:block;margin-bottom:28px}
+.mkt-featrow{display:block;margin-bottom:34px}
 .mkt-feat-side{display:none}
-.mkt-grid-h{margin:8px 0 14px}
-.mkt-grid-h h2{font-size:24px}
+.mkt-grid-h{margin:10px 0 17px}
+.mkt-grid-h h2{font-size:26px}
 .mkt-grid-h span{font-size:11.5px}
-.mkt-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.mkt-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
 
 .mkt-card{
-  gap:12px;
+  gap:14px;
   min-width:0;
-  min-height:286px;
-  padding:18px;
-  border-radius:17px;
+  min-height:310px;
+  padding:22px;
+  border-radius:18px;
 }
 .mkt-card-h{gap:10px}
 .mkt-name{gap:10px}
-.mkt-name b{font-size:14px}
-.mkt-name small{font-size:11.5px;margin-top:1px}
+.mkt-name b{font-size:15px}
+.mkt-name small{font-size:12px;margin-top:2px}
 .mkt-badge{font-size:10.5px;padding:4px 8px}
 .mkt-watch{min-width:36px;min-height:36px;justify-content:center}
-.mkt-card-title{min-height:46px}
-.mkt-card-title button{font-size:16px;line-height:1.38}
+.mkt-card-title{min-height:50px}
+.mkt-card-title button{font-size:17px;line-height:1.4}
 .mkt-prog{gap:9px;font-size:12.5px}
 .mkt-prog em{font-size:11px}
 .mkt-bar{height:7px;min-width:52px}
@@ -400,7 +400,7 @@ body.mkt-full .app{
   align-items:center;
   padding:2px 0;
 }
-.mkt-card .mkt-terms .t-mult b{font-size:21px}
+.mkt-card .mkt-terms .t-mult b{font-size:23px}
 .mkt-terms small{font-size:10.5px;margin-top:1px}
 .mkt-delta{font-size:14px}
 .mkt-risk{font-size:12px;white-space:normal;line-height:1.35}
@@ -419,24 +419,24 @@ body.mkt-full .app{
 }
 
 .mkt-feat{
-  gap:14px;
-  min-height:352px;
-  padding:22px 24px;
-  border-radius:19px;
+  gap:16px;
+  min-height:410px;
+  padding:27px 29px;
+  border-radius:20px;
 }
 .mkt-feat-tag{font-size:10.5px;padding:5px 8px}
-.mkt-feat-title button{font-size:clamp(22px,2vw,28px);line-height:1.22}
+.mkt-feat-title button{font-size:clamp(26px,2.2vw,32px);line-height:1.24}
 .mkt-feat-nav{font-size:11px}
 .mkt-feat-chart small{font-size:11.5px;margin-bottom:8px}
-.mkt-spark{height:96px}
-.mkt-feat .mkt-terms{display:flex;gap:18px}
-.mkt-terms.big .t-mult b{font-size:25px}
+.mkt-spark{height:112px}
+.mkt-feat .mkt-terms{display:flex;gap:22px}
+.mkt-terms.big .t-mult b{font-size:28px}
 .mkt-terms .t-close b{font-size:14px}
 .mkt-feat-ev{font-size:13.5px}
 
-.mkt-rail{gap:16px}
-.mkt-rmod{padding:17px 18px;border-radius:16px}
-.mkt-rmod h4{font-size:14px;margin-bottom:12px}
+.mkt-rail{gap:18px}
+.mkt-rmod{padding:19px 20px;border-radius:17px}
+.mkt-rmod h4{font-size:15px;margin-bottom:13px}
 .rm-note{font-size:10.5px}
 .rm-copy{font-size:13px;line-height:1.55;margin-bottom:12px}
 .rm-bullets{gap:9px}
@@ -471,10 +471,7 @@ body.mkt-full .app{
 .mkt-poa-hero small{font-size:10.5px}
 .mkt-limits li{font-size:13px}
 
-@media (min-width:2100px){
-  .mkt-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-}
-@media (max-width:1399px){
+@media (max-width:1179px){
   .mkt-stage.has-rail{display:block}
   .mkt-rail{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin-top:24px}
 }
@@ -487,7 +484,7 @@ body.mkt-full .app{
   .mkt-controls-wrap{top:64px}
 }
 @media (max-width:767px){
-  body.mkt-full .app{padding:78px 14px 112px}
+  body.mkt-full .app{padding:90px 14px 112px}
   .mkt-framing{padding-top:8px}
   .mkt-framing h1{font-size:32px}
   .mkt-framing-l p{font-size:14px}
