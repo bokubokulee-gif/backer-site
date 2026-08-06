@@ -30,6 +30,7 @@
   background:var(--accent,#e9bd86);transform:translateX(-50%);
 }
 .backer-menu__label{display:inline-block;width:66px;text-align:center}
+.backer-menu__trigger[data-menu-trigger="research"] .backer-menu__label{width:108px}
 .backer-menu__chevron{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:transform .18s var(--ease,cubic-bezier(.22,.61,.36,1))}
 .backer-menu__trigger[aria-expanded="true"] .backer-menu__chevron{transform:rotate(180deg)}
 .backer-menu__trigger:focus-visible,.backer-menu__mobile-trigger:focus-visible,.backer-menu__mobile-close:focus-visible,.backer-menu__accordion-trigger:focus-visible,.backer-menu__link:focus-visible,.backer-menu__launch:focus-visible{
