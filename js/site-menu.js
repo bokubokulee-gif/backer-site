@@ -12,7 +12,7 @@
     },
     {
       key: 'research', label: 'Backer Research', items: [
-        { label: 'The Attention Lab', href: BASE + 'research.html', icon: 'proof' }
+        { label: 'The Attention Observatory', description: 'Proof of Attention Protocol', href: BASE + 'research.html', icon: 'proof' }
       ]
     },
     {
