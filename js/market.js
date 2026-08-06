@@ -721,15 +721,12 @@ window.BackerMarket = (function () {
     <div class="mkt" id="mktRoot">
       <div class="mkt-framing">
         <div class="mkt-framing-l">
-          <h1>Creator markets</h1>
-          <p>Underwritten by Proof of Attention.</p>
+          <h1>Live Markets</h1>
         </div>
         <div class="mkt-framing-r">
-          <span class="mkt-pill demo" title="Fixture catalog at a fixed snapshot — never production data.">Demo · simulated data</span>
-          <span class="mkt-pill sim" title="Every position on this page is simulated.">Simulated markets · no real money moves</span>
           <form class="mkt-search" id="mktNL">
             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-            <input id="mktNLInput" placeholder="Search creators, niches, or milestone markets…" aria-label="Search creators, niches, or milestone markets"/>
+            <input id="mktNLInput" placeholder="Search people, platforms, markets..." aria-label="Search people, platforms, markets"/>
           </form>
         </div>
       </div>
