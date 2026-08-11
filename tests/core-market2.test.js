@@ -2,6 +2,8 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const {
   applySnapshotQuery,
@@ -10,12 +12,17 @@ const {
   encodeCursor,
   isEligibilityTradable,
   normalizeQuery,
+  publicProviderState,
   readDatabaseSnapshot,
   readStaticSnapshot,
   sanitizeEvidence,
-  sanitizePerson
+  sanitizeMarketCatalog,
+  sanitizeMetric,
+  sanitizePerson,
+  sanitizeRollup
 } = require('../api/_lib/market2-repository');
 const { createMarket2PeopleHandler } = require('../api/market2/people');
+const { createMarket2SyncHandler } = require('../api/market2/sync');
 
 async function syncModule() {
   return import('../scripts/sync-market2-people.mjs');
@@ -46,6 +53,15 @@ function personFixture(overrides) {
     evidence: [],
     marketEligibility: []
   }, overrides || {});
+}
+
+function responseRecorder() {
+  const headers = {};
+  return {
+    headers,
+    setHeader(name, value) { headers[name] = value; },
+    end(value) { this.body = value; }
+  };
 }
 
 test('Market 2 query normalization is bounded and deterministic', () => {
@@ -470,4 +486,330 @@ test('opt-outs suppress people and content tombstones become safe removed states
     personIds: [creator.id]
   });
   assert.deepEqual(optedOut.people, []);
+});
+
+test('reviewed identity links merge source accounts but display names never do', async () => {
+  const module = await syncModule();
+  const xPerson = personFixture({
+    id: 'person:x:101',
+    personId: 'person:x:101',
+    displayName: 'Same Display Name',
+    sourceAccounts: [Object.assign(sourceAccount('x', '101'), { handle: '@reviewed' })]
+  });
+  const youtubePerson = personFixture({
+    id: 'person:youtube:202',
+    personId: 'person:youtube:202',
+    displayName: 'Same Display Name',
+    platforms: ['youtube'],
+    sourceAccounts: [Object.assign(sourceAccount('youtube', '202'), { handle: '@reviewed-channel' })]
+  });
+  assert.equal(module.applyIdentityGraph([xPerson, youtubePerson], { people: [] }).length, 2);
+  const graph = {
+    people: [{
+      personId: 'person:canonical:reviewed',
+      slug: 'reviewed-person',
+      displayName: 'Reviewed Person',
+      linkConfidence: 'editorial_reviewed',
+      reviewState: 'approved',
+      reviewedBy: 'editor',
+      reviewedAt: '2026-08-12T00:00:00Z',
+      accounts: [
+        { platform: 'x', handle: 'reviewed', profileUrl: 'https://x.com/reviewed' },
+        { platform: 'youtube', handle: 'reviewed-channel', profileUrl: 'https://youtube.com/@reviewed-channel' }
+      ]
+    }]
+  };
+  const merged = module.applyIdentityGraph([xPerson, youtubePerson], graph);
+  assert.equal(merged.length, 1);
+  assert.equal(merged[0].personId, 'person:canonical:reviewed');
+  assert.deepEqual(merged[0].platforms.sort(), ['x', 'youtube']);
+  assert.equal(merged[0].identityConfidence, 'editorial_reviewed');
+  assert.equal(merged[0].tradable, false);
+});
+
+test('window rollups require distinct baseline and current observations', async () => {
+  const module = await syncModule();
+  const observation = (rawHash, observedAt, rawValue) => ({
+    rawHash,
+    personId: 'person:github:1',
+    platform: 'github',
+    subjectType: 'repository',
+    subjectId: 'repo-1',
+    metricName: 'repository_stars',
+    nativeMetricName: 'stargazers_count',
+    rawValue,
+    rawText: String(rawValue),
+    observedAt,
+    availability: 'available',
+    accessClass: 'public_app',
+    publiclyDisplayable: true,
+    isDerived: false,
+    kind: 'counter'
+  });
+  const complete = module.buildMetricRollups([
+    observation('baseline', '2026-08-05T00:00:00Z', 100),
+    observation('current', '2026-08-12T00:00:00Z', 145)
+  ], '2026-08-12T00:00:00Z').find(item => item.window === '7d');
+  assert.equal(complete.state, 'complete');
+  assert.equal(complete.baseline, 100);
+  assert.equal(complete.current, 145);
+  assert.equal(complete.absoluteDelta, 45);
+  assert.equal(complete.percentDelta, 45);
+  assert.equal(complete.sampleCount, 2);
+  const newOnly = module.buildMetricRollups([
+    observation('only', '2026-08-12T00:00:00Z', 145)
+  ], '2026-08-12T00:00:00Z').find(item => item.window === '7d');
+  assert.equal(newOnly.state, 'newly_observed');
+  assert.equal(newOnly.baseline, null);
+  assert.equal(newOnly.absoluteDelta, null);
+  assert.equal(newOnly.percentDelta, null);
+});
+
+test('owner-only metrics and malformed movement fail closed in the public model', () => {
+  const privateMetric = sanitizeMetric({
+    platform: 'instagram',
+    metricName: 'saved',
+    rawValue: 42,
+    rawText: '42',
+    availability: 'available',
+    accessClass: 'creator_authorized',
+    publiclyDisplayable: false
+  }, '2026-08-12T00:00:00Z');
+  assert.equal(privateMetric.availability, 'permission_required');
+  assert.equal(privateMetric.rawValue, null);
+  assert.equal(privateMetric.freshnessState, 'permission_required');
+  const consented = sanitizeMetric(Object.assign({}, privateMetric, {
+    availability: 'available',
+    rawValue: 42,
+    rawText: '42',
+    publiclyDisplayable: true
+  }), '2026-08-12T00:00:00Z');
+  assert.equal(consented.rawValue, 42);
+  const invalidRollup = sanitizeRollup({
+    platform: 'github',
+    metricKey: 'repository_stars',
+    window: '7d',
+    current: 10,
+    baseline: 4,
+    absoluteDelta: 6,
+    sampleCount: 1,
+    observationIds: ['one'],
+    state: 'complete',
+    accessClass: 'public_app'
+  });
+  assert.equal(invalidRollup.state, 'unavailable');
+  assert.equal(invalidRollup.absoluteDelta, null);
+});
+
+test('GitHub notification watchers map only from subscribers_count', async () => {
+  const module = await syncModule();
+  const metrics = module.githubRepositoryMetrics({
+    stargazers_count: 120,
+    forks_count: 9,
+    watchers_count: 120,
+    subscribers_count: 7
+  }, 'person:github:1', 'repo-1', new Date('2026-08-12T00:00:00Z'), 'https://github.com/example/repo');
+  assert.equal(metrics.find(item => item.metricName === 'repository_stars').rawValue, 120);
+  assert.equal(metrics.find(item => item.metricName === 'repository_forks').rawValue, 9);
+  assert.equal(metrics.find(item => item.metricName === 'repository_watchers').rawValue, 7);
+});
+
+test('Instagram authorized Insights map saved, shares, and reposts only with public consent', async () => {
+  const module = await syncModule();
+  let calls = 0;
+  const fetchImpl = async urlValue => {
+    calls += 1;
+    const url = new URL(String(urlValue));
+    const insights = url.pathname.endsWith('/media-1/insights');
+    return {
+      ok: true,
+      status: 200,
+      headers: { get() { return null; } },
+      async json() {
+        if (insights) return { data: [
+          { name: 'saved', values: [{ value: 12 }] },
+          { name: 'shares', values: [{ value: 3 }] },
+          { name: 'reposts', values: [{ value: 1 }] }
+        ] };
+        return { business_discovery: {
+          id: 'creator-id',
+          username: 'creator',
+          name: 'Creator',
+          profile_picture_url: 'https://cdn.example/creator.jpg',
+          followers_count: 100,
+          media_count: 1,
+          media: { data: [{
+            id: 'media-1',
+            permalink: 'https://www.instagram.com/p/media-1/',
+            timestamp: '2026-08-12T00:00:00Z',
+            media_type: 'IMAGE',
+            like_count: 20,
+            comments_count: 2
+          }] }
+        } };
+      }
+    };
+  };
+  const consented = await module.syncInstagram({
+    token: 'token',
+    igUserId: 'ig-user',
+    handles: ['creator'],
+    appReviewApproved: true,
+    insightsEnabled: true,
+    insightsHandles: ['creator'],
+    insightsConsentId: 'consent-1',
+    insightsPublicDisplayAllowed: true,
+    fetchImpl,
+    now: new Date('2026-08-12T00:00:00Z')
+  });
+  assert.equal(calls, 2);
+  const ownerMetrics = consented.people[0].metrics.filter(item => ['saved', 'shares', 'reposts'].includes(item.metricName));
+  assert.deepEqual(ownerMetrics.map(item => item.rawValue), [12, 3, 1]);
+  assert.equal(ownerMetrics.every(item => item.accessClass === 'creator_authorized'), true);
+  assert.equal(ownerMetrics.every(item => item.consentId === 'consent-1'), true);
+
+  calls = 0;
+  const blocked = await module.syncInstagram({
+    token: 'token',
+    igUserId: 'ig-user',
+    handles: ['creator'],
+    appReviewApproved: true,
+    insightsEnabled: true,
+    insightsHandles: ['creator'],
+    insightsConsentId: '',
+    insightsPublicDisplayAllowed: false,
+    fetchImpl,
+    now: new Date('2026-08-12T00:00:00Z')
+  });
+  assert.equal(calls, 1);
+  const blockedMetrics = blocked.people[0].metrics.filter(item => ['saved', 'shares', 'reposts'].includes(item.metricName));
+  assert.equal(blockedMetrics.every(item => item.availability === 'permission_required'), true);
+  assert.equal(blockedMetrics.every(item => item.rawValue === null), true);
+});
+
+test('YouTube never enters a cross-platform score, including approved-derived mode', () => {
+  const evidence = sanitizeEvidence({
+    platformCoverage: ['youtube', 'github'],
+    facts: [],
+    crossPlatformScore: 77,
+    youtubeIncludedInScore: true,
+    youtubePolicyMode: 'youtube-derived-approved',
+    coverageGaps: []
+  }, ['youtube', 'github']);
+  assert.equal(evidence.crossPlatformScore, null);
+  assert.equal(evidence.youtubeIncludedInScore, false);
+  assert.match(evidence.coverageGaps.join(' '), /isolated/i);
+});
+
+test('provider states and market catalog use the frozen public contract', () => {
+  assert.equal(publicProviderState('succeeded'), 'live');
+  assert.equal(publicProviderState('rate-limited'), 'stale_snapshot');
+  assert.equal(publicProviderState('permission-required'), 'permission_required');
+  assert.equal(publicProviderState('failed'), 'unavailable');
+  const catalog = sanitizeMarketCatalog([
+    {
+      marketId: 'market-1',
+      personId: 'person-1',
+      publicationState: 'published',
+      isSimulation: true,
+      status: 'open',
+      closesAt: '2026-09-01T00:00:00Z',
+      tradeEligible: true,
+      outcomes: []
+    },
+    {
+      marketId: 'private-market',
+      publicationState: 'private',
+      isSimulation: true,
+      status: 'open',
+      closesAt: '2026-09-01T00:00:00Z',
+      tradeEligible: true
+    }
+  ], '2026-08-12T00:00:00Z');
+  assert.equal(catalog.length, 1);
+  assert.equal(catalog[0].tradeEligible, true);
+});
+
+test('Market 2 migration and identity graph encode reviewed links, observations, consent, markets, and drafts', () => {
+  const root = path.resolve(__dirname, '..');
+  const migration = fs.readFileSync(path.join(root, 'migrations', '004_market2_attention_markets.sql'), 'utf8');
+  const graph = JSON.parse(fs.readFileSync(path.join(root, 'data', 'market2-identity-graph.json'), 'utf8'));
+  [
+    'market2_identity_links',
+    'market2_provider_observations',
+    'market2_metric_rollups',
+    'market2_consent_scopes',
+    'market2_market_catalog',
+    'market2_market_drafts'
+  ].forEach(name => assert.match(migration, new RegExp(`create table if not exists ${name}`)));
+  assert.equal(graph.matchingPolicy.displayNameMatching, false);
+  assert.equal(graph.people.every(person => person.reviewState === 'approved'), true);
+  assert.equal(graph.people.some(person => person.accounts.length > 1), true);
+});
+
+test('cron sync handler requires CRON_SECRET and returns counts and states only', async () => {
+  let persisted = false;
+  const previous = { generatedAt: '2026-08-11T00:00:00Z', people: [{ id: 'stale' }] };
+  const snapshot = {
+    generatedAt: '2026-08-12T00:00:00Z',
+    status: 'partial',
+    people: [{ id: 'fresh' }],
+    providerStatus: {
+      x: {
+        status: 'fresh',
+        state: 'live',
+        peopleCount: 1,
+        contentCount: 2,
+        metricCount: 3,
+        diagnosticCode: 'must-not-be-returned',
+        rawPayload: { token: 'must-not-leak' }
+      }
+    }
+  };
+  const sync = {
+    OUTPUT_PATH: '/tmp/market2.json',
+    readExistingSnapshot: async () => previous,
+    buildMarket2Snapshot: async options => {
+      assert.equal(options.tokens.x, 'provider-secret');
+      assert.equal(options.previousSnapshot, previous);
+      return snapshot;
+    },
+    mergeWithLastGood: () => Object.assign({}, snapshot, {
+      people: [{ id: 'fresh' }, { id: 'stale', dataState: 'last-good' }]
+    }),
+    persistSnapshot: async () => {
+      persisted = true;
+      return { personIds: [], accountTombstones: [], contentTombstones: [] };
+    },
+    applyPublicationSuppressions: value => value,
+    atomicWriteJson: async () => { throw new Error('serverless handler must not write unless configured'); }
+  };
+  const handler = createMarket2SyncHandler({
+    cronSecret: 'a-secure-cron-secret',
+    syncModule: sync,
+    now: () => new Date('2026-08-12T00:00:00Z'),
+    environment: {
+      DATABASE_URL: 'postgres://database.example/backer',
+      X_BEARER_TOKEN: 'provider-secret'
+    }
+  });
+  const denied = responseRecorder();
+  await handler({ method: 'GET', headers: { authorization: 'Bearer wrong' } }, denied);
+  assert.equal(denied.statusCode, 401);
+  const allowed = responseRecorder();
+  await handler({ method: 'GET', headers: { authorization: 'Bearer a-secure-cron-secret' } }, allowed);
+  assert.equal(allowed.statusCode, 200);
+  assert.equal(persisted, true);
+  const body = JSON.parse(allowed.body);
+  assert.equal(body.peopleCount, 2);
+  assert.equal(body.lastGoodPeopleCount, 1);
+  assert.deepEqual(body.providerStatus.x, {
+    state: 'live',
+    status: 'fresh',
+    peopleCount: 1,
+    contentCount: 2,
+    metricCount: 3,
+    retainedLastGood: false
+  });
+  assert.doesNotMatch(allowed.body, /provider-secret|must-not-leak|must-not-be-returned|postgres/);
 });

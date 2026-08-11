@@ -2,16 +2,38 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { buildSnapshot as buildGithubMomentumSnapshot } from './sync-github-momentum.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUTPUT_PATH = path.join(ROOT, 'data', 'market2-people.json');
-const SCHEMA_VERSION = 1;
-const METHODOLOGY = 'backer-market2-evidence-v1';
+const IDENTITY_GRAPH_PATH = path.join(ROOT, 'data', 'market2-identity-graph.json');
+const SCHEMA_VERSION = 2;
+const METHODOLOGY = 'backer-market2-evidence-v2';
 const PLATFORMS = Object.freeze(['x', 'youtube', 'instagram', 'github']);
 const INSTRUMENTS = Object.freeze(['milestones', 'pk-market', 'creator-arena', 'creator-perps']);
 const YOUTUBE_MAX_RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
+const WINDOW_DAYS = Object.freeze({ '24h': 1, '7d': 7, '30d': 30, '90d': 90 });
+const ROLLUP_METHOD = 'two-observation-window-v1';
+const PROVIDER_POLICY_VERSION = Object.freeze({
+  x: 'x-api-policy-2026-08-12',
+  youtube: 'youtube-developer-policies-2026-06-01',
+  instagram: 'instagram-api-policy-2026-07-23',
+  github: 'github-api-policy-2026-08-12'
+});
+const PROVIDER_DOC_URL = Object.freeze({
+  x: 'https://docs.x.com/x-api/fundamentals/metrics',
+  youtube: 'https://developers.google.com/youtube/v3/docs',
+  instagram: 'https://www.postman.com/meta/instagram/documentation/6yqw8pt/instagram-api',
+  github: 'https://docs.github.com/en/rest'
+});
+const PROVIDER_FRESHNESS = Object.freeze({
+  x: { fresh: 15 * 60 * 1000, stale: 24 * 60 * 60 * 1000, expires: 30 * 24 * 60 * 60 * 1000 },
+  youtube: { fresh: 6 * 60 * 60 * 1000, stale: 24 * 60 * 60 * 1000, expires: YOUTUBE_MAX_RETENTION_MS },
+  instagram: { fresh: 6 * 60 * 60 * 1000, stale: 24 * 60 * 60 * 1000, expires: 90 * 24 * 60 * 60 * 1000 },
+  github: { fresh: 6 * 60 * 60 * 1000, stale: 24 * 60 * 60 * 1000, expires: null }
+});
 
 function cleanText(value, maximum) {
   return String(value == null ? '' : value).replace(/\s+/g, ' ').trim().slice(0, maximum || 500);
@@ -36,6 +58,325 @@ function iso(value) {
   return Number.isFinite(date.getTime()) ? date.toISOString() : null;
 }
 
+function normalizeHandle(value) {
+  return cleanText(value, 160).replace(/^@/, '').toLowerCase();
+}
+
+function hashValue(value) {
+  return createHash('sha256').update(String(value)).digest('hex');
+}
+
+function addMilliseconds(value, milliseconds) {
+  const timestamp = new Date(value).getTime();
+  return Number.isFinite(timestamp) && milliseconds != null
+    ? new Date(timestamp + milliseconds).toISOString()
+    : null;
+}
+
+function providerState(status, hasRetainedSnapshot) {
+  const value = String(status || '').toLowerCase();
+  if (hasRetainedSnapshot || value === 'last-good' || value === 'rate-limited') return 'stale_snapshot';
+  if (value === 'permission-required') return 'permission_required';
+  if (['fresh', 'live', 'succeeded', 'partial'].includes(value)) return 'live';
+  return 'unavailable';
+}
+
+function metricLabel(value) {
+  return cleanText(value, 120)
+    .replace(/[_-]+/g, ' ')
+    .replace(/\b\w/g, character => character.toUpperCase());
+}
+
+function metricIdentity(item) {
+  return [
+    item.platform,
+    item.subjectType,
+    item.subjectId,
+    item.metricName,
+    item.observedAt,
+    item.rawValue,
+    item.rawText
+  ].map(value => value == null ? '' : String(value)).join('|');
+}
+
+function metricAccessClass(platform, extras) {
+  if (extras && extras.accessClass) return extras.accessClass;
+  return platform === 'instagram' ? 'known_professional' : 'public_app';
+}
+
+function enrichMetric(item, person) {
+  const platform = String(item.platform || '').toLowerCase();
+  const observedAt = iso(item.observedAt) || person.provenance && iso(person.provenance.observedAt) || new Date(0).toISOString();
+  const freshness = PROVIDER_FRESHNESS[platform] || PROVIDER_FRESHNESS.github;
+  const account = (person.sourceAccounts || []).find(row => (
+    row.platform === platform && String(row.nativeAccountId) === String(item.subjectId)
+  ));
+  const content = (person.content || []).find(row => (
+    row.platform === platform && String(row.nativeContentId) === String(item.subjectId)
+  ));
+  const availability = item.availability || (item.rawValue == null && item.rawText == null ? 'not_returned' : 'available');
+  const accessClass = metricAccessClass(platform, item);
+  const sourceUrl = item.sourceUrl || content && content.url || account && account.profileUrl || PROVIDER_DOC_URL[platform];
+  const enriched = Object.assign({}, item, {
+    observationId: item.observationId || `observation:${hashValue(metricIdentity(Object.assign({}, item, { observedAt }))).slice(0, 24)}`,
+    nativeMetricName: item.nativeMetricName || item.metricName,
+    label: item.label || metricLabel(item.metricName),
+    unit: item.unit || 'count',
+    kind: item.kind || (item.metricName === 'provider_rank' ? 'rank' : 'counter'),
+    rawValue: availability === 'available' ? numberOrNull(item.rawValue) : null,
+    rawText: availability === 'available' && item.rawText != null ? String(item.rawText) : null,
+    availability,
+    accessClass,
+    consentId: item.consentId || null,
+    providerTimestamp: item.providerTimestamp || item.sourceTimestamp || null,
+    observedAt,
+    fetchedAt: item.fetchedAt || observedAt,
+    freshUntil: item.freshUntil || addMilliseconds(observedAt, freshness.fresh),
+    staleAt: item.staleAt || addMilliseconds(observedAt, freshness.stale),
+    expiresAt: item.expiresAt || addMilliseconds(observedAt, freshness.expires),
+    sourceUrl,
+    policyVersion: item.policyVersion || PROVIDER_POLICY_VERSION[platform],
+    eligibleForCrossPlatformScore: platform === 'youtube' ? false : Boolean(item.eligibleForCrossPlatformScore),
+    publiclyDisplayable: accessClass === 'creator_authorized'
+      ? item.publiclyDisplayable === true
+      : true
+  });
+  enriched.rawHash = item.rawHash || hashValue(metricIdentity(enriched));
+  return enriched;
+}
+
+function enrichPersonData(person) {
+  const copy = Object.assign({}, person);
+  copy.metrics = (person.metrics || []).map(item => enrichMetric(item, person));
+  return copy;
+}
+
+async function readIdentityGraph(targetPath) {
+  try {
+    const source = await fs.readFile(targetPath || IDENTITY_GRAPH_PATH, 'utf8');
+    const graph = JSON.parse(source);
+    return graph && Array.isArray(graph.people) ? graph : { schemaVersion: 1, people: [] };
+  } catch (_error) {
+    return { schemaVersion: 1, people: [] };
+  }
+}
+
+function compileIdentityGraph(graphValue) {
+  const graph = graphValue && Array.isArray(graphValue.people) ? graphValue : { people: [] };
+  const accountIndex = new Map();
+  const personIndex = new Map();
+  graph.people.forEach(record => {
+    if (!record || record.reviewState !== 'approved') return;
+    if (!['editorial_reviewed', 'creator_verified'].includes(record.linkConfidence)) return;
+    if (!record.personId || personIndex.has(record.personId)) return;
+    personIndex.set(record.personId, record);
+    (record.accounts || []).forEach(account => {
+      const platform = String(account.platform || '').toLowerCase();
+      if (!PLATFORMS.includes(platform)) return;
+      const keys = [];
+      if (account.nativeAccountId != null && String(account.nativeAccountId)) {
+        keys.push(`id:${platform}:${String(account.nativeAccountId)}`);
+      }
+      const handle = normalizeHandle(account.handle);
+      if (handle) keys.push(`handle:${platform}:${handle}`);
+      keys.forEach(key => {
+        if (accountIndex.has(key) && accountIndex.get(key).person.personId !== record.personId) {
+          accountIndex.set(key, null);
+          return;
+        }
+        accountIndex.set(key, { person: record, account });
+      });
+    });
+  });
+  return { accountIndex, personIndex };
+}
+
+function identityMatch(account, compiled) {
+  const platform = String(account.platform || '').toLowerCase();
+  const keys = [
+    `id:${platform}:${String(account.nativeAccountId || '')}`,
+    `handle:${platform}:${normalizeHandle(account.handle)}`
+  ];
+  for (const key of keys) {
+    const match = compiled.accountIndex.get(key);
+    if (match) return match;
+  }
+  return null;
+}
+
+function mergeCanonicalPeople(items, identityRecord) {
+  const primary = items[0];
+  const sourceAccounts = [];
+  const content = [];
+  const metrics = [];
+  const evidence = [];
+  const seenAccounts = new Set();
+  const seenContent = new Set();
+  const seenMetrics = new Set();
+  items.forEach(person => {
+    (person.sourceAccounts || []).forEach(account => {
+      const key = `${account.platform}:${account.nativeAccountId}`;
+      if (!seenAccounts.has(key)) {
+        seenAccounts.add(key);
+        const reviewed = (identityRecord.accounts || []).find(candidate => (
+          candidate.platform === account.platform
+          && (
+            candidate.nativeAccountId != null && String(candidate.nativeAccountId) === String(account.nativeAccountId)
+            || normalizeHandle(candidate.handle) === normalizeHandle(account.handle)
+          )
+        ));
+        sourceAccounts.push(reviewed ? Object.assign({}, account, {
+          identityLinkId: `identity:${identityRecord.personId}:${account.platform}:${hashValue(String(account.nativeAccountId)).slice(0, 12)}`,
+          identityLinkConfidence: identityRecord.linkConfidence,
+          identityReviewState: identityRecord.reviewState,
+          identityReviewedBy: identityRecord.reviewedBy,
+          identityReviewedAt: identityRecord.reviewedAt,
+          identityEvidenceUrls: [reviewed.profileUrl].filter(Boolean)
+        }) : account);
+      }
+    });
+    (person.content || []).forEach(item => {
+      const key = `${item.platform}:${item.nativeContentId}`;
+      if (!seenContent.has(key)) {
+        seenContent.add(key);
+        content.push(Object.assign({}, item, { personId: identityRecord.personId }));
+      }
+    });
+    (person.metrics || []).forEach(item => {
+      const key = item.rawHash || metricIdentity(item);
+      if (!seenMetrics.has(key)) {
+        seenMetrics.add(key);
+        metrics.push(Object.assign({}, item, { personId: identityRecord.personId }));
+      }
+    });
+    evidence.push(...(person.evidence || []));
+  });
+  content.sort((a, b) => Date.parse(b.publishedAt || 0) - Date.parse(a.publishedAt || 0));
+  const rankedContent = content.filter(item => Number.isInteger(Number(item.providerRank))).sort((a, b) => Number(a.providerRank) - Number(b.providerRank));
+  return Object.assign({}, primary, {
+    id: identityRecord.personId,
+    personId: identityRecord.personId,
+    slug: identityRecord.slug || primary.slug,
+    displayName: identityRecord.displayName || primary.displayName,
+    identityConfidence: identityRecord.linkConfidence,
+    identityReview: {
+      state: identityRecord.reviewState,
+      reviewedBy: identityRecord.reviewedBy,
+      reviewedAt: identityRecord.reviewedAt,
+      reference: identityRecord.reviewReference
+    },
+    sourceAccounts,
+    platforms: Array.from(new Set(sourceAccounts.map(account => account.platform))),
+    coverageWindows: Array.from(new Set(items.flatMap(person => person.coverageWindows || []))),
+    content,
+    metrics,
+    evidence,
+    marketEligibility: discoveryEligibility(),
+    tradable: false,
+    tradableInstruments: [],
+    discoveryOnly: true,
+    latestWork: content[0] || null,
+    breakoutWork: rankedContent[0] || content[0] || null,
+    bestProviderRank: items.map(person => Number(person.bestProviderRank)).filter(Number.isFinite).sort((a, b) => a - b)[0] || null,
+    provenance: Object.assign({}, primary.provenance, {
+      identityGraphVersion: 1,
+      identityReviewState: identityRecord.reviewState
+    })
+  });
+}
+
+function applyIdentityGraph(peopleValue, graphValue) {
+  const people = Array.isArray(peopleValue) ? peopleValue : [];
+  const compiled = compileIdentityGraph(graphValue);
+  const groups = new Map();
+  people.forEach(person => {
+    const matches = (person.sourceAccounts || []).map(account => identityMatch(account, compiled)).filter(Boolean);
+    const canonicalIds = Array.from(new Set(matches.map(match => match.person.personId)));
+    const identityRecord = canonicalIds.length === 1 ? compiled.personIndex.get(canonicalIds[0]) : null;
+    const groupKey = identityRecord ? `canonical:${identityRecord.personId}` : `source:${person.id || person.personId}`;
+    const group = groups.get(groupKey) || { identityRecord, people: [] };
+    group.people.push(person);
+    groups.set(groupKey, group);
+  });
+  return Array.from(groups.values()).map(group => group.identityRecord
+    ? mergeCanonicalPeople(group.people, group.identityRecord)
+    : group.people[0]);
+}
+
+function rollupKey(item) {
+  return [item.platform, item.subjectType, item.subjectId, item.metricName].join('|');
+}
+
+function buildMetricRollups(observationsValue, nowValue) {
+  const now = new Date(nowValue || Date.now());
+  const observations = (Array.isArray(observationsValue) ? observationsValue : [])
+    .filter(item => item && item.availability === 'available')
+    .filter(item => Number.isFinite(Number(item.rawValue)))
+    .filter(item => !item.isDerived && item.kind !== 'rank' && item.metricName !== 'provider_rank')
+    .filter(item => Number.isFinite(Date.parse(item.observedAt)) && Date.parse(item.observedAt) <= now.getTime());
+  const groups = new Map();
+  observations.forEach(item => {
+    const key = rollupKey(item);
+    const list = groups.get(key) || [];
+    if (!list.some(existing => existing.rawHash === item.rawHash)) list.push(item);
+    groups.set(key, list);
+  });
+  const rollups = [];
+  groups.forEach(listValue => {
+    const list = listValue.slice().sort((a, b) => Date.parse(a.observedAt) - Date.parse(b.observedAt));
+    Object.entries(WINDOW_DAYS).forEach(([window, days]) => {
+      const expectedStart = now.getTime() - days * 24 * 60 * 60 * 1000;
+      const current = list[list.length - 1];
+      const beforeStart = list.filter(item => Date.parse(item.observedAt) <= expectedStart).pop();
+      const withinWindow = list.filter(item => Date.parse(item.observedAt) >= expectedStart);
+      const baseline = beforeStart || withinWindow[0];
+      const samples = list.filter(item => (
+        Date.parse(item.observedAt) >= Date.parse(baseline.observedAt)
+        && Date.parse(item.observedAt) <= Date.parse(current.observedAt)
+      ));
+      const distinctSamples = samples.filter((item, index) => index === 0 || item.observedAt !== samples[index - 1].observedAt);
+      const sampleCount = distinctSamples.length;
+      const elapsed = Math.max(0, Date.parse(current.observedAt) - Date.parse(baseline.observedAt));
+      const coverageRatio = Math.min(1, elapsed / (days * 24 * 60 * 60 * 1000));
+      const hasBaseline = sampleCount >= 2 && baseline.rawHash !== current.rawHash;
+      const absoluteDelta = hasBaseline ? Number(current.rawValue) - Number(baseline.rawValue) : null;
+      const percentDelta = hasBaseline && Number(baseline.rawValue) !== 0
+        ? absoluteDelta / Math.abs(Number(baseline.rawValue)) * 100
+        : null;
+      const state = hasBaseline ? coverageRatio >= 0.9 ? 'complete' : 'partial' : 'newly_observed';
+      const identity = `${rollupKey(current)}|${window}|${current.observedAt}`;
+      rollups.push({
+        rollupId: `rollup:${hashValue(identity).slice(0, 28)}`,
+        personId: current.personId,
+        platform: current.platform,
+        subjectType: current.subjectType,
+        subjectId: current.subjectId,
+        metricKey: current.metricName,
+        nativeMetricName: current.nativeMetricName || current.metricName,
+        window,
+        effectiveStart: baseline.observedAt,
+        effectiveEnd: current.observedAt,
+        current: Number(current.rawValue),
+        baseline: hasBaseline ? Number(baseline.rawValue) : null,
+        absoluteDelta,
+        percentDelta,
+        sampleCount,
+        coverageRatio,
+        state,
+        accessClass: current.accessClass,
+        consentId: current.consentId || null,
+        publiclyDisplayable: current.publiclyDisplayable !== false,
+        methodVersion: ROLLUP_METHOD,
+        baselineObservationHash: hasBaseline ? baseline.rawHash : null,
+        currentObservationHash: current.rawHash,
+        observationHashes: distinctSamples.map(item => item.rawHash),
+        generatedAt: now.toISOString()
+      });
+    });
+  });
+  return rollups;
+}
+
 function firstThumbnail(thumbnails) {
   const source = thumbnails || {};
   const match = source.maxres || source.standard || source.high || source.medium || source.default;
@@ -57,7 +398,7 @@ function discoveryEligibility() {
 }
 
 function providerResult(provider, status, people, details) {
-  const list = Array.isArray(people) ? people : [];
+  const list = (Array.isArray(people) ? people : []).map(enrichPersonData);
   const contentCount = list.reduce((sum, person) => sum + (person.content || []).length, 0);
   const metricCount = list.reduce((sum, person) => sum + (person.metrics || []).length, 0);
   return Object.assign({
@@ -124,6 +465,7 @@ function basePerson(platform, nativeAccountId, input, now) {
 }
 
 function metric(platform, personId, subjectType, subjectId, name, value, window, observedAt, extras) {
+  const availability = value == null ? 'not_returned' : 'available';
   return Object.assign({
     platform,
     personId,
@@ -132,12 +474,21 @@ function metric(platform, personId, subjectType, subjectId, name, value, window,
     metricName: name,
     rawValue: numberOrNull(value),
     rawText: value == null ? null : String(value),
+    nativeMetricName: name,
+    label: metricLabel(name),
+    unit: 'count',
+    kind: name === 'provider_rank' ? 'rank' : 'counter',
+    availability,
+    accessClass: metricAccessClass(platform),
+    consentId: null,
+    publiclyDisplayable: platform !== 'instagram',
     window,
     observedAt: observedAt.toISOString(),
     sourceTimestamp: null,
     providerRank: null,
     isDerived: false,
-    policyMode: 'raw-provider-metric'
+    policyMode: 'raw-provider-metric',
+    eligibleForCrossPlatformScore: false
   }, extras || {});
 }
 
@@ -446,6 +797,24 @@ function instagramHandles(value) {
     .slice(0, 12);
 }
 
+function instagramInsightValue(record) {
+  if (!record || typeof record !== 'object') return null;
+  if (record.value != null) return numberOrNull(record.value);
+  const values = Array.isArray(record.values) ? record.values : [];
+  return values.length ? numberOrNull(values[values.length - 1] && values[values.length - 1].value) : null;
+}
+
+function instagramPermissionMetric(person, item, name, now, consentId) {
+  return metric('instagram', person.id, 'content', item.id, name, null, 'current', now, {
+    availability: 'permission_required',
+    accessClass: 'creator_authorized',
+    consentId: consentId || null,
+    publiclyDisplayable: false,
+    sourceTimestamp: iso(item.timestamp),
+    sourceUrl: item.permalink
+  });
+}
+
 function publicGitHubUrl(input) {
   const url = new URL(String(input));
   if (url.hostname === 'api.github.com' && url.pathname === '/search/repositories') {
@@ -453,6 +822,27 @@ function publicGitHubUrl(input) {
     if (!/(?:^|\s)is:public(?:\s|$)/.test(query)) url.searchParams.set('q', `${query} is:public`.trim());
   }
   return url;
+}
+
+function githubHeaders(token) {
+  return {
+    Accept: 'application/vnd.github+json',
+    Authorization: `Bearer ${token}`,
+    'X-GitHub-Api-Version': '2022-11-28'
+  };
+}
+
+function githubRepositoryMetrics(details, personId, subjectId, observedAt, sourceUrl) {
+  const input = details || {};
+  return [
+    ['repository_stars', input.stargazers_count],
+    ['repository_forks', input.forks_count],
+    // GitHub watchers_count is a legacy alias for stars. Notification watchers are subscribers_count.
+    ['repository_watchers', input.subscribers_count]
+  ].map(([name, value]) => metric('github', personId, 'repository', subjectId, name, value, 'lifetime', observedAt, {
+    sourceUrl,
+    availability: value == null ? 'not_returned' : 'available'
+  }));
 }
 
 async function syncInstagram(options) {
@@ -463,9 +853,16 @@ async function syncInstagram(options) {
     igUserId: '',
     handles: [],
     apiVersion: 'v25.0',
-    appReviewApproved: false
+    appReviewApproved: false,
+    insightsEnabled: false,
+    insightsHandles: [],
+    insightsConsentId: '',
+    insightsPublicDisplayAllowed: false
   }, options || {});
   const handles = Array.isArray(config.handles) ? config.handles : instagramHandles(config.handles);
+  const insightsHandles = new Set((Array.isArray(config.insightsHandles)
+    ? config.insightsHandles
+    : instagramHandles(config.insightsHandles)).map(normalizeHandle));
   if (!config.token || !config.igUserId) {
     return providerResult('instagram', 'permission-required', [], { diagnosticCode: 'missing_instagram_oauth' });
   }
@@ -514,6 +911,46 @@ async function syncInstagram(options) {
         if (item.like_count != null) person.metrics.push(metric('instagram', person.id, 'content', item.id, 'like_count', item.like_count, 'current', new Date(config.now), { sourceTimestamp: iso(item.timestamp) }));
         if (item.comments_count != null) person.metrics.push(metric('instagram', person.id, 'content', item.id, 'comments_count', item.comments_count, 'current', new Date(config.now), { sourceTimestamp: iso(item.timestamp) }));
       });
+      const media = (account.media || {}).data || [];
+      const wantsInsights = config.insightsEnabled && insightsHandles.has(normalizeHandle(account.username));
+      const canPublishInsights = wantsInsights
+        && Boolean(config.insightsConsentId)
+        && config.insightsPublicDisplayAllowed === true;
+      if (wantsInsights && !canPublishInsights) {
+        media.forEach(item => {
+          ['saved', 'shares', 'reposts'].forEach(name => {
+            person.metrics.push(instagramPermissionMetric(person, item, name, new Date(config.now), config.insightsConsentId));
+          });
+        });
+      } else if (canPublishInsights) {
+        for (const item of media) {
+          const insightsUrl = new URL(`https://graph.facebook.com/${encodeURIComponent(config.apiVersion)}/${encodeURIComponent(item.id)}/insights`);
+          insightsUrl.searchParams.set('metric', 'saved,shares,reposts');
+          insightsUrl.searchParams.set('access_token', config.token);
+          try {
+            const insightsResponse = await requestJson(config.fetchImpl, insightsUrl);
+            rateLimit = Object.assign(rateLimit, insightsResponse.rateLimit);
+            const values = new Map((insightsResponse.payload.data || []).map(record => [record.name, instagramInsightValue(record)]));
+            ['saved', 'shares', 'reposts'].forEach(name => {
+              const value = values.has(name) ? values.get(name) : null;
+              person.metrics.push(metric('instagram', person.id, 'content', item.id, name, value, 'current', new Date(config.now), {
+                availability: value == null ? 'not_returned' : 'available',
+                accessClass: 'creator_authorized',
+                consentId: config.insightsConsentId,
+                publiclyDisplayable: true,
+                sourceTimestamp: iso(item.timestamp),
+                sourceUrl: item.permalink
+              }));
+            });
+          } catch (error) {
+            if (error && error.code === 'rate_limited') throw error;
+            partial = true;
+            ['saved', 'shares', 'reposts'].forEach(name => {
+              person.metrics.push(instagramPermissionMetric(person, item, name, new Date(config.now), config.insightsConsentId));
+            });
+          }
+        }
+      }
       person.evidence = [{
         window: '24h',
         platformCoverage: ['instagram'],
@@ -544,7 +981,8 @@ async function syncGitHub(options) {
     now: new Date(),
     token: '',
     peopleLimit: 8,
-    publicOnlyAccessApproved: false
+    publicOnlyAccessApproved: false,
+    buildMomentumSnapshot: buildGithubMomentumSnapshot
   }, options || {});
   if (!config.token) return providerResult('github', 'permission-required', [], { diagnosticCode: 'missing_github_token' });
   if (!config.publicOnlyAccessApproved) {
@@ -553,12 +991,29 @@ async function syncGitHub(options) {
   const publicOnlyFetch = (input, init) => {
     return config.fetchImpl(publicGitHubUrl(input), init);
   };
-  const snapshot = await buildGithubMomentumSnapshot({
+  const snapshot = await config.buildMomentumSnapshot({
     fetchImpl: publicOnlyFetch,
     token: config.token,
     now: new Date(config.now),
     peopleLimit: config.peopleLimit
   });
+  const repositoryDetails = new Map();
+  let repositoryHydrationPartial = false;
+  for (const source of snapshot.people || []) {
+    const nameWithOwner = source.breakoutRepo && source.breakoutRepo.nameWithOwner;
+    if (!nameWithOwner || repositoryDetails.has(nameWithOwner)) continue;
+    try {
+      const response = await requestJson(
+        config.fetchImpl,
+        new URL(`https://api.github.com/repos/${nameWithOwner.split('/').map(encodeURIComponent).join('/')}`),
+        { headers: githubHeaders(config.token) }
+      );
+      repositoryDetails.set(nameWithOwner, response.payload);
+    } catch (error) {
+      if (error && error.code === 'rate_limited') throw error;
+      repositoryHydrationPartial = true;
+    }
+  }
   const people = snapshot.people.map(source => {
     const person = basePerson('github', source.githubId, {
       handle: source.login,
@@ -586,6 +1041,14 @@ async function syncGitHub(options) {
         thumbnailUrl: null,
         thumbnailPolicy: 'none'
       }, new Date(config.now)));
+      const details = repositoryDetails.get(repo.nameWithOwner);
+      person.metrics.push(...githubRepositoryMetrics(
+        details,
+        person.id,
+        repo.githubId,
+        new Date(config.now),
+        repo.url
+      ));
     }
     const signalNames = {
       followerCount: 'followers_count',
@@ -620,7 +1083,7 @@ async function syncGitHub(options) {
     person.breakoutWork = person.content[0] || null;
     return person;
   });
-  return providerResult('github', snapshot.status === 'fresh' ? 'fresh' : 'partial', people);
+  return providerResult('github', snapshot.status === 'fresh' && !repositoryHydrationPartial ? 'fresh' : 'partial', people);
 }
 
 function diagnosticStatus(error) {
@@ -651,13 +1114,20 @@ function assertPolicySafeSnapshot(snapshot) {
       if (item.platform === 'youtube' && item.isDerived && item.policyMode !== 'youtube-derived-approved') {
         throw new Error('Unapproved YouTube-derived metric');
       }
+      if (
+        item.accessClass === 'creator_authorized'
+        && item.availability === 'available'
+        && item.publiclyDisplayable !== true
+      ) {
+        throw new Error('Owner-authorized metric lacks public-display consent');
+      }
     });
     (person.evidence || []).forEach(record => {
       const coverage = Array.isArray(record.platformCoverage) ? record.platformCoverage : [];
       const youtubeCouldInfluenceScore = record.youtubeIncludedInScore
         || (record.crossPlatformScore != null && coverage.includes('youtube'));
-      if (youtubeCouldInfluenceScore && record.youtubePolicyMode !== 'youtube-derived-approved') {
-        throw new Error('Unapproved YouTube input in Backer score');
+      if (youtubeCouldInfluenceScore) {
+        throw new Error('YouTube cannot enter a cross-platform Backer score');
       }
     });
   });
@@ -677,8 +1147,15 @@ async function buildMarket2Snapshot(options) {
     instagramHandles: [],
     instagramApiVersion: 'v25.0',
     instagramAppReviewApproved: false,
+    instagramInsightsEnabled: false,
+    instagramInsightsHandles: [],
+    instagramInsightsConsentId: '',
+    instagramInsightsPublicDisplayAllowed: false,
     githubPublicOnlyAccessApproved: false,
-    youtubeDerivedApproved: false
+    youtubeDerivedApproved: false,
+    identityGraph: null,
+    identityGraphPath: IDENTITY_GRAPH_PATH,
+    previousSnapshot: null
   }, options || {});
   if (typeof config.fetchImpl !== 'function') throw new Error('A fetch implementation is required');
   const now = new Date(config.now);
@@ -699,7 +1176,11 @@ async function buildMarket2Snapshot(options) {
       igUserId: config.tokens.instagramUserId,
       handles: config.instagramHandles,
       apiVersion: config.instagramApiVersion,
-      appReviewApproved: config.instagramAppReviewApproved
+      appReviewApproved: config.instagramAppReviewApproved,
+      insightsEnabled: config.instagramInsightsEnabled,
+      insightsHandles: config.instagramInsightsHandles,
+      insightsConsentId: config.instagramInsightsConsentId,
+      insightsPublicDisplayAllowed: config.instagramInsightsPublicDisplayAllowed
     }),
     github: () => syncGitHub({
       fetchImpl: config.fetchImpl,
@@ -712,6 +1193,7 @@ async function buildMarket2Snapshot(options) {
   const results = await Promise.all(PLATFORMS.map(provider => runProvider(provider, connectors[provider])));
   const providerStatus = Object.fromEntries(results.map(result => [result.provider, {
     status: result.status,
+    state: providerState(result.status, false),
     peopleCount: result.peopleCount,
     contentCount: result.contentCount,
     metricCount: result.metricCount,
@@ -719,7 +1201,22 @@ async function buildMarket2Snapshot(options) {
     rateLimit: result.rateLimit,
     refreshedAt: ['fresh', 'partial', 'empty-window'].includes(result.status) ? now.toISOString() : null
   }]));
-  const people = results.flatMap(result => result.people);
+  const identityGraph = config.identityGraph || await readIdentityGraph(config.identityGraphPath);
+  const canonicalPeople = applyIdentityGraph(results.flatMap(result => result.people), identityGraph);
+  const previousPeople = new Map(((config.previousSnapshot && config.previousSnapshot.people) || [])
+    .filter(person => person && (person.id || person.personId))
+    .map(person => [person.id || person.personId, person]));
+  const people = canonicalPeople.map(person => {
+    const previous = previousPeople.get(person.id || person.personId);
+    const history = (previous && previous.metrics || []).concat(person.metrics || []);
+    const metricRollups = buildMetricRollups(history, now);
+    return Object.assign({}, person, {
+      metricRollups,
+      coverageWindows: Array.from(new Set((person.coverageWindows || []).concat(
+        metricRollups.map(rollup => rollup.window)
+      )))
+    });
+  });
   const failures = results.filter(result => ['failed', 'rate-limited'].includes(result.status));
   const status = people.length
     ? results.every(result => result.status === 'fresh') ? 'live' : 'partial'
@@ -745,7 +1242,8 @@ async function buildMarket2Snapshot(options) {
       crossPlatformScore: 'disabled-by-default',
       youtubeDerivedMetrics: config.youtubeDerivedApproved ? 'approval-recorded-but-not-used-by-sync' : 'not-approved-and-not-used',
       youtubeAudiovisualCaching: 'disabled',
-      identityMatching: 'no-cross-platform-merge-without-creator-claim',
+      identityMatching: 'reviewed-identity-links-only; display-names-never-merge',
+      rollups: ROLLUP_METHOD,
       tradability: 'all-synced-people-discovery-only',
       sortSemantics: 'provider-rank-remains-provider-rank; no-cross-platform-score'
     },
@@ -851,8 +1349,17 @@ function mergeWithLastGood(current, previous) {
     const retainedForProvider = retained.some(person => personPlatforms(person).includes(platform));
     if (currentStatus !== 'partial' && !retainedForProvider) return;
     providerStatus[platform] = Object.assign({}, providerStatus[platform], currentStatus === 'partial'
-      ? { retainedLastGood: retainedForProvider, lastGoodAsOf: retainedForProvider ? previous.generatedAt : null }
-      : { status: 'last-good', failedStatus: currentStatus, lastGoodAsOf: previous.generatedAt });
+      ? {
+        state: retainedForProvider ? 'stale_snapshot' : providerState(currentStatus, false),
+        retainedLastGood: retainedForProvider,
+        lastGoodAsOf: retainedForProvider ? previous.generatedAt : null
+      }
+      : {
+        status: 'last-good',
+        state: 'stale_snapshot',
+        failedStatus: currentStatus,
+        lastGoodAsOf: previous.generatedAt
+      });
   });
   return Object.assign({}, current, {
     generatedAt: fresh.length || !retained.length ? current.generatedAt : previous.generatedAt,
@@ -932,17 +1439,21 @@ async function persistSnapshot(snapshot, connectionString) {
          and tombstone.provider = content.platform
          and tombstone.native_object_id = content.native_content_id`
     );
+    const syncRunIds = new Map();
     for (const platform of PLATFORMS) {
       const state = snapshot.providerStatus[platform] || { status: 'failed' };
-      await client.query(
+      const runResult = await client.query(
         `insert into market2_sync_runs
            (provider, started_at, completed_at, status, people_count, content_count, metric_count,
             rate_limit_metadata, diagnostic_code, last_good_snapshot_reference, schema_version, methodology_version)
-         values ($1, $2, $2, $3, $4, $5, $6, $7::jsonb, $8, $9, $10, $11)`,
+         values ($1, $2, $2, $3, $4, $5, $6, $7::jsonb, $8, $9, $10, $11)
+         returning sync_run_id`,
         [platform, snapshot.generatedAt, databaseRunStatus(state.status), state.peopleCount || 0,
           state.contentCount || 0, state.metricCount || 0, JSON.stringify(state.rateLimit || {}),
           state.diagnosticCode || null, state.lastGoodAsOf || null, snapshot.schemaVersion, METHODOLOGY]
       );
+      const syncRunId = runResult.rows && runResult.rows[0] && runResult.rows[0].sync_run_id;
+      if (syncRunId != null) syncRunIds.set(platform, syncRunId);
     }
     for (const person of publishableSnapshot.people) {
       if (person.dataState === 'last-good') continue;
@@ -950,7 +1461,7 @@ async function persistSnapshot(snapshot, connectionString) {
         `insert into market2_people
            (person_id, slug, display_name, public_description, portrait_url, portrait_source_url,
             portrait_policy, category, claim_status, discovery_status, identity_confidence, created_at, updated_at)
-         values ($1, $2, $3, $4, $5, $6, $7, $8, 'unclaimed', 'active', 'source-account-only', $9, $9)
+         values ($1, $2, $3, $4, $5, $6, $7, $8, 'unclaimed', 'active', $9, $10, $10)
          on conflict (person_id) do update set
            slug = case when market2_people.claim_status in ('claimed', 'verified') then market2_people.slug else excluded.slug end,
            display_name = case when market2_people.claim_status in ('claimed', 'verified') then market2_people.display_name else excluded.display_name end,
@@ -959,10 +1470,17 @@ async function persistSnapshot(snapshot, connectionString) {
            portrait_source_url = case when market2_people.claim_status in ('claimed', 'verified') then market2_people.portrait_source_url else excluded.portrait_source_url end,
            portrait_policy = case when market2_people.claim_status in ('claimed', 'verified') then market2_people.portrait_policy else excluded.portrait_policy end,
            category = case when market2_people.claim_status in ('claimed', 'verified') then market2_people.category else excluded.category end,
+           identity_confidence = case
+             when market2_people.identity_confidence = 'creator-verified' then market2_people.identity_confidence
+             else excluded.identity_confidence
+           end,
            updated_at = excluded.updated_at
          where market2_people.discovery_status = 'active'`,
         [person.id, person.slug, person.displayName, person.description || '', person.portraitUrl,
-          person.portraitSourceUrl || person.portraitUrl, person.portraitPolicy, person.category, snapshot.generatedAt]
+          person.portraitSourceUrl || person.portraitUrl, person.portraitPolicy, person.category,
+          person.identityConfidence === 'editorial_reviewed' ? 'editorial-reviewed'
+            : person.identityConfidence === 'creator_verified' ? 'creator-verified' : 'source-account-only',
+          snapshot.generatedAt]
       );
       for (const account of person.sourceAccounts || []) {
         await client.query(
@@ -988,6 +1506,27 @@ async function persistSnapshot(snapshot, connectionString) {
           [account.id, person.id, account.platform, account.nativeAccountId, account.handle, account.profileUrl,
             account.accountType || 'public', account.verificationState || 'unverified', account.policyMode || 'discovery-only', snapshot.generatedAt]
         );
+        if (account.identityLinkId && account.identityReviewState === 'approved') {
+          await client.query(
+            `insert into market2_identity_links
+               (identity_link_id, person_id, platform, native_account_id, normalized_handle, profile_url,
+                link_confidence, review_state, reviewed_by, reviewed_at, evidence_urls, created_at, updated_at)
+             values ($1, $2, $3, $4, $5, $6, $7, 'approved', $8, $9, $10::jsonb, $9, $9)
+             on conflict (platform, native_account_id) do update set
+               normalized_handle = excluded.normalized_handle,
+               profile_url = excluded.profile_url,
+               link_confidence = excluded.link_confidence,
+               review_state = excluded.review_state,
+               reviewed_by = excluded.reviewed_by,
+               reviewed_at = excluded.reviewed_at,
+               evidence_urls = excluded.evidence_urls,
+               updated_at = excluded.updated_at
+             where market2_identity_links.person_id = excluded.person_id`,
+            [account.identityLinkId, person.id, account.platform, account.nativeAccountId,
+              normalizeHandle(account.handle), account.profileUrl, account.identityLinkConfidence,
+              account.identityReviewedBy, account.identityReviewedAt, JSON.stringify(account.identityEvidenceUrls || [])]
+          );
+        }
       }
       for (const item of person.content || []) {
         if (item.availability === 'removed') continue;
@@ -1010,16 +1549,89 @@ async function persistSnapshot(snapshot, connectionString) {
             item.title || '', item.type || 'post', item.publishedAt, item.thumbnailUrl, item.thumbnailPolicy, snapshot.generatedAt]
         );
       }
+      const observationIds = new Map();
       for (const item of person.metrics || []) {
+        const account = (person.sourceAccounts || []).find(row => (
+          row.platform === item.platform && String(row.nativeAccountId) === String(item.subjectId)
+        ));
+        const content = (person.content || []).find(row => (
+          row.platform === item.platform && String(row.nativeContentId) === String(item.subjectId)
+        ));
+        const insertResult = await client.query(
+          `insert into market2_provider_observations
+             (sync_run_id, person_id, account_id, content_id, provider, subject_type, subject_id,
+              metric_key, native_metric_name, label, unit, metric_kind, raw_value, raw_text,
+              observation_window, availability, access_class, consent_record_id, provider_timestamp,
+              observed_at, fetched_at, fresh_until, stale_at, expires_at, source_url, policy_version,
+              provider_rank, is_derived, policy_mode, eligible_for_cross_platform_score, raw_hash)
+           values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15,
+             $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31)
+           on conflict (raw_hash) do nothing
+           returning observation_id`,
+          [syncRunIds.get(item.platform) || null, person.id, account && account.id || null,
+            content && content.id || null, item.platform, item.subjectType, item.subjectId,
+            item.metricName, item.nativeMetricName || item.metricName, item.label || metricLabel(item.metricName),
+            item.unit || 'count', item.kind || 'counter', item.availability === 'available' ? item.rawValue : null,
+            item.availability === 'available' ? item.rawText : null, item.window, item.availability,
+            item.accessClass, item.consentId || null, item.providerTimestamp || item.sourceTimestamp,
+            item.observedAt, item.fetchedAt, item.freshUntil, item.staleAt, item.expiresAt,
+            item.sourceUrl, item.policyVersion, item.providerRank, Boolean(item.isDerived),
+            item.policyMode || 'raw-provider-metric', Boolean(item.eligibleForCrossPlatformScore), item.rawHash]
+        );
+        let observationId = insertResult.rows && insertResult.rows[0] && insertResult.rows[0].observation_id;
+        if (observationId == null) {
+          const existingResult = await client.query(
+            `select observation_id from market2_provider_observations where raw_hash = $1`,
+            [item.rawHash]
+          );
+          observationId = existingResult.rows && existingResult.rows[0] && existingResult.rows[0].observation_id;
+        }
+        if (observationId != null) observationIds.set(item.rawHash, observationId);
+      }
+      const missingObservationHashes = Array.from(new Set((person.metricRollups || [])
+        .flatMap(rollup => rollup.observationHashes || [])))
+        .filter(hash => !observationIds.has(hash));
+      if (missingObservationHashes.length) {
+        const historicalResult = await client.query(
+          `select raw_hash, observation_id
+           from market2_provider_observations
+           where person_id = $1 and raw_hash = any($2::text[])`,
+          [person.id, missingObservationHashes]
+        );
+        (historicalResult.rows || []).forEach(row => observationIds.set(row.raw_hash, row.observation_id));
+      }
+      for (const rollup of person.metricRollups || []) {
+        const retainedIds = (rollup.observationHashes || []).map(hash => observationIds.get(hash)).filter(value => value != null);
+        const requiresBaseline = ['complete', 'partial'].includes(rollup.state);
+        if (requiresBaseline && retainedIds.length < 2) continue;
         await client.query(
-          `insert into market2_metric_snapshots
-             (person_id, subject_type, subject_id, platform, metric_name, raw_metric_value, raw_metric_text,
-              observation_window, observed_at, source_timestamp, provider_rank, is_derived, policy_mode)
-           values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
-           on conflict do nothing`,
-          [person.id, item.subjectType, item.subjectId, item.platform, item.metricName, item.rawValue,
-            item.rawText, item.window, item.observedAt, item.sourceTimestamp, item.providerRank,
-            Boolean(item.isDerived), item.policyMode || 'raw-provider-metric']
+          `insert into market2_metric_rollups
+             (rollup_id, person_id, provider, subject_type, subject_id, metric_key, native_metric_name,
+              observation_window, effective_start, effective_end, current_value, baseline_value,
+              absolute_delta, percent_delta, sample_count, coverage_ratio, state, access_class,
+              consent_record_id, method_version, baseline_observation_id, current_observation_id,
+              observation_ids, generated_at)
+           values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14,
+             $15, $16, $17, $18, $19, $20, $21, $22, $23::bigint[], $24)
+           on conflict (rollup_id) do update set
+             effective_start = excluded.effective_start,
+             effective_end = excluded.effective_end,
+             current_value = excluded.current_value,
+             baseline_value = excluded.baseline_value,
+             absolute_delta = excluded.absolute_delta,
+             percent_delta = excluded.percent_delta,
+             sample_count = excluded.sample_count,
+             coverage_ratio = excluded.coverage_ratio,
+             state = excluded.state,
+             observation_ids = excluded.observation_ids,
+             generated_at = excluded.generated_at`,
+          [rollup.rollupId, person.id, rollup.platform, rollup.subjectType, rollup.subjectId,
+            rollup.metricKey, rollup.nativeMetricName, rollup.window, rollup.effectiveStart,
+            rollup.effectiveEnd, rollup.current, rollup.baseline, rollup.absoluteDelta,
+            rollup.percentDelta, rollup.sampleCount, rollup.coverageRatio, rollup.state,
+            rollup.accessClass, rollup.consentId || null, rollup.methodVersion,
+            observationIds.get(rollup.baselineObservationHash) || null,
+            observationIds.get(rollup.currentObservationHash) || null, retainedIds, rollup.generatedAt]
         );
       }
       for (const evidence of person.evidence || []) {
@@ -1075,8 +1687,13 @@ async function main() {
     instagramHandles: instagramHandles(process.env.INSTAGRAM_DISCOVERY_HANDLES),
     instagramApiVersion: process.env.META_GRAPH_VERSION || 'v25.0',
     instagramAppReviewApproved: process.env.INSTAGRAM_APP_REVIEW_APPROVED === 'true',
+    instagramInsightsEnabled: process.env.INSTAGRAM_INSIGHTS_ENABLED === 'true',
+    instagramInsightsHandles: instagramHandles(process.env.INSTAGRAM_INSIGHTS_HANDLES),
+    instagramInsightsConsentId: process.env.INSTAGRAM_INSIGHTS_CONSENT_ID || '',
+    instagramInsightsPublicDisplayAllowed: process.env.INSTAGRAM_INSIGHTS_PUBLIC_DISPLAY_ALLOWED === 'true',
     githubPublicOnlyAccessApproved: process.env.GITHUB_PUBLIC_ONLY_TOKEN_APPROVED === 'true',
-    youtubeDerivedApproved: process.env.YOUTUBE_DERIVED_METRICS_APPROVED === 'true'
+    youtubeDerivedApproved: process.env.YOUTUBE_DERIVED_METRICS_APPROVED === 'true',
+    previousSnapshot: previous
   });
   let merged = mergeWithLastGood(snapshot, previous);
   if (process.env.DATABASE_URL) {
@@ -1097,28 +1714,34 @@ if (isDirect) {
 }
 
 export {
+  IDENTITY_GRAPH_PATH,
   INSTRUMENTS,
   METHODOLOGY,
   OUTPUT_PATH,
   PLATFORMS,
   SCHEMA_VERSION,
   YOUTUBE_MAX_RETENTION_MS,
+  applyIdentityGraph,
   applyPublicationSuppressions,
   assertPolicySafeSnapshot,
   atomicWriteJson,
   basePerson,
   buildMarket2Snapshot,
+  buildMetricRollups,
   cleanText,
   contentItem,
   discoveryEligibility,
   instagramHandles,
+  instagramInsightValue,
   isRetentionSafePerson,
   mergeWithLastGood,
   metric,
   persistSnapshot,
   providerResult,
+  providerState,
   publicGitHubUrl,
   readExistingSnapshot,
+  readIdentityGraph,
   requestJson,
   runProvider,
   slugify,
@@ -1126,5 +1749,6 @@ export {
   syncInstagram,
   syncX,
   syncYouTube,
+  githubRepositoryMetrics,
   xSearchQuery
 };

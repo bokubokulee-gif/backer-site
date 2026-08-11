@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-12T00:00:00.000Z",
+  "matchingPolicy": {
+    "allowedKeys": [
+      "platform+nativeAccountId",
+      "platform+normalizedHandle"
+    ],
+    "displayNameMatching": false,
+    "minimumMergeConfidence": "editorial_reviewed",
+    "conflictBehavior": "keep_source_accounts_separate"
+  },
+  "people": [
+    {
+      "personId": "jeff-delaney-fireship",
+      "slug": "jeff-delaney-fireship",
+      "displayName": "Jeff Delaney",
+      "linkConfidence": "editorial_reviewed",
+      "reviewState": "approved",
+      "reviewedBy": "backer-editorial",
+      "reviewedAt": "2026-08-12T00:00:00.000Z",
+      "reviewReference": "market2-v2.1-editorial-identity-review",
+      "accounts": [
+        { "platform": "x", "handle": "fireship_dev", "profileUrl": "https://x.com/fireship_dev" },
+        { "platform": "youtube", "handle": "Fireship", "profileUrl": "https://www.youtube.com/@Fireship" },
+        { "platform": "github", "handle": "codediodeio", "profileUrl": "https://github.com/codediodeio" }
+      ]
+    },
+    {
+      "personId": "theprimeagen",
+      "slug": "theprimeagen",
+      "displayName": "ThePrimeagen",
+      "linkConfidence": "editorial_reviewed",
+      "reviewState": "approved",
+      "reviewedBy": "backer-editorial",
+      "reviewedAt": "2026-08-12T00:00:00.000Z",
+      "reviewReference": "market2-v2.1-editorial-identity-review",
+      "accounts": [
+        { "platform": "x", "handle": "ThePrimeagen", "profileUrl": "https://x.com/ThePrimeagen" },
+        { "platform": "youtube", "handle": "ThePrimeagen", "profileUrl": "https://www.youtube.com/@ThePrimeagen" },
+        { "platform": "github", "handle": "ThePrimeagen", "profileUrl": "https://github.com/ThePrimeagen" }
+      ]
+    },
+    {
+      "personId": "theo-browne",
+      "slug": "theo-browne",
+      "displayName": "Theo Browne",
+      "linkConfidence": "editorial_reviewed",
+      "reviewState": "approved",
+      "reviewedBy": "backer-editorial",
+      "reviewedAt": "2026-08-12T00:00:00.000Z",
+      "reviewReference": "market2-v2.1-editorial-identity-review",
+      "accounts": [
+        { "platform": "x", "handle": "theo", "profileUrl": "https://x.com/theo" },
+        { "platform": "youtube", "handle": "t3dotgg", "profileUrl": "https://www.youtube.com/@t3dotgg" },
+        { "platform": "github", "handle": "t3dotgg", "profileUrl": "https://github.com/t3dotgg" }
+      ]
+    },
+    {
+      "personId": "wes-bos",
+      "slug": "wes-bos",
+      "displayName": "Wes Bos",
+      "linkConfidence": "editorial_reviewed",
+      "reviewState": "approved",
+      "reviewedBy": "backer-editorial",
+      "reviewedAt": "2026-08-12T00:00:00.000Z",
+      "reviewReference": "market2-v2.1-editorial-identity-review",
+      "accounts": [
+        { "platform": "x", "handle": "wesbos", "profileUrl": "https://x.com/wesbos" },
+        { "platform": "youtube", "handle": "wesbos", "profileUrl": "https://www.youtube.com/@wesbos" },
+        { "platform": "instagram", "handle": "wesbos", "profileUrl": "https://www.instagram.com/wesbos/" },
+        { "platform": "github", "handle": "wesbos", "profileUrl": "https://github.com/wesbos" }
+      ]
+    },
+    {
+      "personId": "kevin-powell",
+      "slug": "kevin-powell",
+      "displayName": "Kevin Powell",
+      "linkConfidence": "editorial_reviewed",
+      "reviewState": "approved",
+      "reviewedBy": "backer-editorial",
+      "reviewedAt": "2026-08-12T00:00:00.000Z",
+      "reviewReference": "market2-v2.1-editorial-identity-review",
+      "accounts": [
+        { "platform": "x", "handle": "KevinJPowell", "profileUrl": "https://x.com/KevinJPowell" },
+        { "platform": "youtube", "handle": "KevinPowell", "profileUrl": "https://www.youtube.com/@KevinPowell" },
+        { "platform": "instagram", "handle": "kevinpowellcss", "profileUrl": "https://www.instagram.com/kevinpowellcss/" },
+        { "platform": "github", "handle": "kevin-powell", "profileUrl": "https://github.com/kevin-powell" }
+      ]
+    },
+    {
+      "personId": "maggie-appleton",
+      "slug": "maggie-appleton",
+      "displayName": "Maggie Appleton",
+      "linkConfidence": "editorial_reviewed",
+      "reviewState": "approved",
+      "reviewedBy": "backer-editorial",
+      "reviewedAt": "2026-08-12T00:00:00.000Z",
+      "reviewReference": "market2-v2.1-editorial-identity-review",
+      "accounts": [
+        { "platform": "x", "handle": "Mappletons", "profileUrl": "https://x.com/Mappletons" },
+        { "platform": "github", "handle": "MaggieAppleton", "profileUrl": "https://github.com/MaggieAppleton" }
+      ]
+    },
+    {
+      "personId": "mitchell-hashimoto",
+      "slug": "mitchell-hashimoto",
+      "displayName": "Mitchell Hashimoto",
+      "linkConfidence": "editorial_reviewed",
+      "reviewState": "approved",
+      "reviewedBy": "backer-editorial",
+      "reviewedAt": "2026-08-12T00:00:00.000Z",
+      "reviewReference": "market2-v2.1-editorial-identity-review",
+      "accounts": [
+        { "platform": "x", "handle": "mitchellh", "profileUrl": "https://x.com/mitchellh" },
+        { "platform": "github", "handle": "mitchellh", "profileUrl": "https://github.com/mitchellh" }
+      ]
+    },
+    {
+      "personId": "kelsey-hightower",
+      "slug": "kelsey-hightower",
+      "displayName": "Kelsey Hightower",
+      "linkConfidence": "editorial_reviewed",
+      "reviewState": "approved",
+      "reviewedBy": "backer-editorial",
+      "reviewedAt": "2026-08-12T00:00:00.000Z",
+      "reviewReference": "market2-v2.1-editorial-identity-review",
+      "accounts": [
+        { "platform": "x", "handle": "kelseyhightower", "profileUrl": "https://x.com/kelseyhightower" },
+        { "platform": "github", "handle": "kelseyhightower", "profileUrl": "https://github.com/kelseyhightower" }
+      ]
+    },
+    {
+      "personId": "alex-goodkind",
+      "slug": "alex-goodkind",
+      "displayName": "Alex Goodkind",
+      "linkConfidence": "editorial_reviewed",
+      "reviewState": "approved",
+      "reviewedBy": "backer-editorial",
+      "reviewedAt": "2026-08-12T00:00:00.000Z",
+      "reviewReference": "market2-v2.1-editorial-identity-review",
+      "accounts": [
+        { "platform": "github", "handle": "agoodkind", "profileUrl": "https://github.com/agoodkind" }
+      ]
+    },
+    {
+      "personId": "chris-mungall",
+      "slug": "chris-mungall",
+      "displayName": "Chris Mungall",
+      "linkConfidence": "editorial_reviewed",
+      "reviewState": "approved",
+      "reviewedBy": "backer-editorial",
+      "reviewedAt": "2026-08-12T00:00:00.000Z",
+      "reviewReference": "market2-v2.1-editorial-identity-review",
+      "accounts": [
+        { "platform": "github", "handle": "cmungall", "profileUrl": "https://github.com/cmungall" }
+      ]
+    }
+  ]
+}

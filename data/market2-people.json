@@ -1,10 +1,10 @@
 {
-  "schemaVersion": 1,
-  "generatedAt": "2026-08-11T09:29:25Z",
-  "status": "snapshot",
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-11T17:37:28Z",
+  "status": "partial",
   "isFixture": false,
   "isSnapshot": true,
-  "notice": "Real public launch snapshot. Provider coverage is partial, all people are discovery-only, and no attention label is an executable price or probability.",
+  "notice": "Real public profile and work snapshot with a current official GitHub REST refresh. X, YouTube, and Instagram connectors require production credentials or creator authorization. All people remain discovery-only, and no attention label is an executable price or probability.",
   "defaultWindow": "7d",
   "ranges": {
     "24h": {
@@ -37,11 +37,11 @@
       "policyMode": "No X API credentials are connected. Backer does not claim a trends response or retained post metrics."
     },
     "youtube": {
-      "state": "partial_coverage",
-      "label": "Dated public editorial references",
+      "state": "permission_required",
+      "label": "Public work links; API key required for metrics",
       "asOf": "2026-08-11T09:29:25Z",
       "sourceUrl": "https://developers.google.com/youtube/v3/docs",
-      "policyMode": "No YouTube ranking feed is represented. Public video links and creator-maintained references are shown without a derived cross-platform score."
+      "policyMode": "No YouTube API key is connected in the public snapshot. Public video links and creator-maintained references are shown without metric claims or a derived cross-platform score."
     },
     "instagram": {
       "state": "permission_required",
@@ -52,14 +52,198 @@
     },
     "github": {
       "state": "snapshot",
-      "label": "Public profiles plus dated native daily ordering",
-      "asOf": "2026-08-11T09:29:25Z",
-      "sourceUrl": "https://github.com/trending/developers",
-      "policyMode": "The daily Trending Developers ordering is a frozen editorial capture. Production refresh uses official REST and GraphQL APIs, not Trending-page scraping."
+      "label": "Official REST aggregate snapshot",
+      "asOf": "2026-08-11T17:37:28Z",
+      "sourceUrl": "https://docs.github.com/en/rest",
+      "policyMode": "Public user and repository aggregates were refreshed through the official GitHub REST API. Totals are point-in-time observations, not growth. Backer does not retain follower or stargazer identities."
+    }
+  },
+  "metricCatalog": {
+    "x": [
+      { "key": "like_count", "label": "Likes", "accessClass": "public_app", "subject": "content" },
+      { "key": "reply_count", "label": "Replies", "accessClass": "public_app", "subject": "content" },
+      { "key": "retweet_count", "label": "Reposts", "accessClass": "public_app", "subject": "content" },
+      { "key": "quote_count", "label": "Quotes", "accessClass": "public_app", "subject": "content" },
+      { "key": "bookmark_count", "label": "Bookmarks", "accessClass": "public_app", "subject": "content" },
+      { "key": "impression_count", "label": "Impressions", "accessClass": "public_app", "subject": "content" },
+      { "key": "followers_count", "label": "Followers", "accessClass": "public_app", "subject": "account" }
+    ],
+    "youtube": [
+      { "key": "viewCount", "label": "Views", "accessClass": "public_app", "subject": "content" },
+      { "key": "likeCount", "label": "Likes", "accessClass": "public_app", "subject": "content" },
+      { "key": "commentCount", "label": "Comments", "accessClass": "public_app", "subject": "content" },
+      { "key": "subscriberCount", "label": "Subscribers", "accessClass": "public_app", "subject": "account", "caveat": "Rounded by YouTube and may be hidden." },
+      { "key": "shares", "label": "Shares", "accessClass": "creator_authorized", "subject": "content" },
+      { "key": "subscribersGained", "label": "Subscribers gained", "accessClass": "creator_authorized", "subject": "account" }
+    ],
+    "instagram": [
+      { "key": "like_count", "label": "Likes", "accessClass": "known_professional", "subject": "content" },
+      { "key": "comments_count", "label": "Comments", "accessClass": "known_professional", "subject": "content" },
+      { "key": "followers_count", "label": "Followers", "accessClass": "known_professional", "subject": "account" },
+      { "key": "saved", "label": "Saves", "accessClass": "creator_authorized", "subject": "content" },
+      { "key": "shares", "label": "Shares", "accessClass": "creator_authorized", "subject": "content" },
+      { "key": "reposts", "label": "Reposts", "accessClass": "creator_authorized", "subject": "content" }
+    ],
+    "github": [
+      { "key": "followers", "label": "Followers", "accessClass": "public_app", "subject": "account" },
+      { "key": "public_repos", "label": "Public repos", "accessClass": "public_app", "subject": "account" },
+      { "key": "stargazers_count", "label": "Stars", "accessClass": "public_app", "subject": "repository" },
+      { "key": "forks_count", "label": "Forks", "accessClass": "public_app", "subject": "repository" },
+      { "key": "subscribers_count", "label": "Watchers", "accessClass": "public_app", "subject": "repository", "caveat": "GitHub watchers_count is a legacy star alias; Backer uses subscribers_count for notification watchers." },
+      { "key": "totalContributions", "label": "Contributions", "accessClass": "public_app", "subject": "account" }
+    ]
+  },
+  "nativeMetricSnapshots": {
+    "jeff-delaney-fireship": {
+      "github": {
+        "state": "snapshot",
+        "accessClass": "public_app",
+        "observedAt": "2026-08-11T17:37:28Z",
+        "sourceUrl": "https://api.github.com/users/codediodeio",
+        "metrics": [
+          { "key": "followers", "label": "Followers", "value": 23132, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/codediodeio" },
+          { "key": "public_repos", "label": "Public repos", "value": 65, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/codediodeio?tab=repositories" }
+        ]
+      }
+    },
+    "theprimeagen": {
+      "github": {
+        "state": "snapshot",
+        "accessClass": "public_app",
+        "observedAt": "2026-08-11T17:37:28Z",
+        "sourceUrl": "https://api.github.com/users/ThePrimeagen",
+        "metrics": [
+          { "key": "followers", "label": "Followers", "value": 49786, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/ThePrimeagen" },
+          { "key": "public_repos", "label": "Public repos", "value": 238, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/ThePrimeagen?tab=repositories" },
+          { "key": "stargazers_count", "label": "Harpoon stars", "value": 9189, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/ThePrimeagen/harpoon" },
+          { "key": "forks_count", "label": "Harpoon forks", "value": 490, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/ThePrimeagen/harpoon" },
+          { "key": "subscribers_count", "label": "Harpoon watchers", "value": 38, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/ThePrimeagen/harpoon" }
+        ]
+      }
+    },
+    "theo-browne": {
+      "github": {
+        "state": "snapshot",
+        "accessClass": "public_app",
+        "observedAt": "2026-08-11T17:37:28Z",
+        "sourceUrl": "https://api.github.com/users/t3dotgg",
+        "metrics": [
+          { "key": "followers", "label": "Followers", "value": 19606, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/t3dotgg" },
+          { "key": "public_repos", "label": "Public repos", "value": 132, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/t3dotgg?tab=repositories" },
+          { "key": "stargazers_count", "label": "t3code stars", "value": 18225, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/pingdotgg/t3code" },
+          { "key": "forks_count", "label": "t3code forks", "value": 4118, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/pingdotgg/t3code" },
+          { "key": "subscribers_count", "label": "t3code watchers", "value": 55, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/pingdotgg/t3code" }
+        ]
+      }
+    },
+    "wes-bos": {
+      "github": {
+        "state": "snapshot",
+        "accessClass": "public_app",
+        "observedAt": "2026-08-11T17:37:28Z",
+        "sourceUrl": "https://api.github.com/users/wesbos",
+        "metrics": [
+          { "key": "followers", "label": "Followers", "value": 35797, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/wesbos" },
+          { "key": "public_repos", "label": "Public repos", "value": 436, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/wesbos?tab=repositories" },
+          { "key": "stargazers_count", "label": "JavaScript30 stars", "value": 29232, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/wesbos/JavaScript30" },
+          { "key": "forks_count", "label": "JavaScript30 forks", "value": 42214, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/wesbos/JavaScript30" },
+          { "key": "subscribers_count", "label": "JavaScript30 watchers", "value": 662, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/wesbos/JavaScript30" }
+        ]
+      }
+    },
+    "kevin-powell": {
+      "github": {
+        "state": "snapshot",
+        "accessClass": "public_app",
+        "observedAt": "2026-08-11T17:37:28Z",
+        "sourceUrl": "https://api.github.com/users/kevin-powell",
+        "metrics": [
+          { "key": "followers", "label": "Followers", "value": 12770, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/kevin-powell" },
+          { "key": "public_repos", "label": "Public repos", "value": 113, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/kevin-powell?tab=repositories" },
+          { "key": "stargazers_count", "label": "Bootcamp stars", "value": 433, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/kevin-powell/reponsive-web-design-bootcamp" },
+          { "key": "forks_count", "label": "Bootcamp forks", "value": 202, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/kevin-powell/reponsive-web-design-bootcamp" },
+          { "key": "subscribers_count", "label": "Bootcamp watchers", "value": 17, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/kevin-powell/reponsive-web-design-bootcamp" }
+        ]
+      }
+    },
+    "maggie-appleton": {
+      "github": {
+        "state": "snapshot",
+        "accessClass": "public_app",
+        "observedAt": "2026-08-11T17:37:28Z",
+        "sourceUrl": "https://api.github.com/users/MaggieAppleton",
+        "metrics": [
+          { "key": "followers", "label": "Followers", "value": 2155, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/MaggieAppleton" },
+          { "key": "public_repos", "label": "Public repos", "value": 31, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/MaggieAppleton?tab=repositories" },
+          { "key": "stargazers_count", "label": "Digital Gardeners stars", "value": 4777, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/MaggieAppleton/digital-gardeners" },
+          { "key": "forks_count", "label": "Digital Gardeners forks", "value": 201, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/MaggieAppleton/digital-gardeners" },
+          { "key": "subscribers_count", "label": "Digital Gardeners watchers", "value": 100, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/MaggieAppleton/digital-gardeners" }
+        ]
+      }
+    },
+    "mitchell-hashimoto": {
+      "github": {
+        "state": "snapshot",
+        "accessClass": "public_app",
+        "observedAt": "2026-08-11T17:37:28Z",
+        "sourceUrl": "https://api.github.com/users/mitchellh",
+        "metrics": [
+          { "key": "followers", "label": "Followers", "value": 24036, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/mitchellh" },
+          { "key": "public_repos", "label": "Public repos", "value": 119, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/mitchellh?tab=repositories" },
+          { "key": "stargazers_count", "label": "Ghostty stars", "value": 59512, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/ghostty-org/ghostty" },
+          { "key": "forks_count", "label": "Ghostty forks", "value": 3241, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/ghostty-org/ghostty" },
+          { "key": "subscribers_count", "label": "Ghostty watchers", "value": 212, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/ghostty-org/ghostty" }
+        ]
+      }
+    },
+    "kelsey-hightower": {
+      "github": {
+        "state": "snapshot",
+        "accessClass": "public_app",
+        "observedAt": "2026-08-11T17:37:28Z",
+        "sourceUrl": "https://api.github.com/users/kelseyhightower",
+        "metrics": [
+          { "key": "followers", "label": "Followers", "value": 24686, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/kelseyhightower" },
+          { "key": "public_repos", "label": "Public repos", "value": 196, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/kelseyhightower?tab=repositories" },
+          { "key": "stargazers_count", "label": "nocode stars", "value": 65603, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/kelseyhightower/nocode" },
+          { "key": "forks_count", "label": "nocode forks", "value": 4823, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/kelseyhightower/nocode" },
+          { "key": "subscribers_count", "label": "nocode watchers", "value": 364, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/kelseyhightower/nocode" }
+        ]
+      }
+    },
+    "alex-goodkind": {
+      "github": {
+        "state": "snapshot",
+        "accessClass": "public_app",
+        "observedAt": "2026-08-11T17:37:28Z",
+        "sourceUrl": "https://api.github.com/users/agoodkind",
+        "metrics": [
+          { "key": "followers", "label": "Followers", "value": 266, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/agoodkind" },
+          { "key": "public_repos", "label": "Public repos", "value": 68, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/agoodkind?tab=repositories" },
+          { "key": "stargazers_count", "label": "macos-smc-fan stars", "value": 39, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/agoodkind/macos-smc-fan" },
+          { "key": "forks_count", "label": "macos-smc-fan forks", "value": 5, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/agoodkind/macos-smc-fan" },
+          { "key": "subscribers_count", "label": "macos-smc-fan watchers", "value": 0, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/agoodkind/macos-smc-fan" }
+        ]
+      }
+    },
+    "chris-mungall": {
+      "github": {
+        "state": "snapshot",
+        "accessClass": "public_app",
+        "observedAt": "2026-08-11T17:37:28Z",
+        "sourceUrl": "https://api.github.com/users/cmungall",
+        "metrics": [
+          { "key": "followers", "label": "Followers", "value": 573, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/cmungall" },
+          { "key": "public_repos", "label": "Public repos", "value": 395, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/cmungall?tab=repositories" },
+          { "key": "stargazers_count", "label": "PrologInfo stars", "value": 3, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/cmungall/PrologInfo" },
+          { "key": "forks_count", "label": "PrologInfo forks", "value": 0, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/cmungall/PrologInfo" },
+          { "key": "subscribers_count", "label": "PrologInfo watchers", "value": 0, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/cmungall/PrologInfo" }
+        ]
+      }
     }
   },
   "methodology": {
-    "version": "market2-launch-snapshot-v1",
+    "version": "market2-attention-read-model-v2",
     "ordering": "Provider-native rank is retained only when the source supplies it. All other launch ordering is editorial and must be labeled as such.",
     "scoring": "No cross-platform creator score is calculated. No YouTube data is combined into a rivalry or investment ranking.",
     "trading": "Every person starts discovery-only. Public evidence does not create consent, eligibility, price, probability, or settlement authority.",

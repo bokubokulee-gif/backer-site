@@ -1496,7 +1496,7 @@
     ROOT.querySelectorAll('[data-amt]').forEach(function (el) { el.addEventListener('click', function () { S.amount = +el.dataset.amt; paint(); }); });
     var amt = ROOT.querySelector('#ptAmt'); if (amt) amt.addEventListener('input', function () { S.amount = clamp(Math.round(+amt.value || 1), 1, 100000); });
     var limit = ROOT.querySelector('#ptLimit'); if (limit) limit.addEventListener('input', function () { S.limitPrice = clamp(round(+limit.value || 1, 1), 1, S.mtype === 'perps' ? 9999 : 99); });
-    var order = ROOT.querySelector('[data-order]'); if (order) order.addEventListener('click', placeOrder);
+    var order = ROOT.querySelector('[data-order]'); if (order) order.addEventListener('click', openOrderReview);
     // composition bands
     ROOT.querySelectorAll('[data-band]').forEach(function (el) {
       var fn = function () { S.band = S.band === el.dataset.band ? null : el.dataset.band; track('poa_composition_segment_selected', { band: S.band }); paint(); };
@@ -1701,7 +1701,62 @@
   }
 
   /* ---- order ---- */
-  function placeOrder() {
+  function openOrderReview() {
+    if (S.asOf !== NDAYS - 1) {
+      replay('reset');
+      setLive('Returned to the latest market snapshot. Review the current quote before placing a simulated order.');
+      return;
+    }
+    var lifecycle = marketLifecycle(S.model, S.mtype);
+    if (!lifecycle.open) {
+      setLive(lifecycleLabel(lifecycle.label) + ' markets do not accept new orders. No fill was recorded.');
+      return;
+    }
+    var m = S.model, isPerp = S.mtype === 'perps', selected = isPerp ? null : selectedMarketOutcome(m, S);
+    var action = isPerp ? (S.side === 'SHORT' ? 'SELL' : 'BUY') : S.tradeSide;
+    var selectedQuote = isPerp ? null : outcomeQuoteAt(selected, S.asOf), perpQuote = isPerp ? perpQuoteAt(m.markets.perps, S.asOf) : null;
+    var quoted = isPerp ? perpQuote.mark : (action === 'BUY' ? selectedQuote.ask : selectedQuote.bid);
+    var requestedPrice = S.orderType === 'LIMIT' ? clamp(Number(S.limitPrice || quoted), 1, isPerp ? 9999 : 99) : null;
+    var entry = quoted;
+    var quantity = isPerp ? round(S.amount * S.leverage / Math.max(entry, 0.01), 4) : round(S.amount / Math.max(entry / 100, 0.01), 2);
+    var fee = round(S.amount * (isPerp ? 0.0008 : 0.006), 2);
+    var outcomeLabel = isPerp ? S.side : selected.name;
+    var market = m.markets[S.mtype];
+    var h = cardHead('Review simulated order', action + ' ' + outcomeLabel);
+    h += '<div class="pt-evcard-b pt-order-review">';
+    h += '<div class="pt-kv"><span>Market</span><b>' + esc(market.question) + '</b></div>';
+    h += '<div class="pt-kv"><span>Outcome / side</span><b class="' + (action === 'BUY' ? 'pos' : 'neg') + '">' + esc(action + ' ' + outcomeLabel) + '</b></div>';
+    h += '<div class="pt-kv"><span>Order type</span><b>' + esc(S.orderType) + (requestedPrice == null ? '' : ' · limit ' + requestedPrice + (isPerp ? ' idx' : '¢')) + '</b></div>';
+    h += '<div class="pt-kv"><span>Displayed execution</span><b>' + entry + (isPerp ? ' idx' : '¢') + '</b></div>';
+    h += '<div class="pt-kv"><span>Amount / quantity</span><b>' + money(S.amount) + ' / ' + quantity + '</b></div>';
+    h += '<div class="pt-kv"><span>Estimated fee</span><b>' + money(fee) + '</b></div>';
+    h += '<div class="pt-kv"><span>Maximum loss</span><b class="neg">' + money(S.amount + fee) + '</b></div>';
+    if (isPerp) {
+      h += '<div class="pt-kv"><span>Exposure / leverage</span><b>' + money(S.amount * S.leverage) + ' / ' + S.leverage + '×</b></div>';
+      h += '<div class="pt-kv"><span>Funding</span><b>' + (market.funding >= 0 ? '+' : '') + market.funding + '% /8h</b></div>';
+    } else {
+      h += '<div class="pt-kv"><span>Possible settlement payout</span><b class="pos">' + money(action === 'BUY' ? quantity : 0) + '</b></div>';
+    }
+    h += '<div class="pt-kv"><span>Closes / resolves</span><b>' + esc(market.deadline || 'Continuous') + '</b></div>';
+    h += '<div class="pt-kv"><span>Settlement source</span><b>' + esc(market.source) + '</b></div>';
+    h += '<label class="pt-review-ack"><input type="checkbox" data-order-ack /><span>I reviewed the outcome, maximum loss, and written resolution source.</span></label>';
+    h += '<button class="pt-order yes" type="button" data-confirm-order disabled>Confirm simulated order</button>';
+    h += '<p class="pt-sim">The quote is checked again at confirmation. No real money moves.</p></div>';
+    showCard(h);
+    var card = evCard();
+    var ack = card && card.querySelector('[data-order-ack]');
+    var confirm = card && card.querySelector('[data-confirm-order]');
+    if (ack && confirm) ack.addEventListener('change', function () { confirm.disabled = !ack.checked; });
+    if (confirm) confirm.addEventListener('click', function () {
+      if (!ack || !ack.checked) return;
+      closeEventCard();
+      placeOrder(true);
+    });
+    track('market_order_reviewed', { mtype: S.mtype, side: action, outcome: outcomeLabel, amount: S.amount, orderType: S.orderType });
+  }
+
+  function placeOrder(confirmed) {
+    if (!confirmed) { openOrderReview(); return; }
     if (S.asOf !== NDAYS - 1) {
       replay('reset');
       setLive('Returned to the latest market snapshot. Review the current quote before placing a simulated order.');
@@ -1758,7 +1813,9 @@
     }
     var mtLabel = action + ' ' + outcomeLabel + ' ' + money(S.amount);
     if (window.__backerToast) try { window.__backerToast('Simulated fill recorded · ' + mtLabel); } catch (e) {}
+    var receiptIndex = m.bets.length - 1;
     paint();
+    openBetCard(receiptIndex);
     setLive('Simulated fill recorded: ' + mtLabel + ' at ' + fill.entryLabel + '. Marker and receipt added to the market history.');
   }
 

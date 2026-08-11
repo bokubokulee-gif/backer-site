@@ -97,6 +97,158 @@ function isAllowedMetric(metric) {
   return policyMode(metric.policyMode || metric.policy_mode) === 'youtube-derived-approved';
 }
 
+function metricFreshnessState(metric, nowValue) {
+  const availability = String(metric.availability || '').toLowerCase();
+  if (availability === 'permission_required') return 'permission_required';
+  if (['unsupported', 'not_returned', 'removed'].includes(availability)) return 'unavailable';
+  const now = new Date(nowValue || Date.now()).getTime();
+  const expiresValue = metric.expiresAt || metric.expires_at;
+  const expiresAt = expiresValue ? Date.parse(expiresValue) : Number.NaN;
+  if (Number.isFinite(expiresAt) && expiresAt <= now) return 'unavailable';
+  const staleValue = metric.staleAt || metric.stale_at;
+  const staleAt = staleValue ? Date.parse(staleValue) : Number.NaN;
+  if (Number.isFinite(staleAt) && staleAt <= now) return 'stale_snapshot';
+  return 'live';
+}
+
+function sanitizeMetric(value, nowValue) {
+  if (!value || typeof value !== 'object') return null;
+  const metric = Object.assign({}, value);
+  const rawValue = metric.rawValue == null ? metric.raw_value : metric.rawValue;
+  const rawText = metric.rawText == null ? metric.raw_text : metric.rawText;
+  const platform = String(metric.platform || metric.provider || '').toLowerCase();
+  const suppliedAvailability = metric.availability || (rawValue == null && rawText == null ? 'not_returned' : 'available');
+  const accessClass = metric.accessClass || metric.access_class
+    || (platform === 'instagram' ? 'known_professional' : 'public_app');
+  const ownerPublic = accessClass !== 'creator_authorized'
+    || enabledFlag(metric.publiclyDisplayable == null ? metric.publicly_displayable : metric.publiclyDisplayable);
+  const availability = ownerPublic ? suppliedAvailability : 'permission_required';
+  metric.platform = platform;
+  metric.metricName = metric.metricName || metric.metric_key || metric.metric_name;
+  metric.nativeMetricName = metric.nativeMetricName || metric.native_metric_name || metric.metricName;
+  metric.label = metric.label || metric.nativeMetricName;
+  metric.unit = metric.unit || 'count';
+  metric.kind = metric.kind || metric.metric_kind || 'counter';
+  metric.availability = availability;
+  metric.accessClass = accessClass;
+  metric.consentId = metric.consentId || metric.consent_id || metric.consent_record_id || null;
+  metric.observedAt = metric.observedAt || metric.observed_at || null;
+  metric.fetchedAt = metric.fetchedAt || metric.fetched_at || null;
+  metric.freshUntil = metric.freshUntil || metric.fresh_until || null;
+  metric.staleAt = metric.staleAt || metric.stale_at || null;
+  metric.expiresAt = metric.expiresAt || metric.expires_at || null;
+  metric.sourceUrl = metric.sourceUrl || metric.source_url || null;
+  metric.policyVersion = metric.policyVersion || metric.policy_version || null;
+  metric.rawHash = metric.rawHash || metric.raw_hash || null;
+  metric.freshnessState = metricFreshnessState(metric, nowValue);
+  metric.publiclyDisplayable = ownerPublic;
+  if (availability !== 'available' || metric.freshnessState === 'unavailable') {
+    metric.rawValue = null;
+    metric.rawText = null;
+  } else {
+    metric.rawValue = rawValue == null ? null : Number(rawValue);
+    metric.rawText = rawText == null ? null : String(rawText);
+  }
+  [
+    'raw_value', 'raw_text', 'access_class', 'consent_id', 'consent_record_id',
+    'observed_at', 'fetched_at', 'fresh_until', 'stale_at', 'expires_at',
+    'source_url', 'policy_version', 'raw_hash', 'publicly_displayable',
+    'native_metric_name', 'metric_kind', 'metric_key', 'metric_name'
+  ].forEach(key => delete metric[key]);
+  return metric;
+}
+
+function sanitizeRollup(value, nowValue) {
+  if (!value || typeof value !== 'object') return null;
+  const rollup = Object.assign({}, value);
+  const accessClass = rollup.accessClass || rollup.access_class || 'public_app';
+  const ownerPublic = accessClass !== 'creator_authorized'
+    || enabledFlag(rollup.publiclyDisplayable == null ? rollup.publicly_displayable : rollup.publiclyDisplayable);
+  const requestedState = String(rollup.state || 'unavailable');
+  const sampleCount = Number(rollup.sampleCount == null ? rollup.sample_count : rollup.sampleCount) || 0;
+  const observationIds = jsonArray(rollup.observationIds || rollup.observation_ids);
+  const baseline = rollup.baseline == null ? rollup.baseline_value : rollup.baseline;
+  const current = rollup.current == null ? rollup.current_value : rollup.current;
+  const hasTrueBaseline = sampleCount >= 2
+    && observationIds.length >= 2
+    && baseline != null
+    && current != null;
+  const movementState = ['complete', 'partial'].includes(requestedState) && !hasTrueBaseline
+    ? 'unavailable'
+    : requestedState;
+  const state = ownerPublic ? movementState : 'permission_required';
+  return {
+    rollupId: rollup.rollupId || rollup.rollup_id || null,
+    platform: String(rollup.platform || rollup.provider || '').toLowerCase(),
+    subjectType: rollup.subjectType || rollup.subject_type,
+    subjectId: rollup.subjectId || rollup.subject_id,
+    metricKey: rollup.metricKey || rollup.metric_key,
+    nativeMetricName: rollup.nativeMetricName || rollup.native_metric_name,
+    window: rollup.window || rollup.observation_window,
+    effectiveStart: rollup.effectiveStart || rollup.effective_start || null,
+    effectiveEnd: rollup.effectiveEnd || rollup.effective_end || null,
+    current: ownerPublic ? (current == null ? null : Number(current)) : null,
+    baseline: ownerPublic && hasTrueBaseline ? Number(baseline) : null,
+    absoluteDelta: ownerPublic && hasTrueBaseline
+      ? Number(rollup.absoluteDelta == null ? rollup.absolute_delta : rollup.absoluteDelta)
+      : null,
+    percentDelta: ownerPublic && hasTrueBaseline && (rollup.percentDelta != null || rollup.percent_delta != null)
+      ? Number(rollup.percentDelta == null ? rollup.percent_delta : rollup.percentDelta)
+      : null,
+    sampleCount,
+    coverageRatio: Number(rollup.coverageRatio == null ? rollup.coverage_ratio : rollup.coverageRatio) || 0,
+    state,
+    accessClass,
+    consentId: rollup.consentId || rollup.consent_id || rollup.consent_record_id || null,
+    methodVersion: rollup.methodVersion || rollup.method_version || null,
+    observationIds,
+    generatedAt: rollup.generatedAt || rollup.generated_at || null,
+    publiclyDisplayable: ownerPublic,
+    freshnessState: state === 'permission_required' ? 'permission_required'
+      : metricFreshnessState({
+        availability: state === 'unavailable' ? 'not_returned' : 'available',
+        staleAt: rollup.staleAt || rollup.stale_at,
+        expiresAt: rollup.expiresAt || rollup.expires_at
+      }, nowValue)
+  };
+}
+
+function sanitizeMarketCatalog(value, nowValue) {
+  const now = new Date(nowValue || Date.now()).getTime();
+  return jsonArray(value).filter(record => (
+    enabledFlag(record.isSimulation == null ? record.is_simulation : record.isSimulation)
+    && String(record.publicationState || record.publication_state) === 'published'
+  )).map(record => {
+    const closesAt = record.closesAt || record.closes_at || null;
+    const open = String(record.status) === 'open'
+      && Number.isFinite(Date.parse(closesAt))
+      && Date.parse(closesAt) > now;
+    return {
+      marketId: record.marketId || record.market_id,
+      personId: record.personId || record.person_id,
+      contentId: record.contentId || record.content_id || null,
+      instrument: record.instrument,
+      subjectScope: record.subjectScope || record.subject_scope,
+      question: record.question,
+      status: record.status,
+      isSimulation: true,
+      measurement: {
+        provider: record.measurementProvider || record.measurement_provider,
+        metricKey: record.measurementMetricKey || record.measurement_metric_key,
+        accessClass: record.measurementAccessClass || record.measurement_access_class,
+        baseline: record.baselineValue == null ? record.baseline_value : record.baselineValue,
+        baselineObservedAt: record.baselineObservedAt || record.baseline_observed_at || null,
+        target: record.targetValue == null ? record.target_value : record.targetValue
+      },
+      closesAt,
+      resolutionSource: record.resolutionSource || record.resolution_source,
+      rules: record.rules || {},
+      outcomes: jsonArray(record.outcomes),
+      tradeEligible: open && enabledFlag(record.tradeEligible == null ? record.trade_eligible : record.tradeEligible)
+    };
+  });
+}
+
 function sanitizeEvidence(record, allowedPlatforms) {
   if (!record || typeof record !== 'object') return null;
   const evidence = Object.assign({}, record);
@@ -110,7 +262,6 @@ function sanitizeEvidence(record, allowedPlatforms) {
       : evidence.youtubeIncludedInScore
   );
   const youtubePolicy = policyMode(evidence.youtubePolicyMode || evidence.youtube_policy_mode) || 'not-used';
-  const approved = youtubePolicy === 'youtube-derived-approved';
   const crossPlatformScore = evidence.crossPlatformScore == null
     ? evidence.cross_platform_score
     : evidence.crossPlatformScore;
@@ -118,7 +269,10 @@ function sanitizeEvidence(record, allowedPlatforms) {
     || (crossPlatformScore != null && suppliedCoverage.includes('youtube'));
   evidence.facts = jsonArray(evidence.facts || evidence.evidenceFacts || evidence.evidence_facts)
     .filter(isAllowedMetric)
-    .filter(item => !item.platform || allowed.includes(String(item.platform).toLowerCase()));
+    .filter(item => !item.platform || allowed.includes(String(item.platform).toLowerCase()))
+    .filter(item => String(item.accessClass || item.access_class || '') !== 'creator_authorized')
+    .map(item => sanitizeMetric(item))
+    .filter(Boolean);
   evidence.platformCoverage = suppliedCoverage.filter(platform => allowed.includes(platform));
   evidence.coverageGaps = jsonArray(evidence.coverageGaps || evidence.coverage_gaps);
   evidence.crossPlatformScore = crossPlatformScore == null ? null : crossPlatformScore;
@@ -130,13 +284,13 @@ function sanitizeEvidence(record, allowedPlatforms) {
   delete evidence.coverage_gaps;
   delete evidence.evidence_facts;
   delete evidence.platform_coverage;
-  if (youtubeCouldInfluenceScore && (!approved || youtubeUnavailable)) {
+  if (youtubeCouldInfluenceScore) {
     evidence.crossPlatformScore = null;
     evidence.youtubeIncludedInScore = false;
     evidence.coverageGaps = unique(evidence.coverageGaps
       .concat(youtubeUnavailable
         ? 'YouTube data excluded because the retained observation passed its refresh window.'
-        : 'YouTube data excluded from Backer-derived scoring pending API audit approval.'));
+        : 'YouTube data is excluded and isolated from Backer cross-platform scoring.'));
   }
   return evidence;
 }
@@ -174,11 +328,13 @@ function sanitizePerson(value, queryValue, nowValue) {
   if (!activePlatforms.length) return null;
 
   const rawMetrics = jsonArray(person.metrics || person.metricSnapshots || person.metric_snapshots);
+  const rawRollups = jsonArray(person.metricRollups || person.metric_rollups);
   const rawEvidence = jsonArray(person.evidence || person.attentionEvidence || person.attention_evidence);
   const explicitWindows = jsonArray(person.coverageWindows || person.coverage_windows)
     .map(item => String(item).toLowerCase());
   const retainedWindows = unique(explicitWindows
     .concat(rawMetrics.map(item => String(item.window || item.observationWindow || item.observation_window || '').toLowerCase()))
+    .concat(rawRollups.map(item => String(item.window || item.observationWindow || item.observation_window || '').toLowerCase()))
     .concat(rawEvidence.map(item => String(item.window || item.observationWindow || item.observation_window || '').toLowerCase())))
     .filter(item => Object.prototype.hasOwnProperty.call(WINDOWS, item));
   if (!retainedWindows.includes(queryOptions.window)) return null;
@@ -207,7 +363,14 @@ function sanitizePerson(value, queryValue, nowValue) {
     .filter(metric => activePlatforms.includes(String(metric.platform).toLowerCase()))
     .filter(metric => String(metric.subjectType || metric.subject_type || '') !== 'content'
       || !removedContentIds.has(String(metric.subjectId || metric.subject_id || '')))
-    .filter(isAllowedMetric);
+    .filter(isAllowedMetric)
+    .map(item => sanitizeMetric(item, nowValue))
+    .filter(Boolean);
+  const metricRollups = rawRollups
+    .filter(item => activePlatforms.includes(String(item.platform || item.provider).toLowerCase()))
+    .filter(item => String(item.window || item.observation_window || '').toLowerCase() === queryOptions.window)
+    .map(item => sanitizeRollup(item, nowValue))
+    .filter(Boolean);
   const evidence = rawEvidence
     .filter(record => String(
       record.window || record.observationWindow || record.observation_window || ''
@@ -231,6 +394,7 @@ function sanitizePerson(value, queryValue, nowValue) {
   person.coverageWindows = retainedWindows;
   person.content = content;
   person.metrics = metrics;
+  person.metricRollups = metricRollups;
   person.evidence = evidence;
   person.marketEligibility = eligibility;
   person.tradable = tradableInstruments.length > 0;
@@ -330,6 +494,7 @@ function uiSnapshotPerson(value, generatedAt) {
     coverageWindows: evidence.map(item => item.window),
     content,
     metrics: [],
+    metricRollups: [],
     evidence,
     marketEligibility: eligibility,
     tradable: false,
@@ -358,6 +523,7 @@ function rowToPerson(row, queryValue, nowValue) {
     sourceAccounts: jsonArray(row.source_accounts),
     content: jsonArray(row.content_items),
     metrics: jsonArray(row.metric_snapshots),
+    metricRollups: jsonArray(row.metric_rollups),
     evidence: jsonArray(row.attention_evidence),
     marketEligibility: jsonArray(row.market_eligibility),
     coverageWindows: jsonArray(row.coverage_windows),
@@ -381,6 +547,14 @@ function sortClause(sort) {
   return 'latest_observed_at desc nulls last, best_provider_rank asc nulls last, p.display_name asc';
 }
 
+function publicProviderState(status, hasLastGood) {
+  const value = String(status || '').toLowerCase();
+  if (hasLastGood || ['last-good', 'rate-limited'].includes(value)) return 'stale_snapshot';
+  if (value === 'permission-required') return 'permission_required';
+  if (['succeeded', 'fresh', 'live', 'partial'].includes(value)) return 'live';
+  return 'unavailable';
+}
+
 async function readProviderStatus(runQuery) {
   const result = await runQuery(
     `select distinct on (provider)
@@ -392,6 +566,7 @@ async function readProviderStatus(runQuery) {
   );
   return Object.fromEntries(result.rows.map(row => [row.provider, {
     status: row.status,
+    state: publicProviderState(row.status, Boolean(row.last_good_snapshot_reference)),
     completedAt: row.completed_at ? new Date(row.completed_at).toISOString() : null,
     refreshedAt: row.completed_at && ['succeeded', 'partial', 'last-good', 'empty-window'].includes(row.status)
       ? new Date(row.completed_at).toISOString()
@@ -403,6 +578,30 @@ async function readProviderStatus(runQuery) {
     diagnosticCode: row.diagnostic_code || null,
     lastGoodSnapshotReference: row.last_good_snapshot_reference || null
   }]));
+}
+
+async function readMarketCatalog(runQuery, personIds, nowValue) {
+  if (!Array.isArray(personIds) || !personIds.length) return [];
+  const result = await runQuery(
+    `select
+       market.*,
+       outcomes.outcomes
+     from market2_public_market_catalog market
+     left join lateral (
+       select jsonb_agg(jsonb_build_object(
+         'outcomeId', outcome.outcome_id,
+         'label', outcome.label,
+         'sortOrder', outcome.sort_order,
+         'settlementValue', outcome.settlement_value
+       ) order by outcome.sort_order, outcome.label) as outcomes
+       from market2_market_outcomes outcome
+       where outcome.market_id = market.market_id
+     ) outcomes on true
+     where market.person_id = any($1::text[])
+     order by market.closes_at asc, market.market_id asc`,
+    [personIds]
+  );
+  return sanitizeMarketCatalog(result.rows, nowValue);
 }
 
 function databaseSnapshotStatus(providerStatus, platforms) {
@@ -464,10 +663,16 @@ async function readDatabaseSnapshot(queryValue, dependencies) {
          )
          and (
            exists (
-             select 1 from market2_metric_snapshots metric
+             select 1 from market2_provider_observations metric
              where metric.person_id = p.person_id
-               and metric.platform = any($1::text[])
+               and metric.provider = any($1::text[])
                and metric.observation_window = $2
+           )
+           or exists (
+             select 1 from market2_metric_rollups rollup
+             where rollup.person_id = p.person_id
+               and rollup.provider = any($1::text[])
+               and rollup.observation_window = $2
            )
            or exists (
              select 1 from market2_attention_evidence evidence
@@ -484,6 +689,7 @@ async function readDatabaseSnapshot(queryValue, dependencies) {
        metrics.metric_snapshots,
        metrics.latest_observed_at,
        metrics.best_provider_rank,
+       rollups.metric_rollups,
        evidence.attention_evidence,
        evidence.coverage_windows,
        evidence.why_now,
@@ -500,9 +706,18 @@ async function readDatabaseSnapshot(queryValue, dependencies) {
          'accountType', account.account_type,
          'verificationState', account.verification_state,
          'policyMode', account.source_policy_mode,
-         'refreshedAt', account.latest_refresh_at
+         'refreshedAt', account.latest_refresh_at,
+         'identityLinkId', identity.identity_link_id,
+         'identityLinkConfidence', identity.link_confidence,
+         'identityReviewState', identity.review_state,
+         'identityReviewedAt', identity.reviewed_at
        ) order by account.platform) as source_accounts
        from market2_source_accounts account
+       left join market2_identity_links identity
+         on identity.person_id = account.person_id
+        and identity.platform = account.platform
+        and identity.native_account_id = account.native_account_id
+        and identity.review_state = 'approved'
        where account.person_id = p.person_id
          and account.platform = any($1::text[])
      ) accounts on true
@@ -534,26 +749,99 @@ async function readDatabaseSnapshot(queryValue, dependencies) {
      left join lateral (
        select
          jsonb_agg(jsonb_build_object(
-           'platform', metric.platform,
+           'platform', metric.provider,
            'subjectType', metric.subject_type,
            'subjectId', metric.subject_id,
-           'metricName', metric.metric_name,
-           'rawValue', metric.raw_metric_value,
-           'rawText', metric.raw_metric_text,
+           'metricName', metric.metric_key,
+           'nativeMetricName', metric.native_metric_name,
+           'label', metric.label,
+           'unit', metric.unit,
+           'kind', metric.metric_kind,
+           'rawValue', metric.raw_value,
+           'rawText', metric.raw_text,
            'window', metric.observation_window,
            'observedAt', metric.observed_at,
-           'sourceTimestamp', metric.source_timestamp,
+           'providerTimestamp', metric.provider_timestamp,
+           'fetchedAt', metric.fetched_at,
+           'freshUntil', metric.fresh_until,
+           'staleAt', metric.stale_at,
+           'expiresAt', metric.expires_at,
+           'availability', metric.availability,
+           'accessClass', metric.access_class,
+           'consentId', metric.consent_record_id,
+           'sourceUrl', metric.source_url,
+           'policyVersion', metric.policy_version,
+           'rawHash', metric.raw_hash,
+           'publiclyDisplayable', metric.access_class <> 'creator_authorized' or exists (
+             select 1
+             from market2_creator_consents consent
+             join market2_consent_scopes scope
+               on scope.consent_record_id = consent.consent_record_id
+              and scope.scope = 'owner_metrics_publication'
+              and scope.status = 'active'
+              and (scope.platform is null or scope.platform = metric.provider)
+              and (scope.expires_at is null or scope.expires_at > now())
+             where consent.consent_record_id = metric.consent_record_id
+               and consent.person_id = metric.person_id
+               and consent.status = 'active'
+               and consent.grants_profile_publication = true
+               and (consent.expires_at is null or consent.expires_at > now())
+           ),
            'providerRank', metric.provider_rank,
            'isDerived', metric.is_derived,
            'policyMode', metric.policy_mode
          ) order by metric.observed_at desc) as metric_snapshots,
          max(metric.observed_at) as latest_observed_at,
          min(metric.provider_rank) filter (where metric.provider_rank is not null) as best_provider_rank
-       from market2_metric_snapshots metric
+       from market2_provider_observations metric
        where metric.person_id = p.person_id
-         and metric.platform = any($1::text[])
+         and metric.provider = any($1::text[])
          and metric.observation_window in ($2, 'current', 'lifetime')
      ) metrics on true
+     left join lateral (
+       select jsonb_agg(jsonb_build_object(
+         'rollupId', rollup.rollup_id,
+         'platform', rollup.provider,
+         'subjectType', rollup.subject_type,
+         'subjectId', rollup.subject_id,
+         'metricKey', rollup.metric_key,
+         'nativeMetricName', rollup.native_metric_name,
+         'window', rollup.observation_window,
+         'effectiveStart', rollup.effective_start,
+         'effectiveEnd', rollup.effective_end,
+         'current', rollup.current_value,
+         'baseline', rollup.baseline_value,
+         'absoluteDelta', rollup.absolute_delta,
+         'percentDelta', rollup.percent_delta,
+         'sampleCount', rollup.sample_count,
+         'coverageRatio', rollup.coverage_ratio,
+         'state', rollup.state,
+         'accessClass', rollup.access_class,
+         'consentId', rollup.consent_record_id,
+         'methodVersion', rollup.method_version,
+         'observationIds', rollup.observation_ids,
+         'generatedAt', rollup.generated_at,
+         'publiclyDisplayable', rollup.access_class <> 'creator_authorized' or exists (
+           select 1
+           from market2_creator_consents consent
+           join market2_consent_scopes scope
+             on scope.consent_record_id = consent.consent_record_id
+            and scope.scope = 'owner_metrics_publication'
+            and scope.status = 'active'
+            and (scope.platform is null or scope.platform = rollup.provider)
+            and (scope.expires_at is null or scope.expires_at > now())
+           where consent.consent_record_id = rollup.consent_record_id
+             and consent.person_id = rollup.person_id
+             and consent.status = 'active'
+             and consent.grants_profile_publication = true
+             and (consent.expires_at is null or consent.expires_at > now())
+         )
+       ) order by rollup.generated_at desc) as metric_rollups
+       from market2_metric_rollups rollup
+       where rollup.person_id = p.person_id
+         and rollup.provider = any($1::text[])
+         and rollup.observation_window = $2
+     ) rollups on true
      left join lateral (
        select
          jsonb_agg(jsonb_build_object(
@@ -620,11 +908,12 @@ async function readDatabaseSnapshot(queryValue, dependencies) {
     }
     return true;
   });
+  const marketCatalog = await readMarketCatalog(runQuery, people.map(person => person.personId), now);
   const dates = people.map(person => Date.parse(person.latestObservedAt || 0)).filter(Number.isFinite);
   const generatedAt = dates.length ? new Date(Math.max(...dates)).toISOString() : new Date(now).toISOString();
   const state = databaseSnapshotStatus(providerStatus, options.platforms);
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     generatedAt,
     status: !people.length && state === 'live' ? 'empty-window' : state,
     isFixture: false,
@@ -635,9 +924,13 @@ async function readDatabaseSnapshot(queryValue, dependencies) {
     sort: options.sort,
     providerStatus,
     people,
-    rightRail: {},
+    marketCatalog,
+    rightRail: {
+      openSimulatedMarkets: marketCatalog.filter(market => market.status === 'open').length,
+      tradeEligibleMarkets: marketCatalog.filter(market => market.tradeEligible).length
+    },
     methodology: {
-      version: 'backer-market2-evidence-v1',
+      version: 'backer-market2-evidence-v2',
       crossPlatformScore: 'disabled-by-default',
       youtubeDerivedMetrics: 'requires-explicit-audit-approval',
       tradability: 'active-consent-and-policy-gates',
@@ -652,7 +945,7 @@ async function readDatabaseSnapshot(queryValue, dependencies) {
 function emptySnapshot(queryValue, nowValue) {
   const options = normalizeQuery(queryValue);
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     generatedAt: new Date(nowValue || Date.now()).toISOString(),
     status: 'permission-required',
     isFixture: false,
@@ -661,11 +954,15 @@ function emptySnapshot(queryValue, nowValue) {
     platforms: options.platforms,
     view: options.view,
     sort: options.sort,
-    providerStatus: Object.fromEntries(PLATFORMS.map(platform => [platform, { status: 'permission-required' }])),
+    providerStatus: Object.fromEntries(PLATFORMS.map(platform => [platform, {
+      status: 'permission-required',
+      state: 'permission_required'
+    }])),
     people: [],
+    marketCatalog: [],
     rightRail: {},
     methodology: {
-      version: 'backer-market2-evidence-v1',
+      version: 'backer-market2-evidence-v2',
       crossPlatformScore: 'disabled-by-default',
       youtubeDerivedMetrics: 'not-used',
       tradability: 'fail-closed',
@@ -705,7 +1002,19 @@ function applySnapshotQuery(snapshotValue, queryValue, nowValue) {
       snapshotAsOf: person.snapshotAsOf || source.generatedAt || null
     }));
   }
+  const providerStatus = Object.fromEntries(PLATFORMS.map(platform => {
+    const record = source.providerStatus && source.providerStatus[platform] || {};
+    const statedState = String(record.state || '');
+    const state = ['live', 'stale_snapshot', 'unavailable', 'permission_required'].includes(statedState)
+      ? statedState
+      : publicProviderState(record.status || record.state, safeStatus === 'delayed');
+    return [platform, Object.assign({}, record, { state })];
+  }));
+  const personIds = new Set(people.map(person => person.personId));
+  const marketCatalog = sanitizeMarketCatalog(source.marketCatalog || source.market_catalog || [], nowValue)
+    .filter(market => personIds.has(market.personId));
   return Object.assign({}, source, {
+    schemaVersion: 2,
     status: safeStatus,
     isFixture: Boolean(source.isFixture || statedStatus === 'fixture'),
     isSnapshot: true,
@@ -714,6 +1023,8 @@ function applySnapshotQuery(snapshotValue, queryValue, nowValue) {
     view: options.view,
     sort: options.sort,
     people,
+    providerStatus,
+    marketCatalog,
     nextCursor: hasMore ? encodeCursor(offset + options.limit) : null
   });
 }
@@ -773,10 +1084,15 @@ module.exports = {
   normalizeSort,
   normalizeView,
   normalizeWindow,
+  publicProviderState,
   readDatabaseSnapshot,
+  readMarketCatalog,
   readStaticSnapshot,
   rowToPerson,
   sanitizeEvidence,
+  sanitizeMarketCatalog,
+  sanitizeMetric,
   sanitizePerson,
+  sanitizeRollup,
   uiSnapshotPerson
 };

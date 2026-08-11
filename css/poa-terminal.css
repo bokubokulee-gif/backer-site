@@ -369,6 +369,11 @@ figure.pt-figure{margin:0;position:relative}
 .pt-evcard-h .pt-x{margin-left:auto;width:44px;height:44px}
 .pt-evcard-b{padding:12px 13px;font-size:11.5px;color:var(--pt-muted);line-height:1.5}
 .pt-evcard-b .pt-kv{font-size:11px}
+.pt-order-review .pt-kv{align-items:flex-start}
+.pt-order-review .pt-kv b{max-width:62%;white-space:normal;text-align:right}
+.pt-review-ack{display:flex;align-items:flex-start;gap:9px;margin:13px 0 2px;padding:11px;border:1px solid var(--pt-line2);border-radius:9px;background:var(--pt-bg2);color:var(--pt-ink);cursor:pointer}
+.pt-review-ack input{width:18px;height:18px;flex:none;margin:1px 0 0;accent-color:var(--pt-up)}
+.pt-review-ack span{font-size:10.5px;line-height:1.45}
 @media (max-width:560px){ .pt-evcard{left:0;right:0;bottom:0;width:100%;border-radius:14px 14px 0 0} }
 
 /* header cross-link buttons */
