@@ -49,7 +49,7 @@
 
   function configureReturn(source) {
     var fromPortfolio = source === 'portfolio' || source === 'portfolio_creator';
-    routeBackHref = source === 'portfolio_creator' ? 'portfolio.html?mode=creator' : source === 'portfolio' ? 'portfolio.html' : BACK_TO_MARKETS;
+    routeBackHref = source === 'portfolio_creator' ? 'portfolio.html?mode=creator' : source === 'portfolio' ? 'portfolio.html' : source === 'market2' ? 'backerdemo.html#market2' : BACK_TO_MARKETS;
     document.body.dataset.returnSource = fromPortfolio ? 'portfolio' : 'markets';
     var back = document.querySelector('.mdp-back');
     if (back) {

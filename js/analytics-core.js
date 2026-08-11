@@ -160,7 +160,8 @@
 
     if (file === 'backerdemo.html' || file === '' || file === 'index.html') {
       var requested = url.searchParams.get('view');
-      if (requested === 'market' || /^#market(?:\?|$)/.test(url.hash)) view = 'market';
+      if (requested === 'market2' || /^#market2(?:\?|$)/.test(url.hash)) view = 'market2';
+      else if (requested === 'market' || /^#market(?:\?|$)/.test(url.hash)) view = 'market';
       else if (requested === 'search') view = 'search';
       else view = 'home';
     } else if (file === 'backermarket.html') {
@@ -190,6 +191,7 @@
     var virtualView = view;
     if (view === 'home') { path = '/'; pageKey = 'home'; }
     else if (view === 'market') path = '/market';
+    else if (view === 'market2') path = '/market2';
     else if (view === 'search') path = '/search';
     else if (view === 'creator') path = arg ? '/creator/' + arg : '/creator';
     else if (view === 'portfolio') path = '/portfolio';

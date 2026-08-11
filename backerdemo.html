@@ -10,10 +10,11 @@
 <link rel="icon" type="image/png" href="img/backer-mark.png?v=2" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;650;700&amp;family=Geist+Mono:wght@400;500;600&amp;family=Inter:wght@400;500;600;700&amp;family=Instrument+Serif:ital@0;1&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/styles.css?v=20260806-3" />
 <link rel="stylesheet" href="css/search.css?v=7" />
 <link rel="stylesheet" href="css/market.css?v=20260806-1" />
+<link rel="stylesheet" href="css/market2.css?v=20260811-1" />
 <link rel="stylesheet" href="css/liquid-glass.css?v=20260731-2" />
 <link rel="stylesheet" href="css/poa-terminal.css?v=13" />
 <link rel="stylesheet" href="css/analytics.css?v=2" />
@@ -41,7 +42,7 @@
       <span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☼</span>
       <span class="theme-toggle-label" data-theme-label>Light</span>
     </button>
-    <button class="btn btn-primary" data-view="market">Enter Backer Market<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    <button class="btn btn-primary" data-view="market2">Enter Backer Market<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
   </div>
 </header>
 
@@ -285,7 +286,7 @@
         <span class="surface-cta">Try the agent <svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </article>
 
-      <article class="surface reveal" data-view="market">
+      <article class="surface reveal" data-view="market2">
         <div class="surface-tag">02 · Creator Discovery Feed</div>
         <h3>Every online IP is eligible. None of them post here.</h3>
         <p>SoundCloud rappers, niche educators, Bilibili vloggers, Substack writers. They link their existing platforms and establish a verified profile. We score them. You browse and back them.</p>
@@ -326,7 +327,7 @@
     <h2 class="finale-line">Attention has always been currency.</h2>
     <h2 class="finale-line grad-text">Now it can be equity.</h2>
     <div class="finale-cta">
-      <button class="btn btn-primary btn-lg" data-view="market">Enter Backer Market<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <button class="btn btn-primary btn-lg" data-view="market2">Enter Backer Market<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       <button class="btn btn-ghost btn-lg" data-view="search">Chat with Backer AI</button>
     </div>
   </section>
@@ -343,7 +344,7 @@
           <nav class="backer-footer__group" aria-label="Product">
             <h2>Product</h2>
             <ul>
-              <li><a class="backer-footer__link" href="backerdemo.html?view=market" data-view="market">Marketplace<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+              <li><a class="backer-footer__link" href="backerdemo.html#market2" data-view="market2">Marketplace<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
               <li><a class="backer-footer__link" href="backerdemo.html?view=search" data-view="search">AI Search<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
               <li><a class="backer-footer__link" href="portfolio.html" data-view="portfolio">Portfolio<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
             </ul>
@@ -387,7 +388,7 @@
   <button class="dock-btn" data-view="search" data-tip="Search" aria-label="AI Search">
     <svg viewBox="0 0 24 24" class="ic"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
   </button>
-  <button class="dock-btn" data-view="market" data-tip="Market" aria-label="Marketplace">
+  <button class="dock-btn" data-view="market2" data-tip="Market" aria-label="Marketplace">
     <svg viewBox="0 0 24 24" class="ic"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
   </button>
   <button class="dock-btn dock-home" data-nav="home" data-tip="Home" aria-label="Home">
@@ -403,10 +404,12 @@
 <script src="js/data.js"></script>
 <script src="js/market-data.js?v=3"></script>
 <script src="js/market.js?v=20260806-1"></script>
+<script src="js/market2-data.js?v=20260811-1"></script>
+<script src="js/market2.js?v=20260811-1"></script>
 <script src="js/search-engine.js?v=20260728-2"></script>
-<script src="js/analytics-core.js?v=1"></script>
+<script src="js/analytics-core.js?v=20260811-1"></script>
 <script src="js/analytics.js?v=2"></script>
-<script src="js/app.js?v=20260722-2"></script>
+<script src="js/app.js?v=20260811-1"></script>
 <script src="js/sections.js?v=2"></script>
 <script type="module" src="js/globe-live.mjs?v=20260806-1"></script>
 <script src="js/poa-terminal.js?v=14"></script>

@@ -183,7 +183,7 @@
   function go(view, arg) {
     if (view === 'portfolio') { window.location.href = 'portfolio.html'; return; }
     if (view === 'home') {
-      document.body.classList.remove('body-app', 'mkt-full');
+      document.body.classList.remove('body-app', 'mkt-full', 'mkt2-full');
       app.classList.add('hidden'); app.setAttribute('aria-hidden', 'true');
       $$('.dock-btn', dock).forEach(b => b.classList.remove('active'));
       $('.dock-home').classList.add('active');
@@ -193,16 +193,30 @@
       return;
     }
     document.body.classList.add('body-app');
-    document.body.classList.toggle('mkt-full', view === 'market'); // market view escapes the 1180px app cap
+    document.body.classList.toggle('mkt-full', view === 'market' || view === 'market2'); // market views escape the 1180px app cap
+    document.body.classList.toggle('mkt2-full', view === 'market2');
     app.classList.remove('hidden'); app.setAttribute('aria-hidden', 'false');
     window.scrollTo({ top: 0, behavior: 'auto' });
-    if (view === 'market') { renderMarket(); setDock('market'); }
+    if (view === 'market2') { renderMarket2(); setDock('market2'); }
+    else if (view === 'market') { renderMarket(); setDock('market'); }
     else if (view === 'creator') { renderCreator(arg); setDock('market'); }
     else if (view === 'portfolio') { renderPortfolio('investor'); setDock('portfolio'); }
     else if (view === 'search') { renderSearch(arg || ''); setDock('search'); }
     analyticsView(view, arg);
   }
   window.__backerGo = go;
+
+  /* ---------- PEOPLE-FIRST MARKET 2 ---------- */
+  function renderMarket2() {
+    if (window.BackerMarket2 && typeof window.BackerMarket2.render === 'function') {
+      try {
+        if (!/^#market2(?:\?|$)/.test(location.hash)) history.replaceState(null, '', location.pathname + location.search + '#market2');
+      } catch (e) {}
+      window.BackerMarket2.render(app);
+      return;
+    }
+    app.innerHTML = '<div class="m2-fatal" role="alert"><b>Marketplace unavailable.</b><span>The people-first market module did not load. Refresh this page to try again.</span></div>';
+  }
 
   /* ---------- MARKET ---------- */
   let activeFilter = 'all';
@@ -714,8 +728,9 @@
     // and shareable marketplace state links (#market?window=…&genre=…)
     try {
       var dl = new URLSearchParams(location.search).get('view');
-      if (dl && (dl === 'market' || dl === 'search')) go(dl);
-      else if (/^#market/.test(location.hash)) go('market');
+      if (dl && (dl === 'market' || dl === 'market2' || dl === 'search')) go(dl);
+      else if (/^#market2(?:\?|$)/.test(location.hash)) go('market2');
+      else if (/^#market(?:\?|$)/.test(location.hash)) go('market');
     } catch (e) {}
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
