@@ -1,17 +1,17 @@
 'use strict';
 
-const { verifyScryptPassword } = require('../_lib/crypto');
-const { HttpError } = require('../_lib/errors');
-const defaultRepository = require('../_lib/admin-repository');
-const { adminContext, auditContext } = require('../_lib/admin-handler');
+const { verifyScryptPassword } = require('../crypto');
+const { HttpError } = require('../errors');
+const defaultRepository = require('../admin-repository');
+const { adminContext, auditContext } = require('../admin-handler');
 const {
   assertMethod,
   createHandler,
   noStoreHeaders,
   readJsonBody,
   sendJson
-} = require('../_lib/http');
-const { validatePasswordBody } = require('../_lib/validate');
+} = require('../http');
+const { validatePasswordBody } = require('../validate');
 
 function createReauthHandler(dependencies) {
   const deps = dependencies || {};

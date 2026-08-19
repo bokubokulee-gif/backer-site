@@ -14,6 +14,7 @@ const state = {
   collectorFailure: false,
   adminAuthenticated: false,
   configAvailable: true,
+  analyticsCollectionEnabled: true,
   consentPolicyVersion: '2026-07-24',
   publicViewCountsEnabled: true,
   publicCountRequests: 0
@@ -56,6 +57,7 @@ async function handler(req, res) {
     }
     json(res, 200, {
       ga4MeasurementId: 'G-TEST12345',
+      analyticsCollectionEnabled: state.analyticsCollectionEnabled,
       consentPolicyVersion: state.consentPolicyVersion,
       publicViewCountsEnabled: state.publicViewCountsEnabled
     });
@@ -301,6 +303,23 @@ test('a disabled public-count flag mounts no badge and makes no count request', 
     assert.equal(state.publicCountRequests, 0);
   } finally {
     state.publicViewCountsEnabled = true;
+    await context.close();
+  }
+});
+
+test('a configured site with no collection backend exposes no inoperative consent controls', async () => {
+  state.views.length = 0;
+  state.analyticsCollectionEnabled = false;
+  const { context, page } = await newPage();
+  try {
+    await page.goto(`${origin}/backerdemo.html`, { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => Boolean(window.BackerAnalytics));
+    await page.waitForTimeout(150);
+    assert.equal(await page.locator('.backer-consent-panel').count(), 0);
+    assert.equal(await page.locator('.backer-privacy-settings').count(), 0);
+    assert.equal(state.views.length, 0);
+  } finally {
+    state.analyticsCollectionEnabled = true;
     await context.close();
   }
 });

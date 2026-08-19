@@ -59,7 +59,7 @@ test('static launch snapshot contains real identities and native metric provenan
   assert.doesNotMatch(JSON.stringify(metricRows), /watchers_count/);
 });
 
-test('Market2 keeps the deep browse rail while centering people, work, evidence, and four instruments', () => {
+test('Market2 keeps the deep browse rail while discovery loads only the real public-source catalog', () => {
   const source = read('js/market2.js');
   [
     'Trending',
@@ -77,11 +77,14 @@ test('Market2 keeps the deep browse rail while centering people, work, evidence,
     'pk_market',
     'creator_arena',
     'creator_perps',
-    '/api/market2/people',
-    'data/market2-people.json'
+    '/api/discovery/search',
+    'data/discovery-catalog.json',
+    'Original content feed'
   ].forEach((term) => assert.match(source, new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'), `missing Market2 affordance: ${term}`));
   assert.match(source, /PoaTerminal\.open/);
   assert.match(source, /permission.required|Permission required/i);
+  assert.doesNotMatch(source, /BACKER_MARKET2_DATA|Bundled fallback|Emergency bundled snapshot/);
+  assert.doesNotMatch(read('backerdemo.html'), /js\/market2-data\.js/);
 });
 
 test('Market2 normalization surfaces observed GitHub values before permission placeholders', () => {

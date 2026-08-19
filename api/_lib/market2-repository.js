@@ -3,6 +3,7 @@
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { query } = require('./db');
+const { HttpError } = require('./errors');
 
 const PLATFORMS = Object.freeze(['x', 'youtube', 'instagram', 'github']);
 const WINDOWS = Object.freeze({ '24h': 1, '7d': 7, '30d': 30, '90d': 90 });
@@ -42,11 +43,14 @@ function normalizeSort(value) {
 function decodeCursor(value) {
   if (!value) return 0;
   try {
-    const parsed = JSON.parse(Buffer.from(String(value), 'base64url').toString('utf8'));
+    const raw = String(value);
+    if (raw.length > 512 || !/^[A-Za-z0-9_-]+$/.test(raw)) throw new Error('invalid');
+    const parsed = JSON.parse(Buffer.from(raw, 'base64url').toString('utf8'));
     const offset = Number(parsed && parsed.offset);
-    return Number.isInteger(offset) && offset >= 0 && offset <= 10_000 ? offset : 0;
+    if (!Number.isSafeInteger(offset) || offset < 0) throw new Error('invalid');
+    return offset;
   } catch (_error) {
-    return 0;
+    throw new HttpError(400, 'Invalid Market 2 cursor', 'invalid_market2_cursor');
   }
 }
 

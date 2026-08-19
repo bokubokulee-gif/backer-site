@@ -1,16 +1,16 @@
 'use strict';
 
-const defaultRepository = require('../_lib/admin-repository');
-const { clearCookie } = require('../_lib/admin-auth');
-const { adminContext, auditContext } = require('../_lib/admin-handler');
+const defaultRepository = require('../admin-repository');
+const { clearCookie } = require('../admin-auth');
+const { adminContext, auditContext } = require('../admin-handler');
 const {
   assertMethod,
   createHandler,
   noStoreHeaders,
   readJsonBody,
   sendJson
-} = require('../_lib/http');
-const { HttpError } = require('../_lib/errors');
+} = require('../http');
+const { HttpError } = require('../errors');
 
 function createLogoutHandler(dependencies) {
   const deps = dependencies || {};

@@ -1,9 +1,9 @@
 'use strict';
 
-const { issueCsrfToken, sessionResponse } = require('../_lib/admin-auth');
-const defaultRepository = require('../_lib/admin-repository');
-const { adminContext } = require('../_lib/admin-handler');
-const { assertMethod, createHandler, noStoreHeaders, sendJson } = require('../_lib/http');
+const { issueCsrfToken, sessionResponse } = require('../admin-auth');
+const defaultRepository = require('../admin-repository');
+const { adminContext } = require('../admin-handler');
+const { assertMethod, createHandler, noStoreHeaders, sendJson } = require('../http');
 
 function createSessionHandler(dependencies) {
   const deps = dependencies || {};

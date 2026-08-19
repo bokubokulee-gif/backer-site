@@ -18,14 +18,10 @@ if (root && canvas) {
   const markerElevation = 0.015;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const labelHost = root.querySelector('[data-globe-labels]');
-  const totalViewers = root.querySelector('[data-globe-viewers]');
-  const markerViewerNodes = [];
   const markerLabels = [];
 
-  let liveViewers = 2847;
   let globe = null;
   let frameId = 0;
-  let viewerTimer = 0;
   let lastFrame = 0;
   let phi = 0;
   let phiOffset = 0;
@@ -37,7 +33,7 @@ if (root && canvas) {
   let destroyed = false;
 
   if (labelHost) {
-    markers.slice(0, 3).forEach((marker, index) => {
+    markers.slice(0, 3).forEach((marker) => {
       const label = document.createElement('span');
       label.className = 'val-globe-label';
       label.setAttribute('aria-hidden', 'true');
@@ -46,14 +42,10 @@ if (root && canvas) {
       const dot = document.createElement('i');
       dot.className = 'val-globe-label-dot';
       const live = document.createElement('b');
-      live.textContent = 'LIVE';
-      const count = document.createElement('span');
-      count.className = 'val-globe-label-count';
-      count.dataset.markerIndex = String(index);
+      live.textContent = 'SOURCE';
 
-      label.append(dot, live, count);
+      label.append(dot, live);
       labelHost.appendChild(label);
-      markerViewerNodes.push(count);
       markerLabels.push({ label, marker });
     });
   }
@@ -98,19 +90,6 @@ if (root && canvas) {
     });
   }
 
-  function updateViewerCopy() {
-    if (totalViewers) totalViewers.textContent = liveViewers.toLocaleString('en-US');
-    markerViewerNodes.forEach((node, index) => {
-      const share = 0.3 + 0.7 * Math.pow(0.6, index);
-      node.textContent = `${Math.floor(liveViewers * share).toLocaleString('en-US')} watching`;
-    });
-  }
-
-  function tickViewers() {
-    liveViewers = Math.max(100, liveViewers + Math.floor(Math.random() * 21) - 8);
-    updateViewerCopy();
-  }
-
   function updateGlobe() {
     if (!globe) return;
     globe.update({
@@ -141,16 +120,6 @@ if (root && canvas) {
     if (frameId) cancelAnimationFrame(frameId);
     frameId = 0;
     lastFrame = 0;
-  }
-
-  function startViewerTimer() {
-    if (viewerTimer || reduceMotion || !inView || document.hidden) return;
-    viewerTimer = window.setInterval(tickViewers, 900);
-  }
-
-  function stopViewerTimer() {
-    if (viewerTimer) clearInterval(viewerTimer);
-    viewerTimer = 0;
   }
 
   function initGlobe() {
@@ -242,10 +211,8 @@ if (root && canvas) {
     if (inView) {
       initGlobe();
       startRendering();
-      startViewerTimer();
     } else {
       stopRendering();
-      stopViewerTimer();
     }
   }, { threshold: 0.08, rootMargin: '120px 0px 120px 0px' });
   visibilityObserver.observe(root);
@@ -253,16 +220,13 @@ if (root && canvas) {
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       stopRendering();
-      stopViewerTimer();
     } else {
       startRendering();
-      startViewerTimer();
     }
   });
 
   window.addEventListener('pagehide', (event) => {
     stopRendering();
-    stopViewerTimer();
     if (event.persisted) return;
     destroyed = true;
     visibilityObserver.disconnect();
@@ -274,8 +238,5 @@ if (root && canvas) {
   window.addEventListener('pageshow', (event) => {
     if (!event.persisted || destroyed) return;
     startRendering();
-    startViewerTimer();
   });
-
-  updateViewerCopy();
 }

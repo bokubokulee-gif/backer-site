@@ -1,9 +1,9 @@
 'use strict';
 
-const analyticsRepository = require('../_lib/admin-analytics-repository');
-const { adminContext, auditContext } = require('../_lib/admin-handler');
-const { parseAnalyticsRange } = require('../_lib/date-range');
-const { assertMethod, createHandler, noStoreHeaders, sendJson } = require('../_lib/http');
+const analyticsRepository = require('../admin-analytics-repository');
+const { adminContext, auditContext } = require('../admin-handler');
+const { parseAnalyticsRange } = require('../date-range');
+const { assertMethod, createHandler, noStoreHeaders, sendJson } = require('../http');
 
 function createSummaryHandler(dependencies) {
   const deps = dependencies || {};

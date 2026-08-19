@@ -506,7 +506,22 @@ window.BackerMarket = (function () {
       const ex = raw.find(p => p.id === c.id);
       if (ex) ex.invested += amt; else raw.push({ id: c.id, invested: amt, when: 'Jul 2026' });
       localStorage.setItem(PKEY, JSON.stringify(raw));
-    } catch (e) {}
+    } catch (error) {
+      analyticsTrack('market_position_blocked', {
+        market_id: c.id,
+        creator_id: c.id,
+        instrument: 'milestone',
+        reason: 'storage-failed',
+        source: 'market'
+      });
+      const pv = $('#mktPosPrev', root);
+      if (pv) {
+        pv.innerHTML = posPreview(c, amt)
+          + '<p class="mkt-pos-err" role="alert">The simulated position was not saved. Check browser storage and try again.</p>';
+      }
+      toast('Position not saved — browser storage is unavailable');
+      return;
+    }
     sessionAdds[c.id] = (sessionAdds[c.id] || 0) + amt;
     analyticsTrack('market_position_completed', { market_id: c.id, creator_id: c.id, instrument: 'milestone', source: 'market' });
     const d = $('#mktPos', root);

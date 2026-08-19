@@ -45,9 +45,50 @@ async function findOrCreateSession(client, event) {
   return id;
 }
 
-async function refreshRollup(client, event) {
+async function refreshRollup(client, event, insertedView) {
+  const viewId = insertedView && insertedView.viewId;
+  const sessionRecordId = insertedView && insertedView.sessionRecordId;
+  if (!viewId || !sessionRecordId) throw new Error('inserted view identity is required');
   await client.query(
-    `insert into analytics_daily_rollups
+    `with membership as (
+       select
+         $4::boolean = false
+           and not exists (
+             select id
+               from analytics_page_views
+              where id <> $5
+                and occurred_at >= date_trunc('day', $1::timestamptz at time zone 'UTC') at time zone 'UTC'
+                and occurred_at < (date_trunc('day', $1::timestamptz at time zone 'UTC') + interval '1 day') at time zone 'UTC'
+                and canonical_path = $3
+                and session_record_id = $6
+                and is_bot = false
+           ) as new_session,
+         $4::boolean = false
+           and not exists (
+             select id
+               from analytics_page_views
+              where id <> $5
+                and occurred_at >= date_trunc('day', $1::timestamptz at time zone 'UTC') at time zone 'UTC'
+                and occurred_at < (date_trunc('day', $1::timestamptz at time zone 'UTC') + interval '1 day') at time zone 'UTC'
+                and canonical_path = $3
+                and visitor_hash = $7
+                and is_bot = false
+           ) as new_visitor,
+         $4::boolean = false
+           and $9::boolean
+           and not exists (
+             select id
+               from analytics_page_views
+              where id <> $5
+                and occurred_at >= date_trunc('day', $1::timestamptz at time zone 'UTC') at time zone 'UTC'
+                and occurred_at < (date_trunc('day', $1::timestamptz at time zone 'UTC') + interval '1 day') at time zone 'UTC'
+                and canonical_path = $3
+                and ip_hash = $8
+                and ip_masked is not null
+                and is_bot = false
+           ) as new_ip
+     )
+     insert into analytics_daily_rollups
        (
          rollup_date, page_key, canonical_path, human_views, bot_views,
          sessions, unique_visitors, unique_ips, latest_view_at, updated_at
@@ -56,28 +97,35 @@ async function refreshRollup(client, event) {
        ($1::timestamptz at time zone 'UTC')::date,
        $2,
        $3,
-       count(*) filter (where not is_bot),
-       count(*) filter (where is_bot),
-       count(distinct session_record_id) filter (where not is_bot),
-       count(distinct visitor_hash) filter (where not is_bot),
-       count(distinct ip_hash) filter (where not is_bot and ip_masked is not null),
-       max(occurred_at),
+       case when $4::boolean then 0 else 1 end,
+       case when $4::boolean then 1 else 0 end,
+       case when membership.new_session then 1 else 0 end,
+       case when membership.new_visitor then 1 else 0 end,
+       case when membership.new_ip then 1 else 0 end,
+       $1::timestamptz,
        $1::timestamptz
-     from analytics_page_views
-     where occurred_at >= date_trunc('day', $1::timestamptz at time zone 'UTC') at time zone 'UTC'
-       and occurred_at < (date_trunc('day', $1::timestamptz at time zone 'UTC') + interval '1 day') at time zone 'UTC'
-       and canonical_path = $3
+     from membership
      on conflict (rollup_date, canonical_path)
      do update set
        page_key = excluded.page_key,
-       human_views = excluded.human_views,
-       bot_views = excluded.bot_views,
-       sessions = excluded.sessions,
-       unique_visitors = excluded.unique_visitors,
-       unique_ips = excluded.unique_ips,
-       latest_view_at = excluded.latest_view_at,
+       human_views = analytics_daily_rollups.human_views + excluded.human_views,
+       bot_views = analytics_daily_rollups.bot_views + excluded.bot_views,
+       sessions = analytics_daily_rollups.sessions + excluded.sessions,
+       unique_visitors = analytics_daily_rollups.unique_visitors + excluded.unique_visitors,
+       unique_ips = analytics_daily_rollups.unique_ips + excluded.unique_ips,
+       latest_view_at = greatest(analytics_daily_rollups.latest_view_at, excluded.latest_view_at),
        updated_at = excluded.updated_at`,
-    [event.now, event.pageKey, event.canonicalPath]
+    [
+      event.now,
+      event.pageKey,
+      event.canonicalPath,
+      event.isBot,
+      viewId,
+      sessionRecordId,
+      event.visitorHash,
+      event.ipHash,
+      Boolean(event.ipMasked)
+    ]
   );
 }
 
@@ -169,7 +217,10 @@ async function recordViewWithClient(client, event, limits) {
       ]
     );
     if (!inserted.rowCount) return { accepted: true, duplicate: true };
-    await refreshRollup(client, event);
+    await refreshRollup(client, event, {
+      viewId: inserted.rows[0].id,
+      sessionRecordId
+    });
     return { accepted: true, duplicate: false };
 }
 

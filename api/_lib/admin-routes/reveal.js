@@ -1,18 +1,18 @@
 'use strict';
 
-const { analyticsConfig, requireSecret } = require('../_lib/env');
-const { decryptIp, parseEncryptionKey } = require('../_lib/crypto');
-const { HttpError } = require('../_lib/errors');
-const analyticsRepository = require('../_lib/admin-analytics-repository');
-const { adminContext, auditContext } = require('../_lib/admin-handler');
+const { analyticsConfig, requireSecret } = require('../env');
+const { decryptIp, parseEncryptionKey } = require('../crypto');
+const { HttpError } = require('../errors');
+const analyticsRepository = require('../admin-analytics-repository');
+const { adminContext, auditContext } = require('../admin-handler');
 const {
   assertMethod,
   createHandler,
   noStoreHeaders,
   readJsonBody,
   sendJson
-} = require('../_lib/http');
-const { validateRevealBody } = require('../_lib/validate');
+} = require('../http');
+const { validateRevealBody } = require('../validate');
 
 function encryptionKeyForVersion(version, config, dependencies) {
   if (dependencies && dependencies.encryptionKeys && dependencies.encryptionKeys[version]) {

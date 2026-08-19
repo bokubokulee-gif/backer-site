@@ -9,6 +9,7 @@ const {
   applySnapshotQuery,
   databasePersonState,
   databaseSnapshotStatus,
+  decodeCursor,
   encodeCursor,
   isEligibilityTradable,
   normalizeQuery,
@@ -79,6 +80,34 @@ test('Market 2 query normalization is bounded and deterministic', () => {
   assert.equal(query.sort, 'provider-rank');
   assert.equal(query.cursorOffset, 17);
   assert.equal(query.limit, 50);
+});
+
+test('Market 2 cursors traverse beyond ten thousand and reject malformed offsets', () => {
+  const people = Array.from({ length: 10_052 }, (_, index) => personFixture({
+    id: `person:x:creator-${index}`,
+    personId: `person:x:creator-${index}`,
+    displayName: `Creator ${index}`,
+    sourceAccounts: [sourceAccount('x', `creator-${index}`)]
+  }));
+  const page = applySnapshotQuery({
+    generatedAt: '2026-08-19T00:00:00Z',
+    status: 'snapshot',
+    people
+  }, {
+    platform: 'x',
+    window: '7d',
+    cursor: encodeCursor(10_050),
+    limit: 2
+  }, '2026-08-19T00:00:00Z');
+  assert.deepEqual(page.people.map(person => person.personId), [
+    'person:x:creator-10050',
+    'person:x:creator-10051'
+  ]);
+  assert.equal(page.nextCursor, null);
+  assert.equal(decodeCursor(encodeCursor(Number.MAX_SAFE_INTEGER)), Number.MAX_SAFE_INTEGER);
+  assert.throws(() => decodeCursor(Buffer.from(JSON.stringify({ offset: -1 })).toString('base64url')), /cursor/i);
+  assert.throws(() => decodeCursor(Buffer.from(JSON.stringify({ offset: 1.5 })).toString('base64url')), /cursor/i);
+  assert.throws(() => decodeCursor('not*base64url'), /cursor/i);
 });
 
 test('tradability fails closed unless every consent and review gate passes', () => {

@@ -14,9 +14,9 @@
 <link rel="stylesheet" href="css/styles.css?v=20260806-3" />
 <link rel="stylesheet" href="css/search.css?v=7" />
 <link rel="stylesheet" href="css/market.css?v=20260806-1" />
-<link rel="stylesheet" href="css/market2.css?v=20260812-2" />
+<link rel="stylesheet" href="css/market2.css?v=20260820-1" />
 <link rel="stylesheet" href="css/liquid-glass.css?v=20260731-2" />
-<link rel="stylesheet" href="css/poa-terminal.css?v=15" />
+<link rel="stylesheet" href="css/poa-terminal.css?v=20260819-1" />
 <link rel="stylesheet" href="css/analytics.css?v=2" />
 <link rel="stylesheet" href="css/theme.css?v=20260731-2" />
 <link rel="stylesheet" href="css/footer.css?v=20260731-1" />
@@ -38,6 +38,7 @@
   </a>
   <div class="site-menu-host" data-backer-site-menu></div>
   <div class="nav-cta">
+    <button type="button" data-backer-privacy-settings hidden aria-label="Open analytics privacy settings">Privacy</button>
     <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to light theme" aria-pressed="false">
       <span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☼</span>
       <span class="theme-toggle-label" data-theme-label>Light</span>
@@ -60,7 +61,7 @@
           <span data-bubble-text>Backer prices attention.</span>
         </em>
       </h1>
-      <form class="hero-search" id="heroSearch" autocomplete="off">
+      <form class="hero-search" id="market2HeroSearch" autocomplete="off">
         <svg viewBox="0 0 24 24" class="ic search-ic"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
         <input id="heroSearchInput" type="text" placeholder="Who are you backing?" />
         <button type="submit" class="search-go" aria-label="Search">
@@ -69,7 +70,7 @@
       </form>
 
       <div class="pills-shell">
-        <div class="pills" id="heroPills" role="group" aria-label="Popular Backer searches">
+        <div class="pills" id="market2HeroPills" role="group" aria-label="Popular Backer searches">
           <div class="pills-track">
             <div class="pills-group">
               <button class="pill" data-q="indie hackers shipping weekly">Indie hackers</button>
@@ -89,7 +90,7 @@
             </div>
           </div>
         </div>
-        <button class="pills-toggle" id="heroPillsToggle" type="button" aria-pressed="false" aria-label="Pause scrolling suggestions"><span aria-hidden="true">Ⅱ</span></button>
+        <button class="pills-toggle" id="market2HeroPillsToggle" type="button" aria-pressed="false" aria-label="Pause scrolling suggestions"><span aria-hidden="true">Ⅱ</span></button>
       </div>
     </div>
 
@@ -162,35 +163,33 @@
       </div>
     </div>
 
-    <!-- prediction market proof -->
+    <!-- evidence-first product premise -->
     <div class="val-proof">
       <div class="val-chart reveal" id="valChartCard">
         <div class="val-chart-head">
           <div class="val-chart-title">
-            <h3>The behavior is proven.</h3>
-            <p>Kalshi + Polymarket, combined monthly notional volume</p>
+            <h3>Attention needs an evidence trail.</h3>
+            <p>Backer keeps the source, observation time, metric meaning, and access state attached to every fact.</p>
           </div>
           <div class="val-chart-now">
-            <span class="val-now-num mono" data-countup data-to="24" data-prefix="$" data-suffix="B" data-dur="1400">$0B</span>
-            <span class="val-now-cap">per month · Apr&nbsp;2026</span>
+            <span class="val-now-num mono">SOURCE-NATIVE</span>
+            <span class="val-now-cap">evidence, not a universal score</span>
           </div>
         </div>
-        <div class="val-bars" id="valBars" aria-hidden="true"></div>
-        <div class="val-chart-x mono"><span>SEP 2025 · &lt;$5B</span><span>APR 2026 · ~$24B</span></div>
-        <p class="val-chart-note">Endpoints as reported; months between are interpolated for illustration.</p>
+        <p class="val-chart-note">Public creator records are for research and watchlists only. Discovery evidence never creates consent, tradability, or a real-money market.</p>
       </div>
       <div class="val-proof-side">
         <div class="val-fact reveal">
-          <b><span data-countup data-to="44" data-prefix="~$" data-suffix="B" data-dur="1200">~$0B</span></b>
-          <span>full-year 2025 total notional volume across the two venues</span>
+          <b>Records</b>
+          <span>Every creator, identity, work, and native source record stays distinct and traceable.</span>
         </div>
         <div class="val-fact reveal">
-          <b><span data-countup data-to="5" data-suffix="×" data-dur="1000">0×</span></b>
-          <span>growth in monthly flow in eight months — under $5B to&nbsp;~$24B</span>
+          <b>Signals</b>
+          <span>Reach, traction, momentum, coverage, and confidence remain separate evidence dimensions.</span>
         </div>
         <div class="val-fact reveal">
-          <b><span data-countup data-to="90" data-prefix="~" data-suffix="%" data-dur="1200">~0%</span></b>
-          <span>of volume on both platforms is sports, politics and crypto — the things people watch. The composition is the tell: <em>capital follows eyeballs.</em></span>
+          <b>Limits</b>
+          <span>Unavailable or permission-gated facts stay unavailable. Backer does not turn missing evidence into zero.</span>
         </div>
       </div>
     </div>
@@ -198,8 +197,8 @@
     <!-- asset base -->
     <div class="val-asset reveal">
       <div class="val-asset-head">
-        <h3>People already fund creators <span class="grad-text">with no return.</span></h3>
-        <p>The money isn't hypothetical. It already moves from believers to people — today, with zero return attached.</p>
+        <h3>Support already follows people. <span class="grad-text">Backer makes the evidence inspectable.</span></h3>
+        <p>Tips, memberships, subscriptions, and public engagement all describe different relationships. Backer keeps those meanings separate.</p>
       </div>
       <div class="val-asset-network">
         <svg class="val-branch-map" viewBox="0 0 1140 520" preserveAspectRatio="none" aria-hidden="true">
@@ -217,37 +216,34 @@
 
         <article class="val-branch-stat val-branch-stat-funding">
           <div class="val-branch-stat-core">
-            <b><span data-countup data-to="40" data-prefix="$" data-dur="1200">$0</span>–60B+</b>
-            <p>flows from fans directly to creators every year, globally — gifts, tips, memberships, etc</p>
+            <b>Direct support</b>
+            <p>Tips, memberships, subscriptions, and purchases are support signals—not promises of financial return.</p>
           </div>
         </article>
 
-        <figure class="val-globe-shell" data-globe-live aria-label="Live global creator support">
+        <figure class="val-globe-shell" data-globe-live aria-label="Illustrative global creator source map">
           <div class="val-globe-bezel" aria-hidden="true">
             <div class="val-globe-stage">
               <canvas class="val-globe-canvas" data-globe-canvas></canvas>
-              <div class="val-globe-labels" data-globe-labels></div>
             </div>
           </div>
           <figcaption class="val-globe-status">
-            <span class="val-globe-status-dot" aria-hidden="true"></span>
-            <span class="mono">LIVE SUPPORT</span>
-            <strong data-globe-viewers>2,847</strong>
-            <span>watching</span>
+            <span class="mono">GLOBAL SOURCE GRAPH</span>
+            <span>illustrative map</span>
           </figcaption>
         </figure>
 
         <article class="val-branch-stat val-branch-stat-market">
           <div class="val-branch-stat-core">
-            <b>$250B → <span data-countup data-to="480" data-prefix="$" data-suffix="B" data-dur="1400">$0B</span></b>
-            <p>creator-economy market value today and where Goldman Sachs projects by 2027</p>
+            <b>Public evidence</b>
+            <p>Source-native metrics, timestamps, methods, freshness, and confidence remain reviewable.</p>
           </div>
         </article>
 
         <article class="val-branch-stat val-branch-stat-creators">
           <div class="val-branch-stat-core">
-            <b><span data-countup data-to="207" data-suffix="M" data-dur="1400">0M</span></b>
-            <p>population on Earth identify themselves as a creator</p>
+            <b>Creator graph</b>
+            <p>Platform identities link only through reviewed evidence—never because two people share a name.</p>
           </div>
         </article>
       </div>
@@ -276,10 +272,10 @@
     </div>
 
     <div class="surfaces surface-tags-heavy">
-      <article class="surface reveal" data-view="search">
+      <article class="surface reveal" data-view="market2">
         <div class="surface-tag">01 · AI Search Agent</div>
         <h3>Describe who you're looking for. In plain language.</h3>
-        <p>"Find fitness creators under 5K followers posting 3× a week, growing steadily, retention-heavy — ideally university students." The agent traverses public data across platforms and ranks candidates by authenticity and trajectory.</p>
+        <p>"Find fitness creators under 5K followers posting 3× a week — ideally university students." Backer checks connected public sources, keeps each native metric attached to its origin, and shows unavailable evidence honestly.</p>
         <div class="surface-demo">
           <div class="mini-search"><svg viewBox="0 0 24 24" class="ic"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span class="typed" data-typed="fitness creators · under 5K · retention-heavy · students"></span></div>
         </div>
@@ -289,11 +285,9 @@
       <article class="surface reveal" data-view="market2">
         <div class="surface-tag">02 · Creator Discovery Feed</div>
         <h3>Every online IP is eligible. None of them post here.</h3>
-        <p>SoundCloud rappers, niche educators, Bilibili vloggers, Substack writers. They link their existing platforms and establish a verified profile. We score them. You browse and back them.</p>
-        <div class="surface-demo surface-feed">
-          <div class="mini-card"><span class="mini-auth">91%</span><span class="mini-name">Elena Vance</span></div>
-          <div class="mini-card"><span class="mini-auth">88%</span><span class="mini-name">Marcus Stillwater</span></div>
-          <div class="mini-card"><span class="mini-auth">83%</span><span class="mini-name">Sarah Fits</span></div>
+        <p>SoundCloud rappers, niche educators, Bilibili vloggers, Substack writers. Browse original work, native engagement, source freshness, and Backer's five evidence dimensions without a fabricated universal score.</p>
+        <div class="surface-demo surface-feed" id="backerLandingCreatorFeed" aria-live="polite">
+          <div class="mini-card is-loading"><span class="mini-auth">Public sources</span><span class="mini-name">Loading creator catalog…</span></div>
         </div>
         <span class="surface-cta">Open the marketplace <svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </article>
@@ -328,7 +322,7 @@
     <h2 class="finale-line grad-text">Now it can be equity.</h2>
     <div class="finale-cta">
       <button class="btn btn-primary btn-lg" data-view="market2">Enter Backer Market<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-      <button class="btn btn-ghost btn-lg" data-view="search">Chat with Backer AI</button>
+      <button class="btn btn-ghost btn-lg" data-view="market2">Search people and work</button>
     </div>
   </section>
 
@@ -345,7 +339,7 @@
             <h2>Product</h2>
             <ul>
               <li><a class="backer-footer__link" href="backerdemo.html#market2" data-view="market2">Marketplace<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
-              <li><a class="backer-footer__link" href="backerdemo.html?view=search" data-view="search">AI Search<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+              <li><a class="backer-footer__link" href="backerdemo.html#market2" data-view="market2">AI Search<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
               <li><a class="backer-footer__link" href="portfolio.html" data-view="portfolio">Portfolio<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
             </ul>
           </nav>
@@ -385,7 +379,7 @@
 
 <!-- BOTTOM DOCK -->
 <nav class="dock" id="dock" aria-label="App navigation">
-  <button class="dock-btn" data-view="search" data-tip="Search" aria-label="AI Search">
+  <button class="dock-btn" data-view="market2" data-tip="Search" aria-label="Search people and work">
     <svg viewBox="0 0 24 24" class="ic"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
   </button>
   <button class="dock-btn" data-view="market2" data-tip="Market" aria-label="Marketplace">
@@ -404,15 +398,13 @@
 <script src="js/data.js"></script>
 <script src="js/market-data.js?v=3"></script>
 <script src="js/market.js?v=20260806-1"></script>
-<script src="js/market2-data.js?v=20260812-2"></script>
-<script src="js/market2.js?v=20260812-2"></script>
-<script src="js/search-engine.js?v=20260728-2"></script>
+<script src="js/market2.js?v=20260820-1"></script>
 <script src="js/analytics-core.js?v=20260811-1"></script>
 <script src="js/analytics.js?v=2"></script>
 <script src="js/app.js?v=20260811-1"></script>
 <script src="js/sections.js?v=2"></script>
 <script type="module" src="js/globe-live.mjs?v=20260806-1"></script>
-<script src="js/poa-terminal.js?v=15"></script>
+<script src="js/poa-terminal.js?v=20260819-1"></script>
 <script src="js/flickering-footer.js?v=20260731-2"></script>
 </body>
 </html>

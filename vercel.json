@@ -2,10 +2,10 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "trailingSlash": false,
   "env": {
-    "PUBLIC_VIEW_COUNTS_ENABLED": "true",
-    "PUBLIC_VIEW_COUNT_BASELINE": "2049",
+    "PUBLIC_VIEW_COUNTS_ENABLED": "false",
+    "PUBLIC_VIEW_COUNT_BASELINE": "0",
     "PUBLIC_VIEW_COUNT_ANCHOR_DATE": "2026-07-24",
-    "PUBLIC_VIEW_COUNT_DAILY_INCREMENT": "3"
+    "PUBLIC_VIEW_COUNT_DAILY_INCREMENT": "0"
   },
   "rewrites": [
     {
@@ -19,7 +19,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https://github.com https://avatars.githubusercontent.com https://i.ytimg.com https://opengraph.githubassets.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com; upgrade-insecure-requests"
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https://github.com https://avatars.githubusercontent.com https://*.githubusercontent.com https://i.ytimg.com https://*.ytimg.com https://*.ggpht.com https://*.dev.to https://substackcdn.com https://*.substackcdn.com https://substack-post-media.s3.amazonaws.com https://storage.ghost.io https://static-cdn.jtvnw.net https://pbs.twimg.com https://*.fbcdn.net https://media.licdn.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com; upgrade-insecure-requests"
         },
         {
           "key": "Referrer-Policy",
@@ -72,16 +72,6 @@
           "value": "noindex, nofollow, noarchive"
         }
       ]
-    }
-  ],
-  "crons": [
-    {
-      "path": "/api/analytics/retention",
-      "schedule": "17 3 * * *"
-    },
-    {
-      "path": "/api/market2/sync",
-      "schedule": "43 4 * * *"
     }
   ]
 }

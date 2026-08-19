@@ -19,6 +19,7 @@
   var decision = 'rejected';
   var runtimeConfigAvailable = false;
   var runtimePolicyMatches = false;
+  var analyticsCollectionEnabled = false;
   var publicViewCountsEnabled = false;
   var hideUnavailableAnalyticsUI = false;
   var runtimeConfigPromise = null;
@@ -51,7 +52,7 @@
   window.gtag('set', 'url_passthrough', false);
 
   function accepted() {
-    return runtimePolicyMatches &&
+    return analyticsCollectionEnabled && runtimePolicyMatches &&
       decision === 'accepted' &&
       storedConsent &&
       storedConsent.decision === 'accepted';
@@ -89,12 +90,13 @@
   }
 
   function analyticsUIEnabled() {
-    return runtimeConfigAvailable || !hideUnavailableAnalyticsUI;
+    return analyticsCollectionEnabled && (runtimeConfigAvailable || !hideUnavailableAnalyticsUI);
   }
 
   function fallbackRuntimeConfig() {
     return {
       ga4MeasurementId: configuredMeasurementId(),
+      analyticsCollectionEnabled: false,
       consentPolicyVersion: Core.POLICY_VERSION,
       publicViewCountsEnabled: configuredPublicCountFlag(),
       configurationAvailable: false
@@ -105,6 +107,7 @@
     config = config || fallbackRuntimeConfig();
     hideUnavailableAnalyticsUI = configuredUnavailableAnalyticsUIFlag();
     runtimeConfigAvailable = config.configurationAvailable === true;
+    analyticsCollectionEnabled = config.analyticsCollectionEnabled === true;
     runtimePolicyMatches = runtimeConfigAvailable &&
       String(config.consentPolicyVersion || '').trim() === Core.POLICY_VERSION;
     publicViewCountsEnabled = config.publicViewCountsEnabled === true;
@@ -122,6 +125,7 @@
     if (!runtimePolicyMatches) stopAnalytics(false);
     return {
       ga4MeasurementId: runtimePolicyMatches ? validMeasurementId(config.ga4MeasurementId) : '',
+      analyticsCollectionEnabled: analyticsCollectionEnabled,
       consentPolicyVersion: Core.POLICY_VERSION,
       publicViewCountsEnabled: publicViewCountsEnabled,
       configurationAvailable: runtimeConfigAvailable,
@@ -149,6 +153,7 @@
       config = config || {};
       return {
         ga4MeasurementId: validMeasurementId(config.ga4MeasurementId || config.GA4_MEASUREMENT_ID),
+        analyticsCollectionEnabled: config.analyticsCollectionEnabled === true,
         consentPolicyVersion: config.consentPolicyVersion,
         publicViewCountsEnabled: config.publicViewCountsEnabled === true,
         configurationAvailable: true
@@ -490,6 +495,7 @@
 
   function setPublicCount(value, live) {
     if (!countEl) return;
+    countEl.hidden = false;
     countEl.textContent = formatCount(value);
     countEl.classList.toggle('is-live', !!live);
     countEl.setAttribute('data-source', live ? 'aggregate' : 'baseline');
@@ -497,7 +503,6 @@
 
   function refreshPublicCount() {
     if (!publicViewCountsEnabled || !countEl) return;
-    setPublicCount(Core.publicCountFallback(Date.now()), false);
     if (!window.fetch) return;
     fetch('/api/analytics/public-count', {
       method: 'GET',
@@ -511,7 +516,9 @@
       var value = Number(data && (data.count != null ? data.count : data.views != null ? data.views : data.total));
       if (!isFinite(value) || value < 0) return;
       setPublicCount(Math.floor(value), true);
-    }).catch(function () {});
+    }).catch(function () {
+      if (countEl) countEl.hidden = true;
+    });
   }
 
   function mountBrandCount() {
@@ -541,6 +548,23 @@
       else if (form.matches('#mktNL')) source = 'market';
       if (source) track('search_submitted', { source: source });
     }, true);
+  }
+
+  function bindPrivacySettings() {
+    document.addEventListener('click', function (event) {
+      var trigger = event.target && event.target.closest && event.target.closest('[data-backer-privacy-settings]');
+      if (!trigger) return;
+      event.preventDefault();
+      window.BackerAnalytics.openPrivacySettings();
+    });
+  }
+
+  function mountPrivacySettings() {
+    document.querySelectorAll('[data-backer-privacy-settings]').forEach(function (trigger) {
+      var enabled = analyticsUIEnabled();
+      trigger.hidden = !enabled;
+      trigger.classList.toggle('backer-privacy-settings', enabled);
+    });
   }
 
   function bindBackerEventBridge() {
@@ -581,10 +605,12 @@
   function bootDOM() {
     runtimeReady.then(function () {
       mountBrandCount();
+      mountPrivacySettings();
       if (analyticsUIEnabled()) {
         if (!storedConsent || !runtimePolicyMatches) showConsentPanel(false);
       }
       bindSearchEvents();
+      bindPrivacySettings();
       if (accepted()) {
         enableGA();
         recordRoute(currentRoute);

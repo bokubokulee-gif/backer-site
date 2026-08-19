@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "methodologyVersion": "backer-reviewed-identity-links-v1",
+  "links": [
+    {
+      "id": "microsoft-official-platforms-2026-08-19",
+      "displayName": "Microsoft",
+      "reviewState": "approved",
+      "reviewedAt": "2026-08-19T00:00:00.000Z",
+      "canonicalAccount": {
+        "provider": "github",
+        "nativeId": "6154722",
+        "profileUrl": "https://github.com/microsoft"
+      },
+      "accounts": [
+        {
+          "provider": "github",
+          "nativeId": "6154722",
+          "profileUrl": "https://github.com/microsoft"
+        },
+        {
+          "provider": "youtube",
+          "nativeId": "UCFtEEv80fQVKkD4h1PF-Xqw",
+          "profileUrl": "https://www.youtube.com/@Microsoft"
+        }
+      ],
+      "evidenceUrls": [
+        "https://github.com/microsoft",
+        "https://www.youtube.com/channel/UCFtEEv80fQVKkD4h1PF-Xqw/about"
+      ],
+      "reviewRationale": "The exact GitHub organization is platform-verified for microsoft.com and the exact YouTube channel ID is marked as the verified Microsoft channel. The reviewed link is keyed only by immutable provider IDs and canonical profile URLs."
+    }
+  ]
+}

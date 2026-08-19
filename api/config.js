@@ -11,11 +11,15 @@ function createConfigHandler(dependencies) {
     const measurementId = /^G-[A-Z0-9]+$/i.test(config.ga4MeasurementId)
       ? config.ga4MeasurementId.toUpperCase()
       : '';
+    const collectionEnabled = deps.collectionEnabled == null
+      ? Boolean(measurementId || process.env.DATABASE_URL)
+      : deps.collectionEnabled === true;
     sendJson(
       res,
       200,
       {
         ga4MeasurementId: measurementId,
+        analyticsCollectionEnabled: collectionEnabled,
         consentPolicyVersion: config.consentPolicyVersion,
         publicViewCountsEnabled: config.publicViewCountsEnabled
       },

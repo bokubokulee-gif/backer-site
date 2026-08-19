@@ -1,23 +1,23 @@
 'use strict';
 
-const { analyticsConfig } = require('../_lib/env');
-const { HttpError } = require('../_lib/errors');
-const { verifyScryptPassword } = require('../_lib/crypto');
+const { analyticsConfig } = require('../env');
+const { HttpError } = require('../errors');
+const { verifyScryptPassword } = require('../crypto');
 const {
   createAdminSession,
   requestIpHash,
   sessionResponse
-} = require('../_lib/admin-auth');
-const defaultRepository = require('../_lib/admin-repository');
+} = require('../admin-auth');
+const defaultRepository = require('../admin-repository');
 const {
   assertMethod,
   createHandler,
   noStoreHeaders,
   readJsonBody,
   sendJson
-} = require('../_lib/http');
-const { assertMutationOrigin } = require('../_lib/origin');
-const { validatePasswordBody } = require('../_lib/validate');
+} = require('../http');
+const { assertMutationOrigin } = require('../origin');
+const { validatePasswordBody } = require('../validate');
 
 function createLoginHandler(dependencies) {
   const deps = dependencies || {};

@@ -15,8 +15,8 @@
   var VISITOR_KEY = 'backer_analytics_visitor_v1';
   var SESSION_KEY = 'backer_analytics_session_v1';
   var SESSION_TTL_MS = 30 * 60 * 1000;
-  var PUBLIC_COUNT_BASE = 2049;
-  var PUBLIC_COUNT_DAILY = 3;
+  var PUBLIC_COUNT_BASE = 0;
+  var PUBLIC_COUNT_DAILY = 0;
   var PUBLIC_COUNT_ANCHOR_UTC = Date.UTC(2026, 6, 24);
 
   var EVENT_PROPS = {

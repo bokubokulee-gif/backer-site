@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # =====================================================================
-# Backer → GitHub Pages, one-shot deploy.
-# Creates the repo, pushes the site, and enables Pages — all via the
-# GitHub API, so you only need: git (already installed) + a token.
+# Backer → GitHub Pages, one-shot repository setup.
+# Creates the repo, pushes the site, and selects the repository's pinned,
+# allowlisted GitHub Actions Pages workflow.
 #
 #   1) Make a token (classic) with the "repo" scope:
 #        https://github.com/settings/tokens/new?scopes=repo&description=backer-deploy
@@ -41,12 +41,12 @@ git remote add origin "https://${GH_USER}:${GH_TOKEN}@github.com/${GH_USER}/${RE
 git push -u origin main
 git remote set-url origin "https://github.com/${GH_USER}/${REPO}.git"   # strip token from config
 
-echo "  • Enabling GitHub Pages (branch: main, path: /)…"
+echo "  • Enabling the allowlisted GitHub Actions Pages workflow…"
 curl -fsS -X POST "${API}/repos/${GH_USER}/${REPO}/pages" -H "${HDR_AUTH}" -H "${HDR_ACC}" \
-  -d '{"source":{"branch":"main","path":"/"}}' >/dev/null 2>&1 \
+  -H "X-GitHub-Api-Version: 2026-03-10" -d '{"build_type":"workflow"}' >/dev/null 2>&1 \
   || curl -fsS -X PUT "${API}/repos/${GH_USER}/${REPO}/pages" -H "${HDR_AUTH}" -H "${HDR_ACC}" \
-       -d '{"source":{"branch":"main","path":"/"}}' >/dev/null 2>&1 \
-  || echo "    (couldn't auto-enable — turn it on in Settings → Pages → Branch: main /root)"
+       -H "X-GitHub-Api-Version: 2026-03-10" -d '{"build_type":"workflow"}' >/dev/null 2>&1 \
+  || echo "    (couldn't auto-enable — choose GitHub Actions in Settings → Pages)"
 
 echo ""
 echo "  ✅ Done. Live in ~1 minute (first build) at:"

@@ -1,10 +1,10 @@
 'use strict';
 
-const analyticsRepository = require('../_lib/admin-analytics-repository');
-const { adminContext, auditContext } = require('../_lib/admin-handler');
-const { parseAnalyticsRange, queryValue } = require('../_lib/date-range');
-const { HttpError } = require('../_lib/errors');
-const { assertMethod, createHandler, noStoreHeaders, sendJson } = require('../_lib/http');
+const analyticsRepository = require('../admin-analytics-repository');
+const { adminContext, auditContext } = require('../admin-handler');
+const { parseAnalyticsRange, queryValue } = require('../date-range');
+const { HttpError } = require('../errors');
+const { assertMethod, createHandler, noStoreHeaders, sendJson } = require('../http');
 
 function parseLimit(req) {
   const raw = queryValue(req, 'limit');

@@ -15,10 +15,11 @@ const {
 } = require('../api/analytics/public-count');
 const { createRetentionHandler } = require('../api/analytics/retention');
 const { createViewHandler } = require('../api/analytics/view');
-const { createLoginHandler } = require('../api/admin/login');
-const { createReauthHandler } = require('../api/admin/reauth');
-const { createRevealHandler } = require('../api/admin/reveal');
-const { createSessionHandler } = require('../api/admin/session');
+const { createLoginHandler } = require('../api/_lib/admin-routes/login');
+const { createReauthHandler } = require('../api/_lib/admin-routes/reauth');
+const { createRevealHandler } = require('../api/_lib/admin-routes/reveal');
+const { createSessionHandler } = require('../api/_lib/admin-routes/session');
+const { createAdminRouteHandler } = require('../api/admin/[route]');
 
 const NOW = new Date('2026-07-24T12:00:00.000Z');
 const HASH_SECRET = 'h'.repeat(48);
@@ -119,6 +120,23 @@ function payload(overrides) {
   );
 }
 
+test('the consolidated admin route preserves public endpoint paths and fails closed for unknown routes', async () => {
+  const handler = createAdminRouteHandler({
+    routes: {
+      session: async (_req, res) => res.status(200).json({ ok: true })
+    }
+  });
+  const success = response();
+  await handler(request('GET', undefined, {}, '/api/admin/session'), success);
+  assert.equal(success.statusCode, 200);
+  assert.deepEqual(success.body, { ok: true });
+
+  const missing = response();
+  await handler(request('GET', undefined, {}, '/api/admin/not-a-route'), missing);
+  assert.equal(missing.statusCode, 404);
+  assert.equal(missing.body.error, 'Not found');
+});
+
 function adminSession(overrides) {
   return Object.assign(
     {
@@ -160,6 +178,7 @@ function adminDependencies(overrides) {
 
 test('GET /api/config returns only the public contract and is never cached', async () => {
   const handler = createConfigHandler({
+    collectionEnabled: true,
     config: {
       ga4MeasurementId: 'g-test123',
       consentPolicyVersion: '2026-07-24',
@@ -171,6 +190,7 @@ test('GET /api/config returns only the public contract and is never cached', asy
   assert.equal(res.statusCode, 200);
   assert.deepEqual(res.body, {
     ga4MeasurementId: 'G-TEST123',
+    analyticsCollectionEnabled: true,
     consentPolicyVersion: '2026-07-24',
     publicViewCountsEnabled: true
   });
@@ -468,8 +488,12 @@ test('bot traffic is stored diagnostically but excluded from human rollup and su
     { withTransaction: transaction }
   );
   assert.equal(insertedBotFlag, true);
-  assert.match(rollupSql, /count\(\*\) filter \(where not is_bot\)/);
-  assert.match(rollupSql, /count\(\*\) filter \(where is_bot\)/);
+  assert.doesNotMatch(rollupSql, /count\(\*\)|count\(distinct/i);
+  assert.match(rollupSql, /human_views = analytics_daily_rollups\.human_views \+ excluded\.human_views/);
+  assert.match(rollupSql, /bot_views = analytics_daily_rollups\.bot_views \+ excluded\.bot_views/);
+  assert.match(rollupSql, /and session_record_id = \$6/);
+  assert.match(rollupSql, /and visitor_hash = \$7/);
+  assert.match(rollupSql, /and ip_hash = \$8/);
 
   const dbModule = require('../api/_lib/db');
   const repositoryPath = require.resolve('../api/_lib/admin-analytics-repository');

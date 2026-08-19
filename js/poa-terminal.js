@@ -2,10 +2,10 @@
    Proof of Attention — Creator Market Terminal
    Self-contained, no dependencies, no build step. Vanilla JS.
 
-   Opens as a modal from any creator / PoA / event / bet click across the
-   Backer site (backerdemo.html + portfolio.html) via a global capture-phase
-   click delegate. Deterministic: every series is synthesised from a stable
-   seed (no Math.random at runtime), so the demo replays identically.
+   Opens as a modal from creator / PoA / event / bet clicks across the Backer
+   demo. Real public discovery profiles use the strict evidence-only route:
+   only supplied native observations render. Deterministic synthesis remains
+   available solely for explicitly simulated legacy demo markets.
 
    Semantic separation is strict:
      • Public Attention Velocity Index  — observed public-view activity (K-line)
@@ -1870,8 +1870,50 @@
       modalSiblings = [];
     }
   }
+
+  function strictURL(value) {
+    try {
+      var parsed = new URL(String(value || ''), window.location.href);
+      return parsed.protocol === 'https:' || parsed.protocol === 'http:' ? parsed.href : '';
+    } catch (error) { return ''; }
+  }
+
+  function strictDate(value) {
+    var parsed = Date.parse(value || '');
+    if (!Number.isFinite(parsed)) return 'Time unavailable';
+    try { return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(parsed)); }
+    catch (error) { return new Date(parsed).toISOString().slice(0, 10); }
+  }
+
+  function strictEvidenceTemplate(ctx) {
+    var evidence = ctx.strictEvidence || {};
+    var dimensions = Array.isArray(evidence.dimensions) ? evidence.dimensions : [];
+    var gaps = Array.isArray(evidence.gaps) ? evidence.gaps : [];
+    var sources = (Array.isArray(evidence.sources) ? evidence.sources : []).map(strictURL).filter(function (url, index, all) { return url && all.indexOf(url) === index; });
+    var dimensionHTML = dimensions.map(function (dimension) {
+      var source = strictURL(dimension.sourceUrl);
+      return '<article class="pt-strict-dimension is-' + esc(dimension.id || 'evidence') + '"><span>' + esc(dimension.label || 'Evidence') + '</span><strong>' + esc(dimension.value || 'Unavailable') + '</strong><p>' + esc(dimension.detail || 'No retained native observation') + '</p><footer><small>' + esc(dimension.state || 'Unavailable') + (dimension.asOf ? ' · ' + esc(strictDate(dimension.asOf)) : '') + '</small>' + (source ? '<a href="' + esc(source) + '" target="_blank" rel="noreferrer">Source ↗</a>' : '') + '</footer></article>';
+    }).join('');
+    return '<div class="pt-scrim" data-close></div><section class="pt-term pt-strict-term" role="dialog" aria-modal="true" aria-labelledby="ptStrictTitle"><header class="pt-head"><div class="pt-id"><span class="pt-av pt-strict-av">' + esc(String(ctx.name || 'B').split(/\s+/).slice(0, 2).map(function (part) { return part.charAt(0); }).join('').toUpperCase()) + '</span><div class="pt-id-t"><h2 class="pt-name" id="ptStrictTitle">' + esc(ctx.name || 'Public creator') + '</h2><div class="pt-sub">' + esc(ctx.handle || '') + ' · Proof of Attention evidence</div></div></div><div class="pt-head-stats"><span class="pt-hstat"><small>As of</small><b>' + esc(strictDate(evidence.asOf)) + '</b></span></div><button class="pt-x" type="button" data-close aria-label="Close evidence details">' + ICO.x + '</button></header><div class="pt-disc">' + ICO.info + '<span>Native observations remain separate. Backer does not convert Reach, Traction, Momentum, Coverage, or Confidence into a universal score, price, or verdict.</span></div><div class="pt-strict-body"><main><span class="pt-strict-kicker">Backer evidence frame</span><h3>' + esc(evidence.title || 'Proof of Attention') + '</h3><p class="pt-strict-lede">' + esc(evidence.interpretation || 'Only retained source observations are shown.') + '</p><div class="pt-strict-dimensions">' + (dimensionHTML || '<div class="pt-empty"><b>No retained dimensions.</b><p>Unavailable evidence remains unavailable.</p></div>') + '</div></main><aside><section class="pt-strict-panel"><span>Method</span><h4>' + esc(evidence.methodologyVersion || 'Backer native-evidence frame') + '</h4><p>Dimensions preserve provider-native names, units, source links, and observation times.</p></section><section class="pt-strict-panel"><span>Coverage gaps · ' + gaps.length + '</span>' + (gaps.length ? '<ul>' + gaps.map(function (gap) { return '<li>' + esc(gap) + '</li>'; }).join('') + '</ul>' : '<p>No coverage gaps were listed in this response.</p>') + '</section><section class="pt-strict-panel"><span>Original sources · ' + sources.length + '</span>' + (sources.length ? '<ol>' + sources.map(function (url) { return '<li><a href="' + esc(url) + '" target="_blank" rel="noreferrer">' + esc((function () { try { return new URL(url).hostname.replace(/^www\./, ''); } catch (error) { return 'Original source'; } })()) + ' ↗</a></li>'; }).join('') + '</ol>' : '<p>No source URL was retained for this view.</p>') + '</section></aside></div></section>';
+  }
+
+  function openStrictEvidence(ctx) {
+    ensureRoot();
+    S = { strict: true, timer: null, playing: false };
+    lastFocus = document.activeElement;
+    ROOT.innerHTML = strictEvidenceTemplate(ctx);
+    ROOT.classList.add('open');
+    setModalBackgroundInert(true);
+    document.documentElement.style.overflow = 'hidden';
+    var bg = document.getElementById('bg'); if (bg) bg.style.visibility = 'hidden';
+    ROOT.querySelectorAll('[data-close]').forEach(function (button) { button.addEventListener('click', close); });
+    track('poa_evidence_viewed', { seed: ctx.seed || '', strict: true });
+    var closeButton = ROOT.querySelector('.pt-x'); if (closeButton) try { closeButton.focus(); } catch (error) {}
+  }
+
   function open(ctx) {
     ctx = ctx || {};
+    if (ctx.strictEvidence) { openStrictEvidence(ctx); return; }
     ensureRoot();
     var seed = ctx.seed || (ctx.creator && ctx.creator.id) || (ctx.position && ('pos_' + ctx.position.id)) || ctx.id || ctx.name || 'creator';
     ctx.seed = seed;

@@ -1,10 +1,10 @@
 'use strict';
 
-const analyticsRepository = require('../_lib/admin-analytics-repository');
-const { adminContext, auditContext } = require('../_lib/admin-handler');
-const { toCsv } = require('../_lib/csv');
-const { parseAnalyticsRange } = require('../_lib/date-range');
-const { assertMethod, createHandler, noStoreHeaders, sendText } = require('../_lib/http');
+const analyticsRepository = require('../admin-analytics-repository');
+const { adminContext, auditContext } = require('../admin-handler');
+const { toCsv } = require('../csv');
+const { parseAnalyticsRange } = require('../date-range');
+const { assertMethod, createHandler, noStoreHeaders, sendText } = require('../http');
 
 const CSV_HEADERS = [
   { key: 'viewedAt', label: 'Viewed at (UTC)' },
