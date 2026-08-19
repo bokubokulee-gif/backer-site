@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="backer-hide-unavailable-analytics-ui" content="true" />
+  <title>Set up your Backer recommendations</title>
+  <meta name="description" content="Optional questions that help Backer AI tailor creator and attention recommendations to you." />
+  <meta name="robots" content="noindex,follow" />
+  <link rel="icon" type="image/png" href="img/backer-mark.png?v=2" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Instrument+Serif:ital@0;1&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/app-pages.css?v=3" />
+  <link rel="stylesheet" href="css/onboarding.css?v=2" />
+  <link rel="stylesheet" href="css/analytics.css?v=2" />
+</head>
+<body class="page-onboarding">
+  <canvas id="bg" aria-hidden="true"></canvas>
+  <div class="onboarding-backdrop" aria-hidden="true">
+    <div class="onboarding-glow onboarding-glow--one"></div>
+    <div class="onboarding-glow onboarding-glow--two"></div>
+  </div>
+
+  <header class="onboarding-header">
+    <a class="brand onboarding-brand" href="signup.html" aria-label="Backer signup">
+      <span class="brand-mark" aria-hidden="true"><img src="img/backer-mark.png?v=2" alt="" /></span>
+      <span class="brand-word">Backer</span>
+      <span class="brand-sub">Beta</span>
+    </a>
+    <button class="header-skip" id="skipSetupTop" type="button">Skip setup</button>
+  </header>
+
+  <main class="onboarding-shell">
+    <aside class="footprint-panel" aria-labelledby="footprintTitle">
+      <div class="footprint-copy">
+        <p class="section-kicker"><span></span>Private recommendation setup</p>
+        <h1 id="footprintTitle">Let Backer AI understand your <em>digital attention footprint</em> better.</h1>
+        <p class="footprint-intro">Share only what feels useful. Your answers help us surface better people, platforms, and opportunities from the start.</p>
+      </div>
+
+      <div class="attention-map" aria-hidden="true">
+        <div class="map-aura"></div>
+        <div class="orbit orbit--outer"></div>
+        <div class="orbit orbit--middle"></div>
+        <div class="orbit orbit--inner"></div>
+        <div class="map-line map-line--one"></div>
+        <div class="map-line map-line--two"></div>
+        <span class="map-node map-node--core"><i></i></span>
+        <span class="map-node map-node--one"><i></i></span>
+        <span class="map-node map-node--two"><i></i></span>
+        <span class="map-node map-node--three"><i></i></span>
+        <span class="map-node map-node--four"><i></i></span>
+        <span class="map-label map-label--one">Platforms</span>
+        <span class="map-label map-label--two">Motivation</span>
+        <span class="map-label map-label--three">Recommendations</span>
+      </div>
+
+      <ul class="trust-list" aria-label="How Backer protects your answers">
+        <li>
+          <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M7 10V7a5 5 0 0110 0v3"/><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M12 14v3"/></svg>
+          <span><strong>Private by design</strong>Your answers stay in this browser’s beta profile.</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M4 18l5-5 4 3 7-9"/><path d="M15 7h5v5"/></svg>
+          <span><strong>Recommendations only</strong>Never used as public profile data or sent as analytics.</span>
+        </li>
+      </ul>
+    </aside>
+
+    <section class="setup-panel" aria-labelledby="setupTitle">
+      <div class="setup-card">
+        <div class="privacy-note" role="note">
+          <span class="privacy-note__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" class="ic"><path d="M12 3l7 3v5c0 4.5-2.8 8.1-7 10-4.2-1.9-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+          </span>
+          <p><strong>Your privacy is protected.</strong> Every question is optional. We only use what you share to improve your recommendations.</p>
+        </div>
+
+        <section class="role-screen" id="roleScreen" aria-labelledby="setupTitle">
+          <p class="panel-kicker">Optional · about 30 seconds</p>
+          <h2 id="setupTitle">How will you use Backer?</h2>
+          <p class="screen-intro">Choose one to shape the questions. You can change your answer or skip setup at any time.</p>
+
+          <div class="role-options">
+            <button class="role-option" type="button" data-role="backer">
+              <span class="role-option__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" class="ic"><path d="M4 17l5-5 4 3 7-8"/><path d="M15 7h5v5"/></svg>
+              </span>
+              <span class="role-option__copy"><strong>Back creators</strong><small>Find people early and build your proof of taste.</small></span>
+              <svg viewBox="0 0 24 24" class="ic role-option__arrow" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+            <button class="role-option" type="button" data-role="creator">
+              <span class="role-option__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" class="ic"><path d="M12 3l2.3 5.7L20 11l-5.7 2.3L12 19l-2.3-5.7L4 11l5.7-2.3L12 3z"/></svg>
+              </span>
+              <span class="role-option__copy"><strong>Raise as a creator</strong><small>Help Backer understand your work and audience.</small></span>
+              <svg viewBox="0 0 24 24" class="ic role-option__arrow" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+
+          <a class="return-link" href="signup.html">
+            <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+            Back to signup
+          </a>
+        </section>
+
+        <form id="onboardingForm" class="question-flow" novalidate hidden>
+          <div class="progress-block" aria-label="Onboarding progress">
+            <div class="progress-copy"><span id="roleLabel">Backer setup</span><span id="progressLabel">1 of 3</span></div>
+            <div class="progress-track"><span id="progressBar"></span></div>
+          </div>
+
+          <section class="question-screen" data-role="creator" data-step="0" aria-labelledby="creatorPlatformsTitle" hidden>
+            <p class="panel-kicker">Your creative footprint</p>
+            <h2 id="creatorPlatformsTitle">Which platforms do you upload your work to most?</h2>
+            <p class="screen-intro">Choose up to three. This helps Backer AI understand where your audience already finds you.</p>
+            <fieldset class="platform-fieldset" aria-describedby="creatorPlatformHelp">
+              <legend class="sr-only">Creator platforms</legend>
+              <div class="platform-grid">
+                <label class="platform-choice"><input type="checkbox" name="creator-platforms" value="YouTube" /><span><b>YT</b>YouTube</span></label>
+                <label class="platform-choice"><input type="checkbox" name="creator-platforms" value="TikTok" /><span><b>TT</b>TikTok</span></label>
+                <label class="platform-choice"><input type="checkbox" name="creator-platforms" value="Instagram" /><span><b>IG</b>Instagram</span></label>
+                <label class="platform-choice"><input type="checkbox" name="creator-platforms" value="X" /><span><b>𝕏</b>X</span></label>
+                <label class="platform-choice"><input type="checkbox" name="creator-platforms" value="Twitch" /><span><b>TW</b>Twitch</span></label>
+                <label class="platform-choice"><input type="checkbox" name="creator-platforms" value="Substack" /><span><b>SS</b>Substack</span></label>
+                <label class="platform-choice"><input type="checkbox" name="creator-platforms" value="Podcast" /><span><b>PC</b>Podcast</span></label>
+                <label class="platform-choice"><input type="checkbox" name="creator-platforms" value="Other" /><span><b>＋</b>Other</span></label>
+              </div>
+              <p class="selection-help" id="creatorPlatformHelp"><span>Optional</span><span class="selection-count" data-counter="creator-platforms">0 of 3 selected</span></p>
+            </fieldset>
+          </section>
+
+          <section class="question-screen" data-role="creator" data-step="1" aria-labelledby="creatorRevenueTitle" hidden>
+            <p class="panel-kicker">How your work earns</p>
+            <h2 id="creatorRevenueTitle">What is your largest source of social media revenue?</h2>
+            <p class="screen-intro">A short answer is enough. We use this only to tune opportunities and creator recommendations.</p>
+            <label class="answer-label" for="creatorRevenue">Your answer <span>Optional</span></label>
+            <textarea class="answer-box" id="creatorRevenue" rows="6" maxlength="280" placeholder="For example: paid ads, fan tips, subscriptions, sponsorships, or affiliate links."></textarea>
+            <div class="answer-meta"><span>Share as much or as little as you like.</span><span><b data-count-for="creatorRevenue">0</b>/280</span></div>
+          </section>
+
+          <section class="question-screen" data-role="backer" data-step="0" aria-labelledby="backerPlatformsTitle" hidden>
+            <p class="panel-kicker">Your attention footprint</p>
+            <h2 id="backerPlatformsTitle">Which platforms do you spend the most time on?</h2>
+            <p class="screen-intro">Choose up to three. This gives Backer AI a starting point for better creator recommendations.</p>
+            <fieldset class="platform-fieldset" aria-describedby="backerPlatformHelp">
+              <legend class="sr-only">Platforms you spend time on</legend>
+              <div class="platform-grid">
+                <label class="platform-choice"><input type="checkbox" name="backer-platforms" value="TikTok" /><span><b>TT</b>TikTok</span></label>
+                <label class="platform-choice"><input type="checkbox" name="backer-platforms" value="YouTube" /><span><b>YT</b>YouTube</span></label>
+                <label class="platform-choice"><input type="checkbox" name="backer-platforms" value="Instagram" /><span><b>IG</b>Instagram</span></label>
+                <label class="platform-choice"><input type="checkbox" name="backer-platforms" value="X" /><span><b>𝕏</b>X</span></label>
+                <label class="platform-choice"><input type="checkbox" name="backer-platforms" value="Reddit" /><span><b>R</b>Reddit</span></label>
+                <label class="platform-choice"><input type="checkbox" name="backer-platforms" value="Twitch" /><span><b>TW</b>Twitch</span></label>
+                <label class="platform-choice"><input type="checkbox" name="backer-platforms" value="Podcast" /><span><b>PC</b>Podcast</span></label>
+                <label class="platform-choice"><input type="checkbox" name="backer-platforms" value="Other" /><span><b>＋</b>Other</span></label>
+              </div>
+              <p class="selection-help" id="backerPlatformHelp"><span>Optional</span><span class="selection-count" data-counter="backer-platforms">0 of 3 selected</span></p>
+            </fieldset>
+          </section>
+
+          <section class="question-screen" data-role="backer" data-step="1" aria-labelledby="backerDrawTitle" hidden>
+            <p class="panel-kicker">What holds your attention</p>
+            <h2 id="backerDrawTitle">What draws you to those platforms?</h2>
+            <p class="screen-intro">There is no right answer. This context helps us recommend people for the reasons that matter to you.</p>
+            <label class="answer-label" for="backerDraw">Your answer <span>Optional</span></label>
+            <textarea class="answer-box" id="backerDraw" rows="6" maxlength="280" placeholder="You can keep it simple: for fun, to kill time, to learn, or to follow specific creators."></textarea>
+            <div class="answer-meta"><span>Share as much or as little as you like.</span><span><b data-count-for="backerDraw">0</b>/280</span></div>
+          </section>
+
+          <section class="question-screen" data-role="backer" data-step="2" aria-labelledby="backerTimeTitle" hidden>
+            <p class="panel-kicker">Your time, your call</p>
+            <h2 id="backerTimeTitle">Do you think you spend more time than you should on them?</h2>
+            <p class="screen-intro">This stays private and helps Backer AI balance discovery with how you want to spend your attention.</p>
+            <fieldset class="time-fieldset">
+              <legend class="sr-only">Whether you spend more time than you want</legend>
+              <div class="time-options">
+                <label class="time-choice"><input type="radio" name="backer-time" value="Yes" /><span>Yes</span></label>
+                <label class="time-choice"><input type="radio" name="backer-time" value="Sometimes" /><span>Sometimes</span></label>
+                <label class="time-choice"><input type="radio" name="backer-time" value="No" /><span>No</span></label>
+                <label class="time-choice"><input type="radio" name="backer-time" value="Not sure" /><span>Not sure</span></label>
+                <label class="time-choice"><input type="radio" name="backer-time" value="Prefer not to say" /><span>Prefer not to say</span></label>
+              </div>
+            </fieldset>
+          </section>
+
+          <div class="question-actions">
+            <button class="action-button action-button--back" id="backButton" type="button">
+              <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+              Back
+            </button>
+            <div class="question-actions__right">
+              <button class="action-button action-button--skip" id="skipQuestion" type="button">Skip this question</button>
+              <button class="action-button action-button--continue" id="continueButton" type="button">
+                <span>Continue</span>
+                <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <p class="screen-status sr-only" id="screenStatus" aria-live="polite"></p>
+      </div>
+
+      <p class="browser-note"><span aria-hidden="true">●</span> Stored only in your local beta profile. You stay in control.</p>
+    </section>
+  </main>
+
+  <script src="js/shader.js?v=1"></script>
+  <script src="js/analytics-core.js?v=1"></script>
+  <script src="js/analytics.js?v=2"></script>
+  <script src="js/onboarding.js?v=1"></script>
+</body>
+</html>

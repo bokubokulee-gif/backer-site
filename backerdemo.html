@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="backer-public-view-counts" content="true" />
+<meta name="backer-hide-unavailable-analytics-ui" content="true" />
+<title>Backer - The Attention Prediction Market</title>
+<meta name="description" content="A financial market where anyone can invest in any online IP's engagement, underwritten by Backer's Proof of Attention." />
+<link rel="icon" type="image/png" href="img/backer-mark.png?v=2" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;650;700&amp;family=Geist+Mono:wght@400;500;600&amp;family=Inter:wght@400;500;600;700&amp;family=Instrument+Serif:ital@0;1&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/styles.css?v=20260806-3" />
+<link rel="stylesheet" href="css/search.css?v=7" />
+<link rel="stylesheet" href="css/market.css?v=20260806-1" />
+<link rel="stylesheet" href="css/market2.css?v=20260819-1" />
+<link rel="stylesheet" href="css/liquid-glass.css?v=20260731-2" />
+<link rel="stylesheet" href="css/poa-terminal.css?v=20260819-1" />
+<link rel="stylesheet" href="css/analytics.css?v=2" />
+<link rel="stylesheet" href="css/theme.css?v=20260731-2" />
+<link rel="stylesheet" href="css/footer.css?v=20260731-1" />
+<link rel="stylesheet" href="css/site-menu.css?v=3" />
+<link rel="stylesheet" href="css/bubble-text.css?v=1" />
+<script src="js/theme.js?v=20260731-1"></script>
+<script src="js/site-menu.js?v=5" defer></script>
+<script src="js/bubble-text.js?v=1" defer></script>
+</head>
+<body class="page-product">
+<canvas id="bg" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+
+<!-- ================= TOP NAV ================= -->
+<header class="nav" id="nav">
+  <a class="brand" href="#" data-nav="home" aria-label="Backer home">
+    <span class="brand-mark" aria-hidden="true"><img src="img/backer-mark.png?v=2" alt="" /></span>
+    <span class="brand-word">Backer</span>
+  </a>
+  <div class="site-menu-host" data-backer-site-menu></div>
+  <div class="nav-cta">
+    <button type="button" data-backer-privacy-settings hidden aria-label="Open analytics privacy settings">Privacy</button>
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to light theme" aria-pressed="false">
+      <span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☼</span>
+      <span class="theme-toggle-label" data-theme-label>Light</span>
+    </button>
+    <button class="btn btn-primary" data-view="market2">Enter Backer Market<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+  </div>
+</header>
+
+<!-- ================= MARKETING SITE ================= -->
+<main id="site">
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero-inner reveal">
+      <div class="eyebrow"><span class="dot"></span> The financial layer of the attention economy</div>
+      <h1 class="hero-title">
+        <span class="hero-name">Backer</span>
+        <em class="hero-thesis">
+          <span>Prediction markets price events.</span>
+          <span data-bubble-text>Backer prices attention.</span>
+        </em>
+      </h1>
+      <form class="hero-search" id="market2HeroSearch" autocomplete="off">
+        <svg viewBox="0 0 24 24" class="ic search-ic"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="heroSearchInput" type="text" placeholder="Who are you backing?" />
+        <button type="submit" class="search-go" aria-label="Search">
+          <svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </form>
+
+      <div class="pills-shell">
+        <div class="pills" id="market2HeroPills" role="group" aria-label="Popular Backer searches">
+          <div class="pills-track">
+            <div class="pills-group">
+              <button class="pill" data-q="indie hackers shipping weekly">Indie hackers</button>
+              <button class="pill" data-q="undiscovered music gems">Music gems</button>
+              <button class="pill" data-q="digital artists">Digital artists</button>
+              <button class="pill" data-q="AI researchers explaining papers">AI researchers</button>
+              <button class="pill" data-q="gaming creators">Gaming</button>
+              <button class="pill" data-q="university fitness creators">Campus fitness</button>
+            </div>
+            <div class="pills-group" aria-hidden="true">
+              <span class="pill" data-q="indie hackers shipping weekly">Indie hackers</span>
+              <span class="pill" data-q="undiscovered music gems">Music gems</span>
+              <span class="pill" data-q="digital artists">Digital artists</span>
+              <span class="pill" data-q="AI researchers explaining papers">AI researchers</span>
+              <span class="pill" data-q="gaming creators">Gaming</span>
+              <span class="pill" data-q="university fitness creators">Campus fitness</span>
+            </div>
+          </div>
+        </div>
+        <button class="pills-toggle" id="market2HeroPillsToggle" type="button" aria-pressed="false" aria-label="Pause scrolling suggestions"><span aria-hidden="true">Ⅱ</span></button>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- READING PATHS -->
+  <section class="section reading-bridge" id="reading" aria-label="Backer reading">
+    <div class="reading-links reveal">
+      <a class="reading-link" href="backerthesis.html">
+        <span class="reading-link-label">Read Backer Thesis</span>
+        <span class="reading-link-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+      <a class="reading-link" href="pitch.html">
+        <span class="reading-link-label">Why Backer?</span>
+        <span class="reading-link-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </a>
+    </div>
+  </section>
+
+  <!-- MARKET VALIDATION -->
+  <section class="section" id="validation">
+    <div class="section-head reveal">
+      <h2>People already invest<br />to own a piece of <span class="grad-text">the future.</span></h2>
+      <p class="section-lead">Wherever human attention concentrates, capital follows — and a market forms to price it. Prediction markets just proved that behavior at scale. Backer applies it to what attention actually orbits: <strong>people.</strong></p>
+    </div>
+
+    <!-- attention → capital → market, twice -->
+    <div class="val-parallel reveal" id="valParallel">
+      <div class="val-lane">
+        <span class="val-lane-tag mono">PROVEN · EVENTS</span>
+        <div class="val-flow">
+          <div class="val-node">
+            <span class="val-node-k">Attention</span>
+            <span class="val-node-d">veers into eyeball-catching events</span>
+          </div>
+          <div class="val-arrow" aria-hidden="true"><i></i></div>
+          <div class="val-node">
+            <span class="val-node-k">Capital follows</span>
+            <span class="val-node-d">into priced positions on outcomes</span>
+          </div>
+          <div class="val-arrow" aria-hidden="true"><i></i></div>
+          <div class="val-node val-node-mkt">
+            <span class="val-node-k">Prediction markets</span>
+            <span class="val-node-d">Kalshi&nbsp;+&nbsp;Polymarket</span>
+          </div>
+        </div>
+      </div>
+      <div class="val-lane val-lane-backer">
+        <span class="val-lane-tag mono">NEXT · PEOPLE</span>
+        <div class="val-flow">
+          <div class="val-node">
+            <span class="val-node-k">Attention</span>
+            <span class="val-node-d">veers into eyeball-catching people</span>
+          </div>
+          <div class="val-arrow" aria-hidden="true"><i></i></div>
+          <div class="val-node">
+            <span class="val-node-k">Capital follows</span>
+            <span class="val-node-d">into belief in who compounds next</span>
+          </div>
+          <div class="val-arrow" aria-hidden="true"><i></i></div>
+          <div class="val-node val-node-mkt val-node-bkr">
+            <span class="val-node-k">Backer</span>
+            <span class="val-node-d">where belief in people gets priced</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- evidence-first product premise -->
+    <div class="val-proof">
+      <div class="val-chart reveal" id="valChartCard">
+        <div class="val-chart-head">
+          <div class="val-chart-title">
+            <h3>Attention needs an evidence trail.</h3>
+            <p>Backer keeps the source, observation time, metric meaning, and access state attached to every fact.</p>
+          </div>
+          <div class="val-chart-now">
+            <span class="val-now-num mono">SOURCE-NATIVE</span>
+            <span class="val-now-cap">evidence, not a universal score</span>
+          </div>
+        </div>
+        <p class="val-chart-note">Public creator records are for research and watchlists only. Discovery evidence never creates consent, tradability, or a real-money market.</p>
+      </div>
+      <div class="val-proof-side">
+        <div class="val-fact reveal">
+          <b>Records</b>
+          <span>Every creator, identity, work, and native source record stays distinct and traceable.</span>
+        </div>
+        <div class="val-fact reveal">
+          <b>Signals</b>
+          <span>Reach, traction, momentum, coverage, and confidence remain separate evidence dimensions.</span>
+        </div>
+        <div class="val-fact reveal">
+          <b>Limits</b>
+          <span>Unavailable or permission-gated facts stay unavailable. Backer does not turn missing evidence into zero.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- asset base -->
+    <div class="val-asset reveal">
+      <div class="val-asset-head">
+        <h3>Support already follows people. <span class="grad-text">Backer makes the evidence inspectable.</span></h3>
+        <p>Tips, memberships, subscriptions, and public engagement all describe different relationships. Backer keeps those meanings separate.</p>
+      </div>
+      <div class="val-asset-network">
+        <svg class="val-branch-map" viewBox="0 0 1140 520" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="branch-left" x1="100%" x2="0%"><stop offset="0%" stop-color="#f5f3ee" stop-opacity=".5"/><stop offset="100%" stop-color="#e9bd86" stop-opacity=".12"/></linearGradient>
+            <linearGradient id="branch-right" x1="0%" x2="100%"><stop offset="0%" stop-color="#f5f3ee" stop-opacity=".5"/><stop offset="100%" stop-color="#e9bd86" stop-opacity=".12"/></linearGradient>
+          </defs>
+          <path pathLength="1" d="M 398 220 C 366 220 350 220 328 220" stroke="url(#branch-left)"/>
+          <path pathLength="1" d="M 692 148 C 744 118 772 84 820 72" stroke="url(#branch-right)"/>
+          <path pathLength="1" d="M 694 354 C 748 370 772 382 820 386" stroke="url(#branch-right)"/>
+          <circle cx="398" cy="220" r="3"/><circle cx="328" cy="220" r="3"/>
+          <circle cx="692" cy="148" r="3"/><circle cx="820" cy="72" r="3"/>
+          <circle cx="694" cy="354" r="3"/><circle cx="820" cy="386" r="3"/>
+        </svg>
+
+        <article class="val-branch-stat val-branch-stat-funding">
+          <div class="val-branch-stat-core">
+            <b>Direct support</b>
+            <p>Tips, memberships, subscriptions, and purchases are support signals—not promises of financial return.</p>
+          </div>
+        </article>
+
+        <figure class="val-globe-shell" data-globe-live aria-label="Illustrative global creator source map">
+          <div class="val-globe-bezel" aria-hidden="true">
+            <div class="val-globe-stage">
+              <canvas class="val-globe-canvas" data-globe-canvas></canvas>
+            </div>
+          </div>
+          <figcaption class="val-globe-status">
+            <span class="mono">GLOBAL SOURCE GRAPH</span>
+            <span>illustrative map</span>
+          </figcaption>
+        </figure>
+
+        <article class="val-branch-stat val-branch-stat-market">
+          <div class="val-branch-stat-core">
+            <b>Public evidence</b>
+            <p>Source-native metrics, timestamps, methods, freshness, and confidence remain reviewable.</p>
+          </div>
+        </article>
+
+        <article class="val-branch-stat val-branch-stat-creators">
+          <div class="val-branch-stat-core">
+            <b>Creator graph</b>
+            <p>Platform identities link only through reviewed evidence—never because two people share a name.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- BROKEN METRICS -->
+  <section class="section tight" id="metrics">
+    <div class="section-head reveal">
+      <h2>You can't invest in a market where the metrics can't be trusted.</h2>
+      <p class="section-lead">Every number on an internet profile can be fabricated. Followers, views, likes, comments — all purchasable.<br /> An entire shadow industry exists to inflate them, and platforms have little incentive to stop it.</p>
+    </div>
+    <div class="question-grid reveal">
+      <div class="q-card"><svg viewBox="0 0 24 24" class="ic"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><p>Are these followers real humans or bots?</p></div>
+      <div class="q-card"><svg viewBox="0 0 24 24" class="ic"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><p>Did this video get 1 million views in a day organically, or bought overnight?</p></div>
+      <div class="q-card"><svg viewBox="0 0 24 24" class="ic"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>Are these comment section for real? These profiles look oddly new.</p></div>
+      <div class="q-card"><svg viewBox="0 0 24 24" class="ic"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0z"/><path d="M12 7v5l3 3"/></svg><p>How is the viewer retention — do they come back — or one-time exposures?</p></div>
+    </div>
+    <p class="metrics-foot reveal">Without data verifications, investment isn't investment. It's gambling.</p>
+  </section>
+
+  <!-- PRODUCT -->
+  <section class="section" id="product" aria-labelledby="productLabel">
+    <div class="section-head reveal">
+      <span class="kicker" id="productLabel">Interfaces</span>
+    </div>
+
+    <div class="surfaces surface-tags-heavy">
+      <article class="surface reveal" data-view="market2">
+        <div class="surface-tag">01 · AI Search Agent</div>
+        <h3>Describe who you're looking for. In plain language.</h3>
+        <p>"Find fitness creators under 5K followers posting 3× a week — ideally university students." Backer checks connected public sources, keeps each native metric attached to its origin, and shows unavailable evidence honestly.</p>
+        <div class="surface-demo">
+          <div class="mini-search"><svg viewBox="0 0 24 24" class="ic"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span class="typed" data-typed="fitness creators · under 5K · retention-heavy · students"></span></div>
+        </div>
+        <span class="surface-cta">Try the agent <svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </article>
+
+      <article class="surface reveal" data-view="market2">
+        <div class="surface-tag">02 · Creator Discovery Feed</div>
+        <h3>Every online IP is eligible. None of them post here.</h3>
+        <p>SoundCloud rappers, niche educators, Bilibili vloggers, Substack writers. Browse original work, native engagement, source freshness, and Backer's five evidence dimensions without a fabricated universal score.</p>
+        <div class="surface-demo surface-feed">
+          <div class="mini-card"><span class="mini-auth">YT · GH</span><span class="mini-name">Jeff Delaney</span></div>
+          <div class="mini-card"><span class="mini-auth">YT · GH</span><span class="mini-name">Wes Bos</span></div>
+          <div class="mini-card"><span class="mini-auth">X · GH</span><span class="mini-name">Simon Willison</span></div>
+        </div>
+        <span class="surface-cta">Open the marketplace <svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </article>
+
+      <article class="surface reveal" data-view="portfolio">
+        <div class="surface-tag">03 · Investment &amp; Portfolio</div>
+        <h3>From $1. Milestones set the terms.</h3>
+        <p>"If I reach 50K subscribers in 12 months, early backers receive 1.5×." Your portfolio isn't just a tracker — it's public proof-of-taste. A record of early bets that paid off is its own social capital.</p>
+        <div class="surface-demo surface-port">
+          <div class="port-stat"><span class="ps-label">Taste Grade</span><span class="ps-val grade">A+</span></div>
+          <div class="port-stat"><span class="ps-label">Return</span><span class="ps-val pos">+19.3%</span></div>
+        </div>
+        <span class="surface-cta">See a portfolio <svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </article>
+    </div>
+  </section>
+
+  <!-- WHO BENEFITS -->
+  <section class="section tight" id="benefits">
+    <div class="section-head reveal">
+      <h2>Aligned upside, <span class="grad-text">for the first time.</span></h2>
+    </div>
+    <div class="benefit-grid benefit-grid-two">
+      <div class="benefit reveal"><h4>Viewers</h4><p>Viewers attention is finally rewarded financially.</p></div>
+      <div class="benefit reveal"><h4>Creators</h4><p>Creators are financially rewarded directly from the amount of attention they accrue.</p></div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="finale reveal">
+    <h2 class="finale-line">Attention has always been currency.</h2>
+    <h2 class="finale-line grad-text">Now it can be equity.</h2>
+    <div class="finale-cta">
+      <button class="btn btn-primary btn-lg" data-view="market2">Enter Backer Market<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <button class="btn btn-ghost btn-lg" data-view="market2">Search people and work</button>
+    </div>
+  </section>
+
+  <!-- SHARED FLICKERING FOOTER -->
+  <footer class="backer-footer backer-footer--dock">
+    <div class="backer-footer__inner">
+      <div class="backer-footer__top">
+        <a class="backer-footer__brand" href="#" data-nav="home" aria-label="Backer home">
+          <span class="backer-footer__mark" aria-hidden="true"><img src="img/backer-mark.png?v=2" alt="" /></span>
+          <span class="backer-footer__word">Backer</span>
+        </a>
+        <div class="backer-footer__nav">
+          <nav class="backer-footer__group" aria-label="Product">
+            <h2>Product</h2>
+            <ul>
+              <li><a class="backer-footer__link" href="backerdemo.html#market2" data-view="market2">Marketplace<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+              <li><a class="backer-footer__link" href="backerdemo.html#market2" data-view="market2">AI Search<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+              <li><a class="backer-footer__link" href="portfolio.html" data-view="portfolio">Portfolio<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+            </ul>
+          </nav>
+          <nav class="backer-footer__group" aria-label="Research">
+            <h2>Research</h2>
+            <ul>
+              <li><a class="backer-footer__link" href="research.html">Proof of Attention<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+            </ul>
+          </nav>
+          <nav class="backer-footer__group" aria-label="Company">
+            <h2>Company</h2>
+            <ul>
+              <li><a class="backer-footer__link" href="backerthesis.html">Thesis<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+              <li><a class="backer-footer__link" href="pitch.html">Pitch<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+              <li><a class="backer-footer__link" href="faq.html">FAQ<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+              <li><a class="backer-footer__link" href="privacy.html">Privacy<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+    <div class="backer-footer__flicker">
+      <span class="backer-footer__fallback">Invest in people, before the world does</span>
+      <canvas class="backer-footer__canvas" data-footer-flicker data-text="Invest in people, before the world does" aria-hidden="true"></canvas>
+    </div>
+  </footer>
+</main>
+
+<!-- ================= APP (interactive) ================= -->
+<section id="app" class="app hidden" aria-hidden="true"><!-- views render here --></section>
+
+<!-- MODAL ROOT -->
+<div id="modalRoot" class="modal-root hidden" aria-hidden="true"></div>
+
+<!-- TOAST -->
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<!-- BOTTOM DOCK -->
+<nav class="dock" id="dock" aria-label="App navigation">
+  <button class="dock-btn" data-view="market2" data-tip="Search" aria-label="Search people and work">
+    <svg viewBox="0 0 24 24" class="ic"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+  </button>
+  <button class="dock-btn" data-view="market2" data-tip="Market" aria-label="Marketplace">
+    <svg viewBox="0 0 24 24" class="ic"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+  </button>
+  <button class="dock-btn dock-home" data-nav="home" data-tip="Home" aria-label="Home">
+    <span class="dock-orb"></span>
+  </button>
+  <button class="dock-btn" data-view="portfolio" data-tip="Portfolio" aria-label="Portfolio">
+    <svg viewBox="0 0 24 24" class="ic"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+  </button>
+</nav>
+
+<script src="js/shader.js"></script>
+<script src="js/liquid-glass.js"></script>
+<script src="js/data.js"></script>
+<script src="js/market-data.js?v=3"></script>
+<script src="js/market.js?v=20260806-1"></script>
+<script src="js/market2-data.js?v=20260812-2"></script>
+<script src="js/market2.js?v=20260819-1"></script>
+<script src="js/analytics-core.js?v=20260811-1"></script>
+<script src="js/analytics.js?v=2"></script>
+<script src="js/app.js?v=20260811-1"></script>
+<script src="js/sections.js?v=2"></script>
+<script type="module" src="js/globe-live.mjs?v=20260806-1"></script>
+<script src="js/poa-terminal.js?v=20260819-1"></script>
+<script src="js/flickering-footer.js?v=20260731-2"></script>
+</body>
+</html>

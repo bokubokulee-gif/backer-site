@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="backer-public-view-counts" content="true" />
+<title>Backer — The Pitch</title>
+<meta name="description" content="Views are becoming a form of currency. Backer is a financial market where anyone can invest in any online IP's engagement — prediction markets price events; Backer prices people's future attention." />
+<meta name="robots" content="index,follow" />
+<meta property="og:title" content="Backer — The Pitch" />
+<meta property="og:description" content="Prediction markets price events. Backer prices people's future attention." />
+<link rel="icon" type="image/png" href="img/backer-mark.png?v=2" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/styles.css?v=6" />
+<link rel="stylesheet" href="css/liquid-glass.css?v=20260731-2" />
+<link rel="stylesheet" href="css/poa-terminal.css?v=13" />
+<link rel="stylesheet" href="css/analytics.css?v=2" />
+<link rel="stylesheet" href="css/footer.css?v=20260731-1" />
+<link rel="stylesheet" href="css/site-menu.css?v=3" />
+<script src="js/site-menu.js?v=5" defer></script>
+<link rel="stylesheet" href="css/bubble-text.css?v=1" />
+<script src="js/bubble-text.js?v=1" defer></script>
+<style>
+/* ---------- pitch-page additions (aligned to site tokens) ---------- */
+.section-head h2 em{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.01em}
+.bigline{
+  margin-top:clamp(34px,5vh,56px);font-size:clamp(22px,3.4vw,40px);font-weight:600;
+  letter-spacing:-.03em;line-height:1.12;max-width:900px;
+}
+.bigline em{font-family:var(--serif);font-style:italic;font-weight:400}
+.shift-thesis{max-width:none}
+
+/* consensus carousel — manual, unframed coverflow */
+.consensus-gallery{
+  --orbit-card-w:clamp(270px,30vw,340px);
+  --orbit-card-h:clamp(380px,50vw,440px);
+  --orbit-side-shift:clamp(190px,24vw,280px);
+  position:relative;height:var(--orbit-card-h);overflow:hidden;isolation:isolate;
+  margin:clamp(34px,5vw,58px) 0 clamp(30px,4vw,46px);
+}
+.people-orbit{
+  position:absolute;inset:0;perspective:1500px;overflow:hidden;
+}
+.people-ring{position:absolute;inset:0;transform-style:preserve-3d}
+.people-orbit .person{
+  position:absolute;left:50%;top:50%;width:var(--orbit-card-w);height:var(--orbit-card-h);
+  margin-left:calc(var(--orbit-card-w) / -2);margin-top:calc(var(--orbit-card-h) / -2);
+  transform:translate3d(0,0,-220px) scale(.78);transform-style:preserve-3d;
+  backface-visibility:hidden;border:1px solid var(--line);border-radius:22px;overflow:hidden;
+  background:#0d0d10;box-shadow:0 24px 64px rgba(0,0,0,.42);
+  opacity:0;pointer-events:none;transition:
+    transform .56s cubic-bezier(.22,.7,.18,1),
+    opacity .34s ease,
+    filter .34s ease;
+}
+.people-orbit .person.is-active{
+  z-index:4;opacity:1;pointer-events:auto;filter:none;
+  transform:translate3d(0,0,80px) rotateY(0deg) scale(1);
+}
+.people-orbit .person.is-prev{
+  z-index:2;opacity:.62;filter:brightness(.68) saturate(.72);
+  transform:translate3d(calc(var(--orbit-side-shift) * -1),0,-80px) rotateY(28deg) scale(.9);
+}
+.people-orbit .person.is-next{
+  z-index:2;opacity:.62;filter:brightness(.68) saturate(.72);
+  transform:translate3d(var(--orbit-side-shift),0,-80px) rotateY(-28deg) scale(.9);
+}
+.people-orbit .person img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:var(--photo-position,center top);
+  display:block;border:0;filter:saturate(.94) contrast(1.04) brightness(.92);
+}
+.people-orbit .person-body{
+  position:absolute;z-index:3;inset:auto 0 0;padding:76px 20px 21px;
+  background:linear-gradient(180deg,transparent,rgba(5,5,7,.78) 28%,rgba(5,5,7,.97));
+}
+.person-role{
+  font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.13em;
+  color:var(--accent);text-transform:uppercase;display:block;
+}
+.person-name{font-weight:700;font-size:20px;line-height:1.15;display:block;margin-top:8px;letter-spacing:-.02em}
+.person-body p{
+  margin-top:9px;font-size:13px;font-weight:500;color:#cdcac3;line-height:1.52;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden;
+}
+.orbit-controls{
+  position:absolute;z-index:10;left:0;right:0;top:50%;transform:translateY(-50%);
+  display:flex;align-items:center;justify-content:space-between;pointer-events:none;
+}
+.orbit-controls button{
+  width:44px;height:44px;display:grid;place-items:center;pointer-events:auto;
+  border:1px solid var(--line);border-radius:50%;background:#0d0d10;color:var(--ink);
+  box-shadow:0 10px 28px rgba(0,0,0,.4);font-family:var(--mono);font-size:16px;
+  transition:transform .2s var(--ease),border-color .2s var(--ease),background .2s var(--ease);
+}
+.orbit-controls button:hover{background:#18181d;border-color:rgba(255,255,255,.26);transform:scale(1.04)}
+.orbit-controls button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media(max-width:700px){
+  .consensus-gallery{
+    --orbit-card-w:min(76vw,300px);--orbit-card-h:min(61svh,390px);--orbit-side-shift:48vw;
+    height:var(--orbit-card-h);margin:34px 0 38px;
+  }
+  .people-orbit .person-body{padding:68px 17px 18px}
+  .person-name{font-size:18px}
+  .person-body p{font-size:12.5px}
+  .orbit-controls{left:2px;right:2px}
+  .orbit-controls button{width:40px;height:40px;font-size:15px}
+}
+@media(prefers-reduced-motion:reduce){
+  .people-orbit .person{transition:none}
+}
+
+/* problem 02 — Dorsey */
+.dorsey{display:grid;grid-template-columns:220px 1fr;gap:clamp(18px,3vw,34px);align-items:center;margin-top:38px}
+.dorsey-photo{position:relative}
+.dorsey-photo img{width:100%;aspect-ratio:1/1.15;object-fit:cover;object-position:center top;border-radius:18px;border:1px solid var(--line);filter:grayscale(.35) contrast(1.04);display:block}
+.dorsey-photo span{position:absolute;left:10px;bottom:10px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--muted);background:rgba(8,8,10,.72);padding:4px 8px;border-radius:6px}
+.dorsey .quote{margin:0}
+@media(max-width:700px){.dorsey{grid-template-columns:1fr}.dorsey-photo img{aspect-ratio:16/10}}
+
+/* three ways to make money */
+.ways{display:flex;flex-direction:column;gap:18px;margin-top:42px}
+.way{border:1px solid var(--line);border-radius:26px;padding:clamp(22px,3vw,36px);background:var(--card)}
+.way-tag{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.16em;color:var(--accent);text-transform:uppercase}
+.way h3{font-size:clamp(20px,2.4vw,26px);font-weight:700;margin-top:12px;letter-spacing:-.02em;line-height:1.25}
+.way-def{color:#cdcac3;margin-top:12px;max-width:820px;font-size:16px;font-weight:500;line-height:1.65}
+.way-def strong{color:var(--ink);font-weight:700}
+.way-ex{margin-top:18px;border:1px dashed var(--lg-bd,var(--line));border-radius:14px;padding:15px 18px;font-size:15px;font-weight:500;color:#cdcac3;line-height:1.65;background:rgba(10,10,14,.38)}
+.way-ex b{color:var(--ink);font-weight:700}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.duo-cell{border:1px solid var(--lg-bd,var(--line));border-radius:14px;padding:17px 19px;background:rgba(10,10,14,.38)}
+.duo-k{font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.16em;display:block;margin-bottom:10px;text-transform:uppercase}
+.duo-inv .duo-k{color:var(--pos)}
+.duo-cre .duo-k{color:var(--accent)}
+.duo-cell p{font-size:14.5px;font-weight:500;color:#cdcac3;line-height:1.65}
+.duo-cell p b{color:var(--ink);font-weight:700}
+.duo-f{display:block;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--ink);background:rgba(86,211,154,.1);border:1px solid rgba(86,211,154,.32);border-radius:8px;padding:10px 12px;margin-bottom:10px;overflow-x:auto;white-space:nowrap}
+.way-insight{margin-top:18px;font-family:var(--serif);font-style:italic;font-size:clamp(17.5px,2vw,20.5px);color:var(--ink);line-height:1.5}
+@media(max-width:760px){.duo{grid-template-columns:1fr}}
+.ladder{margin-top:clamp(36px,5vh,54px);text-align:center}
+.ladder .bigline{margin:0 auto}
+
+/* competition */
+.comp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:38px}
+.comp{border:1px solid var(--line);border-radius:18px;padding:24px;background:var(--card);display:flex;flex-direction:column;gap:14px}
+.comp-logo{height:32px;display:flex;align-items:center}
+.comp-logo img{max-height:26px;max-width:160px;filter:brightness(0) invert(.92);opacity:.92}
+.comp-stat{font-size:26px;font-weight:700;letter-spacing:-.02em}
+.comp-stat .unit{font-size:.62em;color:var(--muted)}
+.comp p{font-size:14.5px;font-weight:500;color:#cdcac3;line-height:1.65}
+.comp p b{color:var(--ink);font-weight:700}
+.comp-tag{font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+@media(max-width:860px){.comp-grid{grid-template-columns:1fr}}
+.comp-read{margin-top:26px;max-width:860px;color:#cdcac3;font-size:16px;font-weight:500;line-height:1.7}
+.comp-read strong{color:var(--ink);font-weight:700}
+
+/* hero CTA row */
+.pitch-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+
+/* footer credit */
+.credit{font-size:11px;color:var(--muted-2);margin-top:6px}
+
+/* =========================================================
+   Ported exactly from the thesis deck (css/thesis.css) —
+   the "Views already become currency" attention-flow element.
+========================================================= */
+.attn{
+  position:relative;border:1px solid var(--line);border-radius:26px;
+  padding:clamp(22px,3vw,36px);isolation:isolate;margin-top:42px;
+  background:radial-gradient(130% 150% at 50% -25%, #15151b 0%, #0c0c10 55%, #08080a 100%);
+}
+.attn-grid{display:grid;grid-template-columns:1fr 1.05fr 1fr;gap:clamp(12px,2vw,26px);align-items:center}
+.attn-k{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--muted);display:block;margin-bottom:12px}
+.attn-col{position:relative}
+.attn-crowd{height:104px;display:flex;align-items:flex-end;justify-content:center}
+.attn-crowd .pixscene{height:100%;width:100%;image-rendering:pixelated;image-rendering:crisp-edges}
+.attn-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.attn-chips span{
+  font-family:var(--mono);font-size:11px;color:var(--muted);padding:4px 9px;border-radius:6px;
+  border:1px solid var(--line-2);background:rgba(255,255,255,.03);
+}
+.attn.lit .attn-chips span{animation:chipGlow 3.4s ease-in-out infinite}
+.attn-chips span:nth-child(2){animation-delay:.4s}
+.attn-chips span:nth-child(3){animation-delay:.8s}
+.attn-chips span:nth-child(4){animation-delay:1.2s}
+.attn-chips span:nth-child(5){animation-delay:1.6s}
+.attn-chips span:nth-child(6){animation-delay:2s}
+.attn-chips span:nth-child(7){animation-delay:2.4s}
+@keyframes chipGlow{0%,100%{border-color:var(--line-2);color:var(--muted)}50%{border-color:rgba(233,189,134,.5);color:var(--ink)}}
+.attn-zero{display:inline-flex;align-items:center;gap:7px;margin-top:16px;font-size:13px;color:var(--neg)}
+.attn-zero .az-ic{font-size:11px}
+.attn-zero b{font-family:var(--mono);font-weight:600;font-size:1.05em}
+.attn-flow{position:relative;height:170px;display:flex;align-items:center;justify-content:center}
+.attn-stream{width:100%;height:100%}
+.attn-stream .sline{stroke:rgba(255,255,255,.08);stroke-width:1.4;fill:none}
+.attn-stream .sdot{fill:var(--accent);opacity:0}
+.attn.lit .attn-stream .sdot{animation:streamDot 2.6s linear infinite}
+.attn-flow-label{position:absolute;bottom:0;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--muted-2);white-space:nowrap}
+@keyframes streamDot{0%{opacity:0;transform:translateX(0)}10%{opacity:1}88%{opacity:1}100%{opacity:0;transform:translateX(168px)}}
+.attn-pool{position:relative;height:124px;border-radius:12px;border:1px solid rgba(244,171,99,.3);overflow:hidden;background:rgba(244,171,99,.04)}
+.attn-pool-fill{position:absolute;left:0;right:0;bottom:0;height:6%;background:linear-gradient(180deg,rgba(244,171,99,.55),rgba(227,113,63,.28));transition:height 1.7s var(--ease)}
+.attn.lit .attn-pool-fill{height:84%}
+.attn-coin{position:absolute;top:9px;right:12px;font-family:var(--mono);font-size:18px;color:var(--accent)}
+.attn-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.attn-tags span{font-family:var(--mono);font-size:11px;color:var(--ink);padding:4px 9px;border-radius:6px;border:1px solid rgba(244,171,99,.3);background:rgba(244,171,99,.06)}
+.attn-returns{margin-top:clamp(18px,2.6vw,30px);display:flex;flex-direction:column;gap:10px}
+.attn-lane{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;font-size:13.5px;color:var(--muted)}
+.lane-dead{border:1px dashed rgba(255,111,107,.42)}
+.lane-dead .lane-ic{color:var(--neg);font-size:13px;flex:none}
+.lane-backer{
+  border:1px solid rgba(86,211,154,0);background:rgba(86,211,154,.05);
+  opacity:0;transform:translateY(8px);transition:.7s var(--ease);
+}
+.attn.lit .lane-backer{opacity:1;transform:none;border-color:rgba(86,211,154,.42);transition-delay:1.3s}
+.lane-tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--pos);padding:5px 10px;border:1px solid rgba(86,211,154,.42);border-radius:6px;flex:none}
+.lane-on{color:var(--ink)}
+.lane-on b{color:var(--pos)}
+.pix-signal{transform-box:fill-box;transform-origin:center;animation:pixSignal 2.4s ease-out infinite}
+@keyframes pixSignal{0%{opacity:.55;transform:scale(.7)}70%{opacity:.18}100%{opacity:0;transform:scale(1.35)}}
+@media(max-width:900px){
+  .attn-grid{grid-template-columns:1fr;gap:24px}
+  .attn-flow{height:90px}
+  .attn-stream{display:none}
+  .attn-flow-label{position:static;transform:none}
+  .attn-flow::after{content:"↓";font-size:24px;color:var(--accent)}
+  .attn-lane{flex-direction:column;align-items:flex-start;gap:8px}
+}
+@media(prefers-reduced-motion: reduce){
+  .attn.lit .attn-stream .sdot,.attn.lit .attn-chips span,.pix-signal{animation:none}
+  .attn-stream .sdot{opacity:.7}
+}
+</style>
+</head>
+<body class="page-product">
+<canvas id="bg" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+
+<!-- ================= TOP NAV ================= -->
+<header class="nav" id="nav">
+  <a class="brand" href="backerdemo.html" aria-label="Backer home">
+    <span class="brand-mark" aria-hidden="true"><img src="img/backer-mark.png?v=2" alt="" /></span>
+    <span class="brand-word">Backer</span>
+  </a>
+  <div class="site-menu-host" data-backer-site-menu></div>
+  <div class="nav-cta">
+    <a class="btn btn-primary" href="backerdemo.html">Launch Demo<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  </div>
+</header>
+
+<main id="site">
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero-inner reveal">
+      <div class="eyebrow"><span class="dot"></span> The Backer pitch</div>
+      <h1 class="hero-title">Prediction markets price events.<br /><em>Backer prices people's future <span data-bubble-text>attention.</span></em></h1>
+      <p class="hero-sub">A financial market where anyone can invest in any online IP's engagement. Before we get to the product, start with something that may seem obvious — because everything else follows from it.</p>
+      <div class="pitch-cta">
+        <a class="btn btn-primary btn-lg" href="#shift">Start the pitch<svg viewBox="0 0 24 24" class="ic"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
+        <a class="btn btn-ghost btn-lg" href="backerdemo.html">See the product</a>
+      </div>
+    </div>
+    <a class="scroll-cue" href="#shift" aria-label="Scroll to the shift">
+      <span>What's happening now</span>
+      <svg viewBox="0 0 24 24" class="ic"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+    </a>
+  </section>
+
+  <!-- 1 · CONSENSUS — WHAT'S HAPPENING NOW -->
+  <section class="section" id="shift">
+    <div class="section-head reveal">
+      <span class="kicker">Consensus · what's happening now</span>
+      <h2>Views already <em>become currency.</em></h2>
+      <p class="section-lead">Human attention prices ads, sponsorships, distribution, cultural leverage, and founder reach. It has already become an asset. And more people — and more companies, across industries — are producing content on every platform: podcasts, articles, video. Platforms that began as pure entertainment are now swarmed by knowledge content.</p>
+    </div>
+
+    <div class="consensus-gallery" data-circular-gallery>
+      <div class="people-orbit" role="region" aria-roledescription="carousel" aria-label="Creators, companies, and investors becoming media">
+        <div class="people-ring">
+          <article class="person is-active" role="group" aria-label="1 of 4: Andrej Karpathy" aria-posinset="1" aria-setsize="4" aria-current="true" style="--photo-position:50% center">
+            <img src="img/pitch/karpathy.jpeg" alt="Andrej Karpathy speaking into a studio microphone" loading="lazy" />
+            <div class="person-body">
+              <span class="person-role">Researcher → creator</span>
+              <span class="person-name">Andrej Karpathy</span>
+              <p>One of the most-cited AI researchers now publishes multi-hour lectures on YouTube and posts on X almost everyday.</p>
+            </div>
+          </article>
+          <article class="person is-next" role="group" aria-label="2 of 4: OpenAI Acquires TBPN Podcast" aria-posinset="2" aria-setsize="4" style="--photo-position:center top">
+            <img src="img/pitch/altman.jpg" alt="Sam Altman" loading="lazy" />
+            <div class="person-body">
+              <span class="person-role">Sam Altman → show guest</span>
+              <span class="person-name">OpenAI Acquires TBPN Podcast</span>
+              <p>The most valuable AI company routes its biggest announcements through TBPN, a daily talk show — leadership included.</p>
+            </div>
+          </article>
+          <article class="person" role="group" aria-label="3 of 4: a16z" aria-posinset="3" aria-setsize="4" style="--photo-position:center top">
+            <img src="img/pitch/andreessen.jpg" alt="Marc Andreessen" loading="lazy" />
+            <div class="person-body">
+              <span class="person-role">VC → media network</span>
+              <span class="person-name">a16z</span>
+              <p>Marc Andreessen's firm runs a full in-house media operation — podcasts, shows, essays — publishing more than the outlets that used to cover it.</p>
+            </div>
+          </article>
+          <article class="person is-prev" role="group" aria-label="4 of 4: Lightspeed" aria-posinset="4" aria-setsize="4" style="--photo-position:center top">
+            <img src="https://lsvp.com/wp-content/uploads/2026/05/IMG_0050-810x1024.png" alt="Claire Zau" loading="lazy" />
+            <div class="person-body">
+              <span class="person-role">Creator → venture partner</span>
+              <span class="person-name">Lightspeed</span>
+              <p>Lightspeed's current venture partner built her audience making talking-head videos.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+      <div class="orbit-controls">
+        <button type="button" data-orbit-prev aria-label="Show previous example">←</button>
+        <button type="button" data-orbit-next aria-label="Show next example">→</button>
+      </div>
+    </div>
+
+    <p class="bigline shift-thesis reveal">Why? Because catching eyeballs — drawing meaningful human attention — converts into real fiscal value. When the people allocating capital are themselves creators, attention as an asset stops being a metaphor.</p>
+
+    <!-- kept exactly from the thesis deck -->
+    <div class="attn reveal" id="attn" aria-hidden="true">
+      <div class="attn-grid">
+        <div class="attn-col attn-supply">
+          <span class="attn-k">YOU · THE AUDIENCE</span>
+          <div class="attn-crowd" data-scene="crowd"></div>
+          <div class="attn-chips">
+            <span>gift $</span><span>swipe</span><span>like</span><span>comment</span><span>share</span><span>watch-time</span><span>subscribe</span>
+          </div>
+          <span class="attn-zero"><span class="az-ic">✕</span> you earn today <b>$0</b></span>
+        </div>
+        <div class="attn-flow">
+          <svg class="attn-stream" id="attnStream" viewBox="0 0 200 170" preserveAspectRatio="none"></svg>
+          <span class="attn-flow-label">your attention &amp; spend →</span>
+        </div>
+        <div class="attn-col attn-capture">
+          <span class="attn-k">VALUE CAPTURED</span>
+          <div class="attn-pool"><div class="attn-pool-fill"></div><span class="attn-coin">$</span></div>
+          <div class="attn-tags"><span>platform</span><span>algorithm</span><span>creator</span></div>
+        </div>
+      </div>
+      <div class="attn-returns">
+        <div class="attn-lane lane-dead"><span class="lane-ic">✕</span><span>Today the value flows one way. None of it returns to the people who supply the attention.</span></div>
+        <div class="attn-lane lane-backer"><span class="lane-tag">BACKER RAIL</span><span class="lane-on">A return rail on your early belief — <b>earn while you engage.</b></span></div>
+      </div>
+    </div>
+
+    <p class="bigline reveal">The asset is <span class="grad-text">aggregated fan conviction.</span></p>
+  </section>
+
+  <!-- 2 · PROBLEMS -->
+  <section class="section" id="problems">
+    <div class="section-head reveal">
+      <span class="kicker kicker-warn">The problems</span>
+      <h2>The attention economy is broken.</h2>
+    </div>
+
+    <div class="two-col">
+      <article class="claim reveal">
+        <span class="claim-no">01</span>
+        <h3>The reward system is hugely unbalanced.</h3>
+        <p>Only the platforms and the creators make money. There is no economic upside for the consumers — the viewers who already spend money and create the value the whole system runs on.</p>
+      </article>
+      <article class="claim reveal">
+        <span class="claim-no">02</span>
+        <h3>Attention can be manufactured — by people and by algorithms.</h3>
+        <p>Companies spend hundreds of thousands of dollars on influencers without knowing what the real conversion will be. That is happening every day in AI right now.</p>
+      </article>
+    </div>
+
+    <div class="sin reveal">
+      <p class="sin-label">An original sin of the creator economy</p>
+      <p class="sin-text">There is no aligned upside for the people who matter most — <em>the fans.</em></p>
+    </div>
+
+    <div class="gifting reveal">
+      <div class="gifting-head">
+        <h3>Tipping already proves fans will fund creators.</h3>
+        <p>Instagram, Twitch, TikTok/Douyin, Bilibili, YouTube — every platform has a money flow from fans to creators. Look at who captures the value.</p>
+      </div>
+      <div class="gifting-rows">
+        <div class="g-row"><span class="g-who">Platform</span><div class="g-bar"><span style="width:38%"></span></div><span class="g-val">sets the rules, access, and transaction terms</span></div>
+        <div class="g-row"><span class="g-who">Creator</span><div class="g-bar"><span style="width:62%" class="g-pos"></span></div><span class="g-val">receives funds &amp; recognition</span></div>
+        <div class="g-row g-zero"><span class="g-who">Fan</span><div class="g-bar"><span style="width:2%" class="g-neg"></span></div><span class="g-val">receives nothing — no return, no ownership, no upside</span></div>
+      </div>
+      <p class="gifting-foot">The question was never whether fans will fund creators. They already do. The question is: <strong>what if funding came with upside?</strong></p>
+    </div>
+
+    <div class="dorsey reveal">
+      <div class="dorsey-photo">
+        <img src="img/pitch/dorsey.jpg" alt="Jack Dorsey" loading="lazy" />
+        <span>JACK DORSEY · TWITTER CO-FOUNDER</span>
+      </div>
+      <figure class="quote">
+        <blockquote>"Every time you like a post, every time you retweet something, that's a signal to an algorithm… all of these algorithms are predominantly focused on increasing impressions, because that increases advertising revenue."</blockquote>
+        <figcaption>— Jack Dorsey, on why the reactions you see can't be trusted</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 3 · SOLUTION & CONVICTION -->
+  <section class="section" id="solution">
+    <div class="section-head reveal">
+      <span class="kicker kicker-accent">The solution</span>
+      <h2>That's why we built <span class="grad-text">Backer.</span></h2>
+      <p class="section-lead">Backer is a financial market where people invest money to bet on any online IP's engagement. Prediction markets price events. <strong>Backer prices people's future attention.</strong></p>
+    </div>
+
+    <div class="two-col">
+      <article class="claim reveal">
+        <span class="claim-no">01</span>
+        <h3>People investing in the future is a proven behavior.</h3>
+        <p>Prediction markets proved it at scale: give people a way to stake money on what happens next, and billions of dollars a month show up to do it.</p>
+      </article>
+      <article class="claim reveal">
+        <span class="claim-no">02</span>
+        <h3>People funding others knowing there is no economical return is a proven behavior.</h3>
+        <p>The attention economy proved the other half: fans pour money into creators knowing there is no aligned return. Backer sits exactly where those two proven behaviors meet.</p>
+      </article>
+    </div>
+
+    <!-- kept exactly from the demo site -->
+    <div class="section-head reveal" style="margin-top:clamp(60px,8vw,90px)">
+      <span class="kicker">Market validation</span>
+      <h2>People already pay to own a piece of <span class="grad-text">the future.</span></h2>
+      <p class="section-lead">Wherever human attention concentrates, capital follows — and a market forms to price it. Prediction markets just proved that behavior at scale. Backer applies it to what attention actually orbits: <strong>people.</strong></p>
+    </div>
+
+    <div class="val-parallel reveal" id="valParallel">
+      <div class="val-lane">
+        <span class="val-lane-tag mono">PROVEN · EVENTS</span>
+        <div class="val-flow">
+          <div class="val-node">
+            <span class="val-node-k">Human Attention</span>
+            <span class="val-node-d">veers into eyeball-catching events</span>
+          </div>
+          <div class="val-arrow" aria-hidden="true"><i></i></div>
+          <div class="val-node">
+            <span class="val-node-k">Capital follows</span>
+            <span class="val-node-d">into priced positions on outcomes</span>
+          </div>
+          <div class="val-arrow" aria-hidden="true"><i></i></div>
+          <div class="val-node val-node-mkt">
+            <span class="val-node-k">Prediction markets</span>
+            <span class="val-node-d">Kalshi&nbsp;+&nbsp;Polymarket</span>
+          </div>
+        </div>
+      </div>
+      <div class="val-lane val-lane-backer">
+        <span class="val-lane-tag mono">NEXT · PEOPLE</span>
+        <div class="val-flow">
+          <div class="val-node">
+            <span class="val-node-k">Human Attention</span>
+            <span class="val-node-d">veers into eyeball-catching people</span>
+          </div>
+          <div class="val-arrow" aria-hidden="true"><i></i></div>
+          <div class="val-node">
+            <span class="val-node-k">Capital follows</span>
+            <span class="val-node-d">into belief in who compounds next</span>
+          </div>
+          <div class="val-arrow" aria-hidden="true"><i></i></div>
+          <div class="val-node val-node-mkt val-node-bkr">
+            <span class="val-node-k">Backer</span>
+            <span class="val-node-d">where human attention gets priced</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="val-proof">
+      <div class="val-chart reveal" id="valChartCard">
+        <div class="val-chart-head">
+          <div class="val-chart-title">
+            <h3>Attention needs an evidence trail.</h3>
+            <p>Backer keeps each provider fact attached to its source, time, window, methodology, and access state.</p>
+          </div>
+          <div class="val-chart-now">
+            <span class="val-now-num mono">SOURCE-NATIVE</span>
+            <span class="val-now-cap">evidence, not a universal score</span>
+          </div>
+        </div>
+        <p class="val-chart-note">Public creator discovery is research-only. Evidence does not create consent, tradability, or a real-money market.</p>
+      </div>
+      <div class="val-proof-side">
+        <div class="val-fact reveal">
+          <b>Records</b>
+          <span>Creators, linked identities, unique works, and source records stay distinct and countable.</span>
+        </div>
+        <div class="val-fact reveal">
+          <b>Signals</b>
+          <span>Reach, traction, momentum, coverage, and confidence remain separate evidence dimensions.</span>
+        </div>
+        <div class="val-fact reveal">
+          <b>Limits</b>
+          <span>Unavailable and permission-gated facts remain unavailable. Missing evidence is never presented as zero.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="val-asset reveal">
+      <div class="val-asset-head">
+        <h3>Support already follows people. Backer makes the evidence inspectable.</h3>
+        <p>Tips, memberships, subscriptions, and public engagement all describe different relationships. Backer keeps those meanings separate.</p>
+      </div>
+      <div class="val-asset-grid">
+        <div class="val-big">
+          <b>Direct support</b>
+          <span>Tips, memberships, subscriptions, and purchases are support signals—not promises of financial return.</span>
+        </div>
+        <div class="val-big">
+          <b>Public evidence</b>
+          <span>Source-native metrics, timestamps, methods, freshness, and confidence remain reviewable.</span>
+        </div>
+        <div class="val-big">
+          <b>Creator graph</b>
+          <span>Platform identities link only through reviewed evidence—never because two people share a name.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · PROOF OF ATTENTION -->
+  <section class="section proof proof-glass" id="proof">
+    <div class="section-head center reveal">
+      <span class="kicker kicker-accent">Proof of Attention</span>
+      <h2 class="proof-h">Now, back to the algorithm problem.<br /><span class="grad-text">Which attention is real?</span></h2>
+      <p class="section-lead">Every number on a creator's profile can be manufactured — fabricated, even. So we learn from the best market makers in the world: quantitative hedge funds monitor the sentiment around a stock by analyzing news channels, analyst reports on Substack and Medium, Reddit, and Twitter. Backer applies the same discipline to attention.</p>
+    </div>
+
+    <div class="section-head center reveal" style="margin-top:0">
+      <h3 style="font-size:clamp(18px,2.2vw,23px);letter-spacing:-.02em">Our own PoA — Proof of Attention — algorithms.</h3>
+      <p class="section-lead" style="margin-top:14px">Agents monitor and analyze the publicly available data on every major platform: likes, comments, reposts, views; the frequency of their spikes; the sentiment inside the comments. The output is a whole picture of the <strong>composition of attention — per content, per creator.</strong></p>
+    </div>
+
+    <article class="poa-demo reveal" data-poa-preview="marcus" aria-labelledby="poaDemoTitle" aria-describedby="poaDemoDisclosure">
+      <header class="poa-demo-head">
+        <div class="poa-demo-identity">
+          <span class="poa-demo-avatar" aria-hidden="true">MS</span>
+          <div>
+            <span class="poa-demo-kicker">Illustrative public-data snapshot</span>
+            <h3 id="poaDemoTitle">Marcus Stillwater</h3>
+            <p>@marcus.films · YouTube · 90 days</p>
+          </div>
+        </div>
+        <div class="poa-demo-status" aria-label="Snapshot status">
+          <span><small>PoA band</small><b class="poa-demo-positive">Strong</b></span>
+          <span><small>Evidence</small><b data-poa-confidence>High · 94</b></span>
+          <button type="button" class="poa-demo-open" data-poa="marcus">Open full PoA <span aria-hidden="true">↗</span></button>
+        </div>
+      </header>
+
+      <div class="poa-demo-body">
+        <section class="poa-demo-composition" aria-labelledby="poaCompositionTitle">
+          <div class="poa-demo-block-head">
+            <h4 id="poaCompositionTitle">Attention composition</h4>
+            <span>ranges, not a single score</span>
+          </div>
+
+          <div class="poa-demo-band poa-demo-core" data-poa-band="core" aria-label="Credible core estimate: 80 to 95 percent; point estimate 87 percent">
+            <div class="poa-demo-band-label"><span><i></i>Credible core</span><b data-poa-range>87 · 80–95%</b></div>
+            <div class="poa-demo-track"><span class="poa-demo-range" style="--range-left:80%;--range-width:15%"></span><i style="--point-left:87%"></i></div>
+          </div>
+          <div class="poa-demo-band poa-demo-passive" data-poa-band="passive" aria-label="Passive or transient estimate: 0 to 15 percent; point estimate 7 percent">
+            <div class="poa-demo-band-label"><span><i></i>Passive / transient</span><b data-poa-range>7 · 0–15%</b></div>
+            <div class="poa-demo-track"><span class="poa-demo-range" style="--range-left:0%;--range-width:15%"></span><i style="--point-left:7%"></i></div>
+          </div>
+          <div class="poa-demo-band poa-demo-anomalous" data-poa-band="anom" aria-label="Anomalous estimate: 0 to 10 percent; point estimate 2 percent">
+            <div class="poa-demo-band-label"><span><i></i>Anomalous</span><b data-poa-range>2 · 0–10%</b></div>
+            <div class="poa-demo-track"><span class="poa-demo-range" style="--range-left:0%;--range-width:10%"></span><i style="--point-left:2%"></i></div>
+          </div>
+          <div class="poa-demo-band poa-demo-unassessed" data-poa-band="un" aria-label="Unassessed estimate: 0 to 10 percent; point estimate 4 percent">
+            <div class="poa-demo-band-label"><span><i></i>Unassessed</span><b data-poa-range>4 · 0–10%</b></div>
+            <div class="poa-demo-track"><span class="poa-demo-range" style="--range-left:0%;--range-width:10%"></span><i style="--point-left:4%"></i></div>
+          </div>
+          <p class="poa-demo-note">Point estimates total 100%. Ranges may overlap because uncertainty is shown, not hidden.</p>
+        </section>
+
+        <section class="poa-demo-evidence" aria-labelledby="poaEvidenceTitle">
+          <div class="poa-demo-block-head">
+            <h4 id="poaEvidenceTitle">Evidence read</h4>
+            <span>captured public signals</span>
+          </div>
+          <div class="poa-demo-read">
+            <p><b>Evidence for</b> <span data-poa-evidence>Comment breadth held across eight uploads while public-view velocity normalized after the largest spike.</span></p>
+            <p><b>Watch</b> <span data-poa-risk>Low output cadence and incomplete source coverage increase uncertainty.</span></p>
+          </div>
+          <div class="poa-demo-coverage" aria-label="Captured data coverage">
+            <span><small>Videos</small><b data-poa-videos>8</b></span>
+            <span><small>Comments</small><b data-poa-comments>642</b></span>
+            <span><small>Coverage</small><b data-poa-coverage>67%</b></span>
+          </div>
+          <div class="poa-demo-pulse-head"><span>Observed attention velocity</span><small>100 = prior 28d median</small></div>
+          <div class="poa-demo-pulse" data-poa-pulse role="img" aria-label="Illustrative observed public attention velocity over twelve observations; 100 equals the prior 28-day median">
+            <span style="--pulse:32%"></span><span style="--pulse:38%"></span><span style="--pulse:29%"></span><span style="--pulse:44%"></span>
+            <span style="--pulse:41%"></span><span style="--pulse:52%"></span><span style="--pulse:46%"></span><span style="--pulse:61%"></span>
+            <span class="is-spike" style="--pulse:94%"></span><span style="--pulse:58%"></span><span style="--pulse:49%"></span><span style="--pulse:54%"></span>
+          </div>
+        </section>
+      </div>
+
+      <p class="poa-demo-disclosure" id="poaDemoDisclosure">Estimated composition from observable public signals. This is creator underwriting—not a creator valuation, market price, probability, or settlement oracle.</p>
+    </article>
+
+    <div class="open-note reveal">
+      <svg viewBox="0 0 24 24" class="ic"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <div>
+        <h4>PoA can ship to B or as a paid subscription</h4>
+        <p>Businesses run it before committing marketing budget to an influencer — instead of spending hundreds of thousands of dollars blind. Investors decide for themselves whether knowing the full composition of attention matters before taking a position.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · PRODUCT & BUSINESS MODEL -->
+  <section class="section" id="product">
+    <div class="section-head reveal">
+      <span class="kicker">Product &amp; business model</span>
+      <h2>Events and creators share the same <em>four conditions.</em></h2>
+      <p class="section-lead">High attention, real uncertainty, measurable outcomes, and strong disagreement — the four conditions under which a prediction and trading market can form.</p>
+    </div>
+
+    <!-- kept exactly from the demo site -->
+    <div class="val-cond reveal" id="valCond">
+      <div class="val-cond-head">
+        <h3>A tradable market needs four conditions. Creators meet every&nbsp;one.</h3>
+        <p>The exact conditions that made events tradable already hold for the people who hold the internet's attention.</p>
+      </div>
+      <div class="val-cond-table" role="table" aria-label="Market conditions: events vs creators">
+        <div class="vc-row vc-head mono" role="row"><span>Condition</span><span>Events</span><span>Creators</span></div>
+        <div class="vc-row" role="row" style="--i:0">
+          <div class="vc-c"><b>High attention</b><span>creators attract economically valuable attention</span></div>
+          <span class="vc-check" aria-label="yes">✓</span><span class="vc-check vc-check-b" aria-label="yes">✓</span>
+        </div>
+        <div class="vc-row" role="row" style="--i:1">
+          <div class="vc-c"><b>Real uncertainty</b><span>their future growth is genuinely unknown</span></div>
+          <span class="vc-check" aria-label="yes">✓</span><span class="vc-check vc-check-b" aria-label="yes">✓</span>
+        </div>
+        <div class="vc-row" role="row" style="--i:2">
+          <div class="vc-c"><b>Measurable outcomes</b><span>performance resolves against observable milestones</span></div>
+          <span class="vc-check" aria-label="yes">✓</span><span class="vc-check vc-check-b" aria-label="yes">✓</span>
+        </div>
+        <div class="vc-row" role="row" style="--i:3">
+          <div class="vc-c"><b>Strong disagreement</b><span>people already argue over who rises or falls next</span></div>
+          <span class="vc-check" aria-label="yes">✓</span><span class="vc-check vc-check-b" aria-label="yes">✓</span>
+        </div>
+      </div>
+      <p class="val-cond-foot">Backer turns those beliefs into <strong>tradable positions.</strong></p>
+    </div>
+
+    <!-- kept exactly from the demo site -->
+    <div class="section-head reveal" style="margin-top:clamp(60px,8vw,90px)">
+      <span class="kicker">The product</span>
+      <h2>Three surfaces. One marketplace for early belief.</h2>
+    </div>
+
+    <div class="surfaces">
+      <article class="surface reveal">
+        <div class="surface-tag">01 · AI Search Agent</div>
+        <h3>Describe who you're looking for. In plain language.</h3>
+        <p>"Find fitness creators under 5K followers posting 3× a week, growing steadily, retention-heavy — ideally university students." The agent traverses public data across platforms and ranks candidates by authenticity and trajectory.</p>
+        <div class="surface-demo">
+          <div class="mini-search"><svg viewBox="0 0 24 24" class="ic"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span class="typed" data-typed="fitness creators · under 5K · retention-heavy · students"></span></div>
+        </div>
+        <a class="surface-cta" href="backerdemo.html?view=search">Try the agent <svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+
+      <article class="surface reveal">
+        <div class="surface-tag">02 · Creator Discovery Feed</div>
+        <h3>Every online IP is eligible. None of them post here.</h3>
+        <p>SoundCloud rappers, niche educators, Bilibili vloggers, Substack writers. They link their existing platforms and establish a verified profile. We score them. You browse and back them.</p>
+        <div class="surface-demo surface-feed">
+          <div class="mini-card"><span class="mini-auth">91%</span><span class="mini-name">Elena Vance</span></div>
+          <div class="mini-card"><span class="mini-auth">88%</span><span class="mini-name">Marcus Stillwater</span></div>
+          <div class="mini-card"><span class="mini-auth">83%</span><span class="mini-name">Sarah Fits</span></div>
+        </div>
+        <a class="surface-cta" href="backerdemo.html?view=market">Open the marketplace <svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+
+      <article class="surface reveal">
+        <div class="surface-tag">03 · Investment &amp; Portfolio</div>
+        <h3>From $1. Milestones set the terms.</h3>
+        <p>"If I reach 50K subscribers in 12 months, early backers receive 1.5×." Your portfolio isn't just a tracker — it's public proof-of-taste. A record of early bets that paid off is its own social capital.</p>
+        <div class="surface-demo surface-port">
+          <div class="port-stat"><span class="ps-label">Taste Grade</span><span class="ps-val grade">A+</span></div>
+          <div class="port-stat"><span class="ps-label">Return</span><span class="ps-val pos">+19.3%</span></div>
+        </div>
+        <a class="surface-cta" href="backerdemo.html?view=portfolio">See a portfolio <svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+    </div>
+
+    <!-- three ways to make money -->
+    <div class="section-head reveal" style="margin-top:clamp(60px,8vw,90px)">
+      <span class="kicker kicker-accent">The instruments</span>
+      <h2>Three ways to make money.</h2>
+      <p class="section-lead">Every instrument is shown from both seats — the backer taking the position, and the creator whose market it is. Backer takes a fee on flow, <strong>never a position.</strong></p>
+    </div>
+
+    <div class="ways">
+      <article class="way reveal">
+        <span class="way-tag">01 · Milestone Contracts</span>
+        <h3>Binary positions on whether a creator hits a defined growth target by a set date.</h3>
+        <p class="way-def">Backers on the correct side split the pool, minus Backer's fee.</p>
+        <div class="way-ex"><b>"Maya reaches 250K subscribers by June 30."</b> You stake $50 on YES while she's at 100K subs. She hits it — the YES side splits the NO side's stakes pro-rata. She misses — your stake goes to the NO side.</div>
+        <div class="duo">
+          <div class="duo-cell duo-inv">
+            <span class="duo-k">You, the backer</span>
+            <span class="duo-f">Payout = Stake × Pool × (1 − fee) ÷ Winning side</span>
+            <p>You win the pool minus the fee, <b>in proportion to your share of the winning side.</b> Side with the crowd and win pennies; be right against it and get paid multiples.</p>
+          </div>
+          <div class="duo-cell duo-cre">
+            <span class="duo-k">Maya, the creator</span>
+            <p>She earns a <b>royalty from the market fee</b> — proposed 40% of it, 60% to Backer — whether the milestone hits or misses. The volume her market attracts pays her; her backers' losses never do.</p>
+          </div>
+        </div>
+        <p class="way-insight">The insight: it's the first instrument that converts belief in a person into a priced, settleable claim — without touching equity.</p>
+      </article>
+
+      <article class="way reveal">
+        <span class="way-tag">02 · PK Markets</span>
+        <h3>Head-to-head contracts on which of two comparable creators grows faster over a fixed window.</h3>
+        <p class="way-def">Relative performance, not absolute targets. Relative markets are harder to manipulate — a creator can inflate their own numbers, <strong>but not suppress a rival's.</strong></p>
+        <div class="way-ex"><b>Two fitness creators, both ~80K subs.</b> "Who adds more subscribers in Q3 — Alex or Jordan?" You back Alex. Whoever's side wins splits the pool of the losing side.</div>
+        <div class="duo">
+          <div class="duo-cell duo-inv">
+            <span class="duo-k">You, the backer</span>
+            <span class="duo-f">Payout = Stake × Pool × (1 − fee) ÷ Winning side</span>
+            <p>Same pooled mechanics as a milestone — you're pricing <b>which of the two</b> compounds faster, not an absolute number.</p>
+          </div>
+          <div class="duo-cell duo-cre">
+            <span class="duo-k">Alex &amp; Jordan, the creators</span>
+            <p>The two creators <b>share the royalty</b> from the market fee. The battle itself pays both of them, whoever wins — so agreeing to a PK is rational for both sides.</p>
+          </div>
+        </div>
+        <p class="way-insight">The insight: PK markets price taste — the ability to spot the winner before the algorithm does.</p>
+      </article>
+
+      <article class="way reveal">
+        <span class="way-tag">03 · Creator Perps</span>
+        <h3>Perpetual contracts tracking a creator's attention index. No expiry, no settlement event.</h3>
+        <p class="way-def">The index is a <strong>PoA-weighted composite of reach, engagement quality, and durability.</strong> Continuous price discovery on a human being's trajectory.</p>
+        <div class="way-ex"><b>MrBeast's attention index trades at 1,840.</b> You believe he's structurally underpriced going into a new format launch — you go long and hold for as long as your thesis holds, exiting whenever the market has repriced.</div>
+        <div class="duo">
+          <div class="duo-cell duo-inv">
+            <span class="duo-k">You, the backer</span>
+            <span class="duo-f">Payout = Stake × index change − trading fees</span>
+            <p>Your dollar tracks the index. No pool, no resolution date — <b>conviction without an expiry.</b></p>
+          </div>
+          <div class="duo-cell duo-cre">
+            <span class="duo-k">The creator</span>
+            <p>A share of <b>every entry and exit fee</b> on their index accrues to the creator — a continuous royalty on the trading volume their trajectory generates.</p>
+          </div>
+        </div>
+        <p class="way-insight">The insight: milestones and PK markets generate the price history; perps are where that history compounds into a continuous market. Binary events bootstrap the data that makes perpetual markets underwritable.</p>
+      </article>
+    </div>
+
+    <div class="ladder reveal">
+      <p class="bigline">Milestones price outcomes. PK prices comparison. <em>Perps price the person, continuously.</em></p>
+    </div>
+
+    <!-- kept exactly from the FAQ page -->
+    <div class="calc reveal" id="calc" style="margin-top:clamp(50px,7vw,80px)">
+      <div class="calc-head">
+        <div class="calc-title">
+          <h3>Payout calculator for each scenario</h3>
+          <p>Put in any numbers, pick a scenario, and watch where every dollar&nbsp;goes — including the creator's cut of the fee.</p>
+        </div>
+        <div class="calc-tabs" role="tablist" aria-label="Payout scenario">
+          <button class="calc-tab active" data-scen="milestone" role="tab" aria-selected="true">Milestone</button>
+          <button class="calc-tab" data-scen="pk" role="tab" aria-selected="false">PK battle</button>
+          <button class="calc-tab" data-scen="perp" role="tab" aria-selected="false">Perp</button>
+        </div>
+      </div>
+
+      <div class="calc-grid">
+        <div class="calc-inputs">
+          <div class="calc-pane" id="panePool">
+            <div class="calc-field">
+              <label for="cStake">Your stake</label>
+              <div class="calc-num"><span class="cur">$</span><input id="cStake" type="number" inputmode="decimal" min="0" step="1" value="1" /></div>
+            </div>
+            <div class="calc-field">
+              <label id="cSideLab">Your side</label>
+              <div class="calc-seg" id="cSide" role="radiogroup" aria-labelledby="cSideLab">
+                <button class="seg active" data-side="yes" role="radio" aria-checked="true">YES — it hits</button>
+                <button class="seg" data-side="no" role="radio" aria-checked="false">NO — it misses</button>
+              </div>
+            </div>
+            <div class="calc-field-row">
+              <div class="calc-field">
+                <label for="cYes" id="cYesLab">Total staked YES <em>(incl. yours)</em></label>
+                <div class="calc-num"><span class="cur">$</span><input id="cYes" type="number" inputmode="decimal" min="0" step="1" value="20" /></div>
+              </div>
+              <div class="calc-field">
+                <label for="cNo" id="cNoLab">Total staked NO</label>
+                <div class="calc-num"><span class="cur">$</span><input id="cNo" type="number" inputmode="decimal" min="0" step="1" value="80" /></div>
+              </div>
+            </div>
+            <div class="calc-field">
+              <label id="cOutLab">Then the milestone…</label>
+              <div class="calc-seg" id="cOutcome" role="radiogroup" aria-labelledby="cOutLab">
+                <button class="seg active" data-out="yes" role="radio" aria-checked="true">Hits ✓</button>
+                <button class="seg" data-out="no" role="radio" aria-checked="false">Misses ✕</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="calc-pane hidden" id="panePerp">
+            <div class="calc-field">
+              <label for="pStake">Your stake</label>
+              <div class="calc-num"><span class="cur">$</span><input id="pStake" type="number" inputmode="decimal" min="0" step="1" value="1" /></div>
+            </div>
+            <div class="calc-field-row">
+              <div class="calc-field">
+                <label for="pEntry">Index at entry</label>
+                <div class="calc-num"><input id="pEntry" type="number" inputmode="decimal" min="1" step="1" value="100" /></div>
+              </div>
+              <div class="calc-field">
+                <label for="pExit">Index at exit</label>
+                <div class="calc-num"><input id="pExit" type="number" inputmode="decimal" min="0" step="1" value="120" /></div>
+              </div>
+            </div>
+            <div class="calc-field">
+              <label for="pFee">Trade fee, each way</label>
+              <div class="calc-num"><input id="pFee" type="number" inputmode="decimal" min="0" max="10" step="0.1" value="0.5" /><span class="cur">%</span></div>
+            </div>
+          </div>
+
+          <div class="calc-feenote"><span class="fee-chip mono" id="feeChip">fee 10% · proposed</span> All fee rates and splits are proposals — <b>to be determined.</b></div>
+        </div>
+
+        <div class="calc-out" aria-live="polite">
+          <div class="calc-poolbar" id="calcPoolbar">
+            <div class="cp-track" id="cpTrack">
+              <div class="cp-seg cp-yes" id="cpYes"><i id="cpYou"></i></div>
+              <div class="cp-seg cp-no" id="cpNo"></div>
+              <div class="cp-seg cp-fee" id="cpFee"></div>
+            </div>
+            <div class="cp-legend mono" id="cpLegend">
+              <span class="cpl cpl-you" id="cplYou">you $1</span>
+              <span class="cpl cpl-yes" id="cplYes">YES $20</span>
+              <span class="cpl cpl-no" id="cplNo">NO $80</span>
+              <span class="cpl cpl-fee" id="cplFee">fee $10</span>
+            </div>
+          </div>
+          <div class="calc-payout">
+            <span class="calc-payout-lab" id="payoutLab">Your payout</span>
+            <span class="calc-payout-num mono" id="payoutNum">$4.50</span>
+            <span class="calc-payout-delta" id="payoutDelta">+350% on your $1</span>
+          </div>
+          <p class="calc-formula mono" id="calcFormula">$1 × ($100 × 0.90) ÷ $20 = $4.50</p>
+          <p class="calc-split" id="calcSplit">Fee $10 → $6 Backer revenue · $4 creator royalty <em>(proposed 60 / 40)</em></p>
+          <p class="calc-insight" id="calcInsight">The pool balance <em>is</em> the price: side with the crowd and win pennies — be right against it and get paid multiples.</p>
+        </div>
+      </div>
+
+      <p class="calc-one"><b>The one-line version:</b> you win the pool minus the fee, in proportion to your share of the winning side. On a perp, your dollar simply tracks the index. The creator earns a royalty from the fee either way — more detail in the <a href="faq.html" style="color:var(--accent)">FAQ</a>.</p>
+    </div>
+  </section>
+
+  <!-- 6 · COMPETITION -->
+  <section class="section" id="competition">
+    <div class="section-head reveal">
+      <span class="kicker kicker-warn">Competition</span>
+      <h2>Industry giants continue to prove the category.</h2>
+      <p class="section-lead">Prediction markets are already enormous. Look at what they price, and what they leave unpriced.</p>
+    </div>
+
+    <div class="comp-grid">
+      <div class="comp reveal">
+        <div class="comp-logo"><img src="img/pitch/kalshi.png" alt="Kalshi" loading="lazy" /></div>
+        <span class="comp-stat">Events</span>
+        <span class="comp-tag">sports · politics · crypto</span>
+        <p>Kalshi demonstrates demand for event contracts across categories people already follow closely.</p>
+      </div>
+      <div class="comp reveal">
+        <div class="comp-logo"><img src="img/pitch/polymarket.png" alt="Polymarket" loading="lazy" /></div>
+        <span class="comp-stat">Events</span>
+        <span class="comp-tag">sports · politics · crypto</span>
+        <p>Polymarket demonstrates a second product path for expressing conviction around public events.</p>
+      </div>
+      <div class="comp reveal">
+        <div class="comp-logo"><img src="img/pitch/meta.png" alt="Meta" loading="lazy" /></div>
+        <span class="comp-stat">Arena</span>
+        <span class="comp-tag">in development</span>
+        <p>Meta is entering too: <b>Arena</b>, a Kalshi / Polymarket equivalent, is under development. A third giant validating the same category.</p>
+      </div>
+    </div>
+
+    <p class="comp-read reveal">None of them touch the attention economy — and not because the upside is limited. Diverging into a whole new sector means a whole new definition of the market: <strong>pricing creators, and collaborating with them to share profit.</strong> That's not a wise detour for platforms defending sports and crypto flow. It's the entire company for us. Their volume proves capital follows eyeballs; their absence leaves the people layer unpriced. Those markets monetize the bet, not its subject. Backer aligns both sides: viewers can profit from early conviction, while creators share in the value their attention creates. <strong>That's Backer's lane.</strong></p>
+  </section>
+
+  <!-- FINAL — kept exactly from the demo site -->
+  <section class="finale reveal">
+    <h2 class="finale-line">Attention has always been currency.</h2>
+    <h2 class="finale-line grad-text">Now it can be equity.</h2>
+    <div class="finale-cta">
+      <a class="btn btn-primary btn-lg" href="backerdemo.html?view=market">Enter the marketplace<svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="btn btn-ghost btn-lg" href="backerthesis.html">Read the thesis</a>
+    </div>
+  </section>
+
+  <!-- SHARED FLICKERING FOOTER -->
+  <footer class="backer-footer">
+    <div class="backer-footer__inner">
+      <div class="backer-footer__top">
+        <a class="backer-footer__brand" href="backerdemo.html" aria-label="Backer home">
+          <span class="backer-footer__mark" aria-hidden="true"><img src="img/backer-mark.png?v=2" alt="" /></span>
+          <span class="backer-footer__word">Backer</span>
+        </a>
+        <div class="backer-footer__nav">
+          <nav class="backer-footer__group" aria-label="Product">
+            <h2>Product</h2>
+            <ul>
+              <li><a class="backer-footer__link" href="backerdemo.html?view=market">Marketplace<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+              <li><a class="backer-footer__link" href="backerdemo.html?view=search">AI Search<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+              <li><a class="backer-footer__link" href="portfolio.html">Portfolio<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+            </ul>
+          </nav>
+          <nav class="backer-footer__group" aria-label="Research">
+            <h2>Research</h2>
+            <ul>
+              <li><a class="backer-footer__link" href="research.html">Proof of Attention<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+            </ul>
+          </nav>
+          <nav class="backer-footer__group" aria-label="Company">
+            <h2>Company</h2>
+            <ul>
+              <li><a class="backer-footer__link" href="backerthesis.html">Thesis<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+              <li><a class="backer-footer__link" href="pitch.html" aria-current="page">Pitch<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+              <li><a class="backer-footer__link" href="faq.html">FAQ<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+              <li><a class="backer-footer__link" href="privacy.html">Privacy<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+    <div class="backer-footer__flicker">
+      <span class="backer-footer__fallback">Invest in people, before the world does</span>
+      <canvas class="backer-footer__canvas" data-footer-flicker data-text="Invest in people, before the world does" aria-hidden="true"></canvas>
+    </div>
+  </footer>
+</main>
+
+<script src="js/shader.js"></script>
+<script src="js/liquid-glass.js"></script>
+<script src="js/data.js"></script>
+<script src="js/analytics-core.js?v=1"></script>
+<script src="js/analytics.js?v=2"></script>
+<script>
+/* pitch-page injections: typed search line and the thesis attention-flow element. */
+(function () {
+  'use strict';
+  var $ = function (s, c) { return (c || document).querySelector(s); };
+  var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* circular consensus gallery — manual button rotation */
+  var circularGallery = $('[data-circular-gallery]');
+  if (circularGallery) {
+    var cards = $$('.person', circularGallery);
+    var previous = $('[data-orbit-prev]', circularGallery);
+    var next = $('[data-orbit-next]', circularGallery);
+    var activeIndex = 0;
+
+    function renderGallery() {
+      cards.forEach(function (card, index) {
+        var offset = (index - activeIndex + cards.length) % cards.length;
+        card.classList.remove('is-active', 'is-prev', 'is-next');
+        if (offset === 0) {
+          card.classList.add('is-active');
+          card.setAttribute('aria-current', 'true');
+        } else {
+          card.removeAttribute('aria-current');
+          if (offset === 1) card.classList.add('is-next');
+          if (offset === cards.length - 1) card.classList.add('is-prev');
+        }
+      });
+    }
+    function rotateGallery(direction) {
+      activeIndex = (activeIndex + direction + cards.length) % cards.length;
+      renderGallery();
+    }
+    previous.addEventListener('click', function () { rotateGallery(-1); });
+    next.addEventListener('click', function () { rotateGallery(1); });
+    renderGallery();
+  }
+
+  /* typed line in the AI-search surface */
+  $$('.typed').forEach(function (el) {
+    var full = el.dataset.typed, i = 0;
+    var io = new IntersectionObserver(function (ents) {
+      if (ents[0].isIntersecting) {
+        io.disconnect();
+        (function tick() { el.textContent = full.slice(0, i++); if (i <= full.length) setTimeout(tick, 38); })();
+      }
+    }, { threshold: 0.6 });
+    io.observe(el);
+  });
+
+  /* pixel crowd — ported from the thesis deck */
+  var P = { s: '#e8b487', k: '#15110b', b: '#5b86c9', g: '#5fae5a', a: '#f3b44e', M: '#565c66', G: '#56d39a' };
+  function R(x, y, w, h, f) { return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + f + '"/>'; }
+  function PX(grid, u, ox, oy) {
+    var out = '';
+    for (var y = 0; y < grid.length; y++) {
+      var row = grid[y], x = 0;
+      while (x < row.length) {
+        var ch = row.charAt(x);
+        if (ch === '.' || ch === ' ') { x++; continue; }
+        var run = 1; while (x + run < row.length && row.charAt(x + run) === ch) run++;
+        if (P[ch]) out += R(ox + x * u, oy + y * u, run * u, u, P[ch]);
+        x += run;
+      }
+    }
+    return out;
+  }
+  var crowdEl = $('.attn-crowd[data-scene="crowd"]');
+  if (crowdEl) {
+    var base = ['.kkkk.', '.ssss.', '.ssss.', 'CCCCCC', 'CCCCCC', 'C.CC.C', '.k..k.'];
+    var body = '';
+    ['b', 'g', 'a', 'M'].forEach(function (sk, i) {
+      var ox = 8 + i * 52;
+      var grid = base.map(function (r) { return r.replace(/C/g, sk); });
+      body += '<circle class="pix-signal" cx="' + (ox + 18) + '" cy="22" r="4" fill="' + P.G + '" style="animation-delay:' + (ox / 120).toFixed(2) + 's"/>' + PX(grid, 6, ox, 44);
+    });
+    crowdEl.innerHTML = '<svg class="pixscene" viewBox="0 0 220 100" shape-rendering="crispEdges" preserveAspectRatio="xMidYMid meet">' + body + '</svg>';
+  }
+
+  /* attention stream + lit state — ported from the thesis deck */
+  var attn = $('#attn'), stream = $('#attnStream');
+  if (attn) {
+    if (stream) {
+      var lanes = [26, 58, 90, 122, 150], svg = '';
+      lanes.forEach(function (y) { svg += '<path class="sline" d="M8 ' + y + ' L184 ' + y + '"/>'; });
+      lanes.forEach(function (y, li) {
+        for (var d = 0; d < 2; d++) {
+          svg += '<circle class="sdot" cx="12" cy="' + y + '" r="2.6" style="animation-delay:' + (li * 0.45 + d * 1.3).toFixed(2) + 's"/>';
+        }
+      });
+      stream.innerHTML = svg;
+    }
+    if (reduceMotion) { attn.classList.add('lit'); }
+    else {
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { attn.classList.add('lit'); obs.disconnect(); } });
+      }, { threshold: 0.3 });
+      obs.observe(attn);
+    }
+  }
+})();
+</script>
+<script src="js/poa-terminal.js?v=14"></script>
+<script src="js/poa-preview.js?v=1"></script>
+<script src="js/sections.js?v=2"></script>
+<script src="js/flickering-footer.js?v=20260731-2"></script>
+</body>
+</html>

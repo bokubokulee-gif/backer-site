@@ -1,0 +1,2813 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-11T17:37:28Z",
+  "status": "partial",
+  "isFixture": false,
+  "isSnapshot": true,
+  "notice": "Real public profile and work snapshot with a current official GitHub REST refresh. X, YouTube, and Instagram connectors require production credentials or creator authorization. All people remain discovery-only, and no attention label is an executable price or probability.",
+  "defaultWindow": "7d",
+  "ranges": {
+    "24h": {
+      "label": "24H",
+      "start": "2026-08-10T09:29:25Z",
+      "end": "2026-08-11T09:29:25Z"
+    },
+    "7d": {
+      "label": "7D",
+      "start": "2026-08-04T09:29:25Z",
+      "end": "2026-08-11T09:29:25Z"
+    },
+    "30d": {
+      "label": "30D",
+      "start": "2026-07-12T09:29:25Z",
+      "end": "2026-08-11T09:29:25Z"
+    },
+    "90d": {
+      "label": "90D",
+      "start": "2026-05-13T09:29:25Z",
+      "end": "2026-08-11T09:29:25Z"
+    }
+  },
+  "providerStatus": {
+    "x": {
+      "state": "permission_required",
+      "label": "Public profile links only",
+      "asOf": "2026-08-11T09:29:25Z",
+      "sourceUrl": "https://docs.x.com/x-api/overview",
+      "policyMode": "No X API credentials are connected. Backer does not claim a trends response or retained post metrics."
+    },
+    "youtube": {
+      "state": "permission_required",
+      "label": "Public work links; API key required for metrics",
+      "asOf": "2026-08-11T09:29:25Z",
+      "sourceUrl": "https://developers.google.com/youtube/v3/docs",
+      "policyMode": "No YouTube API key is connected in the public snapshot. Public video links and creator-maintained references are shown without metric claims or a derived cross-platform score."
+    },
+    "instagram": {
+      "state": "permission_required",
+      "label": "Profile links only",
+      "asOf": "2026-08-11T09:29:25Z",
+      "sourceUrl": "https://www.postman.com/meta/instagram/documentation/6yqw8pt/instagram-api",
+      "policyMode": "No Instagram media or insights were scraped. Production requires creator authorization, eligible account coverage, and App Review."
+    },
+    "github": {
+      "state": "snapshot",
+      "label": "Official REST aggregate snapshot",
+      "asOf": "2026-08-11T17:37:28Z",
+      "sourceUrl": "https://docs.github.com/en/rest",
+      "policyMode": "Public user and repository aggregates were refreshed through the official GitHub REST API. Totals are point-in-time observations, not growth. Backer does not retain follower or stargazer identities."
+    }
+  },
+  "metricCatalog": {
+    "x": [
+      { "key": "like_count", "label": "Likes", "accessClass": "public_app", "subject": "content" },
+      { "key": "reply_count", "label": "Replies", "accessClass": "public_app", "subject": "content" },
+      { "key": "retweet_count", "label": "Reposts", "accessClass": "public_app", "subject": "content" },
+      { "key": "quote_count", "label": "Quotes", "accessClass": "public_app", "subject": "content" },
+      { "key": "bookmark_count", "label": "Bookmarks", "accessClass": "public_app", "subject": "content" },
+      { "key": "impression_count", "label": "Impressions", "accessClass": "public_app", "subject": "content" },
+      { "key": "followers_count", "label": "Followers", "accessClass": "public_app", "subject": "account" }
+    ],
+    "youtube": [
+      { "key": "viewCount", "label": "Views", "accessClass": "public_app", "subject": "content" },
+      { "key": "likeCount", "label": "Likes", "accessClass": "public_app", "subject": "content" },
+      { "key": "commentCount", "label": "Comments", "accessClass": "public_app", "subject": "content" },
+      { "key": "subscriberCount", "label": "Subscribers", "accessClass": "public_app", "subject": "account", "caveat": "Rounded by YouTube and may be hidden." },
+      { "key": "shares", "label": "Shares", "accessClass": "creator_authorized", "subject": "content" },
+      { "key": "subscribersGained", "label": "Subscribers gained", "accessClass": "creator_authorized", "subject": "account" }
+    ],
+    "instagram": [
+      { "key": "like_count", "label": "Likes", "accessClass": "known_professional", "subject": "content" },
+      { "key": "comments_count", "label": "Comments", "accessClass": "known_professional", "subject": "content" },
+      { "key": "followers_count", "label": "Followers", "accessClass": "known_professional", "subject": "account" },
+      { "key": "saved", "label": "Saves", "accessClass": "creator_authorized", "subject": "content" },
+      { "key": "shares", "label": "Shares", "accessClass": "creator_authorized", "subject": "content" },
+      { "key": "reposts", "label": "Reposts", "accessClass": "creator_authorized", "subject": "content" }
+    ],
+    "github": [
+      { "key": "followers", "label": "Followers", "accessClass": "public_app", "subject": "account" },
+      { "key": "public_repos", "label": "Public repos", "accessClass": "public_app", "subject": "account" },
+      { "key": "stargazers_count", "label": "Stars", "accessClass": "public_app", "subject": "repository" },
+      { "key": "forks_count", "label": "Forks", "accessClass": "public_app", "subject": "repository" },
+      { "key": "subscribers_count", "label": "Watchers", "accessClass": "public_app", "subject": "repository", "caveat": "GitHub watchers_count is a legacy star alias; Backer uses subscribers_count for notification watchers." },
+      { "key": "totalContributions", "label": "Contributions", "accessClass": "public_app", "subject": "account" }
+    ]
+  },
+  "nativeMetricSnapshots": {
+    "jeff-delaney-fireship": {
+      "github": {
+        "state": "snapshot",
+        "accessClass": "public_app",
+        "observedAt": "2026-08-11T17:37:28Z",
+        "sourceUrl": "https://api.github.com/users/codediodeio",
+        "metrics": [
+          { "key": "followers", "label": "Followers", "value": 23132, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/codediodeio" },
+          { "key": "public_repos", "label": "Public repos", "value": 65, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/codediodeio?tab=repositories" }
+        ]
+      }
+    },
+    "theprimeagen": {
+      "github": {
+        "state": "snapshot",
+        "accessClass": "public_app",
+        "observedAt": "2026-08-11T17:37:28Z",
+        "sourceUrl": "https://api.github.com/users/ThePrimeagen",
+        "metrics": [
+          { "key": "followers", "label": "Followers", "value": 49786, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/ThePrimeagen" },
+          { "key": "public_repos", "label": "Public repos", "value": 238, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/ThePrimeagen?tab=repositories" },
+          { "key": "stargazers_count", "label": "Harpoon stars", "value": 9189, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/ThePrimeagen/harpoon" },
+          { "key": "forks_count", "label": "Harpoon forks", "value": 490, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/ThePrimeagen/harpoon" },
+          { "key": "subscribers_count", "label": "Harpoon watchers", "value": 38, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/ThePrimeagen/harpoon" }
+        ]
+      }
+    },
+    "theo-browne": {
+      "github": {
+        "state": "snapshot",
+        "accessClass": "public_app",
+        "observedAt": "2026-08-11T17:37:28Z",
+        "sourceUrl": "https://api.github.com/users/t3dotgg",
+        "metrics": [
+          { "key": "followers", "label": "Followers", "value": 19606, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/t3dotgg" },
+          { "key": "public_repos", "label": "Public repos", "value": 132, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/t3dotgg?tab=repositories" },
+          { "key": "stargazers_count", "label": "t3code stars", "value": 18225, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/pingdotgg/t3code" },
+          { "key": "forks_count", "label": "t3code forks", "value": 4118, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/pingdotgg/t3code" },
+          { "key": "subscribers_count", "label": "t3code watchers", "value": 55, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/pingdotgg/t3code" }
+        ]
+      }
+    },
+    "wes-bos": {
+      "github": {
+        "state": "snapshot",
+        "accessClass": "public_app",
+        "observedAt": "2026-08-11T17:37:28Z",
+        "sourceUrl": "https://api.github.com/users/wesbos",
+        "metrics": [
+          { "key": "followers", "label": "Followers", "value": 35797, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/wesbos" },
+          { "key": "public_repos", "label": "Public repos", "value": 436, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/wesbos?tab=repositories" },
+          { "key": "stargazers_count", "label": "JavaScript30 stars", "value": 29232, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/wesbos/JavaScript30" },
+          { "key": "forks_count", "label": "JavaScript30 forks", "value": 42214, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/wesbos/JavaScript30" },
+          { "key": "subscribers_count", "label": "JavaScript30 watchers", "value": 662, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/wesbos/JavaScript30" }
+        ]
+      }
+    },
+    "kevin-powell": {
+      "github": {
+        "state": "snapshot",
+        "accessClass": "public_app",
+        "observedAt": "2026-08-11T17:37:28Z",
+        "sourceUrl": "https://api.github.com/users/kevin-powell",
+        "metrics": [
+          { "key": "followers", "label": "Followers", "value": 12770, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/kevin-powell" },
+          { "key": "public_repos", "label": "Public repos", "value": 113, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/kevin-powell?tab=repositories" },
+          { "key": "stargazers_count", "label": "Bootcamp stars", "value": 433, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/kevin-powell/reponsive-web-design-bootcamp" },
+          { "key": "forks_count", "label": "Bootcamp forks", "value": 202, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/kevin-powell/reponsive-web-design-bootcamp" },
+          { "key": "subscribers_count", "label": "Bootcamp watchers", "value": 17, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/kevin-powell/reponsive-web-design-bootcamp" }
+        ]
+      }
+    },
+    "maggie-appleton": {
+      "github": {
+        "state": "snapshot",
+        "accessClass": "public_app",
+        "observedAt": "2026-08-11T17:37:28Z",
+        "sourceUrl": "https://api.github.com/users/MaggieAppleton",
+        "metrics": [
+          { "key": "followers", "label": "Followers", "value": 2155, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/MaggieAppleton" },
+          { "key": "public_repos", "label": "Public repos", "value": 31, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/MaggieAppleton?tab=repositories" },
+          { "key": "stargazers_count", "label": "Digital Gardeners stars", "value": 4777, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/MaggieAppleton/digital-gardeners" },
+          { "key": "forks_count", "label": "Digital Gardeners forks", "value": 201, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/MaggieAppleton/digital-gardeners" },
+          { "key": "subscribers_count", "label": "Digital Gardeners watchers", "value": 100, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/MaggieAppleton/digital-gardeners" }
+        ]
+      }
+    },
+    "mitchell-hashimoto": {
+      "github": {
+        "state": "snapshot",
+        "accessClass": "public_app",
+        "observedAt": "2026-08-11T17:37:28Z",
+        "sourceUrl": "https://api.github.com/users/mitchellh",
+        "metrics": [
+          { "key": "followers", "label": "Followers", "value": 24036, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/mitchellh" },
+          { "key": "public_repos", "label": "Public repos", "value": 119, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/mitchellh?tab=repositories" },
+          { "key": "stargazers_count", "label": "Ghostty stars", "value": 59512, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/ghostty-org/ghostty" },
+          { "key": "forks_count", "label": "Ghostty forks", "value": 3241, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/ghostty-org/ghostty" },
+          { "key": "subscribers_count", "label": "Ghostty watchers", "value": 212, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/ghostty-org/ghostty" }
+        ]
+      }
+    },
+    "kelsey-hightower": {
+      "github": {
+        "state": "snapshot",
+        "accessClass": "public_app",
+        "observedAt": "2026-08-11T17:37:28Z",
+        "sourceUrl": "https://api.github.com/users/kelseyhightower",
+        "metrics": [
+          { "key": "followers", "label": "Followers", "value": 24686, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/kelseyhightower" },
+          { "key": "public_repos", "label": "Public repos", "value": 196, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/kelseyhightower?tab=repositories" },
+          { "key": "stargazers_count", "label": "nocode stars", "value": 65603, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/kelseyhightower/nocode" },
+          { "key": "forks_count", "label": "nocode forks", "value": 4823, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/kelseyhightower/nocode" },
+          { "key": "subscribers_count", "label": "nocode watchers", "value": 364, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/kelseyhightower/nocode" }
+        ]
+      }
+    },
+    "alex-goodkind": {
+      "github": {
+        "state": "snapshot",
+        "accessClass": "public_app",
+        "observedAt": "2026-08-11T17:37:28Z",
+        "sourceUrl": "https://api.github.com/users/agoodkind",
+        "metrics": [
+          { "key": "followers", "label": "Followers", "value": 266, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/agoodkind" },
+          { "key": "public_repos", "label": "Public repos", "value": 68, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/agoodkind?tab=repositories" },
+          { "key": "stargazers_count", "label": "macos-smc-fan stars", "value": 39, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/agoodkind/macos-smc-fan" },
+          { "key": "forks_count", "label": "macos-smc-fan forks", "value": 5, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/agoodkind/macos-smc-fan" },
+          { "key": "subscribers_count", "label": "macos-smc-fan watchers", "value": 0, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/agoodkind/macos-smc-fan" }
+        ]
+      }
+    },
+    "chris-mungall": {
+      "github": {
+        "state": "snapshot",
+        "accessClass": "public_app",
+        "observedAt": "2026-08-11T17:37:28Z",
+        "sourceUrl": "https://api.github.com/users/cmungall",
+        "metrics": [
+          { "key": "followers", "label": "Followers", "value": 573, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/cmungall" },
+          { "key": "public_repos", "label": "Public repos", "value": 395, "unit": "count", "subject": "account", "availability": "observed", "sourceUrl": "https://github.com/cmungall?tab=repositories" },
+          { "key": "stargazers_count", "label": "PrologInfo stars", "value": 3, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/cmungall/PrologInfo" },
+          { "key": "forks_count", "label": "PrologInfo forks", "value": 0, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/cmungall/PrologInfo" },
+          { "key": "subscribers_count", "label": "PrologInfo watchers", "value": 0, "unit": "count", "subject": "repository", "availability": "observed", "sourceUrl": "https://github.com/cmungall/PrologInfo" }
+        ]
+      }
+    }
+  },
+  "methodology": {
+    "version": "market2-attention-read-model-v2",
+    "ordering": "Provider-native rank is retained only when the source supplies it. All other launch ordering is editorial and must be labeled as such.",
+    "scoring": "No cross-platform creator score is calculated. No YouTube data is combined into a rivalry or investment ranking.",
+    "trading": "Every person starts discovery-only. Public evidence does not create consent, eligibility, price, probability, or settlement authority.",
+    "media": "All portraits are real public GitHub profile images. Work thumbnails come from YouTube or GitHub public media endpoints. No AI-generated imagery is used.",
+    "freshness": "This file is a dated last-good snapshot. It must not be described as live after generatedAt."
+  },
+  "people": [
+    {
+      "id": "jeff-delaney-fireship",
+      "name": "Jeff Delaney",
+      "handle": "@fireship_dev",
+      "avatar": "https://github.com/codediodeio.png?size=640",
+      "avatarAlt": "Jeff Delaney public profile picture",
+      "category": "Programming creator",
+      "bio": "Creates fast-paced programming explainers under Fireship and maintains public developer projects.",
+      "platforms": [
+        {
+          "id": "x",
+          "handle": "@fireship_dev",
+          "url": "https://x.com/fireship_dev",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://x.com/fireship_dev/with_replies"
+        },
+        {
+          "id": "youtube",
+          "handle": "@Fireship",
+          "url": "https://www.youtube.com/@Fireship",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://www.youtube.com/@Fireship"
+        },
+        {
+          "id": "github",
+          "handle": "@codediodeio",
+          "url": "https://github.com/codediodeio",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://github.com/codediodeio"
+        }
+      ],
+      "eligibility": "discovery_only",
+      "claimStatus": "unclaimed",
+      "consentStatus": "not_recorded",
+      "whyNow": "Fireship is included as a cross-platform creator reference. The retained YouTube item is real, but this snapshot does not claim that the channel is currently trending.",
+      "evidence": {
+        "24h": {
+          "state": "partial_coverage",
+          "label": "Public profiles observed",
+          "whyNow": "The X, YouTube, and GitHub profiles were reachable at capture time. No 24-hour movement series is retained.",
+          "platforms": [
+            "x",
+            "youtube",
+            "github"
+          ],
+          "window": {
+            "label": "24H",
+            "start": "2026-08-10T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://www.youtube.com/watch?v=EKOU3JWDNLI",
+            "https://www.youtube.com/watch?v=DHjqpvDnNGE",
+            "https://x.com/fireship_dev",
+            "https://github.com/codediodeio"
+          ],
+          "confidence": "low",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No official X trend response.",
+            "No YouTube API ranking snapshot.",
+            "No 24-hour metric series."
+          ]
+        },
+        "7d": {
+          "state": "partial_coverage",
+          "label": "Catalog snapshot only",
+          "whyNow": "Backer retained current profile and work links, not a seven-day popularity curve.",
+          "platforms": [
+            "x",
+            "youtube",
+            "github"
+          ],
+          "window": {
+            "label": "7D",
+            "start": "2026-08-04T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://www.youtube.com/watch?v=EKOU3JWDNLI",
+            "https://www.youtube.com/watch?v=DHjqpvDnNGE",
+            "https://x.com/fireship_dev",
+            "https://github.com/codediodeio"
+          ],
+          "confidence": "low",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No seven-day provider-authorized metric series."
+          ]
+        },
+        "30d": {
+          "state": "partial_coverage",
+          "label": "Catalog snapshot only",
+          "whyNow": "The public creator catalog is verifiable, but the retained work predates this observation window.",
+          "platforms": [
+            "x",
+            "youtube",
+            "github"
+          ],
+          "window": {
+            "label": "30D",
+            "start": "2026-07-12T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://www.youtube.com/watch?v=EKOU3JWDNLI",
+            "https://www.youtube.com/watch?v=DHjqpvDnNGE",
+            "https://x.com/fireship_dev",
+            "https://github.com/codediodeio"
+          ],
+          "confidence": "low",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No YouTube publication inside the retained 30-day sample.",
+            "No cross-platform score is calculated."
+          ]
+        },
+        "90d": {
+          "state": "partial_coverage",
+          "label": "Catalog snapshot only",
+          "whyNow": "The public creator catalog is verifiable, but the retained work predates this observation window.",
+          "platforms": [
+            "x",
+            "youtube",
+            "github"
+          ],
+          "window": {
+            "label": "90D",
+            "start": "2026-05-13T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://www.youtube.com/watch?v=EKOU3JWDNLI",
+            "https://www.youtube.com/watch?v=DHjqpvDnNGE",
+            "https://x.com/fireship_dev",
+            "https://github.com/codediodeio"
+          ],
+          "confidence": "low",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No provider-authorized 90-day series.",
+            "No cross-platform score is calculated."
+          ]
+        }
+      },
+      "recentWork": {
+        "platform": "youtube",
+        "title": "The unhinged world of tech in 2026...",
+        "type": "video",
+        "publishedAt": "2026-01-14T00:00:00Z",
+        "url": "https://www.youtube.com/watch?v=EKOU3JWDNLI",
+        "thumbnail": "https://i.ytimg.com/vi/EKOU3JWDNLI/hqdefault.jpg",
+        "observedAt": "2026-08-11T09:29:25Z",
+        "providerLabel": "Public YouTube video result",
+        "providerRank": null,
+        "publicCounts": [],
+        "availability": "public_at_capture",
+        "sourceUrl": "https://www.youtube.com/watch?v=EKOU3JWDNLI",
+        "backerInterpretation": "Newest YouTube item retained for this launch snapshot. It is not evidence of current-window movement."
+      },
+      "breakoutWork": {
+        "platform": "youtube",
+        "title": "JavaScript in 100 Seconds",
+        "type": "video",
+        "publishedAt": "2022-01-13T00:00:00Z",
+        "url": "https://www.youtube.com/watch?v=DHjqpvDnNGE",
+        "thumbnail": "https://i.ytimg.com/vi/DHjqpvDnNGE/hqdefault.jpg",
+        "observedAt": "2026-08-11T09:29:25Z",
+        "providerLabel": "Public YouTube video result",
+        "providerRank": null,
+        "publicCounts": [],
+        "availability": "public_at_capture",
+        "sourceUrl": "https://www.youtube.com/watch?v=DHjqpvDnNGE",
+        "backerInterpretation": "Representative long-running Fireship format. Backer does not present it as a current provider ranking."
+      },
+      "poa": {
+        "publicEvidence": [
+          {
+            "platform": "youtube",
+            "label": "Real public video and channel links retained",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://www.youtube.com/watch?v=EKOU3JWDNLI"
+          },
+          {
+            "platform": "x",
+            "label": "Public creator profile retained; no API metrics",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://x.com/fireship_dev"
+          },
+          {
+            "platform": "github",
+            "label": "Public developer identity retained",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://github.com/codediodeio"
+          }
+        ],
+        "backerInterpretation": "Cross-platform identity and work are established. Current attention movement is not established by this snapshot.",
+        "executableMarket": {
+          "status": "none",
+          "label": "No Backer market is open for this person."
+        },
+        "settlement": {
+          "status": "not_defined",
+          "sourceUrl": null,
+          "label": "No settlement source has been approved."
+        },
+        "claimStatus": "unclaimed",
+        "consentStatus": "not_recorded",
+        "methodologyVersion": "market2-launch-snapshot-v1",
+        "asOf": "2026-08-11T09:29:25Z",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=EKOU3JWDNLI",
+          "https://www.youtube.com/watch?v=DHjqpvDnNGE",
+          "https://x.com/fireship_dev",
+          "https://github.com/codediodeio"
+        ]
+      },
+      "instruments": {
+        "milestones": {
+          "id": "milestones",
+          "label": "Milestones",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "pk_market": {
+          "id": "pk_market",
+          "label": "PK Market",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "creator_arena": {
+          "id": "creator_arena",
+          "label": "Creator Arena",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "creator_perps": {
+          "id": "creator_perps",
+          "label": "Creator Perps",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        }
+      },
+      "source": {
+        "asOf": "2026-08-11T09:29:25Z",
+        "urls": [
+          "https://www.youtube.com/watch?v=EKOU3JWDNLI",
+          "https://www.youtube.com/watch?v=DHjqpvDnNGE",
+          "https://x.com/fireship_dev",
+          "https://github.com/codediodeio"
+        ],
+        "caveat": "Public editorial references only. No YouTube mostPopular rank or X trend rank is claimed."
+      }
+    },
+    {
+      "id": "theprimeagen",
+      "name": "ThePrimeagen",
+      "handle": "@ThePrimeagen",
+      "avatar": "https://github.com/ThePrimeagen.png?size=640",
+      "avatarAlt": "ThePrimeagen public profile picture",
+      "category": "Developer streamer",
+      "bio": "Live-codes developer tooling and turns systems programming and software-craft discussions into public videos.",
+      "platforms": [
+        {
+          "id": "x",
+          "handle": "@ThePrimeagen",
+          "url": "https://x.com/ThePrimeagen",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://github.com/ThePrimeagen"
+        },
+        {
+          "id": "youtube",
+          "handle": "@ThePrimeagen",
+          "url": "https://www.youtube.com/ThePrimeagen",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://github.com/ThePrimeagen"
+        },
+        {
+          "id": "github",
+          "handle": "@ThePrimeagen",
+          "url": "https://github.com/ThePrimeagen",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://github.com/ThePrimeagen"
+        }
+      ],
+      "eligibility": "discovery_only",
+      "claimStatus": "unclaimed",
+      "consentStatus": "not_recorded",
+      "whyNow": "The current GitHub profile pins 99, a public Neovim agent project, alongside the long-running Harpoon project.",
+      "evidence": {
+        "24h": {
+          "state": "partial_coverage",
+          "label": "Single public profile snapshot",
+          "whyNow": "The GitHub profile currently pins 99 and Harpoon. A single capture cannot establish 24-hour movement.",
+          "platforms": [
+            "github"
+          ],
+          "window": {
+            "label": "24H",
+            "start": "2026-08-10T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/ThePrimeagen",
+            "https://github.com/ThePrimeagen/99",
+            "https://github.com/ThePrimeagen/harpoon"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No retained 24-hour GitHub activity series.",
+            "No official X or YouTube snapshot."
+          ]
+        },
+        "7d": {
+          "state": "partial_coverage",
+          "label": "Current pinned work observed",
+          "whyNow": "99 appears as current pinned work on the public GitHub profile. No seven-day popularity curve is claimed.",
+          "platforms": [
+            "github"
+          ],
+          "window": {
+            "label": "7D",
+            "start": "2026-08-04T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/ThePrimeagen",
+            "https://github.com/ThePrimeagen/99",
+            "https://github.com/ThePrimeagen/harpoon"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "Pinned placement is not a trend rank.",
+            "No cross-platform time series."
+          ]
+        },
+        "30d": {
+          "state": "partial_coverage",
+          "label": "Current creator catalog",
+          "whyNow": "Current public projects and linked creator channels are retained without a custom attention score.",
+          "platforms": [
+            "x",
+            "youtube",
+            "github"
+          ],
+          "window": {
+            "label": "30D",
+            "start": "2026-07-12T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/ThePrimeagen",
+            "https://github.com/ThePrimeagen/99",
+            "https://github.com/ThePrimeagen/harpoon"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No complete 30-day provider series."
+          ]
+        },
+        "90d": {
+          "state": "partial_coverage",
+          "label": "Durable public-work reference",
+          "whyNow": "Harpoon and current pinned work show a durable public developer catalog, not a 90-day movement claim.",
+          "platforms": [
+            "x",
+            "youtube",
+            "github"
+          ],
+          "window": {
+            "label": "90D",
+            "start": "2026-05-13T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/ThePrimeagen",
+            "https://github.com/ThePrimeagen/99",
+            "https://github.com/ThePrimeagen/harpoon"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No complete 90-day provider series."
+          ]
+        }
+      },
+      "recentWork": {
+        "platform": "github",
+        "title": "99: Neovim AI agent done right",
+        "type": "repository",
+        "publishedAt": null,
+        "url": "https://github.com/ThePrimeagen/99",
+        "thumbnail": "https://opengraph.githubassets.com/market2/ThePrimeagen/99",
+        "observedAt": "2026-08-11T09:29:25Z",
+        "providerLabel": "Current GitHub pinned repository",
+        "providerRank": null,
+        "publicCounts": [],
+        "availability": "public_at_capture",
+        "sourceUrl": "https://github.com/ThePrimeagen/99",
+        "backerInterpretation": "A current public project signal. Pinned placement is not a platform popularity rank."
+      },
+      "breakoutWork": {
+        "platform": "github",
+        "title": "Harpoon",
+        "type": "repository",
+        "publishedAt": null,
+        "url": "https://github.com/ThePrimeagen/harpoon",
+        "thumbnail": "https://opengraph.githubassets.com/market2/ThePrimeagen/harpoon",
+        "observedAt": "2026-08-11T09:29:25Z",
+        "providerLabel": "GitHub pinned repository",
+        "providerRank": null,
+        "publicCounts": [],
+        "availability": "public_at_capture",
+        "sourceUrl": "https://github.com/ThePrimeagen/harpoon",
+        "backerInterpretation": "A durable reference project associated with the creator, not proof of current attention movement."
+      },
+      "poa": {
+        "publicEvidence": [
+          {
+            "platform": "github",
+            "label": "99 and Harpoon are pinned on the public profile",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://github.com/ThePrimeagen"
+          },
+          {
+            "platform": "youtube",
+            "label": "YouTube channels are linked from the GitHub profile",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://github.com/ThePrimeagen"
+          },
+          {
+            "platform": "x",
+            "label": "X identity is linked from the GitHub profile",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://github.com/ThePrimeagen"
+          }
+        ],
+        "backerInterpretation": "The identity link is strong and the public work is current. This snapshot does not measure a range-specific change in attention.",
+        "executableMarket": {
+          "status": "none",
+          "label": "No Backer market is open for this person."
+        },
+        "settlement": {
+          "status": "not_defined",
+          "sourceUrl": null,
+          "label": "No settlement source has been approved."
+        },
+        "claimStatus": "unclaimed",
+        "consentStatus": "not_recorded",
+        "methodologyVersion": "market2-launch-snapshot-v1",
+        "asOf": "2026-08-11T09:29:25Z",
+        "sourceUrls": [
+          "https://github.com/ThePrimeagen",
+          "https://github.com/ThePrimeagen/99",
+          "https://github.com/ThePrimeagen/harpoon"
+        ]
+      },
+      "instruments": {
+        "milestones": {
+          "id": "milestones",
+          "label": "Milestones",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "pk_market": {
+          "id": "pk_market",
+          "label": "PK Market",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "creator_arena": {
+          "id": "creator_arena",
+          "label": "Creator Arena",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "creator_perps": {
+          "id": "creator_perps",
+          "label": "Creator Perps",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        }
+      },
+      "source": {
+        "asOf": "2026-08-11T09:29:25Z",
+        "urls": [
+          "https://github.com/ThePrimeagen",
+          "https://github.com/ThePrimeagen/99",
+          "https://github.com/ThePrimeagen/harpoon"
+        ],
+        "caveat": "GitHub pinned placement is a creator-controlled profile feature, not GitHub Trending rank."
+      }
+    },
+    {
+      "id": "theo-browne",
+      "name": "Theo Browne",
+      "handle": "@theo",
+      "avatar": "https://github.com/t3dotgg.png?size=640",
+      "avatarAlt": "Theo Browne public profile picture",
+      "category": "Web developer and creator",
+      "bio": "Builds T3 products and publishes commentary about web development, creator tooling, and AI-assisted software work.",
+      "platforms": [
+        {
+          "id": "x",
+          "handle": "@theo",
+          "url": "https://x.com/theo",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://github.com/t3dotgg"
+        },
+        {
+          "id": "youtube",
+          "handle": "@t3dotgg",
+          "url": "https://www.youtube.com/@t3dotgg",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://github.com/t3dotgg"
+        },
+        {
+          "id": "github",
+          "handle": "@t3dotgg",
+          "url": "https://github.com/t3dotgg",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://github.com/t3dotgg"
+        }
+      ],
+      "eligibility": "discovery_only",
+      "claimStatus": "unclaimed",
+      "consentStatus": "not_recorded",
+      "whyNow": "T3 Code is listed as a current project and its public GitHub repository was shown as updated on July 30, 2026.",
+      "evidence": {
+        "24h": {
+          "state": "partial_coverage",
+          "label": "Current profile snapshot",
+          "whyNow": "Public profiles and current projects were observed. No 24-hour trend series is retained.",
+          "platforms": [
+            "x",
+            "youtube",
+            "github"
+          ],
+          "window": {
+            "label": "24H",
+            "start": "2026-08-10T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/t3dotgg",
+            "https://github.com/pingdotgg",
+            "https://github.com/pingdotgg/t3code",
+            "https://github.com/t3-oss/create-t3-app"
+          ],
+          "confidence": "low",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No official X recent-search response.",
+            "No 24-hour GitHub metric series."
+          ]
+        },
+        "7d": {
+          "state": "partial_coverage",
+          "label": "Current project still public",
+          "whyNow": "T3 Code remains a current public project, but its retained update date falls outside this seven-day window.",
+          "platforms": [
+            "github"
+          ],
+          "window": {
+            "label": "7D",
+            "start": "2026-08-04T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/t3dotgg",
+            "https://github.com/pingdotgg",
+            "https://github.com/pingdotgg/t3code",
+            "https://github.com/t3-oss/create-t3-app"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No seven-day repository snapshot series.",
+            "No X or YouTube ranking response."
+          ]
+        },
+        "30d": {
+          "state": "partial_coverage",
+          "label": "T3 Code updated inside window",
+          "whyNow": "The Ping.gg organization page showed the T3 Code repository updated July 30, 2026.",
+          "platforms": [
+            "github"
+          ],
+          "window": {
+            "label": "30D",
+            "start": "2026-07-12T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/pingdotgg",
+            "https://github.com/pingdotgg/t3code"
+          ],
+          "confidence": "high",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "A repository update is not a cross-platform attention score.",
+            "No provider-native trend rank."
+          ]
+        },
+        "90d": {
+          "state": "partial_coverage",
+          "label": "Current product and creator catalog",
+          "whyNow": "T3 Code and the creator profile are active public references inside a broader 90-day discovery view.",
+          "platforms": [
+            "x",
+            "youtube",
+            "github"
+          ],
+          "window": {
+            "label": "90D",
+            "start": "2026-05-13T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/t3dotgg",
+            "https://github.com/pingdotgg",
+            "https://github.com/pingdotgg/t3code",
+            "https://github.com/t3-oss/create-t3-app"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No complete 90-day metric series."
+          ]
+        }
+      },
+      "recentWork": {
+        "platform": "github",
+        "title": "T3 Code",
+        "type": "repository",
+        "publishedAt": null,
+        "url": "https://github.com/pingdotgg/t3code",
+        "thumbnail": "https://opengraph.githubassets.com/market2/pingdotgg/t3code",
+        "observedAt": "2026-08-11T09:29:25Z",
+        "providerLabel": "GitHub organization page showed Updated Jul 30, 2026",
+        "providerRank": null,
+        "publicCounts": [],
+        "availability": "public_at_capture",
+        "sourceUrl": "https://github.com/pingdotgg/t3code",
+        "backerInterpretation": "A real current project signal inside the 30-day window. It is not a provider popularity ranking."
+      },
+      "breakoutWork": {
+        "platform": "github",
+        "title": "create-t3-app",
+        "type": "repository",
+        "publishedAt": null,
+        "url": "https://github.com/t3-oss/create-t3-app",
+        "thumbnail": "https://opengraph.githubassets.com/market2/t3-oss/create-t3-app",
+        "observedAt": "2026-08-11T09:29:25Z",
+        "providerLabel": "GitHub pinned repository",
+        "providerRank": null,
+        "publicCounts": [],
+        "availability": "public_at_capture",
+        "sourceUrl": "https://github.com/t3-oss/create-t3-app",
+        "backerInterpretation": "A durable public project strongly associated with Theo Browne. Backer does not present it as current-window movement."
+      },
+      "poa": {
+        "publicEvidence": [
+          {
+            "platform": "github",
+            "label": "T3 Code appears in the current-project list",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://github.com/t3dotgg"
+          },
+          {
+            "platform": "github",
+            "label": "Ping.gg showed T3 Code updated Jul 30, 2026",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://github.com/pingdotgg"
+          },
+          {
+            "platform": "x",
+            "label": "X identity is linked from the GitHub profile",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://github.com/t3dotgg"
+          },
+          {
+            "platform": "youtube",
+            "label": "YouTube identity is linked from the GitHub profile",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://github.com/t3dotgg"
+          }
+        ],
+        "backerInterpretation": "The 30-day evidence establishes current public project activity. It does not establish a cross-platform creator rank.",
+        "executableMarket": {
+          "status": "none",
+          "label": "No Backer market is open for this person."
+        },
+        "settlement": {
+          "status": "not_defined",
+          "sourceUrl": null,
+          "label": "No settlement source has been approved."
+        },
+        "claimStatus": "unclaimed",
+        "consentStatus": "not_recorded",
+        "methodologyVersion": "market2-launch-snapshot-v1",
+        "asOf": "2026-08-11T09:29:25Z",
+        "sourceUrls": [
+          "https://github.com/t3dotgg",
+          "https://github.com/pingdotgg",
+          "https://github.com/pingdotgg/t3code",
+          "https://github.com/t3-oss/create-t3-app"
+        ]
+      },
+      "instruments": {
+        "milestones": {
+          "id": "milestones",
+          "label": "Milestones",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "pk_market": {
+          "id": "pk_market",
+          "label": "PK Market",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "creator_arena": {
+          "id": "creator_arena",
+          "label": "Creator Arena",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "creator_perps": {
+          "id": "creator_perps",
+          "label": "Creator Perps",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        }
+      },
+      "source": {
+        "asOf": "2026-08-11T09:29:25Z",
+        "urls": [
+          "https://github.com/t3dotgg",
+          "https://github.com/pingdotgg",
+          "https://github.com/pingdotgg/t3code",
+          "https://github.com/t3-oss/create-t3-app"
+        ],
+        "caveat": "The repository update is a raw GitHub fact. No synthetic creator momentum value is calculated."
+      }
+    },
+    {
+      "id": "wes-bos",
+      "name": "Wes Bos",
+      "handle": "@wesbos",
+      "avatar": "https://github.com/wesbos.png?size=640",
+      "avatarAlt": "Wes Bos public profile picture",
+      "category": "JavaScript educator and podcaster",
+      "bio": "Teaches full-stack JavaScript, publishes courses, and co-hosts the Syntax web development podcast.",
+      "platforms": [
+        {
+          "id": "x",
+          "handle": "@wesbos",
+          "url": "https://x.com/wesbos",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://wesbos.com/"
+        },
+        {
+          "id": "youtube",
+          "handle": "@wesbos",
+          "url": "https://www.youtube.com/@wesbos",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://wesbos.com/"
+        },
+        {
+          "id": "instagram",
+          "handle": "@wesbos",
+          "url": "https://www.instagram.com/wesbos/",
+          "state": "profile_link_only",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://www.instagram.com/wesbos/"
+        },
+        {
+          "id": "github",
+          "handle": "@wesbos",
+          "url": "https://github.com/wesbos",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://wesbos.com/"
+        }
+      ],
+      "eligibility": "discovery_only",
+      "claimStatus": "unclaimed",
+      "consentStatus": "not_recorded",
+      "whyNow": "Wes Bos published Syntax episode 1024, Open Models Replace Big AI, on July 27, 2026.",
+      "evidence": {
+        "24h": {
+          "state": "partial_coverage",
+          "label": "Public creator home observed",
+          "whyNow": "The creator home and platform profiles were reachable at capture time. No 24-hour movement series is retained.",
+          "platforms": [
+            "x",
+            "youtube",
+            "instagram",
+            "github"
+          ],
+          "window": {
+            "label": "24H",
+            "start": "2026-08-10T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://wesbos.com/",
+            "https://www.syntax.fm/",
+            "https://github.com/wesbos/JavaScript30",
+            "https://www.instagram.com/wesbos/"
+          ],
+          "confidence": "low",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No official X, YouTube, or Instagram metric snapshot.",
+            "No 24-hour series."
+          ]
+        },
+        "7d": {
+          "state": "partial_coverage",
+          "label": "Creator catalog observed",
+          "whyNow": "The latest retained episode predates this seven-day window; the current creator catalog remains public.",
+          "platforms": [
+            "x",
+            "youtube",
+            "instagram",
+            "github"
+          ],
+          "window": {
+            "label": "7D",
+            "start": "2026-08-04T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://wesbos.com/",
+            "https://www.syntax.fm/",
+            "https://github.com/wesbos/JavaScript30",
+            "https://www.instagram.com/wesbos/"
+          ],
+          "confidence": "low",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No retained publication inside the seven-day window."
+          ]
+        },
+        "30d": {
+          "state": "partial_coverage",
+          "label": "New Syntax episode inside window",
+          "whyNow": "The official creator site lists Syntax episode 1024 dated July 27, 2026.",
+          "platforms": [
+            "youtube",
+            "x"
+          ],
+          "window": {
+            "label": "30D",
+            "start": "2026-07-12T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://wesbos.com/",
+            "https://www.syntax.fm/"
+          ],
+          "confidence": "high",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "Podcast publication is not a platform popularity rank.",
+            "Instagram content metrics are unavailable."
+          ]
+        },
+        "90d": {
+          "state": "partial_coverage",
+          "label": "Active creator catalog",
+          "whyNow": "A current podcast episode and durable JavaScript learning archive are both retained in this view.",
+          "platforms": [
+            "x",
+            "youtube",
+            "instagram",
+            "github"
+          ],
+          "window": {
+            "label": "90D",
+            "start": "2026-05-13T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://wesbos.com/",
+            "https://www.syntax.fm/",
+            "https://github.com/wesbos/JavaScript30",
+            "https://www.instagram.com/wesbos/"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No complete 90-day cross-platform series."
+          ]
+        }
+      },
+      "recentWork": {
+        "platform": "youtube",
+        "title": "Syntax #1024: Open Models Replace Big AI",
+        "type": "podcast_episode",
+        "publishedAt": "2026-07-27T00:00:00Z",
+        "url": "https://www.syntax.fm/",
+        "thumbnail": null,
+        "observedAt": "2026-08-11T09:29:25Z",
+        "providerLabel": "Official creator site and Syntax homepage",
+        "providerRank": null,
+        "publicCounts": [],
+        "availability": "public_at_capture",
+        "sourceUrl": "https://www.syntax.fm/",
+        "backerInterpretation": "A real publication inside the 30-day window. No podcast-chart rank is claimed."
+      },
+      "breakoutWork": {
+        "platform": "github",
+        "title": "JavaScript30",
+        "type": "course_repository",
+        "publishedAt": "2016-12-14T00:00:00Z",
+        "url": "https://github.com/wesbos/JavaScript30",
+        "thumbnail": "https://opengraph.githubassets.com/market2/wesbos/JavaScript30",
+        "observedAt": "2026-08-11T09:29:25Z",
+        "providerLabel": "Public GitHub repository and creator-authored launch post",
+        "providerRank": null,
+        "publicCounts": [],
+        "availability": "public_at_capture",
+        "sourceUrl": "https://github.com/wesbos/JavaScript30",
+        "backerInterpretation": "A durable reference work. It is not treated as current attention movement."
+      },
+      "poa": {
+        "publicEvidence": [
+          {
+            "platform": "youtube",
+            "label": "Current Syntax episode listed by the creator",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://wesbos.com/"
+          },
+          {
+            "platform": "github",
+            "label": "JavaScript30 source and course archive are public",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://github.com/wesbos/JavaScript30"
+          },
+          {
+            "platform": "instagram",
+            "label": "Profile link only; no Instagram content or insights ingested",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://www.instagram.com/wesbos/"
+          }
+        ],
+        "backerInterpretation": "There is a clear 30-day publication fact and a durable public archive. No cross-platform popularity score is produced.",
+        "executableMarket": {
+          "status": "none",
+          "label": "No Backer market is open for this person."
+        },
+        "settlement": {
+          "status": "not_defined",
+          "sourceUrl": null,
+          "label": "No settlement source has been approved."
+        },
+        "claimStatus": "unclaimed",
+        "consentStatus": "not_recorded",
+        "methodologyVersion": "market2-launch-snapshot-v1",
+        "asOf": "2026-08-11T09:29:25Z",
+        "sourceUrls": [
+          "https://wesbos.com/",
+          "https://www.syntax.fm/",
+          "https://github.com/wesbos/JavaScript30",
+          "https://www.instagram.com/wesbos/"
+        ]
+      },
+      "instruments": {
+        "milestones": {
+          "id": "milestones",
+          "label": "Milestones",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "pk_market": {
+          "id": "pk_market",
+          "label": "PK Market",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "creator_arena": {
+          "id": "creator_arena",
+          "label": "Creator Arena",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "creator_perps": {
+          "id": "creator_perps",
+          "label": "Creator Perps",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        }
+      },
+      "source": {
+        "asOf": "2026-08-11T09:29:25Z",
+        "urls": [
+          "https://wesbos.com/",
+          "https://www.syntax.fm/",
+          "https://github.com/wesbos/JavaScript30",
+          "https://www.instagram.com/wesbos/"
+        ],
+        "caveat": "Instagram is a profile link only. The episode date comes from the creator-maintained site."
+      }
+    },
+    {
+      "id": "kevin-powell",
+      "name": "Kevin Powell",
+      "handle": "@KevinJPowell",
+      "avatar": "https://github.com/kevin-powell.png?size=640",
+      "avatarAlt": "Kevin Powell public profile picture",
+      "category": "CSS educator",
+      "bio": "Teaches CSS through public videos, talks, courses, and practical front-end demonstrations.",
+      "platforms": [
+        {
+          "id": "x",
+          "handle": "@KevinJPowell",
+          "url": "https://x.com/KevinJPowell",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://www.kevinpowell.co/"
+        },
+        {
+          "id": "youtube",
+          "handle": "@KevinPowell",
+          "url": "https://www.youtube.com/@KevinPowell",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://github.com/kevin-powell"
+        },
+        {
+          "id": "instagram",
+          "handle": "@kevinpowellcss",
+          "url": "https://www.instagram.com/kevinpowellcss/",
+          "state": "profile_link_only",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://www.instagram.com/kevinpowellcss/"
+        },
+        {
+          "id": "github",
+          "handle": "@kevin-powell",
+          "url": "https://github.com/kevin-powell",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://github.com/kevin-powell"
+        }
+      ],
+      "eligibility": "discovery_only",
+      "claimStatus": "unclaimed",
+      "consentStatus": "not_recorded",
+      "whyNow": "A creator-maintained 2026 talk page documents Smart layout patterns with modern CSS, while the public profiles provide a real cross-platform identity.",
+      "evidence": {
+        "24h": {
+          "state": "partial_coverage",
+          "label": "Public profiles observed",
+          "whyNow": "The creator site and linked profiles were reachable. No 24-hour movement series is retained.",
+          "platforms": [
+            "x",
+            "youtube",
+            "instagram",
+            "github"
+          ],
+          "window": {
+            "label": "24H",
+            "start": "2026-08-10T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://www.kevinpowell.co/",
+            "https://www.kevinpowell.co/talks/smart-layout-patterns/",
+            "https://github.com/kevin-powell",
+            "https://www.instagram.com/kevinpowellcss/"
+          ],
+          "confidence": "low",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No official Instagram insights.",
+            "No X or YouTube API snapshot.",
+            "No 24-hour series."
+          ]
+        },
+        "7d": {
+          "state": "partial_coverage",
+          "label": "Current creator catalog",
+          "whyNow": "The 2026 talk and creator catalog are public, but no seven-day popularity curve is retained.",
+          "platforms": [
+            "x",
+            "youtube",
+            "instagram",
+            "github"
+          ],
+          "window": {
+            "label": "7D",
+            "start": "2026-08-04T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://www.kevinpowell.co/",
+            "https://www.kevinpowell.co/talks/smart-layout-patterns/",
+            "https://github.com/kevin-powell",
+            "https://www.instagram.com/kevinpowellcss/"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "Talk page has no precise publication timestamp.",
+            "No provider-native rank."
+          ]
+        },
+        "30d": {
+          "state": "partial_coverage",
+          "label": "Current 2026 work retained",
+          "whyNow": "The creator-maintained talk page and course catalog are current public work references.",
+          "platforms": [
+            "x",
+            "youtube",
+            "instagram",
+            "github"
+          ],
+          "window": {
+            "label": "30D",
+            "start": "2026-07-12T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://www.kevinpowell.co/",
+            "https://www.kevinpowell.co/talks/smart-layout-patterns/",
+            "https://github.com/kevin-powell",
+            "https://www.instagram.com/kevinpowellcss/"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No date-specific metric series.",
+            "No Instagram content ingestion."
+          ]
+        },
+        "90d": {
+          "state": "partial_coverage",
+          "label": "Current talk and teaching archive",
+          "whyNow": "Current 2026 talk material and a durable responsive-design course repository are retained.",
+          "platforms": [
+            "x",
+            "youtube",
+            "instagram",
+            "github"
+          ],
+          "window": {
+            "label": "90D",
+            "start": "2026-05-13T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://www.kevinpowell.co/",
+            "https://www.kevinpowell.co/talks/smart-layout-patterns/",
+            "https://github.com/kevin-powell",
+            "https://www.instagram.com/kevinpowellcss/"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No complete 90-day cross-platform series."
+          ]
+        }
+      },
+      "recentWork": {
+        "platform": "youtube",
+        "title": "Smart layout patterns with modern CSS",
+        "type": "talk_slides",
+        "publishedAt": null,
+        "url": "https://www.kevinpowell.co/talks/smart-layout-patterns/",
+        "thumbnail": null,
+        "observedAt": "2026-08-11T09:29:25Z",
+        "providerLabel": "Creator-maintained talk page for Smashing Conf Amsterdam 2026",
+        "providerRank": null,
+        "publicCounts": [],
+        "availability": "public_at_capture",
+        "sourceUrl": "https://www.kevinpowell.co/talks/smart-layout-patterns/",
+        "backerInterpretation": "Current public teaching work. The page does not provide a provider popularity rank."
+      },
+      "breakoutWork": {
+        "platform": "github",
+        "title": "Responsive Web Design Bootcamp course files",
+        "type": "course_repository",
+        "publishedAt": null,
+        "url": "https://github.com/kevin-powell/reponsive-web-design-bootcamp",
+        "thumbnail": "https://opengraph.githubassets.com/market2/kevin-powell/reponsive-web-design-bootcamp",
+        "observedAt": "2026-08-11T09:29:25Z",
+        "providerLabel": "GitHub pinned repository",
+        "providerRank": null,
+        "publicCounts": [],
+        "availability": "public_at_capture",
+        "sourceUrl": "https://github.com/kevin-powell/reponsive-web-design-bootcamp",
+        "backerInterpretation": "A durable public teaching artifact, not a current trend rank."
+      },
+      "poa": {
+        "publicEvidence": [
+          {
+            "platform": "youtube",
+            "label": "Creator-maintained 2026 talk material is public",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://www.kevinpowell.co/talks/smart-layout-patterns/"
+          },
+          {
+            "platform": "github",
+            "label": "YouTube identity and course repository are public",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://github.com/kevin-powell"
+          },
+          {
+            "platform": "instagram",
+            "label": "Profile link only; no Instagram media or insights ingested",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://www.instagram.com/kevinpowellcss/"
+          }
+        ],
+        "backerInterpretation": "Current public work and identity links are established. Range movement and Instagram performance are not established.",
+        "executableMarket": {
+          "status": "none",
+          "label": "No Backer market is open for this person."
+        },
+        "settlement": {
+          "status": "not_defined",
+          "sourceUrl": null,
+          "label": "No settlement source has been approved."
+        },
+        "claimStatus": "unclaimed",
+        "consentStatus": "not_recorded",
+        "methodologyVersion": "market2-launch-snapshot-v1",
+        "asOf": "2026-08-11T09:29:25Z",
+        "sourceUrls": [
+          "https://www.kevinpowell.co/",
+          "https://www.kevinpowell.co/talks/smart-layout-patterns/",
+          "https://github.com/kevin-powell",
+          "https://www.instagram.com/kevinpowellcss/"
+        ]
+      },
+      "instruments": {
+        "milestones": {
+          "id": "milestones",
+          "label": "Milestones",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "pk_market": {
+          "id": "pk_market",
+          "label": "PK Market",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "creator_arena": {
+          "id": "creator_arena",
+          "label": "Creator Arena",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "creator_perps": {
+          "id": "creator_perps",
+          "label": "Creator Perps",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        }
+      },
+      "source": {
+        "asOf": "2026-08-11T09:29:25Z",
+        "urls": [
+          "https://www.kevinpowell.co/",
+          "https://www.kevinpowell.co/talks/smart-layout-patterns/",
+          "https://github.com/kevin-powell",
+          "https://www.instagram.com/kevinpowellcss/"
+        ],
+        "caveat": "Instagram is profile-link coverage only. No follower count or engagement metric is retained."
+      }
+    },
+    {
+      "id": "maggie-appleton",
+      "name": "Maggie Appleton",
+      "handle": "@Mappletons",
+      "avatar": "https://github.com/MaggieAppleton.png?size=640",
+      "avatarAlt": "Maggie Appleton public profile picture",
+      "category": "Designer, researcher, and writer",
+      "bio": "Creates illustrated essays and public notes about design, anthropology, AI, and tools for thought.",
+      "platforms": [
+        {
+          "id": "x",
+          "handle": "@Mappletons",
+          "url": "https://x.com/Mappletons",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://github.com/MaggieAppleton"
+        },
+        {
+          "id": "github",
+          "handle": "@MaggieAppleton",
+          "url": "https://github.com/MaggieAppleton",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://github.com/MaggieAppleton"
+        }
+      ],
+      "eligibility": "discovery_only",
+      "claimStatus": "unclaimed",
+      "consentStatus": "not_recorded",
+      "whyNow": "The current public GitHub profile pins Lodestone, a research project about language models as tools for thought, alongside an active digital-garden archive.",
+      "evidence": {
+        "24h": {
+          "state": "partial_coverage",
+          "label": "Current profile snapshot",
+          "whyNow": "Current pinned research and identity links were observed. No 24-hour movement series is retained.",
+          "platforms": [
+            "github"
+          ],
+          "window": {
+            "label": "24H",
+            "start": "2026-08-10T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/MaggieAppleton",
+            "https://github.com/MaggieAppleton/lodestone",
+            "https://github.com/MaggieAppleton/digital-gardeners"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No official X recent-search response.",
+            "No 24-hour GitHub series."
+          ]
+        },
+        "7d": {
+          "state": "partial_coverage",
+          "label": "Current research catalog",
+          "whyNow": "Lodestone and the public digital garden are current profile references, not a seven-day trend rank.",
+          "platforms": [
+            "x",
+            "github"
+          ],
+          "window": {
+            "label": "7D",
+            "start": "2026-08-04T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/MaggieAppleton",
+            "https://github.com/MaggieAppleton/lodestone",
+            "https://github.com/MaggieAppleton/digital-gardeners"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "Pinned placement is not provider ranking.",
+            "No publication series."
+          ]
+        },
+        "30d": {
+          "state": "partial_coverage",
+          "label": "Current public-work snapshot",
+          "whyNow": "The current research and writing catalog is retained without a cross-platform attention score.",
+          "platforms": [
+            "x",
+            "github"
+          ],
+          "window": {
+            "label": "30D",
+            "start": "2026-07-12T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/MaggieAppleton",
+            "https://github.com/MaggieAppleton/lodestone",
+            "https://github.com/MaggieAppleton/digital-gardeners"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No complete 30-day provider series."
+          ]
+        },
+        "90d": {
+          "state": "partial_coverage",
+          "label": "Durable research and essay archive",
+          "whyNow": "The current profile links a durable public body of research, essays, and open-source garden projects.",
+          "platforms": [
+            "x",
+            "github"
+          ],
+          "window": {
+            "label": "90D",
+            "start": "2026-05-13T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/MaggieAppleton",
+            "https://github.com/MaggieAppleton/lodestone",
+            "https://github.com/MaggieAppleton/digital-gardeners"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No complete 90-day provider series."
+          ]
+        }
+      },
+      "recentWork": {
+        "platform": "github",
+        "title": "Lodestone",
+        "type": "research_repository",
+        "publishedAt": null,
+        "url": "https://github.com/MaggieAppleton/lodestone",
+        "thumbnail": "https://opengraph.githubassets.com/market2/MaggieAppleton/lodestone",
+        "observedAt": "2026-08-11T09:29:25Z",
+        "providerLabel": "Current GitHub pinned repository",
+        "providerRank": null,
+        "publicCounts": [],
+        "availability": "public_at_capture",
+        "sourceUrl": "https://github.com/MaggieAppleton/lodestone",
+        "backerInterpretation": "A current public research signal. Pinned placement does not establish popularity movement."
+      },
+      "breakoutWork": {
+        "platform": "github",
+        "title": "Digital Gardeners",
+        "type": "resource_repository",
+        "publishedAt": null,
+        "url": "https://github.com/MaggieAppleton/digital-gardeners",
+        "thumbnail": "https://opengraph.githubassets.com/market2/MaggieAppleton/digital-gardeners",
+        "observedAt": "2026-08-11T09:29:25Z",
+        "providerLabel": "GitHub pinned repository",
+        "providerRank": null,
+        "publicCounts": [],
+        "availability": "public_at_capture",
+        "sourceUrl": "https://github.com/MaggieAppleton/digital-gardeners",
+        "backerInterpretation": "A durable public reference work associated with the creator."
+      },
+      "poa": {
+        "publicEvidence": [
+          {
+            "platform": "github",
+            "label": "Current profile describes design and LLM research work",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://github.com/MaggieAppleton"
+          },
+          {
+            "platform": "github",
+            "label": "Lodestone and Digital Gardeners are pinned public projects",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://github.com/MaggieAppleton"
+          },
+          {
+            "platform": "x",
+            "label": "X identity is linked from the GitHub profile",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://github.com/MaggieAppleton"
+          }
+        ],
+        "backerInterpretation": "The creator identity and body of work are well linked. Current attention movement is not quantified.",
+        "executableMarket": {
+          "status": "none",
+          "label": "No Backer market is open for this person."
+        },
+        "settlement": {
+          "status": "not_defined",
+          "sourceUrl": null,
+          "label": "No settlement source has been approved."
+        },
+        "claimStatus": "unclaimed",
+        "consentStatus": "not_recorded",
+        "methodologyVersion": "market2-launch-snapshot-v1",
+        "asOf": "2026-08-11T09:29:25Z",
+        "sourceUrls": [
+          "https://github.com/MaggieAppleton",
+          "https://github.com/MaggieAppleton/lodestone",
+          "https://github.com/MaggieAppleton/digital-gardeners"
+        ]
+      },
+      "instruments": {
+        "milestones": {
+          "id": "milestones",
+          "label": "Milestones",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "pk_market": {
+          "id": "pk_market",
+          "label": "PK Market",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "creator_arena": {
+          "id": "creator_arena",
+          "label": "Creator Arena",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "creator_perps": {
+          "id": "creator_perps",
+          "label": "Creator Perps",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        }
+      },
+      "source": {
+        "asOf": "2026-08-11T09:29:25Z",
+        "urls": [
+          "https://github.com/MaggieAppleton",
+          "https://github.com/MaggieAppleton/lodestone",
+          "https://github.com/MaggieAppleton/digital-gardeners"
+        ],
+        "caveat": "Current pinned work is creator-controlled profile context, not a platform trend ranking."
+      }
+    },
+    {
+      "id": "mitchell-hashimoto",
+      "name": "Mitchell Hashimoto",
+      "handle": "@mitchellh",
+      "avatar": "https://github.com/mitchellh.png?size=640",
+      "avatarAlt": "Mitchell Hashimoto public profile picture",
+      "category": "Open-source developer",
+      "bio": "Builds developer infrastructure and created Ghostty, a native cross-platform terminal emulator.",
+      "platforms": [
+        {
+          "id": "x",
+          "handle": "@mitchellh",
+          "url": "https://x.com/mitchellh",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://github.com/mitchellh"
+        },
+        {
+          "id": "github",
+          "handle": "@mitchellh",
+          "url": "https://github.com/mitchellh",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://github.com/mitchellh"
+        }
+      ],
+      "eligibility": "discovery_only",
+      "claimStatus": "unclaimed",
+      "consentStatus": "not_recorded",
+      "whyNow": "Ghostty is the first pinned project on the current public profile and remains the clearest public work reference in this snapshot.",
+      "evidence": {
+        "24h": {
+          "state": "partial_coverage",
+          "label": "Current profile snapshot",
+          "whyNow": "Ghostty is currently pinned on the public profile. No 24-hour movement series is retained.",
+          "platforms": [
+            "github"
+          ],
+          "window": {
+            "label": "24H",
+            "start": "2026-08-10T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/mitchellh",
+            "https://github.com/ghostty-org/ghostty",
+            "https://github.com/hashicorp/terraform"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No retained 24-hour activity series.",
+            "Pinned placement is not provider rank."
+          ]
+        },
+        "7d": {
+          "state": "partial_coverage",
+          "label": "Current project observed",
+          "whyNow": "Ghostty remains the first current pinned work reference. No seven-day popularity curve is claimed.",
+          "platforms": [
+            "github"
+          ],
+          "window": {
+            "label": "7D",
+            "start": "2026-08-04T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/mitchellh",
+            "https://github.com/ghostty-org/ghostty",
+            "https://github.com/hashicorp/terraform"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No seven-day repository snapshot series."
+          ]
+        },
+        "30d": {
+          "state": "partial_coverage",
+          "label": "Current open-source catalog",
+          "whyNow": "The public developer profile and Ghostty project are current, without a custom momentum metric.",
+          "platforms": [
+            "x",
+            "github"
+          ],
+          "window": {
+            "label": "30D",
+            "start": "2026-07-12T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/mitchellh",
+            "https://github.com/ghostty-org/ghostty",
+            "https://github.com/hashicorp/terraform"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No complete 30-day provider series."
+          ]
+        },
+        "90d": {
+          "state": "partial_coverage",
+          "label": "Durable project reference",
+          "whyNow": "Ghostty and the broader public developer portfolio remain visible as durable work references.",
+          "platforms": [
+            "x",
+            "github"
+          ],
+          "window": {
+            "label": "90D",
+            "start": "2026-05-13T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/mitchellh",
+            "https://github.com/ghostty-org/ghostty",
+            "https://github.com/hashicorp/terraform"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No complete 90-day provider series."
+          ]
+        }
+      },
+      "recentWork": {
+        "platform": "github",
+        "title": "Ghostty",
+        "type": "repository",
+        "publishedAt": null,
+        "url": "https://github.com/ghostty-org/ghostty",
+        "thumbnail": "https://opengraph.githubassets.com/market2/ghostty-org/ghostty",
+        "observedAt": "2026-08-11T09:29:25Z",
+        "providerLabel": "First pinned project on the public GitHub profile",
+        "providerRank": null,
+        "publicCounts": [],
+        "availability": "public_at_capture",
+        "sourceUrl": "https://github.com/ghostty-org/ghostty",
+        "backerInterpretation": "A current public project reference. Backer does not infer an exact movement value from it."
+      },
+      "breakoutWork": {
+        "platform": "github",
+        "title": "Terraform",
+        "type": "repository",
+        "publishedAt": null,
+        "url": "https://github.com/hashicorp/terraform",
+        "thumbnail": "https://opengraph.githubassets.com/market2/hashicorp/terraform",
+        "observedAt": "2026-08-11T09:29:25Z",
+        "providerLabel": "Public open-source project associated with the creator",
+        "providerRank": null,
+        "publicCounts": [],
+        "availability": "public_at_capture",
+        "sourceUrl": "https://github.com/hashicorp/terraform",
+        "backerInterpretation": "A durable historical reference, not current-window evidence."
+      },
+      "poa": {
+        "publicEvidence": [
+          {
+            "platform": "github",
+            "label": "Ghostty is the first pinned project on the current profile",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://github.com/mitchellh"
+          },
+          {
+            "platform": "github",
+            "label": "Ghostty source is public under its project organization",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://github.com/ghostty-org/ghostty"
+          },
+          {
+            "platform": "x",
+            "label": "Public X profile link retained; no API metrics",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://x.com/mitchellh"
+          }
+        ],
+        "backerInterpretation": "The creator and project identity are strong. The snapshot does not establish a provider-native trend rank.",
+        "executableMarket": {
+          "status": "none",
+          "label": "No Backer market is open for this person."
+        },
+        "settlement": {
+          "status": "not_defined",
+          "sourceUrl": null,
+          "label": "No settlement source has been approved."
+        },
+        "claimStatus": "unclaimed",
+        "consentStatus": "not_recorded",
+        "methodologyVersion": "market2-launch-snapshot-v1",
+        "asOf": "2026-08-11T09:29:25Z",
+        "sourceUrls": [
+          "https://github.com/mitchellh",
+          "https://github.com/ghostty-org/ghostty",
+          "https://github.com/hashicorp/terraform"
+        ]
+      },
+      "instruments": {
+        "milestones": {
+          "id": "milestones",
+          "label": "Milestones",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "pk_market": {
+          "id": "pk_market",
+          "label": "PK Market",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "creator_arena": {
+          "id": "creator_arena",
+          "label": "Creator Arena",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "creator_perps": {
+          "id": "creator_perps",
+          "label": "Creator Perps",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        }
+      },
+      "source": {
+        "asOf": "2026-08-11T09:29:25Z",
+        "urls": [
+          "https://github.com/mitchellh",
+          "https://github.com/ghostty-org/ghostty",
+          "https://github.com/hashicorp/terraform"
+        ],
+        "caveat": "Project association is public. No trend rank or current attention delta is claimed."
+      }
+    },
+    {
+      "id": "kelsey-hightower",
+      "name": "Kelsey Hightower",
+      "handle": "@kelseyhightower",
+      "avatar": "https://github.com/kelseyhightower.png?size=640",
+      "avatarAlt": "Kelsey Hightower public profile picture",
+      "category": "Infrastructure educator",
+      "bio": "Makes cloud and distributed-systems concepts approachable through talks, demonstrations, and open-source learning projects.",
+      "platforms": [
+        {
+          "id": "x",
+          "handle": "@kelseyhightower",
+          "url": "https://x.com/kelseyhightower",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://x.com/kelseyhightower"
+        },
+        {
+          "id": "youtube",
+          "handle": "Kelsey Hightower",
+          "url": "https://www.youtube.com/results?search_query=Kelsey+Hightower",
+          "state": "search_reference_only",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://www.youtube.com/results?search_query=Kelsey+Hightower"
+        },
+        {
+          "id": "github",
+          "handle": "@kelseyhightower",
+          "url": "https://github.com/kelseyhightower",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://github.com/kelseyhightower"
+        }
+      ],
+      "eligibility": "discovery_only",
+      "claimStatus": "unclaimed",
+      "consentStatus": "not_recorded",
+      "whyNow": "The current public GitHub profile keeps Kubernetes the Hard Way and other infrastructure learning projects easy to discover.",
+      "evidence": {
+        "24h": {
+          "state": "partial_coverage",
+          "label": "Public catalog observed",
+          "whyNow": "The public developer catalog was reachable. No 24-hour attention series is retained.",
+          "platforms": [
+            "x",
+            "youtube",
+            "github"
+          ],
+          "window": {
+            "label": "24H",
+            "start": "2026-08-10T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/kelseyhightower",
+            "https://github.com/kelseyhightower/kubernetes-the-hard-way",
+            "https://github.com/kelseyhightower/nocode"
+          ],
+          "confidence": "low",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No official X or YouTube API snapshot.",
+            "No 24-hour series."
+          ]
+        },
+        "7d": {
+          "state": "partial_coverage",
+          "label": "Durable catalog snapshot",
+          "whyNow": "Current popular repositories are visible, but no seven-day movement claim is made.",
+          "platforms": [
+            "github"
+          ],
+          "window": {
+            "label": "7D",
+            "start": "2026-08-04T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/kelseyhightower",
+            "https://github.com/kelseyhightower/kubernetes-the-hard-way",
+            "https://github.com/kelseyhightower/nocode"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "Repository popularity is not a seven-day creator trend."
+          ]
+        },
+        "30d": {
+          "state": "partial_coverage",
+          "label": "Durable public-work reference",
+          "whyNow": "The current profile retains a clear infrastructure learning archive without a custom attention score.",
+          "platforms": [
+            "x",
+            "youtube",
+            "github"
+          ],
+          "window": {
+            "label": "30D",
+            "start": "2026-07-12T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/kelseyhightower",
+            "https://github.com/kelseyhightower/kubernetes-the-hard-way",
+            "https://github.com/kelseyhightower/nocode"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No complete 30-day provider series."
+          ]
+        },
+        "90d": {
+          "state": "partial_coverage",
+          "label": "Durable public-work reference",
+          "whyNow": "Kubernetes the Hard Way remains a durable public reference. That does not establish 90-day movement.",
+          "platforms": [
+            "x",
+            "youtube",
+            "github"
+          ],
+          "window": {
+            "label": "90D",
+            "start": "2026-05-13T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/kelseyhightower",
+            "https://github.com/kelseyhightower/kubernetes-the-hard-way",
+            "https://github.com/kelseyhightower/nocode"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No complete 90-day provider series."
+          ]
+        }
+      },
+      "recentWork": {
+        "platform": "github",
+        "title": "No Code",
+        "type": "repository",
+        "publishedAt": null,
+        "url": "https://github.com/kelseyhightower/nocode",
+        "thumbnail": "https://opengraph.githubassets.com/market2/kelseyhightower/nocode",
+        "observedAt": "2026-08-11T09:29:25Z",
+        "providerLabel": "First popular repository on the current GitHub profile",
+        "providerRank": null,
+        "publicCounts": [],
+        "availability": "public_at_capture",
+        "sourceUrl": "https://github.com/kelseyhightower/nocode",
+        "backerInterpretation": "A recognizable public project. Current profile order is not a trend rank."
+      },
+      "breakoutWork": {
+        "platform": "github",
+        "title": "Kubernetes the Hard Way",
+        "type": "learning_repository",
+        "publishedAt": null,
+        "url": "https://github.com/kelseyhightower/kubernetes-the-hard-way",
+        "thumbnail": "https://opengraph.githubassets.com/market2/kelseyhightower/kubernetes-the-hard-way",
+        "observedAt": "2026-08-11T09:29:25Z",
+        "providerLabel": "Popular repository on the current GitHub profile",
+        "providerRank": null,
+        "publicCounts": [],
+        "availability": "public_at_capture",
+        "sourceUrl": "https://github.com/kelseyhightower/kubernetes-the-hard-way",
+        "backerInterpretation": "A durable public learning reference, not a current attention-market signal."
+      },
+      "poa": {
+        "publicEvidence": [
+          {
+            "platform": "github",
+            "label": "Public profile and popular repositories retained",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://github.com/kelseyhightower"
+          },
+          {
+            "platform": "github",
+            "label": "Kubernetes the Hard Way source is public",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://github.com/kelseyhightower/kubernetes-the-hard-way"
+          },
+          {
+            "platform": "youtube",
+            "label": "Search reference only; no channel-level API data retained",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://www.youtube.com/results?search_query=Kelsey+Hightower"
+          }
+        ],
+        "backerInterpretation": "The public body of work is clear. There is not enough provider-authorized data to assert current range movement.",
+        "executableMarket": {
+          "status": "none",
+          "label": "No Backer market is open for this person."
+        },
+        "settlement": {
+          "status": "not_defined",
+          "sourceUrl": null,
+          "label": "No settlement source has been approved."
+        },
+        "claimStatus": "unclaimed",
+        "consentStatus": "not_recorded",
+        "methodologyVersion": "market2-launch-snapshot-v1",
+        "asOf": "2026-08-11T09:29:25Z",
+        "sourceUrls": [
+          "https://github.com/kelseyhightower",
+          "https://github.com/kelseyhightower/kubernetes-the-hard-way",
+          "https://github.com/kelseyhightower/nocode"
+        ]
+      },
+      "instruments": {
+        "milestones": {
+          "id": "milestones",
+          "label": "Milestones",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "pk_market": {
+          "id": "pk_market",
+          "label": "PK Market",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "creator_arena": {
+          "id": "creator_arena",
+          "label": "Creator Arena",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "creator_perps": {
+          "id": "creator_perps",
+          "label": "Creator Perps",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        }
+      },
+      "source": {
+        "asOf": "2026-08-11T09:29:25Z",
+        "urls": [
+          "https://github.com/kelseyhightower",
+          "https://github.com/kelseyhightower/kubernetes-the-hard-way",
+          "https://github.com/kelseyhightower/nocode"
+        ],
+        "caveat": "YouTube is a search reference, not an authenticated channel observation. No rank is claimed."
+      }
+    },
+    {
+      "id": "alex-goodkind",
+      "name": "Alex Goodkind",
+      "handle": "@agoodkind",
+      "avatar": "https://github.com/agoodkind.png?size=640",
+      "avatarAlt": "Alex Goodkind public profile picture",
+      "category": "Open-source developer",
+      "bio": "Researches low-level macOS hardware control and publishes working open-source implementations.",
+      "platforms": [
+        {
+          "id": "github",
+          "handle": "@agoodkind",
+          "url": "https://github.com/agoodkind",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://github.com/trending/developers"
+        }
+      ],
+      "eligibility": "discovery_only",
+      "claimStatus": "unclaimed",
+      "consentStatus": "not_recorded",
+      "whyNow": "GitHub Trending Developers listed Alex Goodkind at native daily rank 1 when this snapshot was captured.",
+      "evidence": {
+        "24h": {
+          "state": "snapshot",
+          "label": "GitHub native daily rank 1",
+          "whyNow": "GitHub Trending Developers listed Alex Goodkind first and named macos-smc-fan as the popular repository.",
+          "platforms": [
+            "github"
+          ],
+          "window": {
+            "label": "24H",
+            "start": "2026-08-10T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/trending/developers",
+            "https://github.com/agoodkind/macos-smc-fan"
+          ],
+          "confidence": "high",
+          "providerRank": 1,
+          "providerRankLabel": "GitHub Trending Developers, Today",
+          "publicCounts": [],
+          "coverageGaps": [
+            "The Trending page is a point-in-time provider ordering, not a retained 24-hour curve."
+          ]
+        },
+        "7d": {
+          "state": "partial_coverage",
+          "label": "Daily rank captured; week series unavailable",
+          "whyNow": "The daily provider rank is retained, but this launch snapshot does not include seven daily observations.",
+          "platforms": [
+            "github"
+          ],
+          "window": {
+            "label": "7D",
+            "start": "2026-08-04T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/trending/developers",
+            "https://github.com/agoodkind",
+            "https://github.com/agoodkind/macos-smc-fan"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No seven-day sequence of provider ranks."
+          ]
+        },
+        "30d": {
+          "state": "partial_coverage",
+          "label": "Daily rank captured; month series unavailable",
+          "whyNow": "The daily provider rank and public repository are retained without a 30-day trend claim.",
+          "platforms": [
+            "github"
+          ],
+          "window": {
+            "label": "30D",
+            "start": "2026-07-12T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/trending/developers",
+            "https://github.com/agoodkind",
+            "https://github.com/agoodkind/macos-smc-fan"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No 30-day provider series."
+          ]
+        },
+        "90d": {
+          "state": "partial_coverage",
+          "label": "Daily rank captured; history unavailable",
+          "whyNow": "Current discovery is supported by the native daily rank only.",
+          "platforms": [
+            "github"
+          ],
+          "window": {
+            "label": "90D",
+            "start": "2026-05-13T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/trending/developers",
+            "https://github.com/agoodkind",
+            "https://github.com/agoodkind/macos-smc-fan"
+          ],
+          "confidence": "low",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No 90-day provider series."
+          ]
+        }
+      },
+      "recentWork": {
+        "platform": "github",
+        "title": "macos-smc-fan",
+        "type": "repository",
+        "publishedAt": null,
+        "url": "https://github.com/agoodkind/macos-smc-fan",
+        "thumbnail": "https://opengraph.githubassets.com/market2/agoodkind/macos-smc-fan",
+        "observedAt": "2026-08-11T09:29:25Z",
+        "providerLabel": "Popular repository attached to GitHub Trending Developers daily rank 1",
+        "providerRank": 1,
+        "publicCounts": [],
+        "availability": "public_at_capture",
+        "sourceUrl": "https://github.com/agoodkind/macos-smc-fan",
+        "backerInterpretation": "Provider-supplied discovery ordering. Backer has not converted it into a price or probability."
+      },
+      "breakoutWork": {
+        "platform": "github",
+        "title": "macos-smc-fan",
+        "type": "repository",
+        "publishedAt": null,
+        "url": "https://github.com/agoodkind/macos-smc-fan",
+        "thumbnail": "https://opengraph.githubassets.com/market2/agoodkind/macos-smc-fan",
+        "observedAt": "2026-08-11T09:29:25Z",
+        "providerLabel": "GitHub Trending Developers popular repository",
+        "providerRank": 1,
+        "publicCounts": [],
+        "availability": "public_at_capture",
+        "sourceUrl": "https://github.com/agoodkind/macos-smc-fan",
+        "backerInterpretation": "The same repository is both the newest retained work and the provider-named breakout reference for this point-in-time snapshot."
+      },
+      "poa": {
+        "publicEvidence": [
+          {
+            "platform": "github",
+            "label": "GitHub Trending Developers native daily rank 1",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://github.com/trending/developers"
+          },
+          {
+            "platform": "github",
+            "label": "macos-smc-fan named as the popular repository",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://github.com/trending/developers"
+          }
+        ],
+        "backerInterpretation": "This is the strongest provider-native discovery signal in the launch snapshot. It remains a single daily capture, not a trend curve.",
+        "executableMarket": {
+          "status": "none",
+          "label": "No Backer market is open for this person."
+        },
+        "settlement": {
+          "status": "not_defined",
+          "sourceUrl": null,
+          "label": "No settlement source has been approved."
+        },
+        "claimStatus": "unclaimed",
+        "consentStatus": "not_recorded",
+        "methodologyVersion": "market2-launch-snapshot-v1",
+        "asOf": "2026-08-11T09:29:25Z",
+        "sourceUrls": [
+          "https://github.com/trending/developers",
+          "https://github.com/agoodkind",
+          "https://github.com/agoodkind/macos-smc-fan"
+        ]
+      },
+      "instruments": {
+        "milestones": {
+          "id": "milestones",
+          "label": "Milestones",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "pk_market": {
+          "id": "pk_market",
+          "label": "PK Market",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "creator_arena": {
+          "id": "creator_arena",
+          "label": "Creator Arena",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "creator_perps": {
+          "id": "creator_perps",
+          "label": "Creator Perps",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        }
+      },
+      "source": {
+        "asOf": "2026-08-11T09:29:25Z",
+        "urls": [
+          "https://github.com/trending/developers",
+          "https://github.com/agoodkind",
+          "https://github.com/agoodkind/macos-smc-fan"
+        ],
+        "caveat": "Rank 1 is a frozen GitHub daily provider ordering captured at the stated time. It will change."
+      }
+    },
+    {
+      "id": "chris-mungall",
+      "name": "Chris Mungall",
+      "handle": "@cmungall",
+      "avatar": "https://github.com/cmungall.png?size=640",
+      "avatarAlt": "Chris Mungall public profile picture",
+      "category": "Knowledge systems developer",
+      "bio": "Builds open knowledge tools at the intersection of biology, logic, ontologies, and data systems.",
+      "platforms": [
+        {
+          "id": "github",
+          "handle": "@cmungall",
+          "url": "https://github.com/cmungall",
+          "state": "public_profile",
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrl": "https://github.com/trending/developers"
+        }
+      ],
+      "eligibility": "discovery_only",
+      "claimStatus": "unclaimed",
+      "consentStatus": "not_recorded",
+      "whyNow": "GitHub Trending Developers listed Chris Mungall at native daily rank 3 when this snapshot was captured.",
+      "evidence": {
+        "24h": {
+          "state": "snapshot",
+          "label": "GitHub native daily rank 3",
+          "whyNow": "GitHub Trending Developers listed Chris Mungall third and named PrologInfo as the popular repository.",
+          "platforms": [
+            "github"
+          ],
+          "window": {
+            "label": "24H",
+            "start": "2026-08-10T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/trending/developers",
+            "https://github.com/cmungall/PrologInfo"
+          ],
+          "confidence": "high",
+          "providerRank": 3,
+          "providerRankLabel": "GitHub Trending Developers, Today",
+          "publicCounts": [],
+          "coverageGaps": [
+            "The Trending page is a point-in-time provider ordering, not a retained 24-hour curve."
+          ]
+        },
+        "7d": {
+          "state": "partial_coverage",
+          "label": "Daily rank captured; week series unavailable",
+          "whyNow": "The daily provider rank is retained, but this launch snapshot does not include seven daily observations.",
+          "platforms": [
+            "github"
+          ],
+          "window": {
+            "label": "7D",
+            "start": "2026-08-04T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/trending/developers",
+            "https://github.com/cmungall",
+            "https://github.com/cmungall/PrologInfo"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No seven-day sequence of provider ranks."
+          ]
+        },
+        "30d": {
+          "state": "partial_coverage",
+          "label": "Daily rank captured; month series unavailable",
+          "whyNow": "The daily provider rank and public repository are retained without a 30-day trend claim.",
+          "platforms": [
+            "github"
+          ],
+          "window": {
+            "label": "30D",
+            "start": "2026-07-12T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/trending/developers",
+            "https://github.com/cmungall",
+            "https://github.com/cmungall/PrologInfo"
+          ],
+          "confidence": "medium",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No 30-day provider series."
+          ]
+        },
+        "90d": {
+          "state": "partial_coverage",
+          "label": "Daily rank captured; history unavailable",
+          "whyNow": "Current discovery is supported by the native daily rank only.",
+          "platforms": [
+            "github"
+          ],
+          "window": {
+            "label": "90D",
+            "start": "2026-05-13T09:29:25Z",
+            "end": "2026-08-11T09:29:25Z"
+          },
+          "asOf": "2026-08-11T09:29:25Z",
+          "sourceUrls": [
+            "https://github.com/trending/developers",
+            "https://github.com/cmungall",
+            "https://github.com/cmungall/PrologInfo"
+          ],
+          "confidence": "low",
+          "providerRank": null,
+          "providerRankLabel": null,
+          "publicCounts": [],
+          "coverageGaps": [
+            "No 90-day provider series."
+          ]
+        }
+      },
+      "recentWork": {
+        "platform": "github",
+        "title": "PrologInfo",
+        "type": "repository",
+        "publishedAt": null,
+        "url": "https://github.com/cmungall/PrologInfo",
+        "thumbnail": "https://opengraph.githubassets.com/market2/cmungall/PrologInfo",
+        "observedAt": "2026-08-11T09:29:25Z",
+        "providerLabel": "Popular repository attached to GitHub Trending Developers daily rank 3",
+        "providerRank": 3,
+        "publicCounts": [],
+        "availability": "public_at_capture",
+        "sourceUrl": "https://github.com/cmungall/PrologInfo",
+        "backerInterpretation": "Provider-supplied discovery ordering. Backer has not converted it into a price or probability."
+      },
+      "breakoutWork": {
+        "platform": "github",
+        "title": "PrologInfo",
+        "type": "repository",
+        "publishedAt": null,
+        "url": "https://github.com/cmungall/PrologInfo",
+        "thumbnail": "https://opengraph.githubassets.com/market2/cmungall/PrologInfo",
+        "observedAt": "2026-08-11T09:29:25Z",
+        "providerLabel": "GitHub Trending Developers popular repository",
+        "providerRank": 3,
+        "publicCounts": [],
+        "availability": "public_at_capture",
+        "sourceUrl": "https://github.com/cmungall/PrologInfo",
+        "backerInterpretation": "The same repository is both the newest retained work and provider-named breakout reference for this point-in-time snapshot."
+      },
+      "poa": {
+        "publicEvidence": [
+          {
+            "platform": "github",
+            "label": "GitHub Trending Developers native daily rank 3",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://github.com/trending/developers"
+          },
+          {
+            "platform": "github",
+            "label": "PrologInfo named as the popular repository",
+            "asOf": "2026-08-11T09:29:25Z",
+            "sourceUrl": "https://github.com/trending/developers"
+          }
+        ],
+        "backerInterpretation": "This is a provider-native discovery signal. It remains a single daily capture, not a retained trend curve.",
+        "executableMarket": {
+          "status": "none",
+          "label": "No Backer market is open for this person."
+        },
+        "settlement": {
+          "status": "not_defined",
+          "sourceUrl": null,
+          "label": "No settlement source has been approved."
+        },
+        "claimStatus": "unclaimed",
+        "consentStatus": "not_recorded",
+        "methodologyVersion": "market2-launch-snapshot-v1",
+        "asOf": "2026-08-11T09:29:25Z",
+        "sourceUrls": [
+          "https://github.com/trending/developers",
+          "https://github.com/cmungall",
+          "https://github.com/cmungall/PrologInfo"
+        ]
+      },
+      "instruments": {
+        "milestones": {
+          "id": "milestones",
+          "label": "Milestones",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "pk_market": {
+          "id": "pk_market",
+          "label": "PK Market",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "creator_arena": {
+          "id": "creator_arena",
+          "label": "Creator Arena",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        },
+        "creator_perps": {
+          "id": "creator_perps",
+          "label": "Creator Perps",
+          "status": "unavailable",
+          "reason": "Discovery profile only. Creator claim, consent, policy review, and a written settlement source are required before trading."
+        }
+      },
+      "source": {
+        "asOf": "2026-08-11T09:29:25Z",
+        "urls": [
+          "https://github.com/trending/developers",
+          "https://github.com/cmungall",
+          "https://github.com/cmungall/PrologInfo"
+        ],
+        "caveat": "Rank 3 is a frozen GitHub daily provider ordering captured at the stated time. It will change."
+      }
+    }
+  ]
+}

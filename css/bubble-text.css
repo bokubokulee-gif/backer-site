@@ -1,0 +1,31 @@
+[data-bubble-text] {
+  cursor: default;
+  white-space: nowrap;
+}
+
+[data-bubble-text] .bubble-letter {
+  display: inline-block;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-style: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  transform: translate3d(0, 0, 0) scale(1);
+  transform-origin: 50% 72%;
+  backface-visibility: hidden;
+  will-change: transform;
+  transition: transform 180ms cubic-bezier(.22, .61, .36, 1);
+}
+
+[data-bubble-text] .bubble-letter[data-distance="0"] { transform: translate3d(0, -.07em, 0) scale(1.12); }
+[data-bubble-text] .bubble-letter[data-distance="1"] { transform: translate3d(0, -.035em, 0) scale(1.065); }
+[data-bubble-text] .bubble-letter[data-distance="2"] { transform: translate3d(0, -.014em, 0) scale(1.025); }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-bubble-text] .bubble-letter {
+    transform: none;
+    transition: none;
+  }
+}

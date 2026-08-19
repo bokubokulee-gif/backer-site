@@ -1,0 +1,311 @@
+/* =========================================================
+   BACKER — product-surface theme system
+   Marketplace and portfolio default to a true-black canvas.
+   A persisted light theme uses Backer's warm paper palette.
+   ========================================================= */
+
+.theme-toggle{
+  display:none;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-width:44px;
+  min-height:44px;
+  padding:9px 13px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  color:var(--ink);
+  background:var(--card-2);
+  font-size:12.5px;
+  font-weight:600;
+  line-height:1;
+  white-space:nowrap;
+  transition:background .16s ease,border-color .16s ease,color .16s ease;
+}
+.theme-toggle:hover{background:var(--card-hi);border-color:rgba(233,189,134,.5)}
+.theme-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.theme-toggle-icon{
+  display:grid;
+  place-items:center;
+  width:18px;
+  height:18px;
+  font-size:18px;
+  line-height:1;
+}
+body.mkt-full .theme-toggle,
+body.page-portfolio .theme-toggle{display:inline-flex}
+
+/* Shared product-surface tokens. */
+body.mkt-full,
+body.page-portfolio{
+  --bg:#000000;
+  --bg-2:#050505;
+  --ink:#f7f4ed;
+  --muted:#bbb7ae;
+  --muted-2:#858179;
+  --faint:#66625c;
+  --line:rgba(255,255,255,.13);
+  --line-2:rgba(255,255,255,.075);
+  --card:#0a0a0c;
+  --card-2:#101013;
+  --card-hi:#17171b;
+  --surface:#0a0a0c;
+  --surface-2:#101013;
+  --surface-3:#17171b;
+  --control:#080809;
+  --nav-bg:#000000;
+  --panel-shadow:0 18px 48px rgba(0,0,0,.34);
+  background:#000000;
+  color:var(--ink);
+}
+body.mkt-full #bg,
+body.mkt-full .vignette,
+body.page-portfolio #bg,
+body.page-portfolio .vignette,
+body.page-portfolio .grain{display:none!important}
+body.mkt-full .nav,
+body.page-portfolio .site-nav{
+  background:var(--nav-bg);
+  border-bottom:1px solid var(--line-2);
+  box-shadow:0 8px 28px rgba(0,0,0,.22);
+}
+body.mkt-full .nav.scrolled,
+body.page-portfolio .site-nav.scrolled{
+  background:var(--nav-bg);
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+}
+body.mkt-full .app,
+body.page-portfolio .wrap{background:var(--bg)}
+body.mkt-full .dock,
+body.page-portfolio .dock{
+  background:var(--surface-2);
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+  border-color:var(--line);
+  box-shadow:var(--panel-shadow);
+}
+body.mkt-full .backer-consent-panel,
+body.page-portfolio .backer-consent-panel{
+  color:var(--ink);
+  background:var(--surface-2);
+  border-color:var(--line);
+  box-shadow:var(--panel-shadow);
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+}
+
+/* Opaque marketplace surfaces keep the exchange calm and readable. */
+body.mkt-full .mkt-controls-wrap{background:var(--bg)}
+body.mkt-full .mkt-card,
+body.mkt-full .mkt-feat,
+body.mkt-full .mkt-rmod,
+body.mkt-full .mkt-inline{
+  background:var(--surface);
+  box-shadow:var(--panel-shadow);
+}
+body.mkt-full .mkt-card:hover{background:var(--surface-2)}
+body.mkt-full .mkt-search,
+body.mkt-full .mkt-windows,
+body.mkt-full .mkt-sort select,
+body.mkt-full .mkt-poa,
+body.mkt-full .mkt-amt,
+body.mkt-full .mkt-poa-hero{background:var(--control)}
+body.mkt-full .mkt-drawer-panel{background:var(--surface-2)}
+body.mkt-full .mkt-drawer{background:rgba(0,0,0,.72)}
+body.mkt-full .mkt-bar{background:rgba(255,255,255,.11)}
+body.mkt-full .mkt-rrow:hover{background:var(--surface-3)}
+
+/* Opaque portfolio surfaces replace liquid glass on the trading pages. */
+body.page-portfolio{
+  --lg-fg:var(--surface);
+  --lg-fg-hi:var(--surface-2);
+  --lg-fg-warm:linear-gradient(135deg,#17120c,#0d0b09);
+  --lg-fg-dark:var(--surface-2);
+  --lg-bd:var(--line);
+  --lg-bd-warm:rgba(233,189,134,.42);
+  --lg-bd-dark:var(--line);
+  --lg-rim:var(--panel-shadow);
+  --lg-rim-soft:0 10px 28px rgba(0,0,0,.28);
+  --lg-rim-pill:none;
+}
+body.page-portfolio .card,
+body.page-portfolio .prow,
+body.page-portfolio .act,
+body.page-portfolio .contract,
+body.page-portfolio .ct-stat,
+body.page-portfolio .chart-wrap,
+body.page-portfolio .ct-strip,
+body.page-portfolio .panel,
+body.page-portfolio .ai-box,
+body.page-portfolio .dr-rows,
+body.page-portfolio .dr-note{
+  background:var(--surface);
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+  border-color:var(--line);
+  box-shadow:var(--panel-shadow);
+}
+body.page-portfolio .prow:hover,
+body.page-portfolio .contract:hover{background:var(--surface-2)}
+body.page-portfolio .drawer{
+  background:var(--surface-2);
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+}
+body.page-portfolio .search-box input,
+body.page-portfolio .sort-sel,
+body.page-portfolio .mode-toggle,
+body.page-portfolio .seg,
+body.page-portfolio .ai-ans,
+body.page-portfolio .dr-formula{background:var(--control)}
+body.page-portfolio [data-tip]:hover::after{background:var(--surface-3)}
+
+/* Portfolio reads as a brokerage ledger instead of a compressed dashboard. */
+body.page-portfolio .wrap{
+  max-width:1320px;
+  padding:36px clamp(18px,3vw,38px) 124px;
+}
+body.page-portfolio .id-head{gap:22px;margin-bottom:10px}
+body.page-portfolio .id-name{font-size:clamp(30px,3.4vw,40px)}
+body.page-portfolio .id-meta{font-size:13px;gap:9px}
+body.page-portfolio .id-actions{gap:12px}
+body.page-portfolio .cards{gap:16px;margin:30px 0}
+body.page-portfolio .card{
+  min-height:118px;
+  padding:20px;
+  border-radius:18px;
+}
+body.page-portfolio .card .ck{font-size:12px;margin-bottom:11px}
+body.page-portfolio .card .cm{font-size:12.5px;margin-top:8px}
+body.page-portfolio .chart-wrap{padding:24px;margin-bottom:30px}
+body.page-portfolio .chart-top h3{font-size:14px}
+body.page-portfolio .range-tabs button{
+  min-height:36px;
+  padding:8px 12px;
+  font-size:11.5px;
+}
+body.page-portfolio .chart-svg{height:240px}
+body.page-portfolio .legend-pill{font-size:12px}
+body.page-portfolio .chart-disc{font-size:11px}
+body.page-portfolio .main-tabs{gap:30px;margin-bottom:22px}
+body.page-portfolio .main-tab{min-height:44px;font-size:15px}
+body.page-portfolio .controls{gap:12px;margin-bottom:20px}
+body.page-portfolio .seg button{min-height:36px;padding:8px 14px;font-size:12.5px}
+body.page-portfolio .search-box input,
+body.page-portfolio .sort-sel{min-height:42px;font-size:13px}
+body.page-portfolio .rows{gap:12px}
+body.page-portfolio .prow{
+  min-height:82px;
+  grid-template-columns:minmax(260px,1.8fr) repeat(4,minmax(90px,.8fr)) auto;
+  gap:18px;
+  padding:18px 20px;
+  border-radius:17px;
+}
+body.page-portfolio .pr-title{font-size:15.5px}
+body.page-portfolio .pr-sub{font-size:12.5px;line-height:1.45}
+body.page-portfolio .pr-k{font-size:10.5px}
+body.page-portfolio .pr-v{font-size:14px}
+body.page-portfolio .pr-col:not(:first-child){text-align:right;align-items:flex-end}
+body.page-portfolio .pr-cta{font-size:12.5px}
+body.page-portfolio .inst-badge{font-size:10px}
+body.page-portfolio .act{padding:16px 18px;gap:15px}
+body.page-portfolio .act-title{font-size:14px}
+body.page-portfolio .act-desc{font-size:12.5px}
+body.page-portfolio .ct-strip{padding:22px}
+body.page-portfolio .panel{padding:20px}
+body.page-portfolio .panel h3{font-size:14px}
+body.page-portfolio .contract{padding:17px}
+body.page-portfolio .drawer{padding:28px}
+body.page-portfolio .dr-row{padding:12px 15px;font-size:13px}
+
+/* Warm light mode: same information hierarchy, no cold dashboard white. */
+html[data-theme="light"] body.mkt-full,
+html[data-theme="light"] body.page-portfolio{
+  --bg:#f3efe5;
+  --bg-2:#ebe5d9;
+  --ink:#171612;
+  --muted:#5e5a52;
+  --muted-2:#777168;
+  --faint:#928b81;
+  --line:rgba(23,22,18,.18);
+  --line-2:rgba(23,22,18,.10);
+  --card:#fffdf8;
+  --card-2:#f8f3e9;
+  --card-hi:#efe7da;
+  --surface:#fffdf8;
+  --surface-2:#f8f3e9;
+  --surface-3:#eee6d9;
+  --control:#f8f3e9;
+  --nav-bg:#f3efe5;
+  --pos:#12845a;
+  --warn:#9b5d00;
+  --neg:#c83e3a;
+  --accent:#9b5b22;
+  --panel-shadow:0 14px 34px rgba(64,48,28,.08);
+  background:var(--bg);
+}
+html[data-theme="light"] body.mkt-full .nav,
+html[data-theme="light"] body.page-portfolio .site-nav{box-shadow:0 8px 24px rgba(64,48,28,.07)}
+html[data-theme="light"] body.mkt-full .mkt-pill.demo,
+html[data-theme="light"] body.mkt-full .bchip.on,
+html[data-theme="light"] body.mkt-full .qchip.on,
+html[data-theme="light"] body.mkt-full .mkt-achip{
+  background:rgba(155,91,34,.09);
+  border-color:rgba(155,91,34,.34);
+}
+html[data-theme="light"] body.mkt-full .mkt-bar{background:rgba(23,22,18,.11)}
+html[data-theme="light"] body.mkt-full .mkt-spark .sp-target{stroke:rgba(23,22,18,.28)}
+html[data-theme="light"] body.mkt-full .mkt-drawer{background:rgba(23,19,14,.34)}
+html[data-theme="light"] body.mkt-full .mkt-cta,
+html[data-theme="light"] body.mkt-full .mkt-btn.accent{color:#241600}
+html[data-theme="light"] body.mkt-full .btn-primary{color:#fffdf8}
+html[data-theme="light"] body.page-portfolio{
+  --lg-fg:var(--surface);
+  --lg-fg-hi:var(--surface-2);
+  --lg-fg-warm:linear-gradient(135deg,#fff8eb,#f4e6d4);
+  --lg-fg-dark:var(--surface);
+  --lg-bd:var(--line);
+  --lg-bd-warm:rgba(155,91,34,.32);
+  --lg-bd-dark:var(--line);
+  --lg-rim:var(--panel-shadow);
+  --lg-rim-soft:var(--panel-shadow);
+  --lg-rim-pill:none;
+}
+html[data-theme="light"] body.page-portfolio .btn-fill,
+html[data-theme="light"] body.page-portfolio .mode-toggle button.is-on,
+html[data-theme="light"] body.page-portfolio .seg button.is-on{
+  color:#fffdf8;
+}
+html[data-theme="light"] body.page-portfolio .drawer-overlay{background:rgba(23,19,14,.28)}
+html[data-theme="light"] body.page-portfolio .dr-note.warn{background:#fff4df;color:var(--warn)}
+html[data-theme="light"] body.page-portfolio .tooltip-trigger,
+html[data-theme="light"] body.page-portfolio [data-tip]:hover::after{color:var(--ink)}
+html[data-theme="light"] body.mkt-full .backer-consent-reject,
+html[data-theme="light"] body.page-portfolio .backer-consent-reject{
+  color:var(--muted);
+  background:var(--surface);
+  border-color:var(--line);
+}
+
+body.mkt-full select,
+body.page-portfolio select{color-scheme:inherit}
+
+@media(max-width:760px){
+  .theme-toggle{padding:9px 11px}
+  .theme-toggle-label{display:none}
+  body.page-portfolio .wrap{padding:26px 14px 110px}
+  body.page-portfolio .cards{gap:10px}
+  body.page-portfolio .card{padding:16px;min-height:108px}
+  body.page-portfolio .chart-wrap{padding:16px}
+  body.page-portfolio .chart-svg{height:190px}
+  body.page-portfolio .prow{
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    padding:17px;
+  }
+  body.page-portfolio .pr-col:not(:first-child){text-align:left;align-items:flex-start}
+}
+@media(prefers-reduced-motion:reduce){
+  .theme-toggle{transition:none}
+}

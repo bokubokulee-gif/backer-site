@@ -1,0 +1,337 @@
+/* =========================================================
+   BACKER — UNIFIED LIQUID GLASS  (single source of truth)
+   ---------------------------------------------------------
+   One iOS "Liquid Glass" standard for every card / panel /
+   pill / segmented-control that carries words, across all
+   tabs (thesis decks · signup · portfolio · product home).
+
+   Recipe = heavy frosted backdrop (blur + saturate) + the
+   shared #liquid-glass SVG refraction folded into the
+   backdrop chain (injected by js/liquid-glass.js) + a bright
+   specular rim + a depth shadow. Card text paints on the
+   element itself, so it stays sharp above the frost.
+
+   Loaded LAST on every page (after each page's own CSS and
+   inline <style>), so it wins source-order ties. Selectors
+   are page-scoped via the <body> class — deck / page-product
+   / page-portfolio / page-signup — because several class
+   names (.metric, .chip, .card, .panel, .eyebrow) mean
+   different things on different pages.
+
+   Highest-opacity tier on purpose: the dense frost also keeps
+   copy maximally readable over the animated background.
+   ========================================================= */
+
+:root{
+  --lg-blur:20px;
+  --lg-sat:180%;
+  --lg-fg:linear-gradient(135deg,rgba(255,255,255,.09),rgba(255,255,255,.028));
+  --lg-fg-hi:linear-gradient(135deg,rgba(255,255,255,.14),rgba(255,255,255,.05));
+  --lg-fg-warm:linear-gradient(135deg,rgba(244,171,99,.16),rgba(244,171,99,.04));
+  --lg-fg-dark:linear-gradient(135deg,rgba(22,22,27,.74),rgba(12,12,15,.56));
+  --lg-bd:rgba(255,255,255,.16);
+  --lg-bd-warm:rgba(233,189,134,.4);
+  --lg-bd-dark:rgba(255,255,255,.13);
+  --lg-rim:
+    inset 1.5px 1.5px .6px rgba(255,255,255,.42),
+    inset -1px -1px 1px rgba(255,255,255,.12),
+    inset 0 0 26px rgba(255,255,255,.03),
+    0 18px 50px rgba(0,0,0,.45);
+  --lg-rim-soft:
+    inset 1px 1px .5px rgba(255,255,255,.4),
+    inset -1px -1px 1px rgba(255,255,255,.10),
+    0 8px 22px rgba(0,0,0,.4);
+  --lg-rim-pill:
+    inset 1px 1px .5px rgba(255,255,255,.4),
+    0 6px 16px rgba(0,0,0,.35);
+}
+
+/* ---------------------------------------------------------
+   GROUP A — neutral frosted panels & cards (full glass)
+   --------------------------------------------------------- */
+body.deck .layer,
+body.deck .tile,
+body.deck .metric,
+body.deck .arch-step,
+body.deck .wedge,
+body.deck .risks,
+.page-signup .role-card,
+.page-signup .ack,
+.page-signup .chip,
+.page-portfolio .card,
+.page-portfolio .prow,
+.page-portfolio .act,
+.page-portfolio .contract,
+.page-portfolio .ct-stat,
+.page-portfolio .chart-wrap,
+.page-portfolio .ct-strip,
+.page-portfolio .panel,
+.page-portfolio .ai-box,
+.page-portfolio .dr-rows,
+.page-portfolio .dr-note,
+.page-product .ccard,
+.page-product .dhero,
+.page-product .score-card,
+.page-product .chart-card,
+.page-product .q-card,
+.page-product .surface,
+.page-product .benefit,
+.page-product .score-block,
+.page-product .terms,
+.page-product .ai-panel,
+.page-product .pcard,
+.page-product .holdings,
+.page-product .ipo,
+.page-product .gifting,
+.page-product .invest,
+.page-product .val-lane,
+.page-product .val-chart,
+.page-product .val-fact,
+.page-product .val-cond,
+.page-product .val-big,
+.page-product .calc,
+.page-product .faq-item,
+.page-product .way,
+.page-product .comp,
+.page-product .sx-section,
+.page-product .person,
+.page-product .mkt-mcard,
+.page-product .mkt-minis,
+.page-product .mkt-catcard,
+.page-product .mkt-platcard{
+  background:var(--lg-fg);
+  -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat));
+  backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) url(#liquid-glass);
+  border-color:var(--lg-bd);
+  box-shadow:var(--lg-rim);
+}
+
+/* brighten the frost on hover/active rather than dropping to a flat tint */
+body.deck .tile:hover,
+body.deck .tile:focus-visible,
+body.deck .tile[aria-expanded="true"],
+.page-signup .role-card:hover,
+.page-portfolio .prow:hover,
+.page-portfolio .contract:hover,
+.page-product .ccard:hover,
+.page-product .q-card:hover,
+.page-product .score-card:hover,
+.page-product .surface:hover,
+.page-product .val-fact:hover,
+.page-product .val-big:hover,
+.page-product .faq-item:hover,
+.page-product .faq-item.open,
+.page-product .comp:hover,
+.page-product .person:hover{
+  background:var(--lg-fg-hi);
+  border-color:rgba(255,255,255,.22);
+}
+
+/* ---------------------------------------------------------
+   GROUP B — warm / branded frosted panels (Backer amber)
+   --------------------------------------------------------- */
+body.deck .opener,
+body.deck .min,
+.page-signup .ipo-card,
+.page-product .claim,
+.page-product .open-note,
+.page-product .val-lane-backer{
+  background:var(--lg-fg-warm);
+  -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat));
+  backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) url(#liquid-glass);
+  border-color:var(--lg-bd-warm);
+  box-shadow:var(--lg-rim);
+}
+
+/* ---------------------------------------------------------
+   GROUP C — dark glass modals / overlays (kept legible)
+   --------------------------------------------------------- */
+body.deck .ipcard,
+body.deck .memo-panel,
+.page-portfolio .drawer,
+.page-portfolio .site-nav.menu-open .nav-links,
+.page-product .sx-drawer,
+.page-product .nav.menu-open .nav-links{
+  background:var(--lg-fg-dark);
+  -webkit-backdrop-filter:blur(26px) saturate(160%);
+  backdrop-filter:blur(26px) saturate(160%) url(#liquid-glass);
+  border-color:var(--lg-bd-dark);
+  box-shadow:var(--lg-rim),0 30px 80px rgba(0,0,0,.6);
+}
+
+/* ---------------------------------------------------------
+   GROUP D — status-tinted frosted panels (keep the signal)
+   --------------------------------------------------------- */
+body.deck .poa{
+  background:linear-gradient(135deg,rgba(86,211,154,.10),rgba(86,211,154,.02));
+  -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat));
+  backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) url(#liquid-glass);
+  border-color:rgba(86,211,154,.22);
+  box-shadow:var(--lg-rim);
+}
+body.deck .band,
+.page-portfolio .dr-note.warn{
+  -webkit-backdrop-filter:blur(14px) saturate(150%);
+  backdrop-filter:blur(14px) saturate(150%) url(#liquid-glass);
+  box-shadow:var(--lg-rim-soft);
+}
+
+/* ---------------------------------------------------------
+   GROUP E — neutral frosted pills (lighter, proportionate)
+   --------------------------------------------------------- */
+body.deck .eyebrow,
+.page-product .eyebrow,
+.page-product .pill,
+.page-product .dtag,
+.page-product .sx-chip,
+.page-product .sx-strip-tab,
+.page-product .sx-plat-toggle,
+.page-product .plat{
+  background:var(--lg-fg);
+  -webkit-backdrop-filter:blur(10px) saturate(150%);
+  backdrop-filter:blur(10px) saturate(150%) url(#liquid-glass);
+  border-color:var(--lg-bd);
+  box-shadow:var(--lg-rim-pill);
+}
+
+/* ---------------------------------------------------------
+   GROUP F — colored status pills (keep their tint, add glass)
+   --------------------------------------------------------- */
+.page-signup .ipo-meta .badge,
+.page-portfolio .badge,
+.page-product .ccard-cat,
+.page-product .fee-chip{
+  -webkit-backdrop-filter:blur(8px) saturate(140%);
+  backdrop-filter:blur(8px) saturate(140%) url(#liquid-glass);
+  box-shadow:var(--lg-rim-pill);
+}
+
+/* ---------------------------------------------------------
+   GROUP G — segmented-control TRACKS + search bars
+   (active thumbs stay solid/light so dark thumb text reads)
+   --------------------------------------------------------- */
+.page-signup .tabs,
+.page-portfolio .seg,
+.page-portfolio .mode-toggle,
+.page-product .toggle,
+.page-product .hero-search,
+.page-product .big-search,
+.page-product .app-searchbar,
+.page-product .calc-tabs,
+.page-product .calc-seg{
+  background:var(--lg-fg);
+  -webkit-backdrop-filter:blur(14px) saturate(160%);
+  backdrop-filter:blur(14px) saturate(160%) url(#liquid-glass);
+  border-color:var(--lg-bd);
+  box-shadow:var(--lg-rim-pill);
+}
+
+/* ---------------------------------------------------------
+   GROUP H — cockpit columns gain a real surface to frost
+   --------------------------------------------------------- */
+body.deck .wedge,
+body.deck .risks{
+  border:1px solid var(--lg-bd);
+  border-radius:18px;
+  padding:clamp(18px,2.2vw,26px);
+}
+
+/* ---------------------------------------------------------
+   PERF — the dense JS-rendered product grid
+   Drop the costly SVG refraction on every grid cell + its
+   overlay pills (keep blur+saturate), and isolate paint so
+   off-screen cards don't recomposite. Full refraction stays
+   on single-instance heroes / panels / modals.
+   --------------------------------------------------------- */
+.page-product .ccard,
+.page-product .ccard-cat{
+  backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat));
+  contain:paint;
+}
+.page-product .ccard-cat{
+  backdrop-filter:blur(8px) saturate(140%);
+}
+
+/* ---------------------------------------------------------
+   PROOF OF ATTENTION — one full-width glass surface.
+   The modifier is demo-only: pitch.html also owns #proof.
+   --------------------------------------------------------- */
+.page-product .proof-glass{
+  width:calc(100% - clamp(16px,4vw,32px));
+  margin-inline:auto;
+  scroll-margin-top:88px;
+  border:1px solid var(--lg-bd);
+  border-radius:clamp(24px,3vw,36px);
+  background:
+    radial-gradient(110% 72% at 8% 0%,rgba(126,166,255,.07),transparent 58%),
+    var(--lg-fg-dark);
+  -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat));
+  backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) url(#liquid-glass);
+  box-shadow:var(--lg-rim);
+}
+.page-product .proof-glass .poa-demo{
+  border-color:var(--lg-bd-dark);
+  box-shadow:var(--lg-rim-soft);
+}
+
+@media (max-width:1000px){
+  .page-product .proof-glass{
+    -webkit-backdrop-filter:blur(16px) saturate(160%);
+    backdrop-filter:blur(16px) saturate(160%);
+    box-shadow:var(--lg-rim-soft);
+  }
+}
+
+@media (max-width:760px){
+  .page-product .proof-glass{
+    -webkit-backdrop-filter:blur(14px) saturate(150%);
+    backdrop-filter:blur(14px) saturate(150%);
+  }
+}
+
+/* ---------------------------------------------------------
+   Accessibility — honor reduced transparency: drop the
+   frost to a solid panel everywhere (keeps everything legible)
+   --------------------------------------------------------- */
+@media (prefers-reduced-transparency:reduce){
+  body.deck .layer, body.deck .tile, body.deck .metric, body.deck .arch-step,
+  body.deck .wedge, body.deck .risks, body.deck .opener, body.deck .min,
+  body.deck .poa, body.deck .band, body.deck .ipcard, body.deck .memo-panel,
+  body.deck .eyebrow,
+  .page-signup .role-card, .page-signup .ack, .page-signup .chip,
+  .page-signup .ipo-card, .page-signup .tabs, .page-signup .ipo-meta .badge,
+  .page-portfolio .card, .page-portfolio .prow, .page-portfolio .act,
+  .page-portfolio .contract, .page-portfolio .ct-stat, .page-portfolio .chart-wrap,
+  .page-portfolio .ct-strip, .page-portfolio .panel, .page-portfolio .ai-box,
+  .page-portfolio .dr-rows, .page-portfolio .dr-note, .page-portfolio .drawer,
+  .page-portfolio .site-nav.menu-open .nav-links,
+  .page-portfolio .seg, .page-portfolio .mode-toggle, .page-portfolio .badge,
+  .page-product .ccard, .page-product .dhero, .page-product .score-card,
+  .page-product .chart-card, .page-product .q-card, .page-product .surface,
+  .page-product .benefit, .page-product .score-block,
+  .page-product .terms, .page-product .ai-panel, .page-product .pcard,
+  .page-product .holdings, .page-product .ipo, .page-product .gifting,
+  .page-product .invest, .page-product .claim, .page-product .open-note,
+  .page-product .eyebrow, .page-product .pill, .page-product .dtag,
+  .page-product .plat, .page-product .ccard-cat, .page-product .toggle,
+  .page-product .hero-search, .page-product .big-search, .page-product .app-searchbar,
+  .page-product .val-lane, .page-product .val-chart, .page-product .val-fact,
+  .page-product .val-cond, .page-product .val-big, .page-product .calc,
+  .page-product .faq-item, .page-product .calc-tabs, .page-product .calc-seg,
+  .page-product .fee-chip, .page-product .nav.menu-open .nav-links,
+  .page-product .way, .page-product .comp, .page-product .person{
+    -webkit-backdrop-filter:none !important;
+    backdrop-filter:none !important;
+    background:#0e0e12;
+  }
+  .page-product .proof-glass{
+    -webkit-backdrop-filter:none !important;
+    backdrop-filter:none !important;
+    background:#0e0e12;
+    box-shadow:none;
+  }
+  .page-product .proof-glass .poa-demo{
+    background:#101117;
+    box-shadow:none;
+  }
+}
