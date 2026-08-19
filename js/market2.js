@@ -50,7 +50,11 @@
     { id: 'creator_perps', label: 'Creator Perps', terminal: 'perps', short: 'Continuous simulated exposure to an approved attention index.' }
   ];
   var CONFIDENCE_ORDER = { high: 4, medium: 3, low: 2, insufficient: 1, unavailable: 0 };
-  var BUNDLED = window.BACKER_MARKET2_DATA || window.BackerMarket2Data || null;
+  var INITIAL_CREATOR_COUNT = 32;
+  var CREATOR_PAGE_SIZE = 24;
+  var INITIAL_CONTENT_COUNT = 12;
+  var CONTENT_PAGE_SIZE = 12;
+  var MATERIAL_PROVIDER_ORDER = ['youtube', 'github', 'dev', 'medium', 'substack', 'rss', 'x', 'facebook', 'instagram', 'linkedin', 'twitch'];
   var root = null;
   var DATA = null;
   var BASE_DATA = null;
@@ -60,14 +64,17 @@
   var requestTimer = null;
   var discoveryTimer = null;
   var searchTimer = null;
+  var retainedCatalogPromise = null;
+  var retainedDatasetPromise = null;
   var booted = false;
   var state = {
     view: 'radar', browse: 'trending', categoryRail: 'all', range: '7d',
     platforms: [], quick: [], sort: 'viral', selectedId: '', instrument: 'milestones',
     query: '', drawer: false, mobileRoster: false, mobileTicket: false,
     categories: [], eligibility: 'all', confidence: 'all', audienceBand: 'all', engagementBand: 'all', peerId: '', watched: [],
-    dataMode: '', loading: true, loadError: '', source: 'bundled', sourceLabel: 'Bundled fallback',
-    sourceState: 'stale_snapshot', loadedOnce: false, visibleCount: 12, contentVisibleCount: 4,
+    dataMode: '', loading: true, loadError: '', source: 'none', sourceLabel: 'Loading public-source catalog',
+    sourceState: 'stale_snapshot', loadedOnce: false, visibleCount: INITIAL_CREATOR_COUNT, contentVisibleCount: 6,
+    feedVisibleCount: INITIAL_CONTENT_COUNT,
     rosterVisibleCount: 40,
     discoveryLoading: false, discoveryError: '', discoveryStatus: 'not-requested',
     discoveryNextCursor: null, discoveryQuery: '', discoveryTotal: null, discoveryPages: 0
@@ -680,7 +687,23 @@
         return Object.assign({}, person, { ranking: ranking, sourceAccounts: sourceAccounts, metrics: metrics, content: array(person.content).concat(workByPerson[id] || []) });
       })
     });
-    return normalizeDataset(projected, sourceName || 'api');
+    var normalized = normalizeDataset(projected, sourceName || 'api');
+    normalized.people = normalized.people.filter(function (person) {
+      var syntheticId = /^(?:demo|fixture|synthetic)[-_]/i.test(String(person.id || ''));
+      var syntheticKind = /^(?:demo|fixture|synthetic)$/i.test(String(person.identityKind || ''));
+      var linkedSource = array(person.accounts).some(function (account) {
+        return account.id && safeURL(account.url || account.sourceUrl);
+      });
+      return !syntheticId && !syntheticKind && linkedSource;
+    }).map(function (person) {
+      person.identityKind = 'public_discovery';
+      person.tradable = false;
+      person.tradableInstruments = [];
+      person.marketEligibility = [];
+      person.instruments = {};
+      return person;
+    });
+    return normalized;
   }
 
   function people() { return DATA && Array.isArray(DATA.people) ? DATA.people : []; }
@@ -1010,18 +1033,6 @@
     }).map(function (entry) { return entry.person; });
   }
 
-  function apiQuery() {
-    var params = new URLSearchParams();
-    params.set('window', state.range);
-    params.set('view', state.view === 'radar' ? 'creator-radar' : state.view);
-    var sortMap = { viral: 'provider-rank', movement: 'movement', native: 'provider-rank', watched: 'movement', evidence: 'evidence', newest: 'newest-work', backed: 'movement', risk: 'movement' };
-    params.set('sort', sortMap[state.sort] || 'movement');
-    params.set('limit', '50');
-    if (state.platforms.length) params.set('platforms', state.platforms.join(','));
-    return params.toString();
-  }
-
-  function validPayload(value) { return value && (Array.isArray(value.people) || value.data && Array.isArray(value.data.people)); }
   function discoverySource(value) {
     if (value && value.data && (Array.isArray(value.data.people) || Array.isArray(value.data.creators))) return value.data;
     return value || {};
@@ -1030,14 +1041,6 @@
   function validDiscoveryPayload(value) {
     var source = discoverySource(value);
     return source && Array.isArray(source.people || source.creators) && Array.isArray(source.work || source.content || source.contentRecords || []);
-  }
-
-  async function requestJSON(url) {
-    var response = await fetch(url, { credentials: 'same-origin', headers: { Accept: 'application/json' }, cache: 'no-store' });
-    if (!response.ok) throw new Error('Request failed ' + response.status);
-    var payload = await response.json();
-    if (!validPayload(payload)) throw new Error('Invalid Market 2 payload');
-    return { payload: payload, response: response };
   }
 
   async function postDiscovery(body) {
@@ -1057,11 +1060,27 @@
   }
 
   async function staticDiscovery() {
-    var response = await fetch('data/discovery-catalog.json', { credentials: 'same-origin', headers: { Accept: 'application/json' }, cache: 'no-store' });
-    if (!response.ok) throw new Error('Retained discovery catalog returned ' + response.status);
-    var payload = await response.json();
-    if (!validDiscoveryPayload(payload)) throw new Error('Retained discovery catalog is invalid');
-    return payload;
+    if (!retainedCatalogPromise) retainedCatalogPromise = (async function () {
+      var response = await fetch('data/discovery-catalog.json', { credentials: 'same-origin', headers: { Accept: 'application/json' }, cache: 'no-store' });
+      if (!response.ok) throw new Error('Retained discovery catalog returned ' + response.status);
+      var payload = await response.json();
+      if (!validDiscoveryPayload(payload)) throw new Error('Retained discovery catalog is invalid');
+      return payload;
+    })().catch(function (error) {
+      retainedCatalogPromise = null;
+      throw error;
+    });
+    return retainedCatalogPromise;
+  }
+
+  async function staticDiscoveryDataset() {
+    if (!retainedDatasetPromise) retainedDatasetPromise = staticDiscovery().then(function (payload) {
+      return normalizeDiscoveryPayload(payload, 'static');
+    }).catch(function (error) {
+      retainedDatasetPromise = null;
+      throw error;
+    });
+    return retainedDatasetPromise;
   }
 
   async function requestDiscovery(options) {
@@ -1121,7 +1140,8 @@
         var fallbackPayload = await staticDiscovery();
         if (sequence !== discoverySequence) return;
         var fallbackSource = discoverySource(fallbackPayload);
-        DISCOVERY_DATA = normalizeDiscoveryPayload(fallbackPayload, 'static');
+        DISCOVERY_DATA = await staticDiscoveryDataset();
+        if (sequence !== discoverySequence) return;
         DATA = mergeDatasets(BASE_DATA || DATA, DISCOVERY_DATA);
         state.discoveryStatus = 'last-good';
         state.discoveryNextCursor = null;
@@ -1158,35 +1178,17 @@
     state.loading = true; state.loadError = '';
     draw(false);
     if (state.dataMode === 'loading') await new Promise(function (resolve) { window.setTimeout(resolve, 850); });
-    var result = null;
     try {
-      if (state.dataMode === 'error') throw new Error('Simulated provider error');
-      if (/\.github\.io$/i.test(window.location.hostname) || state.dataMode === 'static') {
-        throw new Error('Static host uses the dated same-origin snapshot');
-      }
-      result = await requestJSON('/api/market2/people?' + apiQuery());
+      if (state.dataMode === 'error') throw new Error('Catalog refresh unavailable');
+      var retained = await staticDiscoveryDataset();
       if (sequence !== requestSequence) return;
-      DATA = normalizeDataset(result.payload, 'api');
-      state.source = 'api'; state.sourceLabel = 'Backer API'; state.sourceState = DATA.status || 'live';
-    } catch (apiError) {
-      try {
-        result = await requestJSON('data/market2-people.json');
-        if (sequence !== requestSequence) return;
-        DATA = normalizeDataset(result.payload, 'static');
-        state.source = 'static'; state.sourceLabel = 'Dated static snapshot'; state.sourceState = 'stale_snapshot';
-        state.loadError = apiError.message;
-      } catch (staticError) {
-        if (sequence !== requestSequence) return;
-        if (validPayload(BUNDLED)) {
-          DATA = normalizeDataset(BUNDLED, 'bundled');
-          state.source = 'bundled'; state.sourceLabel = 'Emergency bundled snapshot'; state.sourceState = 'stale_snapshot';
-          state.loadError = staticError.message;
-        } else {
-          DATA = normalizeDataset({ people: [], status: 'unavailable', generatedAt: new Date().toISOString() }, 'empty');
-          state.source = 'none'; state.sourceLabel = 'No retained data'; state.sourceState = 'unavailable';
-          state.loadError = staticError.message;
-        }
-      }
+      DATA = retained;
+      state.source = 'catalog'; state.sourceLabel = 'Retained public-source catalog'; state.sourceState = DATA.status || 'stale_snapshot';
+    } catch (catalogError) {
+      if (sequence !== requestSequence) return;
+      DATA = normalizeDataset({ people: [], status: 'unavailable', generatedAt: new Date(0).toISOString() }, 'empty');
+      state.source = 'none'; state.sourceLabel = 'Public-source catalog unavailable'; state.sourceState = 'unavailable';
+      state.loadError = catalogError.message;
     }
     BASE_DATA = DATA;
     DISCOVERY_DATA = null;
@@ -1329,8 +1331,8 @@
   function dataBannerHTML() {
     if (state.loading && !state.loadedOnce) return '<div class="m2-state-banner" role="status"><b>Connecting the people market.</b><span>Loading public identities, work, native evidence, and market states.</span></div>';
     if (state.discoveryLoading) return '<div class="m2-state-banner" role="status"><b>' + (state.query ? 'Searching connected sources.' : 'Loading connected discovery.') + '</b><span>The retained catalog remains usable while independent providers respond.</span></div>';
-    if (state.discoveryError) return '<div class="m2-state-banner is-warning" role="status"><b>Connected discovery unavailable.</b><span>The retained catalog remains usable; no result or metric was fabricated.</span><button type="button" data-m2-retry-discovery>Retry</button></div>';
-    if (state.dataMode === 'error' || state.loadError && state.source === 'bundled') return '<div class="m2-state-banner is-warning" role="status"><b>Live refresh unavailable.</b><span>A dated retained snapshot remains visible with its original timestamps.</span><button type="button" data-m2-retry>Retry</button></div>';
+    if (state.discoveryError) return '<div class="m2-state-banner is-warning" role="status"><b>Connected discovery unavailable.</b><span>' + (people().length ? 'The retained public-source catalog remains usable; no result or metric was fabricated.' : 'No creator or content record is substituted with demo data.') + '</span><button type="button" data-m2-retry-discovery>Retry</button></div>';
+    if (state.dataMode === 'error' || state.loadError && state.source === 'none') return '<div class="m2-state-banner is-warning" role="status"><b>Public-source catalog unavailable.</b><span>No creator or content record is substituted with demo data.</span><button type="button" data-m2-retry>Retry</button></div>';
     if (state.source !== 'api') return '<div class="m2-state-banner" role="status"><b>' + esc(state.sourceLabel) + '.</b><span>Counts describe this loaded catalog only. Source links, freshness, and permission limits stay attached.</span><time>' + esc(formatDate(DATA.generatedAt, true)) + '</time></div>';
     return '';
   }
@@ -1348,18 +1350,85 @@
       '<span class="m2-person-signal"><b>' + esc(signal) + '</b><small>' + esc(humanState(person.dataState)) + '</small></span></button><div class="m2-person-facts">' + facts.map(function (fact) { return '<a href="' + esc(fact.sourceUrl) + '" target="_blank" rel="noreferrer"><span>' + esc(PLATFORM_LABELS[fact.provider] || fact.provider || 'Source') + ' · ' + esc(fact.label) + '</span><b>' + esc(fact.value) + '</b></a>'; }).join('') + factState + '</div><div class="m2-person-foot">' + watchButton(person, true) + '</div></article>';
   }
 
+  function sourceDiverse(items, providerFor) {
+    var buckets = {};
+    array(items).forEach(function (item) {
+      var provider = String(providerFor(item) || 'other').toLowerCase();
+      (buckets[provider] = buckets[provider] || []).push(item);
+    });
+    var providers = unique(MATERIAL_PROVIDER_ORDER.concat(Object.keys(buckets))).filter(function (provider) {
+      return buckets[provider] && buckets[provider].length;
+    });
+    var output = [];
+    var index = 0;
+    while (output.length < items.length) {
+      var added = false;
+      providers.forEach(function (provider) {
+        if (buckets[provider][index]) { output.push(buckets[provider][index]); added = true; }
+      });
+      if (!added) break;
+      index += 1;
+    }
+    return output;
+  }
+
   function peopleHTML(list) {
     var selected = selectedPerson();
     if (!list.length) return '<aside class="m2-people"><div class="m2-pane-head"><div><span class="m2-kicker">People tape</span><h2>No matching people</h2></div></div><div class="m2-empty"><h3>' + (state.view === 'markets' ? 'No approved markets in this source view.' : 'No one matches these filters.') + '</h3><p>Try Creator Radar, another platform, or a wider evidence range.</p><button class="m2-primary-button" type="button" data-m2-open-radar>Open Creator Radar</button></div></aside>';
-    var shown = list.slice(0, state.visibleCount);
+    var visibleOrder = sourceDiverse(list, function (person) { return person.accounts[0] && person.accounts[0].id; });
+    var shown = visibleOrder.slice(0, state.visibleCount);
     var mobile = [];
     if (selected && shown.indexOf(selected) >= 0) mobile.push(selected);
     shown.forEach(function (person) { if (mobile.length < 4 && mobile.indexOf(person) < 0) mobile.push(person); });
-    var more = shown.length < list.length || state.discoveryNextCursor;
+    var moreLoaded = shown.length < list.length;
+    var moreConnected = Boolean(state.discoveryNextCursor);
     return '<aside class="m2-people" aria-labelledby="m2PeopleTitle"><div class="m2-pane-head"><div><span class="m2-kicker">Gaining now · ' + state.range.toUpperCase() + '</span><h2 id="m2PeopleTitle">People tape</h2></div><button class="m2-text-button m2-see-all" type="button" data-m2-open-roster>See all ' + list.length + '</button></div>' +
-      '<p class="m2-list-provenance">Showing ' + shown.length + ' of ' + list.length + ' loaded matches. Viral-first uses only retained native engagement, movement, and publication time.</p><div class="m2-person-list m2-desktop-people">' + shown.map(function (person, index) { return personRowHTML(person, index, selected && selected.id === person.id); }).join('') + '</div>' +
-      (more ? '<button class="m2-load-more" type="button" data-m2-load-more' + (state.discoveryLoading ? ' disabled aria-busy="true"' : '') + '>' + (shown.length < list.length ? 'Show more loaded creators' : 'Load next connected page') + '<span>' + shown.length + ' / ' + list.length + (state.discoveryNextCursor ? ' loaded · more connected' : '') + '</span></button>' : '') +
+      '<p class="m2-list-provenance">Showing ' + shown.length + ' of ' + list.length + ' loaded matches. Sources are interleaved; native signal orders people within each source.</p><div class="m2-person-list m2-desktop-people">' + shown.map(function (person, index) { return personRowHTML(person, index, selected && selected.id === person.id); }).join('') + '</div>' +
+      (moreLoaded ? '<button class="m2-load-more" type="button" data-m2-load-more>Show ' + Math.min(CREATOR_PAGE_SIZE, list.length - shown.length) + ' more creators<span>' + shown.length + ' / ' + list.length + ' loaded</span></button>' : '') +
+      (moreConnected ? '<button class="m2-load-more is-connected" type="button" data-m2-load-connected' + (state.discoveryLoading ? ' disabled aria-busy="true"' : '') + '>Load next connected source page<span>Source cursor retained</span></button>' : '') +
       '<div class="m2-mobile-people">' + mobile.map(function (person, index) { return personRowHTML(person, index, selected && selected.id === person.id); }).join('') + '</div></aside>';
+  }
+
+  function catalogWorks(list) {
+    var rows = [];
+    var seen = {};
+    array(list).forEach(function (person) {
+      array(person.content).forEach(function (work) {
+        var url = safeURL(work && (work.url || work.sourceUrl));
+        var key = work && (work.sourceRecordId || work.id) || url;
+        if (!url || !key || seen[key]) return;
+        seen[key] = true;
+        rows.push({ person: person, work: work, url: url });
+      });
+    });
+    rows.sort(function (a, b) {
+      var engagement = nativeEngagementValue(b.work) - nativeEngagementValue(a.work);
+      if (engagement) return engagement;
+      return Date.parse(b.work.publishedAt || b.work.observedAt || 0) - Date.parse(a.work.publishedAt || a.work.observedAt || 0);
+    });
+    return sourceDiverse(rows, function (entry) { return entry.work.platform; });
+  }
+
+  function catalogWorkCardHTML(entry, index) {
+    var person = entry.person;
+    var work = entry.work;
+    var thumb = safeURL(work.thumbnail || person.avatar);
+    var platform = PLATFORM_LABELS[work.platform] || work.platform || 'Original source';
+    return '<article class="m2-feed-card"><a class="m2-feed-media" href="' + esc(entry.url) + '" target="_blank" rel="noreferrer">' +
+      (thumb ? '<img src="' + esc(thumb) + '" alt="" loading="' + (index < 4 ? 'eager' : 'lazy') + '" referrerpolicy="no-referrer" />' : '') +
+      '<span class="m2-feed-fallback">' + esc(initials(person.name)) + '</span><span>Open source ↗</span></a>' +
+      '<div class="m2-feed-body"><div class="m2-feed-byline">' + avatarHTML(person, 'feed', index < 4) + '<span><b>' + esc(person.name) + '</b><small>' + esc(platform) + ' · ' + esc(formatDate(work.publishedAt || work.observedAt, false)) + '</small></span></div>' +
+      '<h3><a href="' + esc(entry.url) + '" target="_blank" rel="noreferrer">' + esc(work.title) + '</a></h3><div class="m2-work-native">' + workCountsHTML(work) + '</div>' +
+      '<button type="button" class="m2-feed-person" data-m2-select="' + esc(person.id) + '">Inspect creator evidence →</button></div></article>';
+  }
+
+  function catalogFeedHTML(list) {
+    if (state.view !== 'radar' || state.loading && !state.loadedOnce) return '';
+    var works = catalogWorks(list);
+    if (!works.length) return '<section class="m2-catalog-feed"><div class="m2-section-head"><div><span class="m2-kicker">Source-backed work</span><h2>Original content feed</h2></div></div><div class="m2-feed-empty">No source-linked content matches the current filters.</div></section>';
+    var shown = works.slice(0, state.feedVisibleCount);
+    return '<section class="m2-catalog-feed" aria-labelledby="m2FeedTitle"><div class="m2-section-head"><div><span class="m2-kicker">Source-backed work</span><h2 id="m2FeedTitle">Original content feed</h2></div><p>Showing ' + shown.length + ' of ' + works.length + ' real source records. Sources are interleaved; every card opens its retained original URL.</p></div><div class="m2-feed-grid">' + shown.map(catalogWorkCardHTML).join('') + '</div>' +
+      (shown.length < works.length ? '<button class="m2-load-more is-feed" type="button" data-m2-more-feed>Show ' + Math.min(CONTENT_PAGE_SIZE, works.length - shown.length) + ' more source records<span>' + shown.length + ' / ' + works.length + ' loaded</span></button>' : '') + '</section>';
   }
 
   function workCountsHTML(work) {
@@ -1616,8 +1685,8 @@
     ensureSelection(list);
     var person = list.length ? (list.filter(function (candidate) { return candidate.id === state.selectedId; })[0] || list[0]) : null;
     document.body.classList.toggle('mkt2-drawer-open', state.drawer || state.mobileRoster || state.mobileTicket);
-    var workspace = state.loading && !state.loadedOnce && state.dataMode === 'loading' ? loadingHTML() : '<div class="m2-workspace">' + peopleHTML(list) + dossierHTML(person) + (person ? rightRailHTML(person, list) : emptyRightHTML()) + '</div>';
-    root.innerHTML = '<div class="market2-shell">' + commandHTML() + '<div class="m2-underlayer">' + browseHTML() + contextHTML() + deskControlsHTML() + '</div>' + dataBannerHTML() + workspace + methodologyHTML() + drawerHTML() + rosterSheetHTML(list.length ? list : people()) + (person ? mobileTicketHTML(person) : '') + '</div>';
+    var workspace = state.loading && !state.loadedOnce ? loadingHTML() : '<div class="m2-workspace">' + peopleHTML(list) + dossierHTML(person) + (person ? rightRailHTML(person, list) : emptyRightHTML()) + '</div>';
+    root.innerHTML = '<div class="market2-shell">' + commandHTML() + '<div class="m2-underlayer">' + browseHTML() + contextHTML() + deskControlsHTML() + '</div>' + dataBannerHTML() + catalogFeedHTML(list) + workspace + methodologyHTML() + drawerHTML() + rosterSheetHTML(list.length ? list : people()) + (person ? mobileTicketHTML(person) : '') + '</div>';
     root.classList.remove('hidden'); root.setAttribute('aria-hidden', 'false');
     bindImageFallbacks(); syncHash();
     if (focusSearch) {
@@ -1666,14 +1735,14 @@
       return;
     }
     if ((el = target.closest('[data-m2-select]'))) {
-      state.selectedId = el.getAttribute('data-m2-select'); state.mobileRoster = false; state.contentVisibleCount = 4; draw(false);
+      state.selectedId = el.getAttribute('data-m2-select'); state.mobileRoster = false; state.contentVisibleCount = 6; draw(false);
       track('market_creator_selected', { creator_id: state.selectedId, source: 'market2' }); return;
     }
     if ((el = target.closest('[data-m2-view]'))) { state.view = el.getAttribute('data-m2-view'); draw(false); scheduleDataLoad(); track('market_view_changed', { view: state.view }); return; }
     if ((el = target.closest('[data-m2-browse]'))) { state.browse = el.getAttribute('data-m2-browse'); draw(false); track('market_browse_changed', { browse: state.browse }); return; }
     if ((el = target.closest('[data-m2-category-rail]'))) { state.categoryRail = el.getAttribute('data-m2-category-rail'); draw(false); track('market_category_changed', { category: state.categoryRail }); return; }
     if ((el = target.closest('[data-m2-range]'))) { state.range = el.getAttribute('data-m2-range'); draw(false); scheduleDataLoad(); track('market_filter_changed', { filter: 'range', value: state.range }); return; }
-    if ((el = target.closest('[data-m2-platform]'))) { toggleInArray(state.platforms, el.getAttribute('data-m2-platform')); state.visibleCount = 12; draw(false); scheduleDiscovery(120); track('market_filter_changed', { filter: 'platform', value: state.platforms.join(',') }); return; }
+    if ((el = target.closest('[data-m2-platform]'))) { toggleInArray(state.platforms, el.getAttribute('data-m2-platform')); state.visibleCount = INITIAL_CREATOR_COUNT; state.feedVisibleCount = INITIAL_CONTENT_COUNT; draw(false); scheduleDiscovery(120); track('market_filter_changed', { filter: 'platform', value: state.platforms.join(',') }); return; }
     if ((el = target.closest('[data-m2-quick]'))) { toggleInArray(state.quick, el.getAttribute('data-m2-quick')); draw(false); track('market_filter_changed', { filter: 'quick', value: state.quick.join(',') }); return; }
     if ((el = target.closest('[data-m2-watch]'))) { var id = el.getAttribute('data-m2-watch'); toggleWatch(id); draw(false); toast(isWatched(id) ? 'Added to Your People' : 'Removed from Your People'); track('market_watch_changed', { creator_id: id, watched: isWatched(id) }); return; }
     if ((el = target.closest('[data-m2-instrument]'))) { state.instrument = el.getAttribute('data-m2-instrument'); draw(false); track('market_instrument_changed', { instrument: state.instrument, creator_id: state.selectedId }); return; }
@@ -1682,16 +1751,17 @@
     if (target.closest('[data-m2-open-roster]')) { state.mobileRoster = true; state.rosterVisibleCount = 40; draw(false); return; }
     if (target.closest('[data-m2-open-mobile-ticket]')) { state.mobileTicket = true; draw(false); return; }
     if (target.closest('[data-m2-close-drawer]') || target.matches('[data-m2-drawer-backdrop]') || target.closest('[data-m2-close-roster]') || target.matches('[data-m2-roster-backdrop]') || target.closest('[data-m2-close-mobile-ticket]') || target.matches('[data-m2-ticket-backdrop]')) { closeOverlays(); return; }
-    if (target.closest('[data-m2-apply-drawer]')) { state.drawer = false; state.visibleCount = 12; draw(false); scheduleDiscovery(120); return; }
-    if (target.closest('[data-m2-clear-drawer]')) { state.platforms = []; state.categories = []; state.eligibility = 'all'; state.confidence = 'all'; state.audienceBand = 'all'; state.engagementBand = 'all'; state.visibleCount = 12; draw(false); return; }
-    if (target.closest('[data-m2-open-radar]')) { state.view = 'radar'; state.quick = []; state.platforms = []; state.categoryRail = 'all'; state.visibleCount = 12; draw(false); scheduleDiscovery(120); return; }
+    if (target.closest('[data-m2-apply-drawer]')) { state.drawer = false; state.visibleCount = INITIAL_CREATOR_COUNT; state.feedVisibleCount = INITIAL_CONTENT_COUNT; draw(false); scheduleDiscovery(120); return; }
+    if (target.closest('[data-m2-clear-drawer]')) { state.platforms = []; state.categories = []; state.eligibility = 'all'; state.confidence = 'all'; state.audienceBand = 'all'; state.engagementBand = 'all'; state.visibleCount = INITIAL_CREATOR_COUNT; state.feedVisibleCount = INITIAL_CONTENT_COUNT; draw(false); return; }
+    if (target.closest('[data-m2-open-radar]')) { state.view = 'radar'; state.quick = []; state.platforms = []; state.categoryRail = 'all'; state.visibleCount = INITIAL_CREATOR_COUNT; state.feedVisibleCount = INITIAL_CONTENT_COUNT; draw(false); scheduleDiscovery(120); return; }
     if ((el = target.closest('[data-m2-load-more]'))) {
       var matches = filteredPeople();
-      if (state.visibleCount < matches.length) { state.visibleCount += 12; draw(false); }
-      else if (state.discoveryNextCursor && !state.discoveryLoading) loadDiscovery({ append: true });
+      if (state.visibleCount < matches.length) { state.visibleCount += CREATOR_PAGE_SIZE; draw(false); }
       return;
     }
+    if (target.closest('[data-m2-load-connected]')) { if (state.discoveryNextCursor && !state.discoveryLoading) loadDiscovery({ append: true }); return; }
     if (target.closest('[data-m2-more-content]')) { state.contentVisibleCount += 4; draw(false); return; }
+    if (target.closest('[data-m2-more-feed]')) { state.feedVisibleCount += CONTENT_PAGE_SIZE; draw(false); return; }
     if (target.closest('[data-m2-more-roster]')) { state.rosterVisibleCount += 40; draw(false); return; }
     if (target.closest('[data-m2-share]')) { var url = stateURL(); if (navigator.share) navigator.share({ title: 'Backer people market', url: url }).catch(function () {}); else if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { toast('Marketplace link copied'); }); return; }
     if (target.closest('[data-m2-show-watched]')) { state.quick = ['watched']; state.view = 'radar'; draw(false); return; }
@@ -1703,15 +1773,15 @@
   function inputHandler(event) {
     if (event.target.id !== 'm2Search') return;
     window.clearTimeout(searchTimer); state.query = event.target.value;
-    state.visibleCount = 12;
+    state.visibleCount = INITIAL_CREATOR_COUNT; state.feedVisibleCount = INITIAL_CONTENT_COUNT;
     searchTimer = window.setTimeout(function () { draw(true); scheduleDiscovery(260); }, 120);
   }
 
   function changeHandler(event) {
     var target = event.target;
     if (target.matches('[data-m2-sort]')) { state.sort = target.value; draw(false); scheduleDataLoad(); track('market_sort_changed', { sort: state.sort }); return; }
-    if (target.matches('[data-m2-audience]')) { state.audienceBand = target.value; state.visibleCount = 12; draw(false); track('market_filter_changed', { filter: 'audience', value: target.value }); return; }
-    if (target.matches('[data-m2-engagement]')) { state.engagementBand = target.value; state.visibleCount = 12; draw(false); track('market_filter_changed', { filter: 'engagement', value: target.value }); return; }
+    if (target.matches('[data-m2-audience]')) { state.audienceBand = target.value; state.visibleCount = INITIAL_CREATOR_COUNT; state.feedVisibleCount = INITIAL_CONTENT_COUNT; draw(false); track('market_filter_changed', { filter: 'audience', value: target.value }); return; }
+    if (target.matches('[data-m2-engagement]')) { state.engagementBand = target.value; state.visibleCount = INITIAL_CREATOR_COUNT; state.feedVisibleCount = INITIAL_CONTENT_COUNT; draw(false); track('market_filter_changed', { filter: 'engagement', value: target.value }); return; }
     if (target.matches('[data-m2-peer]')) { state.peerId = target.value; draw(false); return; }
     if (target.matches('[data-m2-drawer-platform]')) { toggleInArray(state.platforms, target.getAttribute('data-m2-drawer-platform')); return; }
     if (target.matches('[data-m2-category]')) { toggleInArray(state.categories, target.getAttribute('data-m2-category')); return; }
@@ -1737,7 +1807,7 @@
 
   function openDiscoveryQuery(query) {
     state.query = String(query || '').trim().slice(0, 240);
-    state.view = 'radar'; state.sort = 'viral'; state.visibleCount = 12;
+    state.view = 'radar'; state.sort = 'viral'; state.visibleCount = INITIAL_CREATOR_COUNT; state.feedVisibleCount = INITIAL_CONTENT_COUNT;
     try { history.replaceState(null, '', location.pathname + location.search + '#market2?view=radar&sort=viral' + (state.query ? '&q=' + encodeURIComponent(state.query) : '')); } catch (error) {}
     if (typeof window.__backerGo === 'function') window.__backerGo('market2');
     else location.hash = '#market2?view=radar&sort=viral' + (state.query ? '&q=' + encodeURIComponent(state.query) : '');
@@ -1775,16 +1845,45 @@
     }
   }
 
+  async function bindLandingCatalogPreview() {
+    var feed = document.getElementById('backerLandingCreatorFeed');
+    if (!feed || feed.dataset.market2CatalogBound) return;
+    feed.dataset.market2CatalogBound = 'true';
+    try {
+      var catalog = await staticDiscoveryDataset();
+      var candidates = catalog.people.filter(function (person) {
+        return person.accounts.length && person.content.some(function (work) { return work.url || work.sourceUrl; });
+      }).sort(function (a, b) {
+        return Date.parse(b.recentWork.publishedAt || b.recentWork.observedAt || 0) - Date.parse(a.recentWork.publishedAt || a.recentWork.observedAt || 0);
+      });
+      var preview = sourceDiverse(candidates, function (person) { return person.accounts[0] && person.accounts[0].id; }).slice(0, 3);
+      if (!preview.length) throw new Error('No source-linked preview records');
+      feed.innerHTML = preview.map(function (person) {
+        var account = person.accounts[0] || {};
+        var work = person.content[0] || person.recentWork || {};
+        var provider = PLATFORM_LABELS[account.id] || account.id || 'Public source';
+        return '<button type="button" class="mini-card" data-m2-landing-person="' + esc(person.id) + '"><span class="mini-auth">' + esc(provider) + '</span><span class="mini-name">' + esc(person.name) + '</span><span class="mini-work">' + esc(work.title) + '</span></button>';
+      }).join('');
+      feed.addEventListener('click', function (event) {
+        var card = event.target.closest('[data-m2-landing-person]');
+        if (!card) return;
+        var person = catalog.people.filter(function (candidate) { return candidate.id === card.getAttribute('data-m2-landing-person'); })[0];
+        openDiscoveryQuery(person && person.name || 'creators gaining attention');
+      });
+    } catch (error) {
+      feed.innerHTML = '<div class="mini-card is-unavailable"><span class="mini-auth">Source catalog unavailable</span><span class="mini-name">No demo profiles are substituted.</span></div>';
+    }
+  }
+
   function render(app) {
     root = app;
     document.title = 'People worth noticing | Backer Market';
     if (!booted) {
       loadWatched(); parseHash();
-      DATA = validPayload(BUNDLED) ? normalizeDataset(BUNDLED, 'bundled') : normalizeDataset({ people: [], status: 'unavailable', generatedAt: new Date().toISOString() }, 'empty');
-      state.source = validPayload(BUNDLED) ? 'bundled' : 'none';
-      state.sourceLabel = validPayload(BUNDLED) ? 'Emergency bundled snapshot' : 'No retained data';
-      state.sourceState = DATA.status || 'stale_snapshot';
-      if (!state.selectedId && people()[0]) state.selectedId = people()[0].id;
+      DATA = normalizeDataset({ people: [], status: 'loading', generatedAt: new Date(0).toISOString() }, 'empty');
+      state.source = 'none';
+      state.sourceLabel = 'Loading public-source catalog';
+      state.sourceState = 'loading';
       booted = true;
     } else parseHash();
     if (!app.dataset.market2Bound) {
@@ -1796,7 +1895,7 @@
     track('market_home_viewed', { source: 'market2' });
   }
 
-  if (typeof document !== 'undefined') bindLandingDiscovery();
+  if (typeof document !== 'undefined') { bindLandingDiscovery(); bindLandingCatalogPreview(); }
   window.BackerMarket2 = {
     render: render, stateURL: stateURL, normalize: normalizeDataset,
     normalizeDiscovery: normalizeDiscoveryPayload, merge: mergeDatasets,
