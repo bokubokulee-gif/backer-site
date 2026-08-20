@@ -61,7 +61,6 @@ const PUBLIC_FILES = Object.freeze([
   'js/market-community.js',
   'js/market-data.js',
   'js/market-detail-page.js',
-  'js/market.js',
   'js/market2-data.js',
   'js/market2.js',
   'js/onboarding.js',

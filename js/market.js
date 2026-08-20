@@ -55,7 +55,7 @@ window.BackerMarket = (function () {
     if (!c) return;
     focusTerminalTrigger(trigger);
     analyticsTrack('market_card_opened', { market_id: c.id, creator_id: c.id, source: 'market' });
-    window.location.href = 'backermarket.html?market=' + encodeURIComponent(c.id) + '&source=market';
+    window.location.href = 'backermarket.html?market=' + encodeURIComponent(c.id) + '&source=market-archive';
   }
   function openPoaTerminal(c, trigger) {
     if (!c) return;
@@ -85,12 +85,12 @@ window.BackerMarket = (function () {
     if (state.ending) p.push('ending=1');
     if (state.u100) p.push('u100=1');
     if (state.sort !== 'pulse') p.push('sort=' + state.sort);
-    try { history.replaceState(null, '', location.pathname + location.search + (p.length ? '#market?' + p.join('&') : '#market')); } catch (e) {}
+    try { history.replaceState(null, '', location.pathname + location.search + (p.length ? '#market-archive?' + p.join('&') : '#market-archive')); } catch (e) {}
   }
   function readURL() {
     const h = location.hash;
-    if (!/^#market\?/.test(h)) return;
-    h.slice(8).split('&').forEach(kv => {
+    if (!/^#market-archive\?/.test(h)) return;
+    h.slice('#market-archive?'.length).split('&').forEach(kv => {
       const [k, v] = kv.split('=');
       if (!v) return;
       if (k === 'view' && ['markets', 'radar', 'resolved'].includes(v)) state.view = v;

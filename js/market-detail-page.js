@@ -4,7 +4,7 @@
 (function () {
   'use strict';
 
-  var BACK_TO_MARKETS = 'backerdemo.html#market';
+  var BACK_TO_MARKETS = 'backerdemo.html#market2';
   var DRAFT_STORAGE_PREFIX = 'backer_market_route_draft_v1:';
   var routeBackHref = BACK_TO_MARKETS;
   var VALID_INSTRUMENTS = ['milestone', 'pk', 'perps'];
@@ -159,7 +159,8 @@
   function configureReturn(source) {
     var fromPortfolio = source === 'portfolio' || source === 'portfolio_creator';
     var fromMarket2 = source === 'market2' || source === 'market2-builder' || source === 'builder';
-    routeBackHref = source === 'portfolio_creator' ? 'portfolio.html?mode=creator' : source === 'portfolio' ? 'portfolio.html' : fromMarket2 ? 'backerdemo.html#market2' : BACK_TO_MARKETS;
+    var fromLocalArchive = source === 'market-archive';
+    routeBackHref = source === 'portfolio_creator' ? 'portfolio.html?mode=creator' : source === 'portfolio' ? 'portfolio.html' : fromLocalArchive ? 'backerdemo.html#market-archive' : fromMarket2 ? 'backerdemo.html#market2' : BACK_TO_MARKETS;
     document.body.dataset.returnSource = fromPortfolio ? 'portfolio' : 'markets';
     var back = document.querySelector('.mdp-back');
     if (back) {

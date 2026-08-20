@@ -59,7 +59,7 @@ test('static launch snapshot contains real identities and native metric provenan
   assert.doesNotMatch(JSON.stringify(metricRows), /watchers_count/);
 });
 
-test('Market2 keeps the deep browse rail while discovery loads only the real public-source catalog', () => {
+test('Market2 keeps deep browse modes while discovery loads only the real public-source catalog', () => {
   const source = read('js/market2.js');
   [
     'Trending',
@@ -79,12 +79,38 @@ test('Market2 keeps the deep browse rail while discovery loads only the real pub
     'creator_perps',
     '/api/discovery/search',
     'data/discovery-catalog.json',
-    'Original content feed'
+    'Contents to Back'
   ].forEach((term) => assert.match(source, new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'), `missing Market2 affordance: ${term}`));
   assert.match(source, /PoaTerminal\.open/);
   assert.match(source, /permission.required|Permission required/i);
   assert.doesNotMatch(source, /BACKER_MARKET2_DATA|Bundled fallback|Emergency bundled snapshot/);
   assert.doesNotMatch(read('backerdemo.html'), /js\/market2-data\.js/);
+});
+
+test('Market2 annotation release has one filter entry, profiles before contents, and no discarded evidence blocks', () => {
+  const source = read('js/market2.js');
+  const html = read('backerdemo.html');
+  const styles = read('css/market2.css');
+  assert.match(source, /Discover profiles and contents to back/);
+  assert.doesNotMatch(source, /People worth noticing/);
+  assert.match(source, /Profiles to Back/);
+  assert.match(source, /Contents to Back/);
+  assert.match(source, /data-m2-more-feed>Show more<\/button>/);
+  assert.match(source, /m2-context-track/);
+  assert.match(styles, /m2-catalog-marquee/);
+  assert.match(styles, /prefers-reduced-motion:\s*reduce/);
+  assert.equal((source.match(/data-m2-filters/g) || []).length, 2, 'one rendered filter control plus one delegated handler');
+  assert.doesNotMatch(source, /m2-category-row/);
+  assert.doesNotMatch(source, /workSectionHTML\(person\) \+ ledgerHTML\(person\)/);
+  assert.doesNotMatch(source, /<section class="m2-why-now"|<section class="m2-attention-metrics"/);
+  assert.match(source, /if \(!complete\) return ''/);
+  assert.match(source, /drawerInitialRange/);
+  assert.match(source, /drawerInitialSort/);
+  assert.match(source, /reloadCatalog[\s\S]*scheduleDataLoad\(\)[\s\S]*scheduleDiscovery/);
+  assert.match(source, /drawerSnapshot/);
+  assert.match(source, /Sources with no current records stay visible but unavailable\./);
+  assert.doesNotMatch(html, /css\/market\.css|js\/market-data\.js|js\/market\.js|data-view="market"/);
+  assert.match(html, /<\/section>\s*<!-- SHARED FLICKERING FOOTER -->\s*<footer class="backer-footer/);
 });
 
 test('Market2 normalization surfaces observed GitHub values before permission placeholders', () => {

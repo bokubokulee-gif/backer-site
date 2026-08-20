@@ -13,7 +13,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;650;700&amp;family=Geist+Mono:wght@400;500;600&amp;family=Inter:wght@400;500;600;700&amp;family=Instrument+Serif:ital@0;1&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/styles.css?v=20260806-3" />
 <link rel="stylesheet" href="css/search.css?v=7" />
-<link rel="stylesheet" href="css/market.css?v=20260806-1" />
 <link rel="stylesheet" href="css/market2.css?v=20260820-1" />
 <link rel="stylesheet" href="css/liquid-glass.css?v=20260731-2" />
 <link rel="stylesheet" href="css/poa-terminal.css?v=20260819-1" />
@@ -326,8 +325,13 @@
     </div>
   </section>
 
-  <!-- SHARED FLICKERING FOOTER -->
-  <footer class="backer-footer backer-footer--dock">
+</main>
+
+<!-- ================= APP (interactive) ================= -->
+<section id="app" class="app hidden" aria-hidden="true"><!-- views render here --></section>
+
+<!-- SHARED FLICKERING FOOTER -->
+<footer class="backer-footer backer-footer--dock">
     <div class="backer-footer__inner">
       <div class="backer-footer__top">
         <a class="backer-footer__brand" href="#" data-nav="home" aria-label="Backer home">
@@ -365,11 +369,7 @@
       <span class="backer-footer__fallback">Invest in people, before the world does</span>
       <canvas class="backer-footer__canvas" data-footer-flicker data-text="Invest in people, before the world does" aria-hidden="true"></canvas>
     </div>
-  </footer>
-</main>
-
-<!-- ================= APP (interactive) ================= -->
-<section id="app" class="app hidden" aria-hidden="true"><!-- views render here --></section>
+</footer>
 
 <!-- MODAL ROOT -->
 <div id="modalRoot" class="modal-root hidden" aria-hidden="true"></div>
@@ -396,8 +396,6 @@
 <script src="js/shader.js"></script>
 <script src="js/liquid-glass.js"></script>
 <script src="js/data.js"></script>
-<script src="js/market-data.js?v=3"></script>
-<script src="js/market.js?v=20260806-1"></script>
 <script src="js/market2.js?v=20260820-1"></script>
 <script src="js/analytics-core.js?v=20260811-1"></script>
 <script src="js/analytics.js?v=2"></script>

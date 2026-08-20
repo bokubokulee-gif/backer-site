@@ -160,8 +160,10 @@
 
     if (file === 'backerdemo.html' || file === '' || file === 'index.html') {
       var requested = url.searchParams.get('view');
+      var loopback = url.hostname === 'localhost' || url.hostname === '127.0.0.1' || url.hostname === '[::1]';
       if (requested === 'market2' || /^#market2(?:\?|$)/.test(url.hash)) view = 'market2';
-      else if (requested === 'market' || /^#market(?:\?|$)/.test(url.hash)) view = 'market';
+      else if (loopback && /^#market-archive(?:\?|$)/.test(url.hash)) view = 'market';
+      else if (requested === 'market' || /^#market(?:\?|$)/.test(url.hash) || /^#market-archive(?:\?|$)/.test(url.hash)) view = 'market2';
       else if (requested === 'search') view = 'search';
       else view = 'home';
     } else if (file === 'backermarket.html') {

@@ -227,7 +227,18 @@ test('Market2 loads trending discovery, keeps research controls safe, and pagina
     assert.equal(requests[0].mode, 'trending');
     assert.equal(requests[0].query, '');
     assert.deepEqual(requests[0].providerScopes, ['x', 'github', 'youtube', 'facebook', 'instagram', 'linkedin', 'twitch', 'medium', 'dev', 'substack', 'rss']);
-    assert.deepEqual(await tab.locator('[data-m2-platform]').allTextContents(), ['X', 'GitHub', 'YouTube', 'Facebook', 'Instagram', 'LinkedIn', 'Twitch', 'Medium', 'DEV', 'Substack', 'RSS']);
+    assert.equal(await tab.locator('.m2-command h1').count(), 0);
+    assert.equal(await tab.locator('.m2-command-summary').innerText(), 'Discover profiles and contents to back');
+    assert.doesNotMatch(await tab.locator('.m2-command').innerText(), /People worth noticing/);
+    assert.equal(await tab.locator('[data-m2-filters]').count(), 1);
+    assert.equal(await tab.locator('.m2-local-archive[data-view="market-archive"]').innerText(), 'Legacy marketplace · local only');
+    assert.equal(await tab.locator('.m2-filterbar, .m2-category-row').count(), 0);
+    assert.equal(await tab.locator('.m2-state-banner').count(), 0, 'healthy retained catalog does not need a fallback banner');
+    assert.equal(await tab.locator('#m2PeopleTitle').innerText(), 'Profiles to Back');
+    assert.equal(await tab.locator('#m2FeedTitle').innerText(), 'Contents to Back');
+    assert.equal(await tab.locator('.m2-list-provenance, .m2-why-now, .m2-attention-metrics, .m2-ledger').count(), 0);
+    assert.equal(await tab.locator('[data-m2-more-feed]').innerText(), 'Show more');
+    assert.ok(await tab.locator('.m2-workspace').evaluate((node) => node.compareDocumentPosition(document.querySelector('.m2-catalog-feed')) & Node.DOCUMENT_POSITION_FOLLOWING));
     const catalogStrip = await tab.locator('.m2-context-strip').innerText();
     assert.match(catalogStrip, /creator entities/);
     assert.match(catalogStrip, /linked platform identities/);
@@ -235,18 +246,12 @@ test('Market2 loads trending discovery, keeps research controls safe, and pagina
     assert.match(catalogStrip, /source records/);
     assert.match(catalogStrip, /evidence observations/);
     assert.match(catalogStrip, /Loaded Backer catalog/);
-    const sourceRail = await tab.locator('.m2-source-rail').innerText();
-    for (const label of ['Creator entities', 'Linked identities', 'Unique works', 'Source records', 'Evidence observations']) {
-      assert.match(sourceRail, new RegExp(label));
-    }
-    assert.match(sourceRail, /not estimates of the internet/);
-    for (const provider of ['X', 'GitHub', 'YouTube', 'Facebook', 'Instagram', 'LinkedIn', 'Twitch', 'Medium', 'DEV', 'Substack', 'RSS']) {
-      assert.match(sourceRail, new RegExp(`\\b${provider}\\b`));
-    }
-    assert.match(sourceRail, /Facebook[\s\S]*Unavailable/);
+    assert.equal(await tab.locator('.m2-context-track').count(), 2);
+    assert.equal(await tab.locator('.m2-context-track[aria-hidden="true"]').count(), 1);
+    assert.equal(await tab.locator('.m2-source-rail').count(), 0, 'catalog counts appear only in the moving strip');
     assert.equal(await tab.locator('.m2-desktop-people .m2-person-row').count(), 32);
     assert.equal(await tab.locator('.m2-feed-card').count(), 12);
-    assert.match(await tab.locator('.m2-catalog-feed').innerText(), /real source records/i);
+    assert.match(await tab.locator('.m2-catalog-feed').innerText(), /Contents to Back/i);
     const initialContentProviders = await tab.locator('.m2-feed-byline small').allTextContents();
     for (const provider of ['YouTube', 'GitHub', 'DEV', 'Medium', 'Substack']) {
       assert.ok(initialContentProviders.filter((label) => label.startsWith(provider)).length >= 2,
@@ -259,9 +264,8 @@ test('Market2 loads trending discovery, keeps research controls safe, and pagina
     assert.doesNotMatch(await neonFacts.innerText(), /Word count|unavailable/i);
 
     await tab.locator('.m2-desktop-people .m2-person-row', { hasText: 'Neon Byte' }).locator('[data-m2-select]').click();
-    assert.equal(await tab.locator('.m2-proof-dimension').count(), 5);
-    assert.match(await tab.locator('.m2-proof-callout').innerText(), /Reach[\s\S]*Traction[\s\S]*Momentum[\s\S]*Coverage[\s\S]*Confidence/i);
-    assert.match(await tab.locator('.m2-proof-callout').innerText(), /48\.2K[\s\S]*23K/);
+    assert.equal(await tab.locator('.m2-proof-callout').count(), 0, 'incomplete PoA dimensions are omitted instead of rendering unavailable values');
+    assert.doesNotMatch(await tab.locator('.m2-dossier').innerText(), /Unavailable/i);
     assert.match(await tab.locator('.m2-work-card').first().innerText(), /23K Likes/);
     assert.match(await tab.locator('.m2-work-card').first().innerText(), /1 source record · 1 unique work/);
     assert.match(await tab.locator('.m2-work-card').first().innerText(), /Published Aug 18, 2026/);
@@ -269,6 +273,8 @@ test('Market2 loads trending discovery, keeps research controls safe, and pagina
     assert.equal(await tab.locator('.m2-ticket').count(), 0);
     assert.equal(await tab.locator('[data-m2-create]').count(), 0);
     assert.match(await tab.locator('.m2-research-boundary').innerText(), /No execution/);
+    assert.equal(await tab.locator('.backer-footer').count(), 1);
+    assert.ok(await tab.locator('#app').evaluate((node) => node.compareDocumentPosition(document.querySelector('.backer-footer')) & Node.DOCUMENT_POSITION_FOLLOWING));
 
     await tab.locator('[data-m2-load-connected]').click();
     await tab.waitForFunction(() => Array.from(document.querySelectorAll('.m2-person-name')).some((node) => node.textContent === 'Signal Lab'));
@@ -279,6 +285,81 @@ test('Market2 loads trending discovery, keeps research controls safe, and pagina
     await new Promise((resolve) => setTimeout(resolve, 450));
     assert.equal(requests.at(-1).mode, 'search');
     assert.equal(requests.at(-1).query, 'Neon Byte');
+  } finally {
+    await context.close();
+  }
+});
+
+test('zero-record provider controls stay visible, unavailable, and cannot empty or relabel the real feed', async () => {
+  discoveryMode = 'static-catalog';
+  requests = [];
+  const { context, tab } = await page();
+  try {
+    await tab.goto(`${origin}/backerdemo.html#market2?platforms=instagram`);
+    await tab.waitForSelector('.m2-person-name', { state: 'visible' });
+    await tab.waitForFunction(() => !location.hash.includes('instagram') && document.querySelectorAll('.m2-feed-card').length === 12);
+
+    assert.equal(await tab.locator('.m2-command h1').count(), 0);
+    assert.equal(await tab.locator('.m2-command-summary').innerText(), 'Discover profiles and contents to back');
+    assert.equal(await tab.locator('[data-m2-filters]').count(), 1);
+    await tab.locator('[data-m2-filters]').click();
+    await tab.waitForSelector('.m2-filter-drawer');
+    for (const id of ['x', 'facebook', 'instagram', 'linkedin', 'twitch']) {
+      const chip = tab.locator(`[data-m2-drawer-platform="${id}"]`);
+      assert.equal(await chip.isEnabled(), false, `${id} should be unavailable with zero retained records`);
+      assert.equal(await chip.getAttribute('aria-disabled'), 'true');
+      assert.match(await chip.locator('xpath=..').innerText(), /Unavailable/);
+    }
+    for (const id of ['github', 'youtube', 'medium', 'dev', 'substack', 'rss']) {
+      assert.equal(await tab.locator(`[data-m2-drawer-platform="${id}"]`).isEnabled(), true, `${id} should remain filterable`);
+    }
+    assert.equal(await tab.locator('.m2-filter-note').innerText(), 'Only sources with retained profiles or content can filter this catalog. Sources with no current records stay visible but unavailable.');
+    for (const selector of ['[data-m2-drawer-range]', '[data-m2-drawer-quick]', '[data-m2-drawer-category-rail]', '[data-m2-drawer-audience]', '[data-m2-drawer-engagement]', '[data-m2-drawer-sort]']) {
+      assert.ok(await tab.locator(selector).count(), `${selector} should be available inside the single filter drawer`);
+    }
+    const originalHash = await tab.evaluate(() => location.hash);
+    await tab.locator('[data-m2-drawer-range][value="30d"]').check();
+    await tab.locator('[data-m2-drawer-sort]').selectOption('newest');
+    await tab.locator('[data-m2-close-drawer]').click();
+    assert.equal(await tab.evaluate(() => location.hash), originalHash, 'closing the drawer cancels provisional filters');
+    await tab.locator('[data-m2-filters]').click();
+    assert.equal(await tab.locator('[data-m2-drawer-range][value="7d"]').isChecked(), true);
+    assert.equal(await tab.locator('[data-m2-drawer-sort]').inputValue(), 'viral');
+
+    const beforeUnavailableClick = await tab.evaluate(() => ({
+      hash: location.hash,
+      names: Array.from(document.querySelectorAll('.m2-desktop-people .m2-person-name')).map((node) => node.textContent),
+      sources: Array.from(document.querySelectorAll('.m2-feed-byline small')).map((node) => node.textContent)
+    }));
+    await tab.locator('[data-m2-drawer-platform="instagram"]').evaluate((input) => {
+      input.checked = true;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    await tab.locator('[data-m2-apply-drawer]').click();
+    const afterUnavailableClick = await tab.evaluate(() => ({
+      hash: location.hash,
+      names: Array.from(document.querySelectorAll('.m2-desktop-people .m2-person-name')).map((node) => node.textContent),
+      sources: Array.from(document.querySelectorAll('.m2-feed-byline small')).map((node) => node.textContent)
+    }));
+    assert.deepEqual(afterUnavailableClick, beforeUnavailableClick);
+    assert.doesNotMatch(afterUnavailableClick.hash, /platforms=/);
+
+    await tab.locator('[data-m2-filters]').click();
+    await tab.waitForSelector('.m2-filter-drawer');
+    await tab.locator('[data-m2-drawer-platform="github"]').check();
+    await tab.locator('[data-m2-apply-drawer]').click();
+    await tab.waitForFunction(() => location.hash.includes('platforms=github'));
+    assert.ok(await tab.evaluate(() => Array.from(document.querySelectorAll('.m2-desktop-people .m2-person-row')).every((row) => row.querySelector('.m2-platform-mark.is-github'))));
+    const githubNames = await tab.locator('.m2-desktop-people .m2-person-name').allTextContents();
+    await tab.locator('[data-m2-filters]').click();
+    await tab.locator('[data-m2-drawer-platform="instagram"]').evaluate((input) => {
+      input.checked = true;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    await tab.locator('[data-m2-apply-drawer]').click();
+    assert.match(await tab.evaluate(() => location.hash), /platforms=github/);
+    assert.deepEqual(await tab.locator('.m2-desktop-people .m2-person-name').allTextContents(), githubNames);
   } finally {
     await context.close();
   }
@@ -326,11 +407,11 @@ test('a creator work continuation makes the fifth and sixth retained records vis
   }
 });
 
-test('Market2 stays within 320px, 390px, and 430px mobile viewports', async () => {
+test('Market2 stays within 320px, 390px, 430px, and 608x688 viewports', async () => {
   discoveryMode = 'connected';
   requests = [];
-  for (const width of [320, 390, 430]) {
-    const { context, tab } = await page({ width, height: 900 });
+  for (const viewport of [{ width: 320, height: 900 }, { width: 390, height: 900 }, { width: 430, height: 900 }, { width: 608, height: 688 }]) {
+    const { context, tab } = await page(viewport);
     try {
       await tab.goto(`${origin}/backerdemo.html#market2`);
       await tab.waitForSelector('.m2-person-name:visible');
@@ -341,6 +422,58 @@ test('Market2 stays within 320px, 390px, and 430px mobile viewports', async () =
       }));
       assert.ok(widths.document <= widths.viewport, `document is ${widths.document}px wide at a ${widths.viewport}px viewport`);
       assert.ok(widths.body <= widths.viewport, `body is ${widths.body}px wide at a ${widths.viewport}px viewport`);
+      assert.equal(await tab.locator('[data-m2-filters]').count(), 1);
+      assert.equal(await tab.locator('.m2-filterbar, .m2-category-row').count(), 0);
+    } finally {
+      await context.close();
+    }
+  }
+});
+
+test('Market2 light theme keeps visible text and controls at readable computed contrast', async () => {
+  discoveryMode = 'static-catalog';
+  requests = [];
+  for (const viewport of [{ width: 320, height: 900 }, { width: 390, height: 900 }, { width: 430, height: 900 }, { width: 608, height: 688 }, { width: 1440, height: 1000 }]) {
+    const { context, tab } = await page(viewport);
+    try {
+      await context.addInitScript(() => localStorage.setItem('backer_theme_v1', 'light'));
+      await tab.goto(`${origin}/backerdemo.html#market2`);
+      await tab.waitForSelector('.m2-person-name:visible');
+      assert.equal(await tab.evaluate(() => document.documentElement.dataset.theme), 'light');
+      await tab.locator('[data-m2-filters]').click();
+      await tab.waitForSelector('.m2-filter-drawer');
+      const failures = await tab.evaluate(() => {
+        function rgb(value) {
+          const match = String(value).match(/[\d.]+/g);
+          return match && match.length >= 3 ? match.slice(0, 3).map(Number) : [0, 0, 0];
+        }
+        function luminance(color) {
+          return color.map((value) => {
+            const channel = value / 255;
+            return channel <= 0.04045 ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4);
+          }).reduce((sum, value, index) => sum + value * [0.2126, 0.7152, 0.0722][index], 0);
+        }
+        function ratio(a, b) {
+          const one = luminance(a), two = luminance(b);
+          return (Math.max(one, two) + 0.05) / (Math.min(one, two) + 0.05);
+        }
+        const samples = [
+          ['.m2-command-summary', 'body'], ['.m2-context-track span', 'body'], ['.m2-view-tabs button', 'body'],
+          ['.m2-person-name', 'body'], ['.m2-person-field', 'body'], ['.m2-feed-card h3', '.m2-feed-card'],
+          ['.m2-feed-byline small', '.m2-feed-card'], ['.m2-filter-button', '.m2-filter-button'],
+          ['.m2-method p', 'body'], ['.backer-footer__link', '.backer-footer'],
+          ['.m2-filter-note', '.m2-filter-drawer'], ['.m2-filter-group legend', '.m2-filter-drawer'],
+          ['.m2-filter-group label.is-unavailable b', '.m2-filter-drawer'],
+          ['.m2-filter-group label.is-unavailable small', '.m2-filter-drawer']
+        ];
+        return samples.map(([selector, backgroundSelector]) => {
+          const element = Array.from(document.querySelectorAll(selector)).find((node) => node.getClientRects().length);
+          const background = backgroundSelector === selector ? element : document.querySelector(backgroundSelector);
+          if (!element || !background) return { selector, ratio: 0, missing: true };
+          return { selector, ratio: Number(ratio(rgb(getComputedStyle(element).color), rgb(getComputedStyle(background).backgroundColor)).toFixed(2)) };
+        }).filter((row) => row.ratio < 4.5);
+      });
+      assert.deepEqual(failures, [], `contrast failures at ${viewport.width}x${viewport.height}: ${JSON.stringify(failures)}`);
     } finally {
       await context.close();
     }
@@ -387,12 +520,42 @@ test('landing discovery preview is populated from the real retained catalog', as
   }
 });
 
+test('loopback legacy marketplace routes canonicalize publicly and keep the explicit archive local', async () => {
+  discoveryMode = 'static-catalog';
+  for (const route of ['#market', '?view=market']) {
+    const { context, tab } = await page();
+    try {
+      await tab.goto(`${origin}/backerdemo.html${route}`);
+      await tab.waitForSelector('.market2-shell');
+      await tab.waitForFunction(() => location.hash.startsWith('#market2'));
+      assert.doesNotMatch(await tab.evaluate(() => location.search), /(?:^|[?&])view=market(?:&|$)/);
+      assert.equal(await tab.locator('.m2-local-archive[data-view="market-archive"]').count(), 1);
+    } finally {
+      await context.close();
+    }
+  }
+
+  const { context, tab } = await page();
+  try {
+    await tab.goto(`${origin}/backerdemo.html#market-archive`);
+    await tab.waitForSelector('#mktRoot');
+    assert.match(await tab.evaluate(() => location.hash), /^#market-archive/);
+    assert.equal(await tab.locator('.market2-shell').count(), 0);
+  } finally {
+    await context.close();
+  }
+});
+
 test('legacy synthetic search asset and routes are absent from the public page', async () => {
   const html = await fs.readFile(path.join(ROOT, 'backerdemo.html'), 'utf8');
   assert.doesNotMatch(html, /js\/search-engine\.js/);
   assert.doesNotMatch(html, /data-view="search"/);
   assert.doesNotMatch(html, /Jeff Delaney|ThePrimeagen|Theo Browne|Wes Bos/);
   assert.match(html, /id="market2HeroSearch"/);
+  assert.doesNotMatch(html, /css\/market\.css|js\/market-data\.js|js\/market\.js/);
+  assert.doesNotMatch(html, /data-view="market"|href="[^"]*#market(?:[?"#])/);
+  assert.ok((html.match(/data-view="market2"/g) || []).length >= 6);
+  assert.match(html, /<\/section>\s*<!-- SHARED FLICKERING FOOTER -->\s*<footer class="backer-footer/);
   const market = await fs.readFile(path.join(ROOT, 'js', 'market2.js'), 'utf8');
   assert.match(market, /method:\s*'POST'/);
   assert.match(market, /mode:\s*query\s*\?\s*'search'\s*:\s*'trending'/);

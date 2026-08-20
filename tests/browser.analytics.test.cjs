@@ -366,8 +366,12 @@ test('accepted SPA views are canonical, single, revocable, and outage-safe', asy
 
     await page.evaluate(() => window.__backerGo('market'));
     await waitUntil(() => state.views.length === 3);
-    assert.equal(state.views[2].path, '/market');
-    await page.click('[data-cat]');
+    assert.equal(state.views[2].path, '/market2');
+    await page.waitForSelector('[data-m2-filters]');
+    await page.click('[data-m2-filters]');
+    await page.check('[data-m2-drawer-category-rail][value="knowledge"]');
+    await page.locator('[data-m2-apply-drawer]').scrollIntoViewIfNeeded();
+    await page.click('[data-m2-apply-drawer]');
     await page.waitForTimeout(150);
     assert.equal(state.views.length, 3, 'market filters must not create page views');
 
