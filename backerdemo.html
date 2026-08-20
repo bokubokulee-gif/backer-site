@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;650;700&amp;family=Geist+Mono:wght@400;500;600&amp;family=Inter:wght@400;500;600;700&amp;family=Instrument+Serif:ital@0;1&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/styles.css?v=20260806-3" />
+<link rel="stylesheet" href="css/styles.css?v=20260821-1" />
 <link rel="stylesheet" href="css/search.css?v=7" />
 <link rel="stylesheet" href="css/market2.css?v=20260820-1" />
 <link rel="stylesheet" href="css/liquid-glass.css?v=20260731-2" />
@@ -172,19 +172,26 @@
           <defs>
             <linearGradient id="branch-left" x1="100%" x2="0%"><stop offset="0%" stop-color="#f5f3ee" stop-opacity=".5"/><stop offset="100%" stop-color="#e9bd86" stop-opacity=".12"/></linearGradient>
             <linearGradient id="branch-right" x1="0%" x2="100%"><stop offset="0%" stop-color="#f5f3ee" stop-opacity=".5"/><stop offset="100%" stop-color="#e9bd86" stop-opacity=".12"/></linearGradient>
+            <marker id="branch-arrow" viewBox="0 0 9 9" refX="7.4" refY="4.5" markerWidth="8.5" markerHeight="8.5" orient="auto" markerUnits="strokeWidth">
+              <path d="M 0 0 L 9 4.5 L 0 9 Z" fill="#e9bd86"/>
+            </marker>
           </defs>
-          <path pathLength="1" d="M 398 220 C 366 220 350 220 328 220" stroke="url(#branch-left)"/>
-          <path pathLength="1" d="M 692 148 C 744 118 772 84 820 72" stroke="url(#branch-right)"/>
-          <path pathLength="1" d="M 694 354 C 748 370 772 382 820 386" stroke="url(#branch-right)"/>
-          <circle cx="398" cy="220" r="3"/><circle cx="328" cy="220" r="3"/>
-          <circle cx="692" cy="148" r="3"/><circle cx="820" cy="72" r="3"/>
-          <circle cx="694" cy="354" r="3"/><circle cx="820" cy="386" r="3"/>
+          <path class="val-branch-line" pathLength="1" d="M 398 220 C 366 220 350 220 328 220" stroke="url(#branch-left)" marker-end="url(#branch-arrow)"/>
+          <path class="val-branch-line" pathLength="1" d="M 692 148 C 744 118 772 84 820 72" stroke="url(#branch-right)" marker-end="url(#branch-arrow)"/>
+          <path class="val-branch-line" pathLength="1" d="M 694 354 C 748 370 772 382 820 386" stroke="url(#branch-right)" marker-end="url(#branch-arrow)"/>
+          <path class="val-branch-pulse" pathLength="1" d="M 398 220 C 366 220 350 220 328 220"/>
+          <path class="val-branch-pulse" pathLength="1" d="M 692 148 C 744 118 772 84 820 72"/>
+          <path class="val-branch-pulse" pathLength="1" d="M 694 354 C 748 370 772 382 820 386"/>
+          <circle cx="398" cy="220" r="3"/>
+          <circle cx="692" cy="148" r="3"/>
+          <circle cx="694" cy="354" r="3"/>
         </svg>
 
         <article class="val-branch-stat val-branch-stat-funding">
           <div class="val-branch-stat-core">
-            <b>Direct support</b>
-            <p>Tips, memberships, subscriptions, and purchases are support signals—not promises of financial return.</p>
+            <b class="val-branch-figure" aria-label="60 billion dollars">$60B</b>
+            <p>Citi estimated the creator economy generated about $60B in 2022 across ad-funded video, subscriptions, donations, purchases, and sponsorships.</p>
+            <a class="val-branch-source" href="https://ir.citi.com/gps/7PUfiT7fJPblL%2FqpQla8YnPTu1opFVW5Qb5fu0LPwJGLKt4p0HcsDxN87TOJ%2F6kA%2FbMcrnTJTn8SFOdAlpoihg%3D%3D" target="_blank" rel="noopener">Citi GPS report · 2023 <span aria-hidden="true">↗</span></a>
           </div>
         </article>
 
@@ -192,25 +199,28 @@
           <div class="val-globe-bezel" aria-hidden="true">
             <div class="val-globe-stage">
               <canvas class="val-globe-canvas" data-globe-canvas></canvas>
+              <div class="val-globe-labels" data-globe-labels></div>
             </div>
           </div>
           <figcaption class="val-globe-status">
-            <span class="mono">GLOBAL SOURCE GRAPH</span>
+            <span class="mono">GLOBAL CREATOR FLOW</span>
             <span>illustrative map</span>
           </figcaption>
         </figure>
 
         <article class="val-branch-stat val-branch-stat-market">
           <div class="val-branch-stat-core">
-            <b>Public evidence</b>
-            <p>Source-native metrics, timestamps, methods, freshness, and confidence remain reviewable.</p>
+            <b class="val-branch-figure" aria-label="250 billion dollars growing to a projected 480 billion dollars">$250B <span class="val-branch-arrow" aria-hidden="true">→</span> $480B</b>
+            <p>Goldman Sachs Research estimated a $250B creator economy in 2023 and projected it could approach $480B by 2027.</p>
+            <a class="val-branch-source" href="https://www.goldmansachs.com/insights/articles/the-creator-economy-could-approach-half-a-trillion-dollars-by-2027" target="_blank" rel="noopener">Goldman Sachs Research · 2023 <span aria-hidden="true">↗</span></a>
           </div>
         </article>
 
         <article class="val-branch-stat val-branch-stat-creators">
           <div class="val-branch-stat-core">
-            <b>Creator graph</b>
-            <p>Platform identities link only through reviewed evidence—never because two people share a name.</p>
+            <b class="val-branch-figure" aria-label="approximately 207 million creators">~207M</b>
+            <p>Approximately 207M people worldwide identify as creators, according to Visa's 2025 report citing Linktree's 2022 creator research.</p>
+            <a class="val-branch-source" href="https://corporate.visa.com/en/solutions/commercial-solutions/knowledge-hub/2025-visa-creators-report.html" target="_blank" rel="noopener">Visa Creator Report · 2025 <span aria-hidden="true">↗</span></a>
           </div>
         </article>
       </div>
@@ -369,7 +379,7 @@
 <script src="js/analytics.js?v=20260820-3"></script>
 <script src="js/app.js?v=20260811-1"></script>
 <script src="js/sections.js?v=2"></script>
-<script type="module" src="js/globe-live.mjs?v=20260806-1"></script>
+<script type="module" src="js/globe-live.mjs?v=20260821-1"></script>
 <script src="js/poa-terminal.js?v=20260819-1"></script>
 <script src="js/flickering-footer.js?v=20260731-2"></script>
 </body>

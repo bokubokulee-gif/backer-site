@@ -129,6 +129,34 @@ test('Market2 annotation release has one filter entry, profiles before contents,
   assert.doesNotMatch(html, /Tips, memberships, subscriptions, and public engagement/);
 });
 
+test('homepage globe restores sourced capital figures and outward flow without fake live viewers', () => {
+  const html = read('backerdemo.html');
+  const styles = read('css/styles.css');
+  const globe = read('js/globe-live.mjs');
+
+  assert.match(html, /aria-label="60 billion dollars">\$60B<\/b>/);
+  assert.match(html, /aria-label="250 billion dollars growing to a projected 480 billion dollars">\$250B[\s\S]*\$480B<\/b>/);
+  assert.match(html, /aria-label="approximately 207 million creators">~207M<\/b>/);
+  assert.doesNotMatch(html, /val-branch-figure[^>]*>[\s\S]{0,120}data-countup/);
+  assert.match(html, /https:\/\/ir\.citi\.com\/gps\//);
+  assert.match(html, /Citi GPS report · 2023/);
+  assert.match(html, /Goldman Sachs Research · 2023/);
+  assert.match(html, /Visa Creator Report · 2025/);
+  assert.equal((html.match(/class="val-branch-source"[^>]*target="_blank" rel="noopener"/g) || []).length, 3);
+  assert.match(html, /data-globe-labels/);
+  assert.equal((html.match(/marker-end="url\(#branch-arrow\)"/g) || []).length, 3);
+  assert.equal((html.match(/class="val-branch-pulse"/g) || []).length, 3);
+  assert.doesNotMatch(html, /\$40[–-]60B\+|data-globe-viewers|LIVE SUPPORT|2,847|watching/);
+
+  assert.match(styles, /\.is-globe-spinning \.val-branch-pulse/);
+  assert.match(styles, /@keyframes valBranchFlow/);
+  assert.match(styles, /prefers-reduced-motion:reduce[\s\S]*\.val-branch-pulse\{display:none\}/);
+  assert.match(globe, /live\.textContent = 'FLOW'/);
+  assert.match(globe, /network\.classList\.add\('is-globe-spinning'\)/);
+  assert.match(globe, /network\.classList\.remove\('is-globe-spinning'\)/);
+  assert.doesNotMatch(globe, /Math\.random|setInterval|data-globe-viewers/);
+});
+
 test('Market2 normalization surfaces observed GitHub values before permission placeholders', () => {
   const windowObject = {
     location: { href: 'https://example.test/backerdemo.html#market2' },

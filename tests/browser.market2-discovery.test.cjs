@@ -19,7 +19,7 @@ let requests = [];
 function type(file) {
   if (file.endsWith('.html')) return 'text/html; charset=utf-8';
   if (file.endsWith('.css')) return 'text/css; charset=utf-8';
-  if (file.endsWith('.js')) return 'text/javascript; charset=utf-8';
+  if (file.endsWith('.js') || file.endsWith('.mjs')) return 'text/javascript; charset=utf-8';
   if (file.endsWith('.json')) return 'application/json; charset=utf-8';
   if (/\.(?:png|jpg|jpeg|webp)$/.test(file)) return 'image/*';
   return 'application/octet-stream';
@@ -218,8 +218,8 @@ async function handler(req, res) {
   }
 }
 
-async function page(viewport = { width: 1440, height: 1000 }) {
-  const context = await browser.newContext({ viewport });
+async function page(viewport = { width: 1440, height: 1000 }, options = {}) {
+  const context = await browser.newContext({ viewport, ...options });
   await context.route('https://fonts.googleapis.com/**', (route) => route.abort());
   await context.route('https://fonts.gstatic.com/**', (route) => route.abort());
   await context.route(/https:\/\/(?!127\.0\.0\.1).*/, (route) => {
@@ -687,6 +687,148 @@ test('landing discovery preview is populated from the real retained catalog', as
     assert.deepEqual(await tab.locator('#backerLandingCreatorFeed .mini-auth').allTextContents(), ['YouTube', 'Bilibili', 'Twitch']);
     await tab.locator('#backerLandingCreatorFeed [data-m2-landing-person]').first().click();
     await tab.waitForFunction(() => location.hash.includes('view=radar') && location.hash.includes('q='));
+  } finally {
+    await context.close();
+  }
+});
+
+test('homepage globe shows complete sourced figures and globe-synchronized outward flow', async () => {
+  const { context, tab } = await page({ width: 1440, height: 1000 });
+  try {
+    await tab.goto(`${origin}/backerdemo.html`);
+    await tab.locator('.val-asset').scrollIntoViewIfNeeded();
+    await tab.waitForSelector('.val-asset.reveal.in');
+    await tab.waitForFunction(() => {
+      const globe = document.querySelector('[data-globe-live]');
+      const network = document.querySelector('.val-asset-network');
+      return globe && globe.classList.contains('is-ready') && network && network.classList.contains('is-globe-spinning');
+    }, null, { timeout: 10000 });
+    await tab.waitForTimeout(1700);
+
+    assert.deepEqual(await tab.locator('.val-branch-figure').allTextContents(), ['$60B', '$250B → $480B', '~207M']);
+    assert.equal(await tab.locator('.val-branch-source').count(), 3);
+    assert.deepEqual(await tab.locator('.val-branch-source').allTextContents(), [
+      'Citi GPS report · 2023 ↗',
+      'Goldman Sachs Research · 2023 ↗',
+      'Visa Creator Report · 2025 ↗'
+    ]);
+    assert.equal(await tab.locator('[data-globe-viewers]').count(), 0);
+    assert.equal(await tab.locator('.val-branch-map [marker-end="url(#branch-arrow)"]').count(), 3);
+    assert.equal(await tab.locator('.val-branch-pulse').count(), 3);
+    assert.equal(await tab.locator('.val-branch-pulse').first().evaluate((node) => getComputedStyle(node).animationName), 'valBranchFlow');
+
+    const before = await tab.locator('.val-globe-label').first().evaluate((node) => ({
+      x: node.style.getPropertyValue('--marker-x'),
+      y: node.style.getPropertyValue('--marker-y')
+    }));
+    await tab.waitForTimeout(450);
+    const after = await tab.locator('.val-globe-label').first().evaluate((node) => ({
+      x: node.style.getPropertyValue('--marker-x'),
+      y: node.style.getPropertyValue('--marker-y')
+    }));
+    assert.notDeepEqual(after, before, 'globe-linked flow labels move with the rotating globe');
+
+    const geometry = await tab.locator('.val-asset').evaluate((section) => ({
+      cards: Array.from(section.querySelectorAll('.val-branch-stat')).map((node) => {
+        const rect = node.getBoundingClientRect();
+        return {
+          className: node.className,
+          left: rect.left,
+          right: rect.right,
+          height: rect.height,
+          scrollHeight: node.scrollHeight,
+          viewportWidth: document.documentElement.clientWidth
+        };
+      }),
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth
+    }));
+    assert.equal(geometry.cards.some((row) => row.left < 0 || row.right > row.viewportWidth || row.height + 1 < row.scrollHeight), false, JSON.stringify(geometry.cards));
+    assert.ok(geometry.overflow <= 1, `homepage globe overflowed by ${geometry.overflow}px`);
+  } finally {
+    await context.close();
+  }
+});
+
+test('homepage globe keeps every figure, sentence, and source readable across responsive widths', async () => {
+  const expectedCopy = [
+    'Citi estimated the creator economy generated about $60B in 2022 across ad-funded video, subscriptions, donations, purchases, and sponsorships.',
+    'Goldman Sachs Research estimated a $250B creator economy in 2023 and projected it could approach $480B by 2027.',
+    "Approximately 207M people worldwide identify as creators, according to Visa's 2025 report citing Linktree's 2022 creator research."
+  ];
+  for (const viewport of [
+    { width: 320, height: 900 },
+    { width: 390, height: 900 },
+    { width: 608, height: 688 },
+    { width: 1440, height: 1000 }
+  ]) {
+    const { context, tab } = await page(viewport);
+    try {
+      await tab.goto(`${origin}/backerdemo.html#validation`);
+      await tab.locator('.val-asset').scrollIntoViewIfNeeded();
+      await tab.waitForSelector('.val-asset.reveal.in');
+      await tab.waitForSelector('.val-globe-label', { state: 'attached' });
+      assert.equal(await tab.locator('.nav .brand-word').isVisible(), true, `Backer wordmark stays visible at ${viewport.width}px`);
+      assert.equal(await tab.locator('.val-asset-head h3').innerText(), 'Capital already flows to people on the internet.');
+      assert.deepEqual(await tab.locator('.val-branch-figure').allTextContents(), ['$60B', '$250B → $480B', '~207M']);
+      assert.deepEqual(await tab.locator('.val-branch-stat p').allTextContents(), expectedCopy);
+      assert.deepEqual(await tab.locator('.val-branch-source').allTextContents(), [
+        'Citi GPS report · 2023 ↗',
+        'Goldman Sachs Research · 2023 ↗',
+        'Visa Creator Report · 2025 ↗'
+      ]);
+
+      const result = await tab.locator('.val-asset').evaluate((section) => {
+        const viewportWidth = document.documentElement.clientWidth;
+        const cards = Array.from(section.querySelectorAll('.val-branch-stat'));
+        const text = Array.from(section.querySelectorAll('.val-branch-figure, .val-branch-stat p, .val-branch-source'));
+        return {
+          cardFailures: cards.map((node) => {
+            const rect = node.getBoundingClientRect();
+            return { left: rect.left, right: rect.right, viewportWidth };
+          }).filter((row) => row.left < -1 || row.right > row.viewportWidth + 1),
+          clipFailures: text.map((node) => ({
+            text: node.textContent.trim(),
+            width: node.clientWidth,
+            scrollWidth: node.scrollWidth,
+            height: node.clientHeight,
+            scrollHeight: node.scrollHeight
+          })).filter((row) => row.scrollWidth > row.width + 1 || row.scrollHeight > row.height + 1),
+          fontSizes: {
+            figure: parseFloat(getComputedStyle(section.querySelector('.val-branch-figure')).fontSize),
+            body: parseFloat(getComputedStyle(section.querySelector('.val-branch-stat p')).fontSize),
+            source: parseFloat(getComputedStyle(section.querySelector('.val-branch-source')).fontSize)
+          },
+          branchDisplay: getComputedStyle(section.querySelector('.val-branch-map')).display,
+          labelDisplay: getComputedStyle(section.querySelector('.val-globe-label')).display
+        };
+      });
+      assert.deepEqual(result.cardFailures, [], `${viewport.width}px card overflow`);
+      assert.deepEqual(result.clipFailures, [], `${viewport.width}px clipped copy`);
+      assert.ok(result.fontSizes.figure >= 34, `${viewport.width}px figure is ${result.fontSizes.figure}px`);
+      assert.ok(result.fontSizes.body >= 15, `${viewport.width}px body is ${result.fontSizes.body}px`);
+      assert.ok(result.fontSizes.source >= 12.5, `${viewport.width}px source is ${result.fontSizes.source}px`);
+      assert.equal(result.branchDisplay === 'none', viewport.width <= 920);
+      assert.equal(result.labelDisplay === 'none', viewport.width <= 760);
+    } finally {
+      await context.close();
+    }
+  }
+});
+
+test('homepage globe preserves exact figures and disables illustrative motion for reduced-motion users', async () => {
+  const { context, tab } = await page({ width: 1440, height: 1000 }, { reducedMotion: 'reduce' });
+  try {
+    await tab.goto(`${origin}/backerdemo.html#validation`);
+    await tab.waitForSelector('.val-asset.reveal.in');
+    await tab.waitForSelector('.val-globe-label', { state: 'attached' });
+    await tab.waitForTimeout(500);
+    assert.deepEqual(await tab.locator('.val-branch-figure').allTextContents(), ['$60B', '$250B → $480B', '~207M']);
+    assert.equal(await tab.locator('.val-asset-network').evaluate((node) => node.classList.contains('is-globe-spinning')), false);
+    assert.equal(await tab.locator('.val-branch-pulse').first().evaluate((node) => getComputedStyle(node).display), 'none');
+    const before = await tab.locator('.val-globe-label').first().evaluate((node) => node.style.getPropertyValue('--marker-x'));
+    await tab.waitForTimeout(500);
+    const after = await tab.locator('.val-globe-label').first().evaluate((node) => node.style.getPropertyValue('--marker-x'));
+    assert.equal(after, before);
   } finally {
     await context.close();
   }
