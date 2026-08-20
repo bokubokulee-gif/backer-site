@@ -18,11 +18,11 @@
   } catch (legacyRouteError) {}
 
   var WATCH_KEY = 'backer_market2_watch_v1';
-  /* These IDs mirror the discovery registry. Keep unavailable providers visible so
-     an empty response is never mistaken for missing product coverage. */
-  var CORE_PLATFORMS = ['x', 'github', 'youtube', 'facebook', 'instagram', 'linkedin', 'twitch', 'medium', 'dev', 'substack', 'rss'];
+  /* These IDs mirror the discovery registry. The filter drawer projects only
+     providers with retained profiles or work; connection state stays internal. */
+  var CORE_PLATFORMS = ['x', 'github', 'youtube', 'bilibili', 'facebook', 'instagram', 'linkedin', 'twitch', 'medium', 'dev', 'substack', 'rss'];
   var DISCOVERY_SCOPES = CORE_PLATFORMS.slice();
-  var PROFILE_ONLY_PLATFORMS = ['tiktok', 'spotify', 'soundcloud', 'patreon', 'kick', 'bilibili', 'douyin'];
+  var PROFILE_ONLY_PLATFORMS = ['tiktok', 'spotify', 'soundcloud', 'patreon', 'kick', 'douyin'];
   var FILTER_PLATFORMS = unique(CORE_PLATFORMS.concat(PROFILE_ONLY_PLATFORMS));
   var PLATFORM_LABELS = {
     x: 'X', youtube: 'YouTube', instagram: 'Instagram', github: 'GitHub', facebook: 'Facebook', linkedin: 'LinkedIn',
@@ -55,7 +55,7 @@
   var CREATOR_PAGE_SIZE = 24;
   var INITIAL_CONTENT_COUNT = 12;
   var CONTENT_PAGE_SIZE = 12;
-  var MATERIAL_PROVIDER_ORDER = ['youtube', 'github', 'dev', 'medium', 'substack', 'rss', 'x', 'facebook', 'instagram', 'linkedin', 'twitch'];
+  var MATERIAL_PROVIDER_ORDER = ['youtube', 'bilibili', 'twitch', 'github', 'dev', 'medium', 'substack', 'rss', 'x', 'facebook', 'instagram', 'linkedin'];
   var root = null;
   var DATA = null;
   var BASE_DATA = null;
@@ -826,7 +826,14 @@
       if (Number.isFinite(expires) && expires <= Date.now()) return false;
       return ['fresh', 'snapshot'].indexOf(freshness) >= 0;
     }).sort(function (a, b) {
-      return Date.parse(b.observedAt || 0) - Date.parse(a.observedAt || 0);
+      var priority = function (metric) {
+        var name = [metric && metric.key, metric && metric.label].join(' ');
+        if (/\bviews?|view_count\b/i.test(name)) return 0;
+        if (/(followers?|subscribers?|audience|fans?)/i.test(name)) return 1;
+        if (/(likes?|comments?|reposts?|shares?|favorites?|forks?)/i.test(name)) return 2;
+        return 3;
+      };
+      return priority(a) - priority(b) || Date.parse(b.observedAt || 0) - Date.parse(a.observedAt || 0);
     }).forEach(function (metric) {
       var key = [metric.provider, metric.key].join(':');
       if (seen[key]) return;
@@ -1282,7 +1289,7 @@
     var localArchive = window.__backerLegacyArchiveAllowed ? '<button type="button" class="m2-local-archive" data-view="market-archive">Legacy marketplace · local only</button>' : '';
     return '<header class="m2-command" aria-label="Backer creator discovery"><div class="m2-command-copy"><span class="m2-kicker">Backer discovery</span><p class="m2-command-summary">Discover profiles and contents to back</p></div>' +
       '<div class="m2-command-side"><label class="m2-search"><span class="m2-search-label">Search</span><input id="m2Search" type="search" value="' + esc(state.query) + '" placeholder="People, handles, or work" autocomplete="off" /><kbd>/</kbd></label>' +
-      '<nav class="m2-command-nav"><button type="button" data-m2-show-watched>Your People <b>' + state.watched.length + '</b></button><a href="portfolio.html">Portfolio</a>' + localArchive + '</nav></div></header>';
+      '<nav class="m2-command-nav" aria-label="Marketplace navigation"><button type="button" data-nav="home">Home</button><a href="research.html">Research</a><a href="backerthesis.html">Thesis</a><button type="button" data-m2-show-watched>Your People <b>' + state.watched.length + '</b></button><a href="portfolio.html">Portfolio</a>' + localArchive + '</nav></div></header>';
   }
 
   function viewCounts() {
@@ -1480,10 +1487,20 @@
   }
 
   function workCountsHTML(work) {
-    var rows = array(work.publicCounts).slice(0, 3);
+    var rows = array(work.publicCounts).map(function (row) {
+      return normalizeMetric(row, { provider: work.platform });
+    }).sort(function (a, b) {
+      var priority = function (metric) {
+        var name = [metric && metric.key, metric && metric.label].join(' ');
+        if (/\bviews?|view_count\b/i.test(name)) return 0;
+        if (/(followers?|subscribers?|audience|fans?)/i.test(name)) return 1;
+        if (/(likes?|comments?|reposts?|shares?|favorites?|forks?)/i.test(name)) return 2;
+        return 3;
+      };
+      return priority(a) - priority(b);
+    }).slice(0, 3);
     if (!rows.length) return '<span>Native counts not retained</span>';
-    return rows.map(function (row) {
-      var metric = normalizeMetric(row, { provider: work.platform });
+    return rows.map(function (metric) {
       return '<span><b>' + esc(metric.value == null ? humanState(metric.availability) : formatCompact(metric.value)) + '</b> ' + esc(metric.label || metricLabel(metric.key)) + '</span>';
     }).join('');
   }
@@ -1686,12 +1703,14 @@
 
   function drawerHTML() {
     if (!state.drawer) return '';
-    var platforms = unique(CORE_PLATFORMS.concat(PROFILE_ONLY_PLATFORMS, people().reduce(function (all, person) { return all.concat(platformIds(person)); }, [])));
+    var platforms = unique(CORE_PLATFORMS.concat(PROFILE_ONLY_PLATFORMS, people().reduce(function (all, person) { return all.concat(platformIds(person)); }, []))).filter(function (id) {
+      return providerAvailability(id).available;
+    });
     var categories = unique(people().map(function (person) { return person.category; })).sort();
     var quick = [['open', 'Open'], ['ending30', 'Ending <30d'], ['under100k', 'Under 100K'], ['medium', 'Medium+ evidence'], ['multi', 'Multi-source'], ['watched', 'Watched']];
     return '<div class="m2-drawer-backdrop" data-m2-drawer-backdrop><section class="m2-filter-drawer" id="m2FilterDrawer" role="dialog" aria-modal="true" aria-labelledby="m2DrawerTitle"><header class="m2-drawer-head"><div><span class="m2-kicker">Refine discovery</span><h2 id="m2DrawerTitle">Filters</h2></div><button class="m2-drawer-close" type="button" data-m2-close-drawer aria-label="Close filters">×</button></header><div class="m2-drawer-body">' +
       '<fieldset class="m2-filter-group"><legend>Evidence range</legend>' + WINDOWS.map(function (range) { return '<label><input type="radio" name="m2DrawerRange" value="' + range + '" data-m2-drawer-range' + (state.range === range ? ' checked' : '') + ' /><span><b>' + range.toUpperCase() + '</b><small>Retained observation window</small></span></label>'; }).join('') + '</fieldset>' +
-      '<fieldset class="m2-filter-group"><legend>Platform</legend><p class="m2-filter-note">Only sources with retained profiles or content can filter this catalog. Sources with no current records stay visible but unavailable.</p>' + platforms.map(drawerPlatformHTML).join('') + '</fieldset>' +
+      '<fieldset class="m2-filter-group"><legend>Platform</legend><p class="m2-filter-note">Showing sources with real profiles or original content retained in this catalog.</p>' + platforms.map(drawerPlatformHTML).join('') + '</fieldset>' +
       '<fieldset class="m2-filter-group"><legend>Quick filters</legend>' + quick.map(function (item) { return '<label><input type="checkbox" value="' + item[0] + '" data-m2-drawer-quick' + (state.quick.indexOf(item[0]) >= 0 ? ' checked' : '') + ' /><span><b>' + item[1] + '</b></span></label>'; }).join('') + '</fieldset>' +
       '<fieldset class="m2-filter-group"><legend>Browse category</legend>' + CATEGORIES.map(function (item) { return '<label><input type="radio" name="m2DrawerCategoryRail" value="' + item[0] + '" data-m2-drawer-category-rail' + (state.categoryRail === item[0] ? ' checked' : '') + ' /><span><b>' + item[1] + '</b></span></label>'; }).join('') + '</fieldset>' +
       (categories.length ? '<fieldset class="m2-filter-group"><legend>Profile category</legend>' + categories.map(function (category) { return '<label><input type="checkbox" data-m2-category="' + esc(category) + '"' + (state.categories.indexOf(category) >= 0 ? ' checked' : '') + ' /><span><b>' + esc(category) + '</b></span></label>'; }).join('') + '</fieldset>' : '') +
@@ -1951,7 +1970,8 @@
         var account = person.accounts[0] || {};
         var work = person.content[0] || person.recentWork || {};
         var provider = PLATFORM_LABELS[account.id] || account.id || 'Public source';
-        return '<button type="button" class="mini-card" data-m2-landing-person="' + esc(person.id) + '"><span class="mini-auth">' + esc(provider) + '</span><span class="mini-name">' + esc(person.name) + '</span><span class="mini-work">' + esc(work.title) + '</span></button>';
+        var nativeCounts = array(work.publicCounts).length ? '<span class="mini-signal">' + workCountsHTML(work) + '</span>' : '';
+        return '<button type="button" class="mini-card" data-m2-landing-person="' + esc(person.id) + '"><span class="mini-auth">' + esc(provider) + '</span><span class="mini-name">' + esc(person.name) + '</span><span class="mini-work">' + esc(work.title) + '</span>' + nativeCounts + '</button>';
       }).join('');
       feed.addEventListener('click', function (event) {
         var card = event.target.closest('[data-m2-landing-person]');

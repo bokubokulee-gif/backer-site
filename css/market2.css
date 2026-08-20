@@ -5852,13 +5852,18 @@ body.mkt2-full .m2-method dd {
 
 @media (min-width: 1180px) {
   body.mkt2-full .m2-command-side {
-    grid-template-columns: minmax(300px, 1fr) auto;
-    align-items: center;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
     gap: 10px;
   }
 
   body.mkt2-full .m2-command-nav {
-    overflow-x: visible;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  body.mkt2-full .m2-command-nav::-webkit-scrollbar {
+    display: none;
   }
 
   body.mkt2-full .m2-browse-layer {
@@ -6823,6 +6828,27 @@ html[data-theme="light"] body.mkt2-full :where(.m2-skeleton, .m2-skeleton::after
   -webkit-line-clamp: 2;
 }
 
+#backerLandingCreatorFeed .mini-signal {
+  display: flex;
+  min-width: 0;
+  margin-top: 10px;
+  color: var(--muted, #a6a39c);
+  font-family: "Geist Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 9px;
+  gap: 9px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+#backerLandingCreatorFeed .mini-signal span:not(:first-child) {
+  display: none;
+}
+
+#backerLandingCreatorFeed .mini-signal b {
+  color: var(--text, #f5f3ee);
+  font-size: 11px;
+}
+
 #backerLandingCreatorFeed .mini-card.is-unavailable {
   cursor: default;
 }
@@ -7023,7 +7049,26 @@ body.mkt2-full .m2-feed-body h3 a {
 }
 
 body.mkt2-full .m2-feed-body .m2-work-native {
-  min-height: 18px;
+  min-height: 24px;
+  font-size: 10px;
+  gap: 7px 12px;
+}
+
+body.mkt2-full .m2-feed-body .m2-work-native span:first-child {
+  display: inline-flex;
+  align-items: baseline;
+  min-height: 24px;
+  padding: 5px 8px;
+  border: 1px solid var(--m2-line-strong);
+  border-radius: 999px;
+  background: var(--m2-surface);
+  color: var(--m2-muted);
+  gap: 4px;
+}
+
+body.mkt2-full .m2-feed-body .m2-work-native span:first-child b {
+  color: var(--m2-ink);
+  font-size: 12px;
 }
 
 body.mkt2-full .m2-feed-person {
