@@ -1,5 +1,6 @@
 /* Backer global navigation — shared across public browsing surfaces. */
 .site-menu-header > .brand,
+.site-menu-header > .backer-brand-lockup,
 .site-menu-header > .nav-cta,
 .site-menu-header > .topbar-actions{position:relative;z-index:2}
 
