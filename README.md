@@ -25,7 +25,7 @@ A convenience script is included:
 ./run.sh        # starts the server and prints the URL
 ```
 
-This static server is enough for the product demo but not for `/api/*`, live view counts,
+This static server is enough for the product demo but not for `/api/*`, measured view counts,
 or the protected analytics dashboard. For analytics development, install Node.js 20+,
 run `pnpm install`, configure a local `.env.local`, and use a Vercel-compatible local
 server.
@@ -93,9 +93,10 @@ Backer keeps GA4 and its first-party analytics separate:
   applies a seven-day deletion threshold through the daily retention job (normally
   removed within the following 24 hours).
 
-The public badge starts at **2,049 on 2026-07-24 UTC**, adds **3 for each completed UTC
-day**, and adds accepted natural human views. It exposes one cached aggregate number,
-not visitor details.
+The number beneath the Backer logo is currently a scheduled display, not measured
+traffic. It starts at 2,305 on 20 August 2026 UTC and adds 5 after each completed UTC
+day. The browser computes it locally and does not call the first-party public-count
+endpoint or a third-party counter.
 
 Counts represent consented traffic and can differ from GA4 or server logs. Unique
 visitors and unique IPs are estimates because of shared networks, VPNs, cookie
@@ -116,10 +117,10 @@ DebugView, and then deploy the validated commit. The exact setup, privacy review
 retention, verification, rollback, and key-rotation procedures are in
 [`docs/ANALYTICS_DEPLOYMENT.md`](docs/ANALYTICS_DEPLOYMENT.md).
 
-The existing `deploy.sh` is a legacy GitHub Pages helper. GitHub Pages can host a static
-non-analytics preview, but it cannot execute the collector, natural view counter,
-retention job, or protected administrator APIs. Do not use that helper for the
-production analytics deployment.
+The existing `deploy.sh` is a legacy GitHub Pages helper. GitHub Pages can host the
+static product and its scheduled header display, but it cannot execute the first-party
+collector, human-view aggregate, retention job, or protected
+administrator APIs. Do not use that helper for the production analytics deployment.
 
 ## Notes
 

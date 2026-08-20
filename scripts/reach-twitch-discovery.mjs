@@ -78,6 +78,26 @@ export function parseTwitchPlaylistJson(value, requestedHandle) {
   }).filter(Boolean);
 }
 
+export async function fetchTwitchAvatarUrl(handleValue, options = {}) {
+  const handle = String(handleValue || '').normalize('NFKC').toLowerCase().trim();
+  if (!/^[a-z0-9_]{2,40}$/.test(handle)) return '';
+  const fetchImpl = options.fetchImpl || fetch;
+  try {
+    const response = await fetchImpl(`https://decapi.me/twitch/avatar/${encodeURIComponent(handle)}`, {
+      redirect: 'follow',
+      headers: { Accept: 'text/plain', 'User-Agent': 'BackerDiscovery/1.0' },
+      signal: AbortSignal.timeout(20_000)
+    });
+    if (!response.ok) return '';
+    const value = String(await response.text()).trim();
+    const parsed = new URL(value);
+    return parsed.protocol === 'https:' && parsed.hostname === 'static-cdn.jtvnw.net'
+      && /\/jtv_user_pictures\//.test(parsed.pathname) ? parsed.href : '';
+  } catch (_error) {
+    return '';
+  }
+}
+
 export async function verifyTwitchInstalledRouter(options = {}) {
   const execImpl = options.execImpl || execFileAsync;
   const agentReachBin = options.agentReachBin || process.env.BACKER_AGENT_REACH_BIN || 'agent-reach';

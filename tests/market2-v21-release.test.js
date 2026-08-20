@@ -107,16 +107,25 @@ test('Market2 annotation release has one filter entry, profiles before contents,
   assert.doesNotMatch(source, /m2-category-row/);
   assert.doesNotMatch(source, /workSectionHTML\(person\) \+ ledgerHTML\(person\)/);
   assert.doesNotMatch(source, /<section class="m2-why-now"|<section class="m2-attention-metrics"/);
+  assert.doesNotMatch(source, /peopleHTML\(list\) \+ dossierHTML|\+ \(person \? rightRailHTML|catalogFeedHTML\(list\) \+ methodologyHTML\(\)/);
+  assert.match(source, /m2-profile-grid m2-desktop-people/);
+  assert.match(source, /sourceDiverseWithMedia/);
+  assert.match(source, /usableMediaURL/);
+  assert.match(source, /launchMediaURL/);
+  assert.match(source, /failedMediaURLs/);
+  assert.match(source, /data-m2-platform-connect="instagram"/);
+  assert.match(source, /chromewebstore\.google\.com\/detail\/ildkmabpimmkaediidaifkhjpohdnifk/);
+  assert.match(styles, /grid-template-columns:\s*repeat\(3, minmax\(0, 1fr\)\)/);
   assert.match(source, /if \(!complete\) return ''/);
   assert.match(source, /drawerInitialRange/);
   assert.match(source, /drawerInitialSort/);
   assert.match(source, /reloadCatalog[\s\S]*scheduleDataLoad\(\)[\s\S]*scheduleDiscovery/);
   assert.match(source, /drawerSnapshot/);
-  assert.match(source, /Showing sources with real profiles or original content retained in this catalog\./);
+  assert.match(source, /Available sources filter this catalog\. Instagram stays visible when a browser connection is needed\./);
   assert.doesNotMatch(html, /css\/market\.css|js\/market-data\.js|js\/market\.js|data-view="market"/);
   assert.match(html, /<\/section>\s*<!-- SHARED FLICKERING FOOTER -->\s*<footer class="backer-footer/);
   assert.doesNotMatch(html, /Attention needs an evidence trail|<div class="val-proof">|>Records<|>Signals<|>Limits</);
-  assert.match(html, /<h3>Capital already follows<\/h3>/);
+  assert.match(html, /<h3>Capital already flows to people on the internet\.<\/h3>/);
   assert.doesNotMatch(html, /Tips, memberships, subscriptions, and public engagement/);
 });
 

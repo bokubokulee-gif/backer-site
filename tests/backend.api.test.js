@@ -74,7 +74,7 @@ function request(method, body, headers, url) {
 function collectorConfig(overrides) {
   return Object.assign(
     {
-      consentPolicyVersion: '2026-07-24',
+      consentPolicyVersion: '2026-08-20',
       hashKeyVersion: 'v1',
       encryptionKeyVersion: 'v1',
       storeRawIp: false,
@@ -114,7 +114,7 @@ function payload(overrides) {
       utm: { source: null, medium: null, campaign: null, id: null },
       deviceClass: 'desktop',
       locale: 'en-US',
-      consentPolicyVersion: '2026-07-24'
+      consentPolicyVersion: '2026-08-20'
     },
     overrides || {}
   );
@@ -181,7 +181,7 @@ test('GET /api/config returns only the public contract and is never cached', asy
     collectionEnabled: true,
     config: {
       ga4MeasurementId: 'g-test123',
-      consentPolicyVersion: '2026-07-24',
+      consentPolicyVersion: '2026-08-20',
       publicViewCountsEnabled: true
     }
   });
@@ -191,7 +191,7 @@ test('GET /api/config returns only the public contract and is never cached', asy
   assert.deepEqual(res.body, {
     ga4MeasurementId: 'G-TEST123',
     analyticsCollectionEnabled: true,
-    consentPolicyVersion: '2026-07-24',
+    consentPolicyVersion: '2026-08-20',
     publicViewCountsEnabled: true
   });
   assert.equal(res.headers['cache-control'], 'no-store, max-age=0');
@@ -728,18 +728,15 @@ test('retention endpoint requires its bearer secret', async () => {
   assert.equal(calls, 1);
 });
 
-test('public count uses only anchored natural views and returns baseline plus daily increment', async () => {
+test('public count returns only durable recorded human views', async () => {
   const config = {
-    publicViewCountsEnabled: true,
-    publicCountBase: 2049,
-    publicCountDailyIncrement: 3,
-    publicCountStartDate: '2026-07-24'
+    publicViewCountsEnabled: true
   };
-  assert.equal(calculatePublicCount(config, 11, new Date('2026-07-26T00:00:00Z')), 2066);
+  assert.equal(calculatePublicCount(config, 11), 11);
+  assert.throws(() => calculatePublicCount(config, -1), /Invalid human view count/);
   let anchor;
   const handler = createPublicCountHandler({
     config,
-    now: () => new Date('2026-07-26T00:00:00Z'),
     totalHumanViews: async (value) => {
       anchor = value;
       return 11;
@@ -747,6 +744,6 @@ test('public count uses only anchored natural views and returns baseline plus da
   });
   const res = response();
   await handler(request('GET'), res);
-  assert.equal(anchor, '2026-07-24');
-  assert.deepEqual(res.body, { count: 2066 });
+  assert.equal(anchor, '1970-01-01');
+  assert.deepEqual(res.body, { count: 11, source: 'human_views' });
 });

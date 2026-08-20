@@ -15,7 +15,7 @@ const state = {
   adminAuthenticated: false,
   configAvailable: true,
   analyticsCollectionEnabled: true,
-  consentPolicyVersion: '2026-07-24',
+  consentPolicyVersion: '2026-08-20',
   publicViewCountsEnabled: true,
   publicCountRequests: 0
 };
@@ -65,7 +65,7 @@ async function handler(req, res) {
   }
   if (url.pathname === '/api/analytics/public-count') {
     state.publicCountRequests += 1;
-    json(res, 200, { count: 2049 + state.views.length });
+    json(res, 200, { count: 37 + state.views.length, source: 'human_views' });
     return;
   }
   if (url.pathname === '/api/analytics/view' && req.method === 'POST') {
@@ -278,19 +278,19 @@ test('server and bundled policy skew fails closed before any collection', async 
       visitor: localStorage.getItem('backer_analytics_visitor_v1'),
       session: sessionStorage.getItem('backer_analytics_session_v1')
     }));
-    assert.equal(browserState.consent.policyVersion, '2026-07-24');
+    assert.equal(browserState.consent, null);
     assert.equal(browserState.visitor, null);
     assert.equal(browserState.session, null);
     assert.equal(await page.locator('.backer-consent-accept').isDisabled(), true);
     assert.equal(await page.evaluate(() => window.BackerAnalytics.consentDecision()), 'rejected');
     assert.equal(state.views.length, 0);
   } finally {
-    state.consentPolicyVersion = '2026-07-24';
+    state.consentPolicyVersion = '2026-08-20';
     await context.close();
   }
 });
 
-test('a disabled public-count flag mounts no badge and makes no count request', async () => {
+test('a disabled public-count flag mounts no scheduled display and makes no count request', async () => {
   state.views.length = 0;
   state.publicViewCountsEnabled = false;
   state.publicCountRequests = 0;
@@ -324,7 +324,7 @@ test('a configured site with no collection backend exposes no inoperative consen
   }
 });
 
-test('an explicit static-page flag keeps the formula badge on when runtime config is unavailable', async () => {
+test('an explicit static-page flag renders the scheduled display without any count request', async () => {
   state.views.length = 0;
   state.configAvailable = false;
   state.publicCountRequests = 0;
@@ -332,10 +332,15 @@ test('an explicit static-page flag keeps the formula badge on when runtime confi
   try {
     await page.goto(`${origin}/backerdemo.html`, { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('.backer-view-count');
-    await waitUntil(() => state.publicCountRequests === 1);
     const countText = await page.locator('.backer-view-count').textContent();
     assert.match(countText, /^[\d,]+ views$/);
-    assert.ok(Number(countText.replace(/\D/g, '')) >= 2049);
+    assert.equal(
+      Number(countText.replace(/\D/g, '')),
+      await page.evaluate(() => window.BackerAnalyticsCore.publicCountFallback(Date.now()))
+    );
+    assert.equal(await page.locator('.backer-view-count').getAttribute('data-source'), 'scheduled_display');
+    assert.match(await page.locator('.backer-view-count').getAttribute('title'), /Not measured traffic/);
+    assert.equal(state.publicCountRequests, 0);
     assert.equal(
       await page.locator('.backer-consent-panel').count(),
       0,
@@ -345,6 +350,32 @@ test('an explicit static-page flag keeps the formula badge on when runtime confi
     assert.equal(state.views.length, 0);
   } finally {
     state.configAvailable = true;
+    await context.close();
+  }
+});
+
+test('a long-open page recomputes the scheduled display after the UTC day changes', async () => {
+  state.publicViewCountsEnabled = true;
+  state.publicCountRequests = 0;
+  const { context, page } = await newPage();
+  try {
+    await page.goto(`${origin}/backerdemo.html`, { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('.backer-view-count');
+    const values = await page.evaluate(() => {
+      const originalNow = Date.now;
+      Date.now = () => Date.parse('2026-08-20T23:59:59.999Z');
+      window.BackerAnalytics.refreshPublicCount();
+      const before = document.querySelector('.backer-view-count').textContent;
+      Date.now = () => Date.parse('2026-08-21T00:00:00.000Z');
+      window.BackerAnalytics.refreshPublicCount();
+      const after = document.querySelector('.backer-view-count').textContent;
+      Date.now = originalNow;
+      return { before, after };
+    });
+    assert.equal(values.before, '2,305 views');
+    assert.equal(values.after, '2,310 views');
+    assert.equal(state.publicCountRequests, 0);
+  } finally {
     await context.close();
   }
 });
@@ -423,7 +454,7 @@ test('cross-tab rejection and removal stop subsequent tracking and clear identit
       const key = 'backer_analytics_consent_v1';
       const value = JSON.stringify({
         decision: 'rejected',
-        policyVersion: '2026-07-24',
+        policyVersion: '2026-08-20',
         timestamp: new Date().toISOString()
       });
       localStorage.setItem(key, value);

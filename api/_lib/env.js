@@ -35,22 +35,9 @@ function requireSecret(name, minimumLength) {
 
 function analyticsConfig() {
   return {
-    consentPolicyVersion: process.env.ANALYTICS_CONSENT_POLICY_VERSION || '2026-07-24',
+    consentPolicyVersion: process.env.ANALYTICS_CONSENT_POLICY_VERSION || '2026-08-20',
     ga4MeasurementId: process.env.GA4_MEASUREMENT_ID || '',
     publicViewCountsEnabled: boolValue(process.env.PUBLIC_VIEW_COUNTS_ENABLED, false),
-    publicCountBase: intValue(
-      process.env.PUBLIC_VIEW_COUNT_BASELINE,
-      2049,
-      0,
-      10_000_000_000
-    ),
-    publicCountDailyIncrement: intValue(
-      process.env.PUBLIC_VIEW_COUNT_DAILY_INCREMENT,
-      3,
-      0,
-      1_000_000
-    ),
-    publicCountStartDate: process.env.PUBLIC_VIEW_COUNT_ANCHOR_DATE || '2026-07-24',
     storeRawIp: boolValue(process.env.ANALYTICS_STORE_RAW_IP, false),
     rawIpRetentionDays: intValue(process.env.ANALYTICS_RAW_IP_RETENTION_DAYS, 7, 1, 30),
     eventRetentionDays: intValue(process.env.ANALYTICS_EVENT_RETENTION_DAYS, 90, 1, 730),

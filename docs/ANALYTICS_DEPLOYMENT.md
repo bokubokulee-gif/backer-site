@@ -11,17 +11,13 @@ This repository is deployable code, not a completed production installation. Do 
 - Supabase PostgreSQL stores protected detailed events, pseudonymous hashes, sessions, daily rollups, admin sessions, and audit records.
 - `/admin/analytics` is only a shell. Every data request still requires the signed `HttpOnly`, `Secure`, `SameSite=Strict` administrator cookie.
 - GA4 receives separate, sanitized event payloads. Backer never adds an IP-address field to those payloads or attempts to retrieve raw IPs from GA4, and it excludes personal information from event parameters.
-- `GET /api/analytics/public-count` returns one cached aggregate number and nothing visitor-specific.
+- `GET /api/analytics/public-count` remains disabled by default and is reserved for a
+  later measured-count launch. The current public browser does not call it.
 
-The public count is:
-
-```text
-2049
-+ 3 × completed UTC days since 2026-07-24
-+ accepted human first-party views recorded on or after 2026-07-24
-```
-
-On the anchor day it starts at `2049`; the scheduled increment begins after the first completed UTC day. Bots, rejected analytics consent, failed collectors, aliases, retries, and duplicate views do not add natural traffic. `vercel.json` safely enables the non-sensitive public aggregate for Vercel deployments and fixes the baseline, anchor, and daily increment. `.env.example` remains disabled by default so other environments opt in intentionally.
+The number beneath the Backer logo is a scheduled display. It starts at 2,305 on
+20 August 2026 UTC and adds 5 after each completed UTC day. It is computed locally,
+is not measured traffic, and does not use the first-party collector or a third-party
+counter. `PUBLIC_VIEW_COUNTS_ENABLED` controls whether the scheduled display mounts.
 
 ## 1. Prerequisites
 
@@ -108,7 +104,7 @@ Add the following production environment values in Vercel:
 - `DATABASE_URL`
 - `DATABASE_SSL=require`
 - `DATABASE_SSL_REJECT_UNAUTHORIZED=true`
-- `ANALYTICS_CONSENT_POLICY_VERSION=2026-07-24`
+- `ANALYTICS_CONSENT_POLICY_VERSION=2026-08-20`
 - `ANALYTICS_HASH_SECRET`
 - `ANALYTICS_HASH_KEY_VERSION=v1`
 - `ANALYTICS_ADMIN_PASSWORD_HASH`
@@ -134,12 +130,15 @@ Add the following production environment values in Vercel:
 - `ANALYTICS_ADMIN_SESSION_IDLE_SECONDS=1800`
 - `ANALYTICS_ADMIN_REAUTH_SECONDS=300`
 
-The non-secret public-count settings are pinned in `vercel.json`:
+The public-count feature is disabled by default in `vercel.json`:
 
-- `PUBLIC_VIEW_COUNTS_ENABLED=true`
-- `PUBLIC_VIEW_COUNT_BASELINE=2049`
-- `PUBLIC_VIEW_COUNT_ANCHOR_DATE=2026-07-24`
-- `PUBLIC_VIEW_COUNT_DAILY_INCREMENT=3`
+- `PUBLIC_VIEW_COUNTS_ENABLED=false`
+
+The current browser display never calls `/api/analytics/public-count`, even on a
+dynamic deployment. It uses the reviewed local schedule documented in `privacy.html`:
+2,305 on 20 August 2026 UTC, then 5 after each completed UTC day. The endpoint remains
+available only for future measured-count work and must stay disabled until that work
+is separately approved.
 
 `vercel.json` also preserves existing `.html` URLs, rewrites `/admin/analytics` to its static shell, applies security/no-store headers, and schedules `GET /api/analytics/retention` daily at 03:17 UTC. Vercel Cron supplies `Authorization: Bearer $CRON_SECRET`; the endpoint rejects other requests.
 
@@ -175,10 +174,10 @@ Use a clean browser profile with developer tools open.
 
 ### Public count
 
-1. Load `/api/analytics/public-count` and confirm the response contains only `{ "count": number }`.
-2. On 2026-07-24 UTC, the seeded component is `2049`; each completed UTC day adds `3`.
-3. Submit one accepted human view, wait for the aggregate cache to refresh, and confirm the natural component increases by one.
-4. Confirm a bot-classified request and a duplicate idempotency key do not increase the human component.
+1. Confirm the header display is 2,305 at `2026-08-20T00:00:00Z` and remains 2,305 until the next UTC midnight.
+2. Confirm it becomes 2,310 at `2026-08-21T00:00:00Z` and adds exactly 5 after each later completed UTC day.
+3. Confirm the browser makes no request to `/api/analytics/public-count` or any third-party counter.
+4. Leave `/api/analytics/public-count` disabled until a separately approved measured-count release.
 
 ### Administrator dashboard
 

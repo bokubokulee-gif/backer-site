@@ -35,6 +35,7 @@
   var gaEnablePromise = null;
   var pendingGA = [];
   var countEl = null;
+  var countRefreshTimer = null;
   var bannerEl = null;
 
   var DENIED_CONSENT = {
@@ -437,7 +438,7 @@
     if (!runtimePolicyMatches) {
       return runtimeConfigAvailable
         ? 'Analytics is temporarily unavailable while Backer synchronizes its privacy policy configuration. Collection remains off.'
-        : 'Analytics is unavailable in this static preview. Collection remains off; the public view total is a non-identifying formula-only preview.';
+        : 'Analytics is unavailable in this static preview. Collection remains off. The view total is a scheduled display, not measured traffic.';
     }
     var signalCopy = (!storedConsent && (signal.gpc || signal.dnt))
       ? ' Your browser privacy signal is being honored, so analytics remains off unless you explicitly accept.'
@@ -493,32 +494,38 @@
     catch (e) { return String(Math.round(value)) + ' views'; }
   }
 
-  function setPublicCount(value, live) {
+  function setPublicCount(value) {
     if (!countEl) return;
     countEl.hidden = false;
     countEl.textContent = formatCount(value);
-    countEl.classList.toggle('is-live', !!live);
-    countEl.setAttribute('data-source', live ? 'aggregate' : 'baseline');
+    countEl.classList.add('is-scheduled');
+    countEl.classList.remove('is-unavailable');
+    countEl.setAttribute('data-source', 'scheduled_display');
+    countEl.setAttribute('aria-label', formatCount(value) + '. Scheduled display, not measured traffic.');
+    countEl.title = 'Scheduled display: 2,305 on 20 August 2026 UTC, plus 5 after each completed UTC day. Not measured traffic.';
+  }
+
+  function millisecondsUntilNextUTCMidnight(now) {
+    var current = new Date(now == null ? Date.now() : now);
+    var next = Date.UTC(
+      current.getUTCFullYear(),
+      current.getUTCMonth(),
+      current.getUTCDate() + 1
+    );
+    return Math.max(1000, next - current.getTime() + 1000);
+  }
+
+  function schedulePublicCountRefresh() {
+    if (countRefreshTimer) window.clearTimeout(countRefreshTimer);
+    countRefreshTimer = window.setTimeout(function () {
+      refreshPublicCount();
+      schedulePublicCountRefresh();
+    }, millisecondsUntilNextUTCMidnight());
   }
 
   function refreshPublicCount() {
     if (!publicViewCountsEnabled || !countEl) return;
-    if (!window.fetch) return;
-    fetch('/api/analytics/public-count', {
-      method: 'GET',
-      credentials: 'same-origin',
-      cache: 'no-cache',
-      headers: { Accept: 'application/json' }
-    }).then(function (response) {
-      if (!response.ok) throw new Error('unavailable');
-      return response.json();
-    }).then(function (data) {
-      var value = Number(data && (data.count != null ? data.count : data.views != null ? data.views : data.total));
-      if (!isFinite(value) || value < 0) return;
-      setPublicCount(Math.floor(value), true);
-    }).catch(function () {
-      if (countEl) countEl.hidden = true;
-    });
+    setPublicCount(Core.publicCountFallback(Date.now()));
   }
 
   function mountBrandCount() {
@@ -533,9 +540,11 @@
     countEl = document.createElement('span');
     countEl.className = 'backer-view-count';
     countEl.setAttribute('aria-live', 'polite');
-    countEl.setAttribute('aria-label', 'Backer site views');
+    countEl.setAttribute('aria-label', 'Backer scheduled view display');
+    countEl.textContent = 'Views …';
     wrapper.appendChild(countEl);
     refreshPublicCount();
+    schedulePublicCountRefresh();
   }
 
   function bindSearchEvents() {
@@ -636,6 +645,13 @@
 
   bindBackerEventBridge();
   bindConsentStorage();
+  window.addEventListener('pageshow', refreshPublicCount);
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) {
+      refreshPublicCount();
+      schedulePublicCountRefresh();
+    }
+  });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootDOM);
   else bootDOM();
 })();

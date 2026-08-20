@@ -52,6 +52,39 @@ export function parseYtDlpJsonLines(value) {
     }));
 }
 
+export function parseYtDlpChannelJson(value) {
+  let row;
+  try {
+    row = JSON.parse(String(value || ''));
+  } catch (_error) {
+    throw codedError('YouTube channel metadata was invalid', 'provider_response_invalid');
+  }
+  const thumbnails = Array.isArray(row && row.thumbnails) ? row.thumbnails : [];
+  const avatar = thumbnails.find((thumbnail) => thumbnail && thumbnail.id === 'avatar_uncropped')
+    || thumbnails.find((thumbnail) => thumbnail && Number(thumbnail.width) > 0
+      && Number(thumbnail.width) === Number(thumbnail.height));
+  const avatarUrl = avatar && /^https:\/\/yt3\.googleusercontent\.com\//i.test(String(avatar.url || ''))
+    ? String(avatar.url) : '';
+  return {
+    channelId: String(row && (row.channel_id || row.id) || ''),
+    avatarUrl
+  };
+}
+
+async function mapPool(rows, concurrency, task) {
+  const output = new Array(rows.length);
+  let cursor = 0;
+  const workers = Array.from({ length: Math.min(concurrency, rows.length) }, async () => {
+    while (cursor < rows.length) {
+      const index = cursor;
+      cursor += 1;
+      output[index] = await task(rows[index], index);
+    }
+  });
+  await Promise.all(workers);
+  return output;
+}
+
 async function run(execImpl, command, args, options) {
   try {
     return await execImpl(command, args, options);
@@ -95,5 +128,28 @@ export async function discoverYouTubeWithInstalledRouter(options = {}) {
   outputs.forEach((output) => {
     parseYtDlpJsonLines(output.stdout).forEach((row) => rowsByVideo.set(row.videoId, row));
   });
-  return { rows: Array.from(rowsByVideo.values()), pagesRead: queries.length, backend: 'yt-dlp' };
+  const rows = Array.from(rowsByVideo.values());
+  const channelIds = Array.from(new Set(rows.map((row) => row.channelId).filter(Boolean)));
+  const channels = await mapPool(channelIds, 6, async (channelId) => {
+    try {
+      const response = await run(execImpl, ytDlpBin, [
+        '--js-runtimes', 'node', '--flat-playlist', '--playlist-end', '1', '--dump-single-json',
+        `https://www.youtube.com/channel/${encodeURIComponent(channelId)}/videos`
+      ], {
+        env: options.env || process.env,
+        encoding: 'utf8',
+        timeout: 60_000,
+        maxBuffer: 8 * 1024 * 1024
+      });
+      return parseYtDlpChannelJson(response.stdout);
+    } catch (_error) {
+      return { channelId, avatarUrl: '' };
+    }
+  });
+  const avatarByChannelId = new Map(channels.map((row) => [row.channelId, row.avatarUrl]));
+  return {
+    rows: rows.map((row) => ({ ...row, channelAvatarUrl: avatarByChannelId.get(row.channelId) || '' })),
+    pagesRead: queries.length + channelIds.length,
+    backend: 'yt-dlp'
+  };
 }

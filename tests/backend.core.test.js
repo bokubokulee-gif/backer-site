@@ -33,7 +33,7 @@ const { validateViewPayload } = require('../api/_lib/validate');
 
 const HASH_SECRET = 'h'.repeat(48);
 const SESSION_SECRET = 's'.repeat(48);
-const POLICY = '2026-07-24';
+const POLICY = '2026-08-20';
 
 function validPayload(overrides) {
   return Object.assign(

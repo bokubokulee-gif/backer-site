@@ -174,6 +174,9 @@ function createCreator(value) {
     displayName,
     bio: compactText(input.bio || input.description, 600),
     avatarUrl: safeHttpsUrl(input.avatarUrl || input.avatar),
+    avatarSourceUrl: safeHttpsUrl(input.avatarUrl || input.avatar)
+      ? canonicalUrl(input.avatarSourceUrl || input.profileUrl || input.url)
+      : null,
     primaryIdentityId: input.primaryIdentityId || null,
     discoveryEligibility: 'research_only',
     observedAt
@@ -208,6 +211,8 @@ function createContentRecord(value) {
   const url = canonicalUrl(input.canonicalUrl || input.url);
   const title = compactText(input.title || input.excerpt, 280);
   if (!PROVIDERS.includes(provider) || !nativeId || !creatorId || !platformIdentityId || !url || !title) return null;
+  const thumbnailUrl = safeHttpsUrl(input.thumbnailUrl || input.thumbnail);
+  const thumbnailRoles = new Set(['content', 'publication_art', 'creator_avatar_fallback']);
   return {
     id: stableId('content', provider, nativeId),
     creatorId,
@@ -218,7 +223,12 @@ function createContentRecord(value) {
     title,
     excerpt: compactText(input.excerpt || input.description, 700),
     canonicalUrl: url,
-    thumbnailUrl: safeHttpsUrl(input.thumbnailUrl || input.thumbnail),
+    thumbnailUrl,
+    thumbnailRole: thumbnailUrl && thumbnailRoles.has(input.thumbnailRole) ? input.thumbnailRole
+      : thumbnailUrl ? 'content' : null,
+    thumbnailSourceUrl: thumbnailUrl
+      ? canonicalUrl(input.thumbnailSourceUrl || input.canonicalUrl || input.url)
+      : null,
     publishedAt: isoDate(input.publishedAt),
     observedAt: isoDate(input.observedAt)
   };

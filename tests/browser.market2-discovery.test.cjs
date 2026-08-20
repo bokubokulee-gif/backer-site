@@ -94,6 +94,31 @@ function discoveryResponse(body) {
   };
 }
 
+function instagramResponse() {
+  const person = {
+    ...creator('public-person-instagram-connected', 'Studio Meridian', '@studio_meridian'),
+    avatarUrl: 'https://images.example.test/studio-meridian.png'
+  };
+  const profileUrl = 'https://www.instagram.com/studio_meridian/';
+  return {
+    schemaVersion: 4,
+    generatedAt: '2026-08-20T10:00:00Z',
+    status: 'fresh',
+    providers: { instagram: { runStatus: 'succeeded', publishState: 'fresh', observedAt: '2026-08-20T10:00:00Z' } },
+    people: [person],
+    work: [],
+    workClusters: [],
+    evidence: {
+      platformIdentities: [{ id: 'identity-instagram-connected', personId: person.id, provider: 'instagram', handle: person.handle, url: profileUrl, sourceUrl: profileUrl, observedAt: '2026-08-20T10:00:00Z', state: 'fresh' }],
+      metricObservations: []
+    },
+    rankings: [{ personId: person.id, rank: 1 }],
+    counts: { responsePage: { scope: 'response_page', creatorEntities: 1, linkedPlatformIdentities: 1, uniqueWorks: 0, sourceRecords: 0, evidenceObservations: 0 } },
+    markets: [],
+    nextCursor: null
+  };
+}
+
 function deepContentResponse(body) {
   const pageTwo = body.cursor === 'deep_next_1';
   const person = creator('public-person-youtube-deep-owner', 'Deep Owner', '@deep_owner');
@@ -167,7 +192,7 @@ async function handler(req, res) {
       return;
     }
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(discoveryMode === 'deep-content' ? deepContentResponse(body) : discoveryResponse(body)));
+    res.end(JSON.stringify(discoveryMode === 'deep-content' ? deepContentResponse(body) : discoveryMode === 'instagram-records' ? instagramResponse() : discoveryResponse(body)));
     return;
   }
   if (url.pathname === '/data/discovery-catalog.json' && discoveryMode === 'failed') {
@@ -197,7 +222,16 @@ async function page(viewport = { width: 1440, height: 1000 }) {
   const context = await browser.newContext({ viewport });
   await context.route('https://fonts.googleapis.com/**', (route) => route.abort());
   await context.route('https://fonts.gstatic.com/**', (route) => route.abort());
-  await context.route(/https:\/\/(?!127\.0\.0\.1).*/, (route) => route.abort());
+  await context.route(/https:\/\/(?!127\.0\.0\.1).*/, (route) => {
+    if (route.request().resourceType() === 'image') {
+      return route.fulfill({
+        status: 200,
+        contentType: 'image/png',
+        body: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64')
+      });
+    }
+    return route.abort();
+  });
   return { context, tab: await context.newPage() };
 }
 
@@ -223,7 +257,12 @@ test('Market2 loads trending discovery, keeps research controls safe, and pagina
   try {
     await tab.goto(`${origin}/backerdemo.html#market2`);
     await tab.waitForSelector('.m2-person-name', { state: 'visible' });
-    await tab.waitForFunction(() => Array.from(document.querySelectorAll('.m2-person-name')).some((node) => node.textContent === 'Neon Byte'));
+    await tab.waitForFunction(() => document.querySelectorAll('.m2-profile-card').length === 9);
+    await tab.waitForFunction(() => {
+      const profiles = Array.from(document.querySelectorAll('.m2-profile-card .m2-profile-media img'));
+      const works = Array.from(document.querySelectorAll('.m2-feed-card .m2-feed-media img'));
+      return profiles.length === 9 && works.length === 12 && profiles.concat(works).every((image) => image.complete && image.naturalWidth > 0);
+    }, null, { timeout: 20000 });
 
     assert.equal(requests[0].mode, 'trending');
     assert.equal(requests[0].query, '');
@@ -241,7 +280,7 @@ test('Market2 loads trending discovery, keeps research controls safe, and pagina
     assert.equal(await tab.locator('.m2-state-banner').count(), 0, 'healthy retained catalog does not need a fallback banner');
     assert.equal(await tab.locator('#m2PeopleTitle').innerText(), 'Profiles to Back');
     assert.equal(await tab.locator('#m2FeedTitle').innerText(), 'Contents to Back');
-    assert.equal(await tab.locator('.m2-list-provenance, .m2-why-now, .m2-attention-metrics, .m2-ledger').count(), 0);
+    assert.equal(await tab.locator('.m2-list-provenance, .m2-why-now, .m2-attention-metrics, .m2-ledger, .m2-dossier, .m2-right, .m2-method').count(), 0);
     assert.equal(await tab.locator('[data-m2-more-feed]').innerText(), 'Show more');
     assert.ok(await tab.locator('.m2-workspace').evaluate((node) => node.compareDocumentPosition(document.querySelector('.m2-catalog-feed')) & Node.DOCUMENT_POSITION_FOLLOWING));
     const catalogStrip = await tab.locator('.m2-context-strip').innerText();
@@ -254,37 +293,32 @@ test('Market2 loads trending discovery, keeps research controls safe, and pagina
     assert.equal(await tab.locator('.m2-context-track').count(), 2);
     assert.equal(await tab.locator('.m2-context-track[aria-hidden="true"]').count(), 1);
     assert.equal(await tab.locator('.m2-source-rail').count(), 0, 'catalog counts appear only in the moving strip');
-    assert.equal(await tab.locator('.m2-desktop-people .m2-person-row').count(), 32);
+    assert.equal(await tab.locator('.m2-desktop-people .m2-profile-card').count(), 9);
     assert.equal(await tab.locator('.m2-feed-card').count(), 12);
+    assert.equal(await tab.locator('.m2-profile-card .m2-profile-media img').count(), 9, 'first-glance profile cards prioritize retained source images');
+    assert.equal(await tab.locator('.m2-feed-card .m2-feed-media img').count(), 12, 'first-glance content cards prioritize retained source thumbnails');
+    assert.equal(await tab.locator('.m2-profile-media.is-image-fallback, .m2-feed-media.is-image-fallback').count(), 0, 'the first marketplace viewport should contain no broken media panels');
+    assert.equal(await tab.locator('.m2-profile-image-fallback:visible, .m2-feed-fallback:visible').count(), 0, 'fallback copy stays hidden behind every loaded first-glance image');
     assert.match(await tab.locator('.m2-catalog-feed').innerText(), /Contents to Back/i);
-    assert.match(await tab.locator('.m2-feed-card', { hasText: 'Build a tiny compiler in one hour' }).locator('.m2-work-native span').first().innerText(), /80\.3K\s+Views/i);
     const initialContentProviders = await tab.locator('.m2-feed-byline small').allTextContents();
-    for (const provider of ['YouTube', 'Bilibili', 'Twitch', 'GitHub', 'DEV', 'Medium', 'Substack', 'RSS']) {
-      assert.ok(initialContentProviders.some((label) => label.startsWith(provider)),
-        `expected a ${provider} record in the initial source-diverse feed`);
-    }
-    assert.ok(new Set(initialContentProviders.map((label) => label.split(' · ')[0])).size >= 8, 'initial feed should span at least eight retained sources');
+    assert.ok(new Set(initialContentProviders.map((label) => label.split(' · ')[0])).size >= 3, 'image-first feed still interleaves retained sources');
     assert.doesNotMatch(await tab.locator('.market2-shell').innerText(), /Jeff Delaney|ThePrimeagen|Theo Browne|Wes Bos/);
     assert.equal(await tab.locator('[data-m2-create]').count(), 0);
-    const neonFacts = tab.locator('.m2-desktop-people .m2-person-row', { hasText: 'Neon Byte' }).locator('.m2-person-facts');
-    assert.match(await neonFacts.innerText(), /Views[\s\S]*Subscribers/);
-    assert.doesNotMatch(await neonFacts.innerText(), /Word count|unavailable/i);
-
-    await tab.locator('.m2-desktop-people .m2-person-row', { hasText: 'Neon Byte' }).locator('[data-m2-select]').click();
-    assert.equal(await tab.locator('.m2-proof-callout').count(), 0, 'incomplete PoA dimensions are omitted instead of rendering unavailable values');
-    assert.doesNotMatch(await tab.locator('.m2-dossier').innerText(), /Unavailable/i);
-    assert.match(await tab.locator('.m2-work-card').first().innerText(), /23K Likes/);
-    assert.match(await tab.locator('.m2-work-card').first().innerText(), /1 source record · 1 unique work/);
-    assert.match(await tab.locator('.m2-work-card').first().innerText(), /Published Aug 18, 2026/);
-    assert.match(await tab.locator('.m2-work-card').first().innerText(), /Fresh|Recent snapshot/);
-    assert.equal(await tab.locator('.m2-ticket').count(), 0);
-    assert.equal(await tab.locator('[data-m2-create]').count(), 0);
-    assert.match(await tab.locator('.m2-research-boundary').innerText(), /No execution/);
+    assert.equal(await tab.locator('.m2-ticket, .m2-research-boundary').count(), 0);
     assert.equal(await tab.locator('.backer-footer').count(), 1);
     assert.ok(await tab.locator('#app').evaluate((node) => node.compareDocumentPosition(document.querySelector('.backer-footer')) & Node.DOCUMENT_POSITION_FOLLOWING));
 
+    const initialCreatorCount = Number(
+      (await tab.locator('.m2-context-track').first().innerText())
+        .match(/([\d,]+) creator entities/)[1]
+        .replaceAll(',', '')
+    );
     await tab.locator('[data-m2-load-connected]').click();
-    await tab.waitForFunction(() => Array.from(document.querySelectorAll('.m2-person-name')).some((node) => node.textContent === 'Signal Lab'));
+    await tab.waitForFunction((expected) => {
+      const text = document.querySelector('.m2-context-track')?.textContent || '';
+      const match = text.match(/([\d,]+) creator entities/);
+      return match && Number(match[1].replaceAll(',', '')) === expected;
+    }, initialCreatorCount + 1);
     assert.equal(requests.at(-1).cursor, 'next_1');
 
     await tab.fill('#m2Search', 'Neon Byte');
@@ -292,6 +326,9 @@ test('Market2 loads trending discovery, keeps research controls safe, and pagina
     await new Promise((resolve) => setTimeout(resolve, 450));
     assert.equal(requests.at(-1).mode, 'search');
     assert.equal(requests.at(-1).query, 'Neon Byte');
+    await tab.waitForFunction(() => Array.from(document.querySelectorAll('.m2-person-name')).some((node) => node.textContent === 'Neon Byte'));
+    assert.match(await tab.locator('.m2-profile-card', { hasText: 'Neon Byte' }).locator('.m2-profile-metrics').innerText(), /80\.3K[\s\S]*Views|48\.2K[\s\S]*Subscribers/i);
+    assert.match(await tab.locator('.m2-feed-card', { hasText: 'Build a tiny compiler in one hour' }).locator('.m2-work-native').innerText(), /80\.3K\s+Views/i);
   } finally {
     await context.close();
   }
@@ -323,27 +360,32 @@ test('Marketplace command navigation exits to Home and public research pages', a
   }
 });
 
-test('zero-record providers stay out of the filter surface and cannot empty the real feed', async () => {
+test('unsupported route providers are removed and the drawer only exposes active providers', async () => {
   discoveryMode = 'static-catalog';
   requests = [];
   const { context, tab } = await page();
   try {
-    await tab.goto(`${origin}/backerdemo.html#market2?platforms=instagram`);
+    await tab.goto(`${origin}/backerdemo.html#market2?platforms=unknown-provider`);
     await tab.waitForSelector('.m2-person-name', { state: 'visible' });
-    await tab.waitForFunction(() => !location.hash.includes('instagram') && document.querySelectorAll('.m2-feed-card').length === 12);
+    await tab.waitForFunction(() => !location.hash.includes('unknown-provider') && document.querySelectorAll('.m2-feed-card').length === 12);
 
     assert.equal(await tab.locator('.m2-command h1').count(), 0);
     assert.equal(await tab.locator('.m2-command-summary').innerText(), 'Discover profiles and contents to back');
     assert.equal(await tab.locator('[data-m2-filters]').count(), 1);
     await tab.locator('[data-m2-filters]').click();
     await tab.waitForSelector('.m2-filter-drawer');
-    for (const id of ['facebook', 'instagram', 'douyin']) {
-      assert.equal(await tab.locator(`[data-m2-drawer-platform="${id}"]`).count(), 0, `${id} should not occupy the filter surface without retained records`);
-    }
+    const exposedProviders = tab.locator('[data-m2-drawer-platform]');
+    assert.ok(await exposedProviders.count() > 0, 'retained providers should occupy the filter surface');
+    assert.equal(await tab.locator('[data-m2-drawer-platform][disabled]').count(), 0, 'the drawer should not render disabled provider choices');
+    const instagramConnect = tab.locator('[data-m2-platform-connect="instagram"]');
+    assert.equal(await instagramConnect.count(), 1, 'Instagram remains visible as an explicit connector instead of a dead filter');
+    assert.match(await instagramConnect.innerText(), /Instagram[\s\S]*Browser connection needed[\s\S]*Connect Instagram/);
+    assert.equal(await instagramConnect.locator('a').getAttribute('href'), 'https://chromewebstore.google.com/detail/ildkmabpimmkaediidaifkhjpohdnifk');
+    assert.equal(await tab.locator('[data-m2-drawer-platform="instagram"]').count(), 0, 'zero-record Instagram cannot apply an empty catalog filter');
     for (const id of ['github', 'youtube', 'bilibili', 'twitch', 'medium', 'dev', 'substack', 'rss']) {
       assert.equal(await tab.locator(`[data-m2-drawer-platform="${id}"]`).isEnabled(), true, `${id} should remain filterable`);
     }
-    assert.equal(await tab.locator('.m2-filter-note').innerText(), 'Showing sources with real profiles or original content retained in this catalog.');
+    assert.equal(await tab.locator('.m2-filter-note').innerText(), 'Available sources filter this catalog. Instagram stays visible when a browser connection is needed.');
     for (const selector of ['[data-m2-drawer-range]', '[data-m2-drawer-quick]', '[data-m2-drawer-category-rail]', '[data-m2-drawer-audience]', '[data-m2-drawer-engagement]', '[data-m2-drawer-sort]']) {
       assert.ok(await tab.locator(selector).count(), `${selector} should be available inside the single filter drawer`);
     }
@@ -359,8 +401,31 @@ test('zero-record providers stay out of the filter surface and cannot empty the 
     await tab.locator('[data-m2-drawer-platform="github"]').check();
     await tab.locator('[data-m2-apply-drawer]').click();
     await tab.waitForFunction(() => location.hash.includes('platforms=github'));
-    assert.ok(await tab.evaluate(() => Array.from(document.querySelectorAll('.m2-desktop-people .m2-person-row')).every((row) => row.querySelector('.m2-platform-mark.is-github'))));
-    assert.doesNotMatch(await tab.evaluate(() => location.hash), /instagram|facebook|douyin/);
+    assert.ok(await tab.evaluate(() => Array.from(document.querySelectorAll('.m2-desktop-people .m2-profile-card')).every((row) => row.querySelector('.m2-platform-mark.is-github'))));
+    assert.doesNotMatch(await tab.evaluate(() => location.hash), /unknown-provider/);
+  } finally {
+    await context.close();
+  }
+});
+
+test('Instagram automatically becomes a normal filter when a retained profile is connected', async () => {
+  discoveryMode = 'instagram-records';
+  requests = [];
+  const { context, tab } = await page();
+  try {
+    await tab.goto(`${origin}/backerdemo.html#market2`);
+    await tab.waitForFunction(() => document.querySelector('.m2-context-strip').textContent.includes('Backer connected catalog'));
+    await tab.locator('[data-m2-filters]').click();
+    await tab.waitForSelector('.m2-filter-drawer');
+    assert.equal(await tab.locator('[data-m2-platform-connect="instagram"]').count(), 0);
+    const instagram = tab.locator('[data-m2-drawer-platform="instagram"]');
+    assert.equal(await instagram.count(), 1);
+    assert.equal(await instagram.isEnabled(), true);
+    assert.match(await instagram.getAttribute('aria-label'), /Instagram · 1 profile retained/);
+    await instagram.check();
+    await tab.locator('[data-m2-apply-drawer]').click();
+    await tab.waitForFunction(() => location.hash.includes('platforms=instagram'));
+    assert.deepEqual(await tab.locator('.m2-profile-card .m2-person-name').allTextContents(), ['Studio Meridian']);
   } finally {
     await context.close();
   }
@@ -389,18 +454,17 @@ test('a creator work continuation makes the fifth and sixth retained records vis
   const { context, tab } = await page();
   try {
     await tab.goto(`${origin}/backerdemo.html#market2`);
-    await tab.waitForFunction(() => Array.from(document.querySelectorAll('.m2-person-name'))
-      .some((node) => node.textContent === 'Deep Owner'));
-    const deepFacts = tab.locator('.m2-desktop-people .m2-person-row', { hasText: 'Deep Owner' }).locator('.m2-person-facts');
-    assert.match(await deepFacts.innerText(), /Current high-confidence source facts unavailable/);
-    await tab.locator('.m2-desktop-people .m2-person-row', { hasText: 'Deep Owner' }).locator('[data-m2-select]').click();
-    assert.equal(await tab.locator('.m2-work-card').count(), 4);
+    await tab.waitForSelector('.m2-profile-card');
+    await tab.fill('#m2Search', 'Deep Owner');
+    await tab.waitForFunction(() => Array.from(document.querySelectorAll('.m2-person-name')).some((node) => node.textContent === 'Deep Owner'));
+    assert.match(await tab.locator('.m2-profile-card', { hasText: 'Deep Owner' }).locator('.m2-profile-metrics').innerText(), /native metrics not retained/i);
+    assert.equal(await tab.locator('.m2-feed-card').count(), 4);
 
     await tab.locator('[data-m2-load-connected]').click();
     await tab.waitForFunction(() => document.body.textContent.includes('Deep work 6'));
     assert.equal(requests.at(-1).cursor, 'deep_next_1');
-    await tab.waitForFunction(() => document.querySelectorAll('.m2-work-card').length === 6);
-    assert.equal(await tab.locator('.m2-work-card').count(), 6);
+    await tab.waitForFunction(() => document.querySelectorAll('.m2-feed-card').length === 6);
+    assert.equal(await tab.locator('.m2-feed-card').count(), 6);
     const ownerNames = await tab.locator('.m2-desktop-people .m2-person-name').allTextContents();
     assert.equal(ownerNames.filter((name) => name === 'Deep Owner').length, 1);
   } finally {
@@ -423,11 +487,104 @@ test('Market2 stays within 320px, 390px, 430px, and 608x688 viewports', async ()
       }));
       assert.ok(widths.document <= widths.viewport, `document is ${widths.document}px wide at a ${widths.viewport}px viewport`);
       assert.ok(widths.body <= widths.viewport, `body is ${widths.body}px wide at a ${widths.viewport}px viewport`);
+      assert.equal(await tab.locator('.nav .brand-word').isVisible(), true, `Backer wordmark stays visible at ${viewport.width}px`);
       assert.equal(await tab.locator('[data-m2-filters]').count(), 1);
       assert.equal(await tab.locator('.m2-filterbar, .m2-category-row').count(), 0);
+      await tab.locator('[data-m2-filters]').click();
+      await tab.waitForSelector('[data-m2-platform-connect="instagram"]');
+      const drawerBounds = await tab.evaluate(() => {
+        const drawer = document.querySelector('.m2-filter-drawer');
+        const connector = document.querySelector('[data-m2-platform-connect="instagram"]');
+        const drawerRect = drawer.getBoundingClientRect();
+        const connectorRect = connector.getBoundingClientRect();
+        return {
+          drawerLeft: drawerRect.left,
+          drawerRight: drawerRect.right,
+          connectorLeft: connectorRect.left,
+          connectorRight: connectorRect.right,
+          viewport: innerWidth
+        };
+      });
+      assert.ok(drawerBounds.drawerLeft >= 0 && drawerBounds.drawerRight <= drawerBounds.viewport + 1, `drawer stays inside ${viewport.width}px viewport`);
+      assert.ok(drawerBounds.connectorLeft >= drawerBounds.drawerLeft && drawerBounds.connectorRight <= drawerBounds.drawerRight + 1, `Instagram connector stays inside drawer at ${viewport.width}px`);
+      const drawerType = await tab.evaluate(() => ({
+        apply: parseFloat(getComputedStyle(document.querySelector('.m2-drawer-footer .m2-primary-button')).fontSize),
+        clear: parseFloat(getComputedStyle(document.querySelector('.m2-drawer-footer .m2-clear-button')).fontSize)
+      }));
+      assert.ok(drawerType.apply >= 14 && drawerType.clear >= 14, `drawer actions stay readable at ${viewport.width}px`);
     } finally {
       await context.close();
     }
+  }
+});
+
+test('marketplace uses three readable card columns and removes the abandoned dossier rails', async () => {
+  discoveryMode = 'static-catalog';
+  requests = [];
+  const { context, tab } = await page({ width: 1440, height: 1000 });
+  try {
+    await tab.goto(`${origin}/backerdemo.html#market2`);
+    await tab.waitForSelector('.m2-profile-card');
+    const layout = await tab.evaluate(() => ({
+      profileColumns: getComputedStyle(document.querySelector('.m2-profile-grid')).gridTemplateColumns.split(' ').length,
+      contentColumns: getComputedStyle(document.querySelector('.m2-feed-grid')).gridTemplateColumns.split(' ').length,
+      profileCount: document.querySelectorAll('.m2-profile-card').length,
+      contentCount: document.querySelectorAll('.m2-feed-card').length,
+      discarded: document.querySelectorAll('.m2-dossier, .m2-right, .m2-method').length,
+      profileBeforeContent: Boolean(document.querySelector('.m2-workspace').compareDocumentPosition(document.querySelector('.m2-catalog-feed')) & Node.DOCUMENT_POSITION_FOLLOWING),
+      portraitTreatment: document.querySelector('.m2-profile-media').classList.contains('is-avatar'),
+      portraitWidth: Math.round(document.querySelector('.m2-profile-media img').getBoundingClientRect().width),
+      sourceStateType: parseFloat(getComputedStyle(document.querySelector('.m2-source-state')).fontSize),
+      platformMarkType: parseFloat(getComputedStyle(document.querySelector('.m2-platform-mark')).fontSize)
+    }));
+    assert.deepEqual(layout, {
+      profileColumns: 3,
+      contentColumns: 3,
+      profileCount: 9,
+      contentCount: 12,
+      discarded: 0,
+      profileBeforeContent: true,
+      portraitTreatment: true,
+      portraitWidth: 148,
+      sourceStateType: 12,
+      platformMarkType: 10
+    });
+  } finally {
+    await context.close();
+  }
+});
+
+test('site view count owns the line directly below the Backer brand and never renders a synthetic watching label', async () => {
+  discoveryMode = 'static-catalog';
+  requests = [];
+  const { context, tab } = await page({ width: 1440, height: 1000 });
+  try {
+    await tab.goto(`${origin}/backerdemo.html#market2`);
+    await tab.waitForFunction(() => Boolean(window.BackerAnalytics && document.querySelector('.backer-brand-lockup')));
+    const placement = await tab.evaluate(() => {
+      const lockup = document.querySelector('.backer-brand-lockup');
+      const brand = lockup && lockup.querySelector(':scope > .brand');
+      const count = lockup && lockup.querySelector(':scope > .backer-view-count');
+      const visible = Boolean(count && !count.hidden && count.getClientRects().length);
+      const brandRect = brand && brand.getBoundingClientRect();
+      const countRect = visible ? count.getBoundingClientRect() : null;
+      return {
+        directSibling: Boolean(brand && count && count.previousElementSibling === brand),
+        visible,
+        belowBrand: !visible || countRect.top >= brandRect.top + brandRect.height - 1,
+        leftAligned: !visible || Math.abs(countRect.left - brandRect.left) <= 2,
+        text: count ? count.textContent.trim() : '',
+        source: count ? count.getAttribute('data-source') : ''
+      };
+    });
+    assert.equal(placement.directSibling, true);
+    assert.equal(placement.belowBrand, true);
+    assert.equal(placement.leftAligned, true);
+    assert.doesNotMatch(placement.text, /watching|baseline|estimated/i);
+    assert.notEqual(placement.source, 'baseline');
+    if (placement.visible) assert.match(placement.text, /(?:site )?views|unavailable/i);
+  } finally {
+    await context.close();
   }
 });
 
@@ -460,9 +617,9 @@ test('Market2 light theme keeps visible text and controls at readable computed c
         }
         const samples = [
           ['.m2-command-summary', 'body'], ['.m2-context-track span', 'body'], ['.m2-view-tabs button', 'body'],
-          ['.m2-person-name', 'body'], ['.m2-person-field', 'body'], ['.m2-feed-card h3', '.m2-feed-card'],
+          ['.m2-person-name', '.m2-profile-card'], ['.m2-profile-bio', '.m2-profile-card'], ['.m2-feed-card h3', '.m2-feed-card'],
           ['.m2-feed-byline small', '.m2-feed-card'], ['.m2-filter-button', '.m2-filter-button'],
-          ['.m2-method p', 'body'], ['.backer-footer__link', '.backer-footer'],
+          ['.m2-profile-source', '.m2-profile-card'], ['.backer-footer__link', '.backer-footer'],
           ['.m2-filter-note', '.m2-filter-drawer'], ['.m2-filter-group legend', '.m2-filter-drawer'],
           ['[data-m2-drawer-platform] + span b', '.m2-filter-drawer'],
           ['[data-m2-drawer-platform] + span small', '.m2-filter-drawer']
@@ -475,6 +632,19 @@ test('Market2 light theme keeps visible text and controls at readable computed c
         }).filter((row) => row.ratio < 4.5);
       });
       assert.deepEqual(failures, [], `contrast failures at ${viewport.width}x${viewport.height}: ${JSON.stringify(failures)}`);
+      const fontFailures = await tab.evaluate(() => {
+        const minimums = [
+          ['.m2-command-summary', 18], ['.m2-command-nav a', 15], ['.m2-search input', 16],
+          ['#m2PeopleTitle', 32], ['#m2FeedTitle', 32], ['.m2-person-name', 18],
+          ['.m2-profile-bio', 15], ['.m2-profile-metrics b', 18], ['.m2-feed-body h3', 18],
+          ['.m2-feed-byline small', 14], ['.m2-feed-body .m2-work-native', 14]
+        ];
+        return minimums.map(([selector, minimum]) => {
+          const node = Array.from(document.querySelectorAll(selector)).find((candidate) => candidate.getClientRects().length);
+          return { selector, minimum, actual: node ? parseFloat(getComputedStyle(node).fontSize) : 0 };
+        }).filter((row) => row.actual < row.minimum);
+      });
+      assert.deepEqual(fontFailures, [], `font-size failures at ${viewport.width}x${viewport.height}: ${JSON.stringify(fontFailures)}`);
     } finally {
       await context.close();
     }
@@ -489,7 +659,7 @@ test('mobile full roster renders retained creators in bounded forty-row chunks',
     await tab.goto(`${origin}/backerdemo.html#market2`);
     await tab.waitForFunction(() => {
       const button = document.querySelector('[data-m2-open-roster]');
-      return button && /See all\s+(?:[1-9]\d{2,})/.test(button.textContent || '');
+      return button && /Browse all\s+(?:[1-9]\d{2,})/.test(button.textContent || '');
     });
     await tab.locator('[data-m2-open-roster]').click();
     await tab.waitForSelector('.m2-mobile-roster .m2-person-row');

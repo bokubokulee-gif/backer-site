@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Instrument+Serif:ital@0;1&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/styles.css?v=20260722-2" />
-<link rel="stylesheet" href="css/analytics.css?v=2" />
+<link rel="stylesheet" href="css/analytics.css?v=20260820-3" />
 <link rel="stylesheet" href="css/footer.css?v=20260731-1" />
 <link rel="stylesheet" href="css/site-menu.css?v=3" />
 <script src="js/site-menu.js?v=5" defer></script>
@@ -67,8 +67,8 @@
   <section class="privacy-hero">
     <span class="kicker kicker-accent">Analytics &amp; privacy</span>
     <h1>Understand the traffic.<br /><em>Respect the visitor.</em></h1>
-    <p class="privacy-intro">This page explains Backer’s optional analytics systems, the information they use, how long it is kept, and the controls available to you. Analytics is off until you explicitly accept it.</p>
-    <div class="privacy-meta"><span>Policy version 2026-07-24</span><span>Last updated 24 July 2026</span></div>
+    <p class="privacy-intro">This page explains Backer’s optional analytics systems, the information they use, how long it is kept, and the controls available to you. Optional analytics is off until you explicitly accept it. The scheduled number beneath the Backer logo is separate from analytics and is described below.</p>
+    <div class="privacy-meta"><span>Policy version 2026-08-20</span><span>Last updated 20 August 2026</span></div>
     <div class="privacy-review"><b>Owner and legal review required.</b> Replace the bracketed company, contact, and jurisdiction placeholders before production. This draft is operational product copy, not legal advice.</div>
   </section>
 
@@ -83,12 +83,14 @@
   </section>
 
   <section class="privacy-section" id="systems">
-    <h2>Two separate analytics systems</h2>
+    <h2>Analytics and the header display</h2>
     <h3>Google Analytics 4</h3>
     <p>After consent, Backer uses Google Analytics 4 as an analytics processor to measure sanitized page views and allowlisted product interactions. Backer manually supplies canonical paths without raw query strings, search text, email addresses, names, handles, submitted creator URLs, portfolio details, authentication data, or IP-address fields. Backer does not use Google advertising analytics.</p>
     <p>Google receives the network request needed to provide GA4 and handles data under its own terms and controls. Backer does not attempt to obtain raw IP addresses from GA4 and does not add IP addresses to GA event payloads.</p>
     <h3>Backer first-party analytics</h3>
     <p>After consent, the browser sends a limited page-view record to Backer’s same-origin analytics endpoint. This system provides page views, estimated unique visitors, sessions, and estimated unique-IP counts. It is separate from GA4 and uses different identity and bot-filtering rules.</p>
+    <h3>Scheduled header display</h3>
+    <p>The number beneath the Backer logo is not a traffic measurement. It starts at 2,305 on 20 August 2026 UTC and adds 5 after each completed UTC day. It does not count visits, page loads, or unique people, and it makes no counter request.</p>
   </section>
 
   <section class="privacy-section" id="collection">
@@ -125,8 +127,9 @@
 
   <section class="privacy-section" id="access">
     <h2>Access, security, and disclosures</h2>
-    <p>Individual analytics records are available only through a protected administrator dashboard using a server-side session. Public browsers receive only an aggregate site-view count when that feature is enabled. Public responses never contain visitor, IP, location, referrer, session, or administrator data.</p>
-    <p>Dashboard metrics are labeled “First-party consented analytics.” They may differ from GA4, hosting logs, or the public counter because of consent choices, ad blockers, outages, retry deduplication, bot filtering, and different identity models.</p>
+    <p>Individual analytics records are available only through a protected administrator dashboard using a server-side session. Public analytics responses never contain visitor, IP, location, referrer, session, or administrator data.</p>
+    <p>The header number is an explicitly scheduled display: 2,305 at the 20 August 2026 UTC anchor, then 5 more after each completed UTC day. It is not read from GA4, Backer’s first-party collector, hosting logs, a third-party badge, or a view-count API.</p>
+    <p>Dashboard metrics are labeled “First-party consented analytics.” They are separate from the scheduled header display and may differ from GA4 or hosting logs because of consent choices, ad blockers, outages, retry deduplication, bot filtering, and different identity models.</p>
   </section>
 
   <section class="privacy-section" id="requests">
@@ -184,8 +187,8 @@
 </footer>
 
 <script src="js/shader.js"></script>
-<script src="js/analytics-core.js?v=1"></script>
-<script src="js/analytics.js?v=2"></script>
+<script src="js/analytics-core.js?v=20260820-3"></script>
+<script src="js/analytics.js?v=20260820-3"></script>
 <script src="js/flickering-footer.js?v=20260731-2"></script>
 </body>
 </html>

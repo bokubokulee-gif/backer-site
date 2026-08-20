@@ -9,15 +9,18 @@ import { promisify } from 'node:util';
 import { exhaustCursorPages, exhaustPages } from './discovery-pagination.mjs';
 import { discoverYouTubeWithInstalledRouter } from './reach-youtube-discovery.mjs';
 import {
+  fetchBilibiliOwnerAvatar,
   fetchBilibiliHotPageWithInstalledRouter,
   fetchBilibiliRankWithInstalledRouter,
   fetchBilibiliUsersWithInstalledRouter,
   verifyBilibiliInstalledRouter
 } from './reach-bilibili-discovery.mjs';
 import {
+  fetchTwitchAvatarUrl,
   fetchTwitchVodsWithInstalledRouter,
   verifyTwitchInstalledRouter
 } from './reach-twitch-discovery.mjs';
+import { discoverInstagramWithInstalledRouter } from './reach-instagram-discovery.mjs';
 
 const require = createRequire(import.meta.url);
 const {
@@ -43,6 +46,7 @@ const outputPath = process.env.BACKER_DISCOVERY_CATALOG_OUTPUT
   : new URL('../data/discovery-catalog.json', import.meta.url);
 const generatedAt = new Date().toISOString();
 const USER_AGENT = 'BackerDiscovery/1.0 (+https://bokubokulee-gif.github.io/backer-site/)';
+const PUBLIC_BROWSER_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/140 Safari/537.36';
 const PYTHON_BIN = process.env.PYTHON_BIN || 'python3';
 const GITHUB_ANONYMOUS_RESULT_PAGES = 10;
 const DEV_PAGE_SIZE = 100;
@@ -53,6 +57,7 @@ const BILIBILI_PUBLIC_RESULT_PAGES = 2;
 const TWITCH_VODS_PER_CHANNEL = 3;
 const PUBLIC_PROVIDERS = new Set([
   'github', 'dev', 'medium', 'substack', 'rss', 'youtube', 'bilibili', 'twitch',
+  'instagram',
   ...REVIEWED_SNAPSHOT_PROVIDERS
 ]);
 const FRESHNESS_SENSITIVE_PROVIDERS = new Set(['github', 'dev', 'youtube', 'bilibili', 'twitch', 'rss']);
@@ -93,6 +98,7 @@ const BILIBILI_USER_QUERIES = [
   '教育'
 ];
 const BILIBILI_RANK_DAYS = [3, 7];
+const INSTAGRAM_QUERIES = ['creator economy', 'technology creator', 'design creator', 'independent artist'];
 
 const MEDIUM_FEEDS = [
   'https://medium.com/feed/tag/artificial-intelligence',
@@ -274,6 +280,66 @@ function attribute(block, tagName, attributeName) {
   return match ? decodeXml(match[1]).trim() : '';
 }
 
+function firstHtmlImage(value) {
+  const html = decodeXml(value);
+  const match = html.match(/<img\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/i);
+  return match ? decodeXml(match[1]).trim() : '';
+}
+
+function metaImage(value) {
+  const html = String(value || '');
+  const match = html.match(/<meta\b[^>]*(?:property|name)=["'](?:og:image|twitter:image(?::src)?)["'][^>]*content=["']([^"']+)["'][^>]*>/i)
+    || html.match(/<meta\b[^>]*content=["']([^"']+)["'][^>]*(?:property|name)=["'](?:og:image|twitter:image(?::src)?)["'][^>]*>/i);
+  return match ? decodeXml(match[1]).trim() : '';
+}
+
+function youtubeEmbedThumbnail(value) {
+  const match = decodeXml(value).match(/(?:youtube\.com\/embed\/|youtu\.be\/)([A-Za-z0-9_-]{6,20})/i);
+  return match ? `https://i.ytimg.com/vi/${match[1]}/hqdefault.jpg` : '';
+}
+
+function channelImage(channel) {
+  const imageBlock = tag(channel, 'image');
+  return tag(imageBlock, 'url') || attribute(channel, 'itunes:image', 'href');
+}
+
+function itemThumbnail(item, fallback = '') {
+  const content = tag(item, 'content:encoded') || tag(item, 'description');
+  const enclosure = attribute(item, 'enclosure', 'url');
+  const enclosureType = attribute(item, 'enclosure', 'type');
+  return attribute(item, 'media:thumbnail', 'url')
+    || attribute(item, 'media:content', 'url')
+    || (/^image\//i.test(enclosureType) ? enclosure : '')
+    || firstHtmlImage(content)
+    || youtubeEmbedThumbnail(content)
+    || fallback;
+}
+
+async function resolveItemThumbnail(item, link, fallback = '') {
+  const embedded = itemThumbnail(item);
+  if (embedded) return embedded;
+  try {
+    const html = await fetchText(link, 'text/html,application/xhtml+xml', PUBLIC_BROWSER_USER_AGENT);
+    return metaImage(html) || fallback;
+  } catch (_error) {
+    return fallback;
+  }
+}
+
+async function mapPool(rows, concurrency, task) {
+  const output = new Array(rows.length);
+  let cursor = 0;
+  const workers = Array.from({ length: Math.min(concurrency, rows.length) }, async () => {
+    while (cursor < rows.length) {
+      const index = cursor;
+      cursor += 1;
+      output[index] = await task(rows[index], index);
+    }
+  });
+  await Promise.all(workers);
+  return output;
+}
+
 function rssItems(xml) {
   return Array.from(String(xml || '').matchAll(/<item(?:\s[^>]*)?>([\s\S]*?)<\/item>/gi), (match) => match[1]);
 }
@@ -289,7 +355,10 @@ function runCounts(provider) {
 }
 
 function addOwner(input) {
-  const creator = createCreator(input);
+  const creator = createCreator({
+    ...input,
+    avatarSourceUrl: input.avatarUrl ? (input.avatarSourceUrl || input.profileUrl) : null
+  });
   if (!creator) return null;
   const identity = createPlatformIdentity({
     creatorId: creator.id,
@@ -311,6 +380,8 @@ function addContent(owner, input) {
   if (!owner) return null;
   const record = createContentRecord({
     ...input,
+    thumbnailRole: input.thumbnailUrl ? (input.thumbnailRole || 'content') : null,
+    thumbnailSourceUrl: input.thumbnailUrl ? (input.thumbnailSourceUrl || input.canonicalUrl) : null,
     creatorId: owner.creator.id,
     platformIdentityId: owner.identity.id
   });
@@ -318,11 +389,143 @@ function addContent(owner, input) {
   return record;
 }
 
-function collectReviewedPublicProvider(provider) {
+const REVIEWED_MEDIA_HOSTS = Object.freeze({
+  x: ['pbs.twimg.com'],
+  tiktok: ['tiktokcdn.com', 'tiktokcdn-us.com'],
+  spotify: ['i.scdn.co', 'spotifycdn.com'],
+  soundcloud: ['sndcdn.com'],
+  patreon: ['patreon.com', 'patreonusercontent.com'],
+  kick: ['files.kick.com'],
+  linkedin: ['media.licdn.com']
+});
+
+function safeReviewedMediaUrl(provider, value) {
+  let parsed;
+  try {
+    parsed = new URL(decodeXml(String(value || '').trim()).replace(/\\u002[fF]/g, '/'));
+  } catch (_error) {
+    return '';
+  }
+  const allowed = REVIEWED_MEDIA_HOSTS[provider] || [];
+  return parsed.protocol === 'https:' && allowed.some((host) => parsed.hostname === host
+    || parsed.hostname.endsWith(`.${host}`)) ? parsed.href : '';
+}
+
+function embeddedJsonString(html, key) {
+  const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const match = String(html || '').match(new RegExp(`"${escaped}":"((?:\\\\.|[^"\\\\])*)"`));
+  if (!match) return '';
+  try {
+    return JSON.parse(`"${match[1]}"`);
+  } catch (_error) {
+    return '';
+  }
+}
+
+async function reviewedOembed(provider, url) {
+  const endpoint = provider === 'tiktok'
+    ? `https://www.tiktok.com/oembed?url=${encodeURIComponent(url)}`
+    : provider === 'spotify'
+      ? `https://open.spotify.com/oembed?url=${encodeURIComponent(url)}`
+      : provider === 'soundcloud'
+        ? `https://soundcloud.com/oembed?format=json&url=${encodeURIComponent(url)}`
+        : null;
+  if (!endpoint) return '';
+  const payload = JSON.parse(await fetchText(endpoint, 'application/json'));
+  return safeReviewedMediaUrl(provider, payload && payload.thumbnail_url);
+}
+
+async function reviewedPageMedia(provider, url, kind) {
+  if (provider === 'spotify') return reviewedOembed(provider, url);
+  if (provider === 'soundcloud' && kind === 'content') {
+    const embedded = await reviewedOembed(provider, url);
+    if (embedded) return embedded;
+  }
+  if (provider === 'tiktok') {
+    if (kind === 'content') return reviewedOembed(provider, url);
+    const html = await fetchText(url, 'text/html,application/xhtml+xml', PUBLIC_BROWSER_USER_AGENT);
+    return safeReviewedMediaUrl(provider, embeddedJsonString(html, 'avatarLarger')
+      || embeddedJsonString(html, 'avatarMedium'));
+  }
+  const html = await fetchText(url, 'text/html,application/xhtml+xml', PUBLIC_BROWSER_USER_AGENT);
+  return safeReviewedMediaUrl(provider, metaImage(html));
+}
+
+async function enrichPatreonMedia(imported) {
+  const identityByCreator = new Map(imported.platformIdentities.map((row) => [row.creatorId, row]));
+  const avatarByCreator = new Map();
+  const thumbnailByContent = new Map();
+  await mapPool(imported.contentRecords, 5, async (content) => {
+    try {
+      const payload = await fetchJsonWithRetry(`https://www.patreon.com/api/posts/${encodeURIComponent(content.nativeId)}?include=user`);
+      const attributes = payload && payload.data && payload.data.attributes || {};
+      const image = attributes.thumbnail && (attributes.thumbnail.default_large || attributes.thumbnail.original)
+        || attributes.image && (attributes.image.large_url || attributes.image.url)
+        || attributes.share_images && attributes.share_images.landscape && attributes.share_images.landscape.url;
+      thumbnailByContent.set(content.id, safeReviewedMediaUrl('patreon', image));
+      const included = Array.isArray(payload && payload.included) ? payload.included : [];
+      const user = included.find((row) => row && row.type === 'user' && row.attributes);
+      const creatorId = content.creatorId;
+      const identity = identityByCreator.get(creatorId);
+      const avatar = safeReviewedMediaUrl('patreon', user && user.attributes
+        && (user.attributes.image_url || user.attributes.thumb_url));
+      if (identity && avatar) avatarByCreator.set(creatorId, avatar);
+    } catch (_error) {
+      // Retain the reviewed row without media when the public metadata endpoint
+      // is temporarily unavailable; never substitute an invented asset.
+    }
+  });
+  return {
+    ...imported,
+    creators: imported.creators.map((row) => avatarByCreator.get(row.id)
+      ? { ...row, avatarUrl: avatarByCreator.get(row.id), avatarSourceUrl: identityByCreator.get(row.id).profileUrl }
+      : row),
+    contentRecords: imported.contentRecords.map((row) => thumbnailByContent.get(row.id)
+      ? { ...row, thumbnailUrl: thumbnailByContent.get(row.id), thumbnailSourceUrl: row.canonicalUrl }
+      : row)
+  };
+}
+
+async function enrichReviewedPublicMedia(imported, provider) {
+  if (provider === 'patreon') return enrichPatreonMedia(imported);
+  const identityByCreator = new Map(imported.platformIdentities.map((row) => [row.creatorId, row]));
+  const avatarPairs = await mapPool(imported.creators, 5, async (creator) => {
+    const identity = identityByCreator.get(creator.id);
+    if (!identity) return [creator.id, ''];
+    try {
+      return [creator.id, await reviewedPageMedia(provider, identity.profileUrl, 'creator')];
+    } catch (_error) {
+      return [creator.id, ''];
+    }
+  });
+  const thumbnailPairs = await mapPool(imported.contentRecords, 5, async (content) => {
+    try {
+      return [content.id, await reviewedPageMedia(provider, content.canonicalUrl, 'content')];
+    } catch (_error) {
+      return [content.id, ''];
+    }
+  });
+  const avatarByCreator = new Map(avatarPairs);
+  const thumbnailByContent = new Map(thumbnailPairs);
+  return {
+    ...imported,
+    creators: imported.creators.map((row) => avatarByCreator.get(row.id)
+      ? { ...row, avatarUrl: avatarByCreator.get(row.id), avatarSourceUrl: identityByCreator.get(row.id).profileUrl }
+      : row),
+    contentRecords: imported.contentRecords.map((row) => thumbnailByContent.get(row.id)
+      ? { ...row, thumbnailUrl: thumbnailByContent.get(row.id), thumbnailSourceUrl: row.canonicalUrl }
+      : row)
+  };
+}
+
+async function collectReviewedPublicProvider(provider) {
   // Import and validate before replacing anything. A malformed or unreadable
   // reviewed snapshot therefore leaves the previously published provider data
   // untouched and the guard below reports it as last-good.
-  const imported = importReviewedPublicSnapshot(REVIEWED_PUBLIC_SNAPSHOT, [provider]);
+  const imported = await enrichReviewedPublicMedia(
+    importReviewedPublicSnapshot(REVIEWED_PUBLIC_SNAPSHOT, [provider]),
+    provider
+  );
   const previous = providerSnapshot(provider);
   const previousMetrics = bundle.metricObservations.filter((row) => row.provider === provider);
   clearProviderSnapshot(provider);
@@ -441,13 +644,15 @@ async function collectBilibili() {
     for (const row of rows) {
         const owner = addOwner({
           provider: 'bilibili', nativeId: row.ownerId, displayName: row.ownerName,
-          bio: '', avatarUrl: null, handle: row.ownerId, profileUrl: row.ownerUrl,
+          bio: '', avatarUrl: row.ownerAvatarUrl, avatarSourceUrl: row.ownerUrl,
+          handle: row.ownerId, profileUrl: row.ownerUrl,
           verified: null, observedAt: generatedAt
         });
         const record = addContent(owner, {
           provider: 'bilibili', nativeId: row.videoId, contentType: 'video',
           title: row.title, excerpt: row.description, canonicalUrl: row.videoUrl,
-          thumbnailUrl: null, publishedAt: null, observedAt: generatedAt
+          thumbnailUrl: row.thumbnailUrl, thumbnailSourceUrl: row.videoUrl,
+          publishedAt: null, observedAt: generatedAt
         });
         if (!record) continue;
         for (const [metric, value] of Object.entries(row.metrics || {})) {
@@ -465,7 +670,8 @@ async function collectBilibili() {
     for (const row of rows) {
       const owner = addOwner({
         provider: 'bilibili', nativeId: row.ownerId, displayName: row.ownerName,
-        bio: row.bio, avatarUrl: null, handle: row.ownerId, profileUrl: row.ownerUrl,
+        bio: row.bio, avatarUrl: row.avatarUrl, avatarSourceUrl: row.ownerUrl,
+        handle: row.ownerId, profileUrl: row.ownerUrl,
         verified: null, observedAt: generatedAt
       });
       if (!owner) continue;
@@ -554,6 +760,21 @@ async function collectBilibili() {
         rankIndex: null, queryIndex: null, restartSnapshot: false,
         updatedAt: generatedAt, reasonCode: 'scoped_public_discovery_snapshot'
       };
+  const bilibiliIdentityByCreator = new Map(bundle.platformIdentities
+    .filter((row) => row.provider === 'bilibili')
+    .map((row) => [row.creatorId, row]));
+  const missingBilibiliCreators = bundle.creators
+    .filter((row) => bilibiliIdentityByCreator.has(row.id) && !row.avatarUrl);
+  for (const creator of missingBilibiliCreators) {
+    const identity = bilibiliIdentityByCreator.get(creator.id);
+    const avatarUrl = await fetchBilibiliOwnerAvatar(identity.nativeId);
+    if (avatarUrl) {
+      bundle.creators = bundle.creators.map((row) => row.id === creator.id
+        ? { ...row, avatarUrl, avatarSourceUrl: identity.profileUrl }
+        : row);
+    }
+    await sleep(400);
+  }
   const counts = runCounts('bilibili');
   const succeeded = result.state === 'succeeded' && !result.hasMore;
   const hasFreshPartial = !succeeded && pagesRead > 0;
@@ -613,6 +834,8 @@ async function collectTwitch() {
     ytDlpBin: process.env.BACKER_YT_DLP_BIN,
     env: process.env
   });
+  const avatarPairs = await mapPool(seeds, 6, async (seed) => [seed.handle, await fetchTwitchAvatarUrl(seed.handle)]);
+  const avatarByHandle = new Map(avatarPairs);
   const priorSnapshot = resuming ? null : clearProviderSnapshot('twitch');
   const targetIndices = resuming
     ? checkpoint.retryIndices.filter((index) => Number.isInteger(index) && index >= 0 && index < seeds.length)
@@ -630,7 +853,8 @@ async function collectTwitch() {
       });
       const owner = addOwner({
         provider: 'twitch', nativeId: seed.handle, displayName: seed.displayName,
-        bio: '', avatarUrl: null, handle: seed.handle, profileUrl: response.channelUrl,
+        bio: '', avatarUrl: avatarByHandle.get(seed.handle), avatarSourceUrl: response.channelUrl,
+        handle: seed.handle, profileUrl: response.channelUrl,
         verified: null, observedAt: generatedAt
       });
       const orderedRows = seed.preferredVodId
@@ -664,6 +888,24 @@ async function collectTwitch() {
     }
   }
 
+  if (priorSnapshot && failedIndices.length && pagesRead > 0) {
+    const failedHandles = new Set(failedIndices.map((index) => seeds[index] && seeds[index].handle).filter(Boolean));
+    const failedIdentities = priorSnapshot.platformIdentities
+      .filter((row) => failedHandles.has(String(row.handle || row.nativeId).toLowerCase()));
+    const failedIdentityIds = new Set(failedIdentities.map((row) => row.id));
+    const failedCreatorIds = new Set(failedIdentities.map((row) => row.creatorId));
+    const failedIdentityByCreator = new Map(failedIdentities.map((row) => [row.creatorId, row]));
+    restoreProviderSnapshot({
+      creators: priorSnapshot.creators.filter((row) => failedCreatorIds.has(row.id)).map((row) => {
+        const identity = failedIdentityByCreator.get(row.id);
+        const avatarUrl = identity && avatarByHandle.get(String(identity.handle || identity.nativeId).toLowerCase());
+        return avatarUrl ? { ...row, avatarUrl, avatarSourceUrl: identity.profileUrl } : row;
+      }),
+      platformIdentities: failedIdentities,
+      contentRecords: priorSnapshot.contentRecords.filter((row) => failedIdentityIds.has(row.platformIdentityId))
+    });
+  }
+
   if (pagesRead === 0 && priorSnapshot) restoreProviderSnapshot(priorSnapshot);
 
   acquisitionCheckpoints.twitch = failedIndices.length
@@ -693,6 +935,85 @@ async function collectTwitch() {
   }));
 }
 
+async function collectInstagram() {
+  const before = runCounts('instagram');
+  const priorRun = priorProviderRun('instagram');
+  let discovery;
+  try {
+    discovery = await discoverInstagramWithInstalledRouter({
+      agentReachBin: process.env.BACKER_AGENT_REACH_BIN,
+      opencliBin: process.env.BACKER_OPENCLI_BIN,
+      queries: INSTAGRAM_QUERIES,
+      env: process.env
+    });
+  } catch (error) {
+    const permissionRequired = error && error.code === 'provider_permission_required';
+    const reasonCode = permissionRequired ? 'browser_extension_not_connected'
+      : error && error.code || 'provider_response_invalid';
+    acquisitionCheckpoints.instagram = {
+      state: 'blocked',
+      scopeKey: 'instagram:browser-session:source-linked-media-v1',
+      updatedAt: generatedAt,
+      reasonCode
+    };
+    replaceProviderRun(createProviderRun({
+      provider: 'instagram',
+      state: permissionRequired ? 'permission_required' : 'failed',
+      publishState: before.contentRecords ? 'last_good' : 'unavailable',
+      startedAt: generatedAt, finishedAt: new Date().toISOString(),
+      observedAt: priorRun && priorRun.observedAt,
+      lastSuccessAt: priorRun && (priorRun.lastSuccessAt || priorRun.observedAt),
+      pagesRead: 0, hasMore: false, reasonCode, resultCounts: before
+    }));
+    return;
+  }
+
+  const profiles = discovery.profiles || [];
+  const content = discovery.content || [];
+  if (!profiles.length || !content.length) {
+    acquisitionCheckpoints.instagram = {
+      state: 'blocked', scopeKey: 'instagram:browser-session:source-linked-media-v1',
+      updatedAt: generatedAt, reasonCode: 'provider_response_missing_media'
+    };
+    replaceProviderRun(createProviderRun({
+      provider: 'instagram', state: 'failed',
+      publishState: before.contentRecords ? 'last_good' : 'unavailable',
+      startedAt: generatedAt, finishedAt: new Date().toISOString(),
+      observedAt: priorRun && priorRun.observedAt,
+      lastSuccessAt: priorRun && (priorRun.lastSuccessAt || priorRun.observedAt),
+      pagesRead: discovery.pagesRead || 0, hasMore: false,
+      reasonCode: 'provider_response_missing_media', resultCounts: before
+    }));
+    return;
+  }
+
+  clearProviderSnapshot('instagram');
+  const owners = new Map();
+  profiles.forEach((row) => {
+    const owner = addOwner({
+      provider: 'instagram', ...row, avatarSourceUrl: row.profileUrl,
+      observedAt: generatedAt
+    });
+    if (owner) owners.set(row.nativeId, owner);
+  });
+  content.forEach((row) => addContent(owners.get(row.ownerNativeId), {
+    provider: 'instagram', ...row, contentType: 'post',
+    thumbnailSourceUrl: row.canonicalUrl, observedAt: generatedAt
+  }));
+  const counts = runCounts('instagram');
+  acquisitionCheckpoints.instagram = {
+    state: 'exhausted', scopeKey: 'instagram:browser-session:source-linked-media-v1',
+    updatedAt: generatedAt, reasonCode: 'scoped_browser_session_discovery'
+  };
+  replaceProviderRun(createProviderRun({
+    provider: 'instagram', state: 'succeeded', publishState: 'fresh',
+    startedAt: generatedAt, finishedAt: new Date().toISOString(),
+    observedAt: generatedAt, lastSuccessAt: generatedAt,
+    pagesRead: discovery.pagesRead || 0, hasMore: false,
+    reasonCode: 'scoped_browser_session_discovery', resultCounts: counts
+  }));
+}
+
 export function enrichDirectMetric(input, observedAt = generatedAt) {
   const directEvidence = directMetricEvidence(input && input.provider, observedAt);
   return directEvidence ? {
@@ -718,11 +1039,11 @@ function addMetric(input) {
   bundle.metricObservations.push(prior || metric);
 }
 
-async function fetchText(url, accept = 'application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.5') {
+async function fetchText(url, accept = 'application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.5', userAgent = USER_AGENT) {
   try {
     const response = await fetch(url, {
       redirect: 'follow',
-      headers: { Accept: accept, 'User-Agent': USER_AGENT },
+      headers: { Accept: accept, 'User-Agent': userAgent },
       signal: AbortSignal.timeout(20_000)
     });
     if (!response.ok) {
@@ -744,7 +1065,7 @@ async function fetchText(url, accept = 'application/rss+xml, application/xml, te
       "request = urllib.request.Request(url, headers={'Accept': accept, 'User-Agent': agent})",
       'with urllib.request.urlopen(request, timeout=20) as response: sys.stdout.buffer.write(response.read(3 * 1024 * 1024 + 1))'
     ].join('\n');
-    const { stdout } = await execFileAsync(PYTHON_BIN, ['-c', python, url, accept, USER_AGENT], {
+    const { stdout } = await execFileAsync(PYTHON_BIN, ['-c', python, url, accept, userAgent], {
       timeout: 25_000,
       encoding: 'buffer',
       maxBuffer: 3 * 1024 * 1024 + 1
@@ -1007,6 +1328,7 @@ async function collectMedium() {
   const priorRun = priorProviderRun('medium');
   let pagesRead = 0;
   const settled = await Promise.allSettled(MEDIUM_FEEDS.map((url) => fetchText(url)));
+  const entries = [];
   settled.forEach((result) => {
     if (result.status !== 'fulfilled') return;
     pagesRead += 1;
@@ -1015,19 +1337,41 @@ async function collectMedium() {
       const identity = mediumIdentity(link);
       const displayName = tag(item, 'dc:creator');
       if (!identity || !displayName) continue;
+      entries.push({ item, link, identity, displayName });
+    }
+  });
+  const identities = Array.from(new Map(entries.map((entry) => [entry.identity.nativeId, entry.identity])).values());
+  const avatars = await mapPool(identities, 6, async (identity) => {
+    try {
+      const html = await fetchText(identity.profileUrl, 'text/html,application/xhtml+xml', PUBLIC_BROWSER_USER_AGENT);
+      return [identity.nativeId, metaImage(html)];
+    } catch (_error) {
+      return [identity.nativeId, ''];
+    }
+  });
+  const avatarByNativeId = new Map(avatars);
+  const thumbnailPairs = await mapPool(entries, 6, async ({ item, link }) => [
+    tag(item, 'guid') || link,
+    await resolveItemThumbnail(item, link)
+  ]);
+  const thumbnailByNativeId = new Map(thumbnailPairs);
+  entries.forEach(({ item, link, identity, displayName }) => {
       const owner = addOwner({
         provider: 'medium', nativeId: identity.nativeId, displayName,
-        bio: '', avatarUrl: null, handle: identity.handle, profileUrl: identity.profileUrl,
+        bio: '', avatarUrl: avatarByNativeId.get(identity.nativeId), avatarSourceUrl: identity.profileUrl,
+        handle: identity.handle, profileUrl: identity.profileUrl,
         verified: null, observedAt: generatedAt
       });
+      const content = tag(item, 'content:encoded') || tag(item, 'description');
       addContent(owner, {
         provider: 'medium', nativeId: tag(item, 'guid') || link, contentType: 'article',
         title: stripMarkup(tag(item, 'title'), 280),
         excerpt: stripMarkup(tag(item, 'description') || tag(item, 'content:encoded')),
-        canonicalUrl: link, thumbnailUrl: attribute(item, 'media:content', 'url'),
+        canonicalUrl: link, thumbnailUrl: thumbnailByNativeId.get(tag(item, 'guid') || link)
+          || firstHtmlImage(content),
+        thumbnailSourceUrl: link,
         publishedAt: tag(item, 'pubDate') || tag(item, 'dc:date'), observedAt: generatedAt
       });
-    }
   });
   const counts = runCounts('medium');
   const succeeded = pagesRead === MEDIUM_FEEDS.length;
@@ -1045,31 +1389,39 @@ async function collectSubstack() {
   const priorRun = priorProviderRun('substack');
   let pagesRead = 0;
   const settled = await Promise.allSettled(SUBSTACK_FEEDS.map(async (url) => ({ url, xml: await fetchText(url) })));
-  settled.forEach((result) => {
-    if (result.status !== 'fulfilled') return;
+  for (const result of settled) {
+    if (result.status !== 'fulfilled') continue;
     pagesRead += 1;
     const { url, xml } = result.value;
     const channel = xml.split(/<item(?:\s|>)/i)[0];
     const home = tag(channel, 'link') || new URL(url).origin;
     const nativeId = new URL(home).hostname.toLowerCase().replace(/^www\./, '');
+    const publicationImage = channelImage(channel);
     const owner = addOwner({
       provider: 'substack', nativeId,
       displayName: stripMarkup(tag(channel, 'title'), 160) || nativeId,
-      bio: stripMarkup(tag(channel, 'description'), 600), avatarUrl: null,
+      bio: stripMarkup(tag(channel, 'description'), 600), avatarUrl: publicationImage,
+      avatarSourceUrl: home,
       handle: nativeId, profileUrl: home, verified: null, observedAt: generatedAt
     });
-    for (const item of rssItems(xml)) {
+    const items = rssItems(xml);
+    const thumbnails = await mapPool(items, 6, async (item) => {
+      const link = tag(item, 'link') || tag(item, 'guid');
+      return [tag(item, 'guid') || link, await resolveItemThumbnail(item, link, publicationImage)];
+    });
+    const thumbnailByNativeId = new Map(thumbnails);
+    for (const item of items) {
       const link = tag(item, 'link') || tag(item, 'guid');
       addContent(owner, {
         provider: 'substack', nativeId: tag(item, 'guid') || link, contentType: 'newsletter',
         title: stripMarkup(tag(item, 'title'), 280),
         excerpt: stripMarkup(tag(item, 'description') || tag(item, 'content:encoded')),
         canonicalUrl: link,
-        thumbnailUrl: attribute(item, 'media:thumbnail', 'url') || attribute(item, 'media:content', 'url'),
+        thumbnailUrl: thumbnailByNativeId.get(tag(item, 'guid') || link), thumbnailSourceUrl: link,
         publishedAt: tag(item, 'pubDate') || tag(item, 'dc:date'), observedAt: generatedAt
       });
     }
-  });
+  }
   const counts = runCounts('substack');
   const succeeded = pagesRead === SUBSTACK_FEEDS.length;
   replaceProviderRun(createProviderRun({
@@ -1086,19 +1438,26 @@ async function collectRss() {
   const priorRun = priorProviderRun('rss');
   let pagesRead = 0;
   const settled = await Promise.allSettled(RSS_FEEDS.map(async (feed) => ({ feed, xml: await fetchText(feed.url) })));
-  settled.forEach((result) => {
-    if (result.status !== 'fulfilled') return;
+  for (const result of settled) {
+    if (result.status !== 'fulfilled') continue;
     pagesRead += 1;
     const { feed, xml } = result.value;
     const channel = xml.split(/<item(?:\s|>)/i)[0];
+    const publicationImage = channelImage(channel);
     const owner = addOwner({
       provider: 'rss', nativeId: feed.id,
       displayName: stripMarkup(tag(channel, 'title'), 160) || feed.title,
-      bio: stripMarkup(tag(channel, 'description'), 600), avatarUrl: null,
+      bio: stripMarkup(tag(channel, 'description'), 600), avatarUrl: publicationImage,
+      avatarSourceUrl: feed.profileUrl,
       handle: new URL(feed.profileUrl).hostname, profileUrl: feed.profileUrl,
       verified: true, observedAt: generatedAt
     });
     const items = rssItems(xml);
+    const thumbnails = await mapPool(items, 6, async (item) => {
+      const link = tag(item, 'link') || tag(item, 'guid');
+      return [tag(item, 'guid') || link, await resolveItemThumbnail(item, link, publicationImage)];
+    });
+    const thumbnailByNativeId = new Map(thumbnails);
     for (const item of items) {
       const link = tag(item, 'link') || tag(item, 'guid');
       addContent(owner, {
@@ -1106,7 +1465,7 @@ async function collectRss() {
         title: stripMarkup(tag(item, 'title'), 280),
         excerpt: stripMarkup(tag(item, 'description') || tag(item, 'content:encoded')),
         canonicalUrl: link,
-        thumbnailUrl: attribute(item, 'media:thumbnail', 'url') || attribute(item, 'media:content', 'url'),
+        thumbnailUrl: thumbnailByNativeId.get(tag(item, 'guid') || link), thumbnailSourceUrl: link,
         publishedAt: tag(item, 'pubDate') || tag(item, 'dc:date'), observedAt: generatedAt
       });
     }
@@ -1117,7 +1476,7 @@ async function collectRss() {
       methodologyVersion: 'reviewed-public-feed-v1', freshness: { state: 'fresh' },
       confidence: { level: 'high', basis: 'server_reviewed_public_feed' }
     });
-  });
+  }
   const counts = runCounts('rss');
   const succeeded = pagesRead === RSS_FEEDS.length;
   replaceProviderRun(createProviderRun({
@@ -1388,7 +1747,8 @@ async function collectYouTubeViaInstalledRouter(priorRun) {
   eligibleRows.forEach((row) => {
     const owner = addOwner({
       provider: 'youtube', nativeId: row.channelId, displayName: row.channelName,
-      bio: '', avatarUrl: null, handle: row.channelHandle, profileUrl: row.channelUrl,
+      bio: '', avatarUrl: row.channelAvatarUrl, avatarSourceUrl: row.channelUrl,
+      handle: row.channelHandle, profileUrl: row.channelUrl,
       verified: row.verified, observedAt: generatedAt
     });
     const record = addContent(owner, {
@@ -1624,6 +1984,42 @@ function stabilizeRows(rows, priorRows, shouldReuse = () => true) {
   });
 }
 
+export function preferMediaCompleteRows(rows, mediaKey) {
+  return (rows || []).map((row, index) => ({ row, index }))
+    .sort((left, right) => Number(Boolean(right.row && right.row[mediaKey]))
+      - Number(Boolean(left.row && left.row[mediaKey])) || left.index - right.index)
+    .map((entry) => entry.row);
+}
+
+export function attachMediaProvenance(value) {
+  const source = value || {};
+  const identityByCreator = new Map((source.platformIdentities || []).map((row) => [row.creatorId, row]));
+  const creatorById = new Map((source.creators || []).map((row) => [row.id, row]));
+  return {
+    ...source,
+    creators: (source.creators || []).map((row) => row.avatarUrl && !row.avatarSourceUrl
+      ? { ...row, avatarSourceUrl: identityByCreator.get(row.id) && identityByCreator.get(row.id).profileUrl || null }
+      : row),
+    contentRecords: (source.contentRecords || []).map((row) => {
+      if (row.thumbnailUrl) return {
+        ...row,
+        thumbnailRole: row.thumbnailRole || 'content',
+        thumbnailSourceUrl: row.thumbnailSourceUrl || row.canonicalUrl
+      };
+      const creator = creatorById.get(row.creatorId);
+      if (!creator || !creator.avatarUrl) return row;
+      const identity = identityByCreator.get(row.creatorId);
+      return {
+        ...row,
+        thumbnailUrl: creator.avatarUrl,
+        thumbnailRole: ['substack', 'rss'].includes(row.provider)
+          ? 'publication_art' : 'creator_avatar_fallback',
+        thumbnailSourceUrl: creator.avatarSourceUrl || identity && identity.profileUrl || row.canonicalUrl
+      };
+    })
+  };
+}
+
 export function compactMetricHistory(rows) {
   const streams = new Map();
   for (const row of rows || []) {
@@ -1716,6 +2112,7 @@ async function main() {
     youtube: collectYouTube,
     bilibili: collectBilibili,
     twitch: collectTwitch,
+    instagram: collectInstagram,
     x: () => collectReviewedPublicProvider('x'),
     tiktok: () => collectReviewedPublicProvider('tiktok'),
     spotify: () => collectReviewedPublicProvider('spotify'),
@@ -1733,7 +2130,7 @@ async function main() {
   const youtubeCreatorIds = new Set(fresh.platformIdentities
     .filter((row) => row.provider === 'youtube')
     .map((row) => row.creatorId));
-  const deduped = existingCatalog ? {
+  let deduped = existingCatalog ? {
     creators: stabilizeRows(fresh.creators, existingCatalog.creators, (row) => !youtubeCreatorIds.has(row.id)),
     platformIdentities: stabilizeRows(fresh.platformIdentities, existingCatalog.platformIdentities,
       (row) => row.provider !== 'youtube'),
@@ -1741,6 +2138,9 @@ async function main() {
       (row) => row.provider !== 'youtube'),
     metricObservations: compactMetricHistory(fresh.metricObservations)
   } : fresh;
+  deduped = attachMediaProvenance(deduped);
+  deduped.creators = preferMediaCompleteRows(deduped.creators, 'avatarUrl');
+  deduped.contentRecords = preferMediaCompleteRows(deduped.contentRecords, 'thumbnailUrl');
   const normalizedRuns = providerRuns.filter(Boolean).map((run) => {
     const identities = deduped.platformIdentities.filter((row) => row.provider === run.provider);
     const creatorIds = new Set(identities.map((row) => row.creatorId));

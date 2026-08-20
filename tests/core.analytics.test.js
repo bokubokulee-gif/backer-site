@@ -108,3 +108,21 @@ test('virtual routes sanitize public IDs and never place free-form search text i
     }
   );
 });
+
+test('scheduled header display starts at 2,305 and adds five per completed UTC day', () => {
+  assert.equal(Core.PUBLIC_COUNT_BASE, 2305);
+  assert.equal(Core.PUBLIC_COUNT_DAILY, 5);
+  assert.equal(Core.PUBLIC_COUNT_ANCHOR_UTC, Date.UTC(2026, 7, 20));
+  assert.equal(Core.publicCountFallback(Date.parse('2026-08-19T23:59:59.999Z')), 2305);
+  assert.equal(Core.publicCountFallback(Date.parse('2026-08-20T00:00:00.000Z')), 2305);
+  assert.equal(Core.publicCountFallback(Date.parse('2026-08-20T23:59:59.999Z')), 2305);
+  assert.equal(Core.publicCountFallback(Date.parse('2026-08-21T00:00:00.000Z')), 2310);
+  assert.equal(Core.publicCountFallback(Date.parse('2026-09-01T00:00:00.000Z')), 2365);
+});
+
+test('scheduled header display is determined by UTC epoch, not local timezone text', () => {
+  const epoch = Date.parse('2026-08-21T00:00:00.000Z');
+  assert.equal(Core.publicCountFallback(epoch), Core.publicCountFallback(new Date(epoch)));
+  assert.equal(Core.publicCountFallback('2026-08-20T17:00:00-07:00'), 2310);
+  assert.equal(Core.publicCountFallback('2026-08-21T08:00:00+08:00'), 2310);
+});

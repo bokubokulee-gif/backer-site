@@ -61,6 +61,8 @@ function normalizeCatalog(payload) {
       displayName: raw.displayName,
       bio: raw.bio,
       avatarUrl: raw.avatarUrl,
+      avatarSourceUrl: raw.avatarSourceUrl,
+      profileUrl: primary.profileUrl,
       observedAt: raw.observedAt || primary.observedAt
     });
     if (!creator) continue;

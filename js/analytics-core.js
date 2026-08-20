@@ -10,14 +10,14 @@
 })(typeof window !== 'undefined' ? window : this, function () {
   'use strict';
 
-  var POLICY_VERSION = '2026-07-24';
+  var POLICY_VERSION = '2026-08-20';
   var CONSENT_KEY = 'backer_analytics_consent_v1';
   var VISITOR_KEY = 'backer_analytics_visitor_v1';
   var SESSION_KEY = 'backer_analytics_session_v1';
   var SESSION_TTL_MS = 30 * 60 * 1000;
-  var PUBLIC_COUNT_BASE = 0;
-  var PUBLIC_COUNT_DAILY = 0;
-  var PUBLIC_COUNT_ANCHOR_UTC = Date.UTC(2026, 6, 24);
+  var PUBLIC_COUNT_BASE = 2305;
+  var PUBLIC_COUNT_DAILY = 5;
+  var PUBLIC_COUNT_ANCHOR_UTC = Date.UTC(2026, 7, 20);
 
   var EVENT_PROPS = {
     market_home_viewed: [],
@@ -291,6 +291,9 @@
     VISITOR_KEY: VISITOR_KEY,
     SESSION_KEY: SESSION_KEY,
     SESSION_TTL_MS: SESSION_TTL_MS,
+    PUBLIC_COUNT_BASE: PUBLIC_COUNT_BASE,
+    PUBLIC_COUNT_DAILY: PUBLIC_COUNT_DAILY,
+    PUBLIC_COUNT_ANCHOR_UTC: PUBLIC_COUNT_ANCHOR_UTC,
     EVENT_PROPS: EVENT_PROPS,
     readConsent: readConsent,
     writeConsent: writeConsent,

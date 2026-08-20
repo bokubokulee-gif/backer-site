@@ -51,11 +51,12 @@
     { id: 'creator_perps', label: 'Creator Perps', terminal: 'perps', short: 'Continuous simulated exposure to an approved attention index.' }
   ];
   var CONFIDENCE_ORDER = { high: 4, medium: 3, low: 2, insufficient: 1, unavailable: 0 };
-  var INITIAL_CREATOR_COUNT = 32;
-  var CREATOR_PAGE_SIZE = 24;
+  var INITIAL_CREATOR_COUNT = 9;
+  var CREATOR_PAGE_SIZE = 9;
   var INITIAL_CONTENT_COUNT = 12;
   var CONTENT_PAGE_SIZE = 12;
   var MATERIAL_PROVIDER_ORDER = ['youtube', 'bilibili', 'twitch', 'github', 'dev', 'medium', 'substack', 'rss', 'x', 'facebook', 'instagram', 'linkedin'];
+  var INSTAGRAM_CONNECT_URL = 'https://chromewebstore.google.com/detail/ildkmabpimmkaediidaifkhjpohdnifk';
   var root = null;
   var DATA = null;
   var BASE_DATA = null;
@@ -65,6 +66,8 @@
   var requestTimer = null;
   var discoveryTimer = null;
   var searchTimer = null;
+  var mediaRedrawTimer = null;
+  var failedMediaURLs = Object.create(null);
   var retainedCatalogPromise = null;
   var retainedDatasetPromise = null;
   var booted = false;
@@ -124,6 +127,22 @@
       if (parsed.protocol === 'http:' || parsed.protocol === 'https:') return parsed.href;
       return '';
     } catch (error) { return ''; }
+  }
+
+  function usableMediaURL(value) {
+    var url = safeURL(value);
+    return url && !failedMediaURLs[url] ? url : '';
+  }
+
+  function launchMediaURL(value) {
+    var url = usableMediaURL(value);
+    if (!url) return '';
+    try {
+      var host = new URL(url, window.location.href).hostname.toLowerCase();
+      return ['media2.dev.to', 'avatars.githubusercontent.com', 'i.ytimg.com'].indexOf(host) >= 0 ? url : '';
+    } catch (error) {
+      return '';
+    }
   }
 
   function formatDate(value, withTime) {
@@ -736,6 +755,7 @@
       count: counts.profiles,
       contentCount: counts.content,
       available: available,
+      connector: id === 'instagram' && !available,
       connectedLive: connectedLive,
       state: rawState,
       label: counts.profiles || counts.content ? retainedLabel : (connectedLive ? 'Connected · no records' : needsConnection ? 'Connection needed' : 'Unavailable'),
@@ -1427,21 +1447,66 @@
     return output;
   }
 
+  function sourceDiverseWithMedia(items, providerFor, mediaFor) {
+    var withMedia = [];
+    var withoutMedia = [];
+    array(items).forEach(function (item) {
+      (launchMediaURL(mediaFor(item)) ? withMedia : withoutMedia).push(item);
+    });
+    return sourceDiverse(withMedia, providerFor).concat(sourceDiverse(withoutMedia, providerFor));
+  }
+
+  function primaryProfileURL(person) {
+    var account = array(person && person.accounts).filter(function (candidate) {
+      return safeURL(candidate && (candidate.sourceUrl || candidate.url));
+    })[0];
+    return account ? safeURL(account.sourceUrl || account.url) : '';
+  }
+
+  function profileMediaURL(person) {
+    var avatar = usableMediaURL(person && person.avatar);
+    if (avatar) return avatar;
+    var linkedWork = array(person && person.content).filter(function (work) {
+      return usableMediaURL(work && work.thumbnail);
+    })[0];
+    return linkedWork ? usableMediaURL(linkedWork.thumbnail) : '';
+  }
+
+  function profileCardHTML(person, index) {
+    var retainedAvatar = usableMediaURL(person && person.avatar);
+    var avatar = retainedAvatar || profileMediaURL(person);
+    var profileURL = primaryProfileURL(person);
+    var primaryAccount = array(person.accounts)[0] || {};
+    var platform = PLATFORM_LABELS[primaryAccount.id] || primaryAccount.id || 'Public source';
+    var facts = sourcedFacts(person, 2);
+    var sourceAction = profileURL
+      ? '<a class="m2-profile-source" href="' + esc(profileURL) + '" target="_blank" rel="noreferrer">Open source profile ↗</a>'
+      : '<span class="m2-profile-source is-muted">Source profile link not retained</span>';
+    return '<article class="m2-profile-card' + (person.id === state.selectedId ? ' is-selected' : '') + '">' +
+      '<div class="m2-profile-media' + (avatar ? (retainedAvatar ? ' is-avatar' : ' is-work-art') : ' is-image-fallback') + '">' +
+      (avatar ? '<img src="' + esc(avatar) + '" alt="' + esc(person.name) + ' profile" loading="' + (index < INITIAL_CREATOR_COUNT ? 'eager' : 'lazy') + '" referrerpolicy="no-referrer" />' : '') +
+      '<div class="m2-profile-image-fallback"><b>' + esc(initials(person.name)) + '</b><span>Profile image not retained</span></div>' +
+      '<span class="m2-profile-platform">' + esc(platform) + '</span></div>' +
+      '<div class="m2-profile-card-body"><div class="m2-profile-card-meta"><span>' + platformMarks(person, false) + '</span><span>' + esc(person.category) + '</span></div>' +
+      '<h3 class="m2-person-name">' + esc(person.name) + '</h3><p class="m2-profile-handle">' + esc(person.handle || primaryAccount.handle || 'Public creator') + '</p>' +
+      '<p class="m2-profile-bio">' + esc(person.bio || 'Public creator profile retained from linked source work.') + '</p>' +
+      '<div class="m2-profile-metrics">' + (facts.length ? facts.map(function (fact) {
+        return '<a href="' + esc(fact.sourceUrl) + '" target="_blank" rel="noreferrer"><b>' + esc(fact.value) + '</b><span>' + esc(PLATFORM_LABELS[fact.provider] || fact.provider || 'Source') + ' · ' + esc(fact.label) + '</span></a>';
+      }).join('') : '<span class="m2-profile-metric-state">Source-linked profile · native metrics not retained</span>') + '</div>' +
+      '<div class="m2-profile-card-actions">' + sourceAction + watchButton(person, true) + '</div></div></article>';
+  }
+
   function peopleHTML(list) {
-    var selected = selectedPerson();
-    if (!list.length) return '<aside class="m2-people"><div class="m2-pane-head"><div><span class="m2-kicker">Profiles</span><h2>No matching profiles</h2></div></div><div class="m2-empty"><h3>' + (state.view === 'markets' ? 'No approved markets in this source view.' : 'No profile matches these filters.') + '</h3><p>Try Creator Radar, another platform, or a wider evidence range.</p><button class="m2-primary-button" type="button" data-m2-open-radar>Open Creator Radar</button></div></aside>';
-    var visibleOrder = sourceDiverse(list, function (person) { return person.accounts[0] && person.accounts[0].id; });
+    if (!list.length) return '<section class="m2-people m2-profile-catalog"><div class="m2-pane-head"><div><span class="m2-kicker">Profiles</span><h2>No matching profiles</h2></div></div><div class="m2-empty"><h3>' + (state.view === 'markets' ? 'No approved markets in this source view.' : 'No profile matches these filters.') + '</h3><p>Try Creator Radar, another platform, or a wider evidence range.</p><button class="m2-primary-button" type="button" data-m2-open-radar>Open Creator Radar</button></div></section>';
+    var visibleOrder = sourceDiverseWithMedia(list, function (person) { return person.accounts[0] && person.accounts[0].id; }, profileMediaURL);
     var shown = visibleOrder.slice(0, state.visibleCount);
-    var mobile = [];
-    if (selected && shown.indexOf(selected) >= 0) mobile.push(selected);
-    shown.forEach(function (person) { if (mobile.length < 4 && mobile.indexOf(person) < 0) mobile.push(person); });
     var moreLoaded = shown.length < list.length;
     var moreConnected = Boolean(state.discoveryNextCursor);
-    return '<aside class="m2-people" aria-labelledby="m2PeopleTitle"><div class="m2-pane-head"><div><span class="m2-kicker">Gaining now · ' + state.range.toUpperCase() + '</span><h2 id="m2PeopleTitle">Profiles to Back</h2></div><button class="m2-text-button m2-see-all" type="button" data-m2-open-roster>See all ' + list.length + '</button></div>' +
-      '<div class="m2-person-list m2-desktop-people">' + shown.map(function (person, index) { return personRowHTML(person, index, selected && selected.id === person.id); }).join('') + '</div>' +
-      (moreLoaded ? '<button class="m2-load-more" type="button" data-m2-load-more>Show ' + Math.min(CREATOR_PAGE_SIZE, list.length - shown.length) + ' more creators<span>' + shown.length + ' / ' + list.length + ' loaded</span></button>' : '') +
+    return '<section class="m2-people m2-profile-catalog" aria-labelledby="m2PeopleTitle"><div class="m2-pane-head"><div><span class="m2-kicker">Source-backed people · ' + state.range.toUpperCase() + '</span><h2 id="m2PeopleTitle">Profiles to Back</h2></div><button class="m2-text-button m2-see-all" type="button" data-m2-open-roster>Browse all ' + list.length + '</button></div>' +
+      '<div class="m2-profile-grid m2-desktop-people">' + shown.map(profileCardHTML).join('') + '</div>' +
+      (moreLoaded ? '<button class="m2-load-more" type="button" data-m2-load-more>Show more</button>' : '') +
       (moreConnected ? '<button class="m2-load-more is-connected" type="button" data-m2-load-connected' + (state.discoveryLoading ? ' disabled aria-busy="true"' : '') + '>Load next connected source page<span>Source cursor retained</span></button>' : '') +
-      '<div class="m2-mobile-people">' + mobile.map(function (person, index) { return personRowHTML(person, index, selected && selected.id === person.id); }).join('') + '</div></aside>';
+      '</section>';
   }
 
   function catalogWorks(list) {
@@ -1461,20 +1526,21 @@
       if (engagement) return engagement;
       return Date.parse(b.work.publishedAt || b.work.observedAt || 0) - Date.parse(a.work.publishedAt || a.work.observedAt || 0);
     });
-    return sourceDiverse(rows, function (entry) { return entry.work.platform; });
+    return sourceDiverseWithMedia(rows, function (entry) { return entry.work.platform; }, function (entry) { return entry.work.thumbnail; });
   }
 
   function catalogWorkCardHTML(entry, index) {
     var person = entry.person;
     var work = entry.work;
-    var thumb = safeURL(work.thumbnail || person.avatar);
+    var thumb = usableMediaURL(work.thumbnail);
     var platform = PLATFORM_LABELS[work.platform] || work.platform || 'Original source';
-    return '<article class="m2-feed-card"><a class="m2-feed-media" href="' + esc(entry.url) + '" target="_blank" rel="noreferrer">' +
-      (thumb ? '<img src="' + esc(thumb) + '" alt="" loading="' + (index < 4 ? 'eager' : 'lazy') + '" referrerpolicy="no-referrer" />' : '') +
-      '<span class="m2-feed-fallback">' + esc(initials(person.name)) + '</span><span>Open source ↗</span></a>' +
+    var profileURL = primaryProfileURL(person);
+    return '<article class="m2-feed-card"><a class="m2-feed-media' + (thumb ? '' : ' is-image-fallback') + '" href="' + esc(entry.url) + '" target="_blank" rel="noreferrer">' +
+      (thumb ? '<img src="' + esc(thumb) + '" alt="" loading="' + (index < INITIAL_CONTENT_COUNT ? 'eager' : 'lazy') + '" referrerpolicy="no-referrer" />' : '') +
+      '<span class="m2-feed-fallback"><b>' + esc(platform) + '</b><small>Content preview not retained</small></span><span>Open source ↗</span></a>' +
       '<div class="m2-feed-body"><div class="m2-feed-byline">' + avatarHTML(person, 'feed', index < 4) + '<span><b>' + esc(person.name) + '</b><small>' + esc(platform) + ' · ' + esc(formatDate(work.publishedAt || work.observedAt, false)) + '</small></span></div>' +
       '<h3><a href="' + esc(entry.url) + '" target="_blank" rel="noreferrer">' + esc(work.title) + '</a></h3><div class="m2-work-native">' + workCountsHTML(work) + '</div>' +
-      '<button type="button" class="m2-feed-person" data-m2-select="' + esc(person.id) + '">Inspect creator evidence →</button></div></article>';
+      (profileURL ? '<a class="m2-feed-person" href="' + esc(profileURL) + '" target="_blank" rel="noreferrer">Open creator profile ↗</a>' : '<span class="m2-feed-person is-muted">Creator source link not retained</span>') + '</div></article>';
   }
 
   function catalogFeedHTML(list) {
@@ -1698,19 +1764,23 @@
     var info = providerAvailability(id);
     var checked = info.available && state.platforms.indexOf(id) >= 0;
     var label = PLATFORM_LABELS[id] || id;
+    if (info.connector) {
+      return '<div class="m2-filter-connect" data-m2-platform-connect="instagram"><span><b>Instagram</b><small>Browser connection needed</small></span><a href="' + INSTAGRAM_CONNECT_URL + '" target="_blank" rel="noreferrer">Connect Instagram ↗</a></div>';
+    }
     return '<label class="' + (!info.available ? 'is-unavailable' : '') + '"><input type="checkbox" data-m2-drawer-platform="' + id + '" data-m2-platform-state="' + esc(info.available ? 'available' : info.state) + '" aria-label="' + esc(label + ' · ' + info.description) + '"' + (checked ? ' checked' : '') + (!info.available ? ' disabled aria-disabled="true"' : '') + ' /><span><b>' + esc(label) + '</b><small>' + esc(info.label) + '</small></span></label>';
   }
 
   function drawerHTML() {
     if (!state.drawer) return '';
     var platforms = unique(CORE_PLATFORMS.concat(PROFILE_ONLY_PLATFORMS, people().reduce(function (all, person) { return all.concat(platformIds(person)); }, []))).filter(function (id) {
-      return providerAvailability(id).available;
+      var info = providerAvailability(id);
+      return info.available || info.connector;
     });
     var categories = unique(people().map(function (person) { return person.category; })).sort();
     var quick = [['open', 'Open'], ['ending30', 'Ending <30d'], ['under100k', 'Under 100K'], ['medium', 'Medium+ evidence'], ['multi', 'Multi-source'], ['watched', 'Watched']];
     return '<div class="m2-drawer-backdrop" data-m2-drawer-backdrop><section class="m2-filter-drawer" id="m2FilterDrawer" role="dialog" aria-modal="true" aria-labelledby="m2DrawerTitle"><header class="m2-drawer-head"><div><span class="m2-kicker">Refine discovery</span><h2 id="m2DrawerTitle">Filters</h2></div><button class="m2-drawer-close" type="button" data-m2-close-drawer aria-label="Close filters">×</button></header><div class="m2-drawer-body">' +
       '<fieldset class="m2-filter-group"><legend>Evidence range</legend>' + WINDOWS.map(function (range) { return '<label><input type="radio" name="m2DrawerRange" value="' + range + '" data-m2-drawer-range' + (state.range === range ? ' checked' : '') + ' /><span><b>' + range.toUpperCase() + '</b><small>Retained observation window</small></span></label>'; }).join('') + '</fieldset>' +
-      '<fieldset class="m2-filter-group"><legend>Platform</legend><p class="m2-filter-note">Showing sources with real profiles or original content retained in this catalog.</p>' + platforms.map(drawerPlatformHTML).join('') + '</fieldset>' +
+      '<fieldset class="m2-filter-group"><legend>Platform</legend><p class="m2-filter-note">Available sources filter this catalog. Instagram stays visible when a browser connection is needed.</p>' + platforms.map(drawerPlatformHTML).join('') + '</fieldset>' +
       '<fieldset class="m2-filter-group"><legend>Quick filters</legend>' + quick.map(function (item) { return '<label><input type="checkbox" value="' + item[0] + '" data-m2-drawer-quick' + (state.quick.indexOf(item[0]) >= 0 ? ' checked' : '') + ' /><span><b>' + item[1] + '</b></span></label>'; }).join('') + '</fieldset>' +
       '<fieldset class="m2-filter-group"><legend>Browse category</legend>' + CATEGORIES.map(function (item) { return '<label><input type="radio" name="m2DrawerCategoryRail" value="' + item[0] + '" data-m2-drawer-category-rail' + (state.categoryRail === item[0] ? ' checked' : '') + ' /><span><b>' + item[1] + '</b></span></label>'; }).join('') + '</fieldset>' +
       (categories.length ? '<fieldset class="m2-filter-group"><legend>Profile category</legend>' + categories.map(function (category) { return '<label><input type="checkbox" data-m2-category="' + esc(category) + '"' + (state.categories.indexOf(category) >= 0 ? ' checked' : '') + ' /><span><b>' + esc(category) + '</b></span></label>'; }).join('') + '</fieldset>' : '') +
@@ -1739,7 +1809,7 @@
   }
 
   function loadingHTML() {
-    return '<div class="m2-workspace is-loading" aria-busy="true"><aside class="m2-people">' + new Array(4).fill('<span class="m2-skeleton is-row"></span>').join('') + '</aside><main class="m2-dossier"><span class="m2-skeleton is-hero"></span><span class="m2-skeleton is-copy"></span><span class="m2-skeleton is-work"></span></main><aside class="m2-right"><span class="m2-skeleton is-ticket"></span></aside></div>';
+    return '<div class="m2-workspace is-loading" aria-busy="true"><section class="m2-people m2-profile-catalog"><div class="m2-profile-grid">' + new Array(6).fill('<span class="m2-skeleton is-profile-card"></span>').join('') + '</div></section></div>';
   }
 
   function ensureSelection(list) {
@@ -1752,8 +1822,24 @@
   }
 
   function bindImageFallbacks() {
-    root.querySelectorAll('.m2-avatar img, .m2-work-media img').forEach(function (image) {
-      function fail() { if (image.parentElement) image.parentElement.classList.add('is-image-fallback'); }
+    root.querySelectorAll('.m2-avatar img, .m2-work-media img, .m2-profile-media img, .m2-feed-media img').forEach(function (image) {
+      var previewTimer = image.matches('.m2-profile-media img, .m2-feed-media img')
+        ? window.setTimeout(function () { if (!image.complete || !image.naturalWidth) fail(); }, 3500)
+        : null;
+      function fail() {
+        if (previewTimer) window.clearTimeout(previewTimer);
+        if (image.parentElement) image.parentElement.classList.add('is-image-fallback');
+        if (!image.matches('.m2-profile-media img, .m2-feed-media img')) return;
+        var failedURL = safeURL(image.getAttribute('src') || image.currentSrc);
+        if (!failedURL || failedMediaURLs[failedURL]) return;
+        failedMediaURLs[failedURL] = true;
+        window.clearTimeout(mediaRedrawTimer);
+        mediaRedrawTimer = window.setTimeout(function () {
+          mediaRedrawTimer = null;
+          draw();
+        }, 40);
+      }
+      image.addEventListener('load', function () { if (previewTimer) window.clearTimeout(previewTimer); }, { once: true });
       image.addEventListener('error', fail, { once: true });
       if (image.complete && !image.naturalWidth) fail();
     });
@@ -1765,8 +1851,8 @@
     ensureSelection(list);
     var person = list.length ? (list.filter(function (candidate) { return candidate.id === state.selectedId; })[0] || list[0]) : null;
     document.body.classList.toggle('mkt2-drawer-open', state.drawer || state.mobileRoster || state.mobileTicket);
-    var workspace = state.loading && !state.loadedOnce ? loadingHTML() : '<div class="m2-workspace">' + peopleHTML(list) + dossierHTML(person) + (person ? rightRailHTML(person, list) : emptyRightHTML()) + '</div>';
-    root.innerHTML = '<div class="market2-shell">' + commandHTML() + '<div class="m2-underlayer">' + browseHTML() + contextHTML() + deskControlsHTML() + '</div>' + dataBannerHTML() + workspace + catalogFeedHTML(list) + methodologyHTML() + drawerHTML() + rosterSheetHTML(list.length ? list : people()) + (person ? mobileTicketHTML(person) : '') + '</div>';
+    var workspace = state.loading && !state.loadedOnce ? loadingHTML() : '<div class="m2-workspace">' + peopleHTML(list) + '</div>';
+    root.innerHTML = '<div class="market2-shell">' + commandHTML() + '<div class="m2-underlayer">' + browseHTML() + contextHTML() + deskControlsHTML() + '</div>' + dataBannerHTML() + workspace + catalogFeedHTML(list) + drawerHTML() + rosterSheetHTML(list.length ? list : people()) + '</div>';
     root.classList.remove('hidden'); root.setAttribute('aria-hidden', 'false');
     bindImageFallbacks(); if (!state.drawer) syncHash();
     if (focusSearch) {

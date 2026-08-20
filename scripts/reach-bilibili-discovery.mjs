@@ -3,6 +3,7 @@ import { delimiter, dirname } from 'node:path';
 import { promisify } from 'node:util';
 
 const execFileAsync = promisify(execFile);
+const BILIBILI_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 BackerDiscovery/1.0';
 
 function codedError(message, code) {
   return Object.assign(new Error(message), { code });
@@ -11,6 +12,113 @@ function codedError(message, code) {
 function finiteCount(value) {
   const number = Number(value);
   return Number.isFinite(number) && number >= 0 ? Math.round(number) : null;
+}
+
+export function normalizeBilibiliImageUrl(value) {
+  const source = String(value || '').trim();
+  if (!source) return '';
+  let parsed;
+  try {
+    parsed = new URL(source.startsWith('//') ? `https:${source}` : source.replace(/^http:/i, 'https:'));
+  } catch (_error) {
+    return '';
+  }
+  return parsed.protocol === 'https:' && /(^|\.)hdslb\.com$/i.test(parsed.hostname) ? parsed.href : '';
+}
+
+async function publicJson(url, fetchImpl = fetch) {
+  const response = await fetchImpl(url, {
+    redirect: 'follow',
+    headers: { Accept: 'application/json', Referer: 'https://www.bilibili.com/', 'User-Agent': BILIBILI_USER_AGENT },
+    signal: AbortSignal.timeout(20_000)
+  });
+  if (!response.ok) throw new Error(`Bilibili public metadata request failed with ${response.status}`);
+  return response.json();
+}
+
+async function mapPool(rows, concurrency, task) {
+  const output = new Array(rows.length);
+  let cursor = 0;
+  const workers = Array.from({ length: Math.min(concurrency, rows.length) }, async () => {
+    while (cursor < rows.length) {
+      const index = cursor;
+      cursor += 1;
+      output[index] = await task(rows[index], index);
+    }
+  });
+  await Promise.all(workers);
+  return output;
+}
+
+export async function enrichBilibiliVideoRows(rows, options = {}) {
+  return mapPool(rows || [], 6, async (row) => {
+    try {
+      const url = new URL('https://api.bilibili.com/x/web-interface/view');
+      url.searchParams.set('bvid', row.videoId);
+      const payload = await publicJson(url, options.fetchImpl);
+      const data = payload && payload.code === 0 && payload.data || {};
+      return {
+        ...row,
+        thumbnailUrl: normalizeBilibiliImageUrl(data.pic),
+        ownerAvatarUrl: normalizeBilibiliImageUrl(data.owner && data.owner.face)
+      };
+    } catch (_error) {
+      return row;
+    }
+  });
+}
+
+export async function enrichBilibiliUserRows(rows, query, page, options = {}) {
+  try {
+    const url = new URL('https://api.bilibili.com/x/web-interface/search/type');
+    url.searchParams.set('search_type', 'bili_user');
+    url.searchParams.set('keyword', query);
+    url.searchParams.set('page', String(page));
+    const payload = await publicJson(url, options.fetchImpl);
+    const results = payload && payload.code === 0 && payload.data && Array.isArray(payload.data.result)
+      ? payload.data.result : [];
+    const avatarByOwner = new Map(results.map((result) => [String(result && result.mid || ''),
+      normalizeBilibiliImageUrl(result && result.upic)]));
+    return mapPool(rows || [], 2, async (row) => {
+      const searchAvatar = avatarByOwner.get(row.ownerId) || '';
+      if (searchAvatar) return { ...row, avatarUrl: searchAvatar };
+      const cardUrl = new URL('https://api.bilibili.com/x/web-interface/card');
+      cardUrl.searchParams.set('mid', row.ownerId);
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        try {
+          const cardPayload = await publicJson(cardUrl, options.fetchImpl);
+          const avatarUrl = normalizeBilibiliImageUrl(cardPayload && cardPayload.code === 0
+            && cardPayload.data && cardPayload.data.card && cardPayload.data.card.face);
+          if (avatarUrl) return { ...row, avatarUrl };
+        } catch (_error) {
+          // retry the same public card below
+        }
+        await new Promise((resolve) => setTimeout(resolve, 300 * (attempt + 1)));
+      }
+      return row;
+    });
+  } catch (_error) {
+    return rows || [];
+  }
+}
+
+export async function fetchBilibiliOwnerAvatar(ownerIdValue, options = {}) {
+  const ownerId = String(ownerIdValue || '').trim();
+  if (!/^\d+$/.test(ownerId)) return '';
+  const cardUrl = new URL('https://api.bilibili.com/x/web-interface/card');
+  cardUrl.searchParams.set('mid', ownerId);
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    try {
+      const payload = await publicJson(cardUrl, options.fetchImpl);
+      const avatar = normalizeBilibiliImageUrl(payload && payload.code === 0
+        && payload.data && payload.data.card && payload.data.card.face);
+      if (avatar) return avatar;
+    } catch (_error) {
+      // retry the public card after a bounded cool-down
+    }
+    await new Promise((resolve) => setTimeout(resolve, 600 * (attempt + 1)));
+  }
+  return '';
 }
 
 function routedEnvironment(environment, commands) {
@@ -151,7 +259,8 @@ export async function fetchBilibiliHotPageWithInstalledRouter(options = {}) {
     timeout: 60_000,
     maxBuffer: 16 * 1024 * 1024
   });
-  return { rows: parseBilibiliHotJson(response.stdout), page, backend: 'bili-cli' };
+  const rows = await enrichBilibiliVideoRows(parseBilibiliHotJson(response.stdout), options);
+  return { rows, page, backend: 'bili-cli' };
 }
 
 export async function fetchBilibiliRankWithInstalledRouter(options = {}) {
@@ -167,7 +276,8 @@ export async function fetchBilibiliRankWithInstalledRouter(options = {}) {
     timeout: 60_000,
     maxBuffer: 16 * 1024 * 1024
   });
-  return { rows: parseBilibiliRankJson(response.stdout), day, backend: 'bili-cli' };
+  const rows = await enrichBilibiliVideoRows(parseBilibiliRankJson(response.stdout), options);
+  return { rows, day, backend: 'bili-cli' };
 }
 
 export async function fetchBilibiliUsersWithInstalledRouter(options = {}) {
@@ -185,5 +295,6 @@ export async function fetchBilibiliUsersWithInstalledRouter(options = {}) {
     timeout: 60_000,
     maxBuffer: 16 * 1024 * 1024
   });
-  return { rows: parseBilibiliUserSearchJson(response.stdout), query, page, backend: 'bili-cli' };
+  const rows = await enrichBilibiliUserRows(parseBilibiliUserSearchJson(response.stdout), query, page, options);
+  return { rows, query, page, backend: 'bili-cli' };
 }
