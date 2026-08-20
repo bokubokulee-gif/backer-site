@@ -92,6 +92,10 @@ test('Market2 annotation release has one filter entry, profiles before contents,
   const html = read('backerdemo.html');
   const styles = read('css/market2.css');
   assert.match(source, /Discover profiles and contents to back/);
+  assert.match(source, /data-nav="home">Home<\/button>/);
+  assert.match(source, /href="research\.html">Research<\/a>/);
+  assert.match(source, /href="backerthesis\.html">Thesis<\/a>/);
+  assert.match(source, /href="portfolio\.html">Portfolio<\/a>/);
   assert.doesNotMatch(source, /People worth noticing/);
   assert.match(source, /Profiles to Back/);
   assert.match(source, /Contents to Back/);
@@ -108,9 +112,12 @@ test('Market2 annotation release has one filter entry, profiles before contents,
   assert.match(source, /drawerInitialSort/);
   assert.match(source, /reloadCatalog[\s\S]*scheduleDataLoad\(\)[\s\S]*scheduleDiscovery/);
   assert.match(source, /drawerSnapshot/);
-  assert.match(source, /Sources with no current records stay visible but unavailable\./);
+  assert.match(source, /Showing sources with real profiles or original content retained in this catalog\./);
   assert.doesNotMatch(html, /css\/market\.css|js\/market-data\.js|js\/market\.js|data-view="market"/);
   assert.match(html, /<\/section>\s*<!-- SHARED FLICKERING FOOTER -->\s*<footer class="backer-footer/);
+  assert.doesNotMatch(html, /Attention needs an evidence trail|<div class="val-proof">|>Records<|>Signals<|>Limits</);
+  assert.match(html, /<h3>Capital already follows<\/h3>/);
+  assert.doesNotMatch(html, /Tips, memberships, subscriptions, and public engagement/);
 });
 
 test('Market2 normalization surfaces observed GitHub values before permission placeholders', () => {

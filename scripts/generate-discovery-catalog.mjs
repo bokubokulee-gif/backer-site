@@ -8,6 +8,16 @@ import { resolve } from 'node:path';
 import { promisify } from 'node:util';
 import { exhaustCursorPages, exhaustPages } from './discovery-pagination.mjs';
 import { discoverYouTubeWithInstalledRouter } from './reach-youtube-discovery.mjs';
+import {
+  fetchBilibiliHotPageWithInstalledRouter,
+  fetchBilibiliRankWithInstalledRouter,
+  fetchBilibiliUsersWithInstalledRouter,
+  verifyBilibiliInstalledRouter
+} from './reach-bilibili-discovery.mjs';
+import {
+  fetchTwitchVodsWithInstalledRouter,
+  verifyTwitchInstalledRouter
+} from './reach-twitch-discovery.mjs';
 
 const require = createRequire(import.meta.url);
 const {
@@ -20,6 +30,12 @@ const {
 } = require('../api/_lib/discovery-model.js');
 const { buildWorkClusters } = require('../api/_lib/discovery-work-clusters.js');
 const { REVIEWED_PUBLIC_FEEDS } = require('../lib/discovery/providers/public-feeds.js');
+const { VERIFIED_PUBLIC_TWITCH_CHANNELS } = require('../lib/discovery/providers/public-twitch-channels.js');
+const {
+  REVIEWED_PUBLIC_SNAPSHOT,
+  REVIEWED_SNAPSHOT_PROVIDERS,
+  importReviewedPublicSnapshot
+} = require('../lib/discovery/providers/reviewed-public-snapshot.js');
 
 const execFileAsync = promisify(execFile);
 const outputPath = process.env.BACKER_DISCOVERY_CATALOG_OUTPUT
@@ -32,8 +48,14 @@ const GITHUB_ANONYMOUS_RESULT_PAGES = 10;
 const DEV_PAGE_SIZE = 100;
 const YOUTUBE_PAGE_SIZE = 50;
 const YOUTUBE_DATA_MAX_AGE_MS = 30 * 86_400_000;
-const PUBLIC_PROVIDERS = new Set(['github', 'dev', 'medium', 'substack', 'rss', 'youtube']);
-const FRESHNESS_SENSITIVE_PROVIDERS = new Set(['github', 'dev', 'youtube', 'rss']);
+const BILIBILI_HOT_PAGE_SIZE = 20;
+const BILIBILI_PUBLIC_RESULT_PAGES = 2;
+const TWITCH_VODS_PER_CHANNEL = 3;
+const PUBLIC_PROVIDERS = new Set([
+  'github', 'dev', 'medium', 'substack', 'rss', 'youtube', 'bilibili', 'twitch',
+  ...REVIEWED_SNAPSHOT_PROVIDERS
+]);
+const FRESHNESS_SENSITIVE_PROVIDERS = new Set(['github', 'dev', 'youtube', 'bilibili', 'twitch', 'rss']);
 const PRIVATE_ACQUISITION_MARKER = /agent[\s_-]*reach|panniantong|opencli|twitter-cli/i;
 
 const DEV_DISCOVERY_QUERIES = [
@@ -57,6 +79,20 @@ const YOUTUBE_QUERIES = [
   '2026 fitness wellness creators',
   '2026 fashion beauty creators'
 ];
+
+const BILIBILI_USER_QUERIES = [
+  '科技',
+  '知识科普',
+  '人工智能',
+  '编程',
+  '设计',
+  '艺术',
+  '音乐',
+  '游戏',
+  '商业财经',
+  '教育'
+];
+const BILIBILI_RANK_DAYS = [3, 7];
 
 const MEDIUM_FEEDS = [
   'https://medium.com/feed/tag/artificial-intelligence',
@@ -165,7 +201,16 @@ async function loadExisting() {
     existingCatalog = parsed;
     const migratedMetrics = (Array.isArray(parsed.metricObservations) ? parsed.metricObservations : [])
       .map((row) => {
-        if (!row || !['github', 'dev'].includes(row.provider)) return row;
+        if (!row) return row;
+        if (row.provider === 'bilibili' && row.methodologyVersion === 'bilibili-public-hot-v1') {
+          return createMetricObservation({
+            ...row,
+            methodologyVersion: row.entityType === 'identity'
+              ? 'bilibili-public-user-search-v1'
+              : 'bilibili-public-hot-rank-v1'
+          });
+        }
+        if (!['github', 'dev'].includes(row.provider)) return row;
         const evidence = directMetricEvidence(row.provider, row.observedAt || generatedAt);
         return createMetricObservation({
           ...row,
@@ -273,6 +318,31 @@ function addContent(owner, input) {
   return record;
 }
 
+function collectReviewedPublicProvider(provider) {
+  // Import and validate before replacing anything. A malformed or unreadable
+  // reviewed snapshot therefore leaves the previously published provider data
+  // untouched and the guard below reports it as last-good.
+  const imported = importReviewedPublicSnapshot(REVIEWED_PUBLIC_SNAPSHOT, [provider]);
+  const previous = providerSnapshot(provider);
+  const previousMetrics = bundle.metricObservations.filter((row) => row.provider === provider);
+  clearProviderSnapshot(provider);
+  bundle.metricObservations = bundle.metricObservations.filter((row) => row.provider !== provider);
+  try {
+    bundle.creators.push(...imported.creators);
+    bundle.platformIdentities.push(...imported.platformIdentities);
+    bundle.contentRecords.push(...imported.contentRecords);
+    bundle.metricObservations.push(...imported.metricObservations);
+    replaceProviderRun(imported.providerRuns[0]);
+    acquisitionCheckpoints[provider] = imported.acquisitionCheckpoints[provider];
+  } catch (error) {
+    clearProviderSnapshot(provider);
+    bundle.metricObservations = bundle.metricObservations.filter((row) => row.provider !== provider);
+    restoreProviderSnapshot(previous);
+    bundle.metricObservations.push(...previousMetrics);
+    throw error;
+  }
+}
+
 export function directMetricEvidence(provider, observedAt = generatedAt) {
   const evidence = {
     github: { methodologyVersion: 'github-rest-v3', basis: 'direct_official_api_field', access: 'public_api' },
@@ -281,12 +351,346 @@ export function directMetricEvidence(provider, observedAt = generatedAt) {
       methodologyVersion: 'youtube-data-api-v3', basis: 'direct_official_api_field', access: 'public_api',
       expiresAt: new Date(Date.parse(observedAt) + YOUTUBE_DATA_MAX_AGE_MS).toISOString()
     },
+    bilibili: {
+      methodologyVersion: 'bilibili-public-discovery-v1', basis: 'direct_public_page_field', access: 'public_page'
+    },
+    twitch: {
+      methodologyVersion: 'twitch-public-vod-playlist-v1', basis: 'direct_public_page_field', access: 'public_page'
+    },
     rss: {
       methodologyVersion: 'reviewed-public-feed-v1', basis: 'server_reviewed_public_feed',
       access: 'public_source'
     }
   }[provider];
   return evidence ? structuredClone(evidence) : null;
+}
+
+function providerSnapshot(provider) {
+  const identityIds = new Set(bundle.platformIdentities
+    .filter((row) => row.provider === provider)
+    .map((row) => row.id));
+  const creatorIds = new Set(bundle.platformIdentities
+    .filter((row) => row.provider === provider)
+    .map((row) => row.creatorId));
+  return {
+    creators: bundle.creators.filter((row) => creatorIds.has(row.id)),
+    platformIdentities: bundle.platformIdentities.filter((row) => row.provider === provider),
+    contentRecords: bundle.contentRecords.filter((row) => row.provider === provider
+      || identityIds.has(row.platformIdentityId))
+  };
+}
+
+function clearProviderSnapshot(provider) {
+  const snapshot = providerSnapshot(provider);
+  const identityIds = new Set(snapshot.platformIdentities.map((row) => row.id));
+  const creatorIds = new Set(snapshot.creators.map((row) => row.id));
+  bundle.platformIdentities = bundle.platformIdentities.filter((row) => row.provider !== provider);
+  bundle.contentRecords = bundle.contentRecords.filter((row) => row.provider !== provider
+    && !identityIds.has(row.platformIdentityId));
+  const retainedCreatorIds = new Set(bundle.platformIdentities.map((row) => row.creatorId));
+  bundle.creators = bundle.creators.filter((row) => !creatorIds.has(row.id) || retainedCreatorIds.has(row.id));
+  // Metrics remain until the final relational dedupe. That preserves the
+  // bounded latest-plus-prior-distinct history for records still in the new
+  // snapshot and automatically drops observations for records that disappear.
+  return snapshot;
+}
+
+function restoreProviderSnapshot(snapshot) {
+  if (!snapshot) return;
+  bundle.creators.push(...snapshot.creators);
+  bundle.platformIdentities.push(...snapshot.platformIdentities);
+  bundle.contentRecords.push(...snapshot.contentRecords);
+}
+
+async function collectBilibili() {
+  const before = runCounts('bilibili');
+  const priorRun = priorProviderRun('bilibili');
+  const pageSize = boundedInteger(
+    process.env.BACKER_BILIBILI_RESULTS_PER_PAGE,
+    BILIBILI_HOT_PAGE_SIZE,
+    1,
+    100
+  );
+  const pageLimit = boundedInteger(
+    process.env.BACKER_BILIBILI_PUBLIC_PAGES,
+    BILIBILI_PUBLIC_RESULT_PAGES,
+    1,
+    25
+  );
+  const scopeKey = JSON.stringify({ endpoint: 'bilibili-public-hot', pageSize, pageLimit });
+  const checkpoint = acquisitionCheckpoints.bilibili;
+  const resuming = checkpoint && checkpoint.state === 'in_progress'
+    && checkpoint.scopeKey === scopeKey && checkpoint.restartSnapshot !== true;
+  let phase = resuming ? String(checkpoint.phase || 'hot') : 'hot';
+  let hotPage = resuming && phase === 'hot' ? positiveSafeInteger(checkpoint.nextPage, 1) : 1;
+  let rankIndex = resuming && phase === 'rank'
+    ? boundedInteger(checkpoint.rankIndex, 0, 0, BILIBILI_RANK_DAYS.length - 1) : 0;
+  let queryIndex = resuming && phase === 'user_search'
+    ? boundedInteger(checkpoint.queryIndex, 0, 0, BILIBILI_USER_QUERIES.length - 1) : 0;
+
+  await verifyBilibiliInstalledRouter({
+    agentReachBin: process.env.BACKER_AGENT_REACH_BIN,
+    biliBin: process.env.BACKER_BILI_BIN,
+    env: process.env
+  });
+  const priorSnapshot = resuming ? null : clearProviderSnapshot('bilibili');
+  let pagesRead = 0;
+  let result = { state: 'succeeded', hasMore: false, reasonCode: null };
+
+  const consumeVideos = async (rows) => {
+    for (const row of rows) {
+        const owner = addOwner({
+          provider: 'bilibili', nativeId: row.ownerId, displayName: row.ownerName,
+          bio: '', avatarUrl: null, handle: row.ownerId, profileUrl: row.ownerUrl,
+          verified: null, observedAt: generatedAt
+        });
+        const record = addContent(owner, {
+          provider: 'bilibili', nativeId: row.videoId, contentType: 'video',
+          title: row.title, excerpt: row.description, canonicalUrl: row.videoUrl,
+          thumbnailUrl: null, publishedAt: null, observedAt: generatedAt
+        });
+        if (!record) continue;
+        for (const [metric, value] of Object.entries(row.metrics || {})) {
+          addMetric({
+            entityType: 'content', entityId: record.id, provider: 'bilibili', metric, value,
+            observedAt: generatedAt, sourceUrl: row.videoUrl,
+            methodologyVersion: 'bilibili-public-hot-rank-v1'
+          });
+        }
+      }
+    await sleep(350);
+  };
+
+  const consumeUsers = async (rows) => {
+    for (const row of rows) {
+      const owner = addOwner({
+        provider: 'bilibili', nativeId: row.ownerId, displayName: row.ownerName,
+        bio: row.bio, avatarUrl: null, handle: row.ownerId, profileUrl: row.ownerUrl,
+        verified: null, observedAt: generatedAt
+      });
+      if (!owner) continue;
+      for (const [metric, value] of Object.entries(row.metrics || {})) {
+        addMetric({
+          entityType: 'identity', entityId: owner.identity.id, provider: 'bilibili', metric, value,
+          observedAt: generatedAt, sourceUrl: row.ownerUrl,
+          methodologyVersion: 'bilibili-public-user-search-v1'
+        });
+      }
+    }
+    await sleep(350);
+  };
+
+  if (phase === 'hot') {
+    result = await exhaustPages({
+      startPage: hotPage,
+      pageSize,
+      providerPageLimit: pageLimit,
+      hasLastGood: before.contentRecords > 0,
+      itemKey: (row) => row && row.videoId,
+      fetchPage: async (page) => {
+        const response = await fetchBilibiliHotPageWithInstalledRouter({
+          biliBin: process.env.BACKER_BILI_BIN, page, resultLimit: pageSize, env: process.env
+        });
+        return { items: response.rows };
+      },
+      consumePage: consumeVideos
+    });
+    pagesRead += result.pagesRead;
+    if (result.hasMore) hotPage = result.nextPage;
+    else phase = 'rank';
+  }
+
+  if (!result.hasMore && phase === 'rank') {
+    for (; rankIndex < BILIBILI_RANK_DAYS.length; rankIndex += 1) {
+      try {
+        const response = await fetchBilibiliRankWithInstalledRouter({
+          biliBin: process.env.BACKER_BILI_BIN,
+          day: BILIBILI_RANK_DAYS[rankIndex],
+          resultLimit: pageSize,
+          env: process.env
+        });
+        await consumeVideos(response.rows);
+        pagesRead += 1;
+      } catch (error) {
+        result = { state: pagesRead ? 'partial' : 'failed', hasMore: true, reasonCode: 'partial_page_failure', error };
+        break;
+      }
+    }
+    if (!result.hasMore) phase = 'user_search';
+  }
+
+  if (!result.hasMore && phase === 'user_search') {
+    for (; queryIndex < BILIBILI_USER_QUERIES.length; queryIndex += 1) {
+      try {
+        const response = await fetchBilibiliUsersWithInstalledRouter({
+          biliBin: process.env.BACKER_BILI_BIN,
+          query: BILIBILI_USER_QUERIES[queryIndex],
+          page: 1,
+          resultLimit: pageSize,
+          env: process.env
+        });
+        await consumeUsers(response.rows);
+        pagesRead += 1;
+      } catch (error) {
+        result = { state: pagesRead ? 'partial' : 'failed', hasMore: true, reasonCode: 'partial_page_failure', error };
+        break;
+      }
+    }
+    if (!result.hasMore) phase = 'complete';
+  }
+
+  if (result.hasMore && pagesRead === 0 && priorSnapshot) restoreProviderSnapshot(priorSnapshot);
+  acquisitionCheckpoints.bilibili = result.hasMore
+    ? {
+        state: 'in_progress', scopeKey, phase,
+        nextPage: phase === 'hot' ? hotPage : null,
+        rankIndex: phase === 'rank' ? rankIndex : null,
+        queryIndex: phase === 'user_search' ? queryIndex : null,
+        restartSnapshot: pagesRead === 0,
+        updatedAt: generatedAt, reasonCode: result.reasonCode
+      }
+    : {
+        state: 'exhausted', scopeKey, phase: 'complete', nextPage: null,
+        rankIndex: null, queryIndex: null, restartSnapshot: false,
+        updatedAt: generatedAt, reasonCode: 'scoped_public_discovery_snapshot'
+      };
+  const counts = runCounts('bilibili');
+  const succeeded = result.state === 'succeeded' && !result.hasMore;
+  const hasFreshPartial = !succeeded && pagesRead > 0;
+  replaceProviderRun(createProviderRun({
+    provider: 'bilibili',
+    state: succeeded ? (counts.contentRecords ? 'succeeded' : 'empty')
+      : (counts.contentRecords ? 'partial' : 'failed'),
+    publishState: succeeded || hasFreshPartial ? 'fresh'
+      : (before.contentRecords ? 'last_good' : 'unavailable'),
+    startedAt: generatedAt, finishedAt: new Date().toISOString(),
+    observedAt: succeeded || hasFreshPartial ? generatedAt : priorRun && priorRun.observedAt,
+    lastSuccessAt: succeeded || hasFreshPartial ? generatedAt
+      : priorRun && (priorRun.lastSuccessAt || priorRun.observedAt),
+    pagesRead, hasMore: result.hasMore,
+    reasonCode: succeeded ? 'scoped_public_discovery_snapshot' : result.reasonCode,
+    resultCounts: counts
+  }));
+}
+
+async function collectTwitch() {
+  const before = runCounts('twitch');
+  const priorRun = priorProviderRun('twitch');
+  const seeds = VERIFIED_PUBLIC_TWITCH_CHANNELS
+    .filter((row) => row && row.verified === true && /^[a-z0-9_]{2,40}$/.test(String(row.handle || '').toLowerCase()))
+    .map((row) => ({
+      handle: String(row.handle).toLowerCase(),
+      displayName: String(row.displayName || row.handle).trim() || String(row.handle),
+      preferredVodId: /^v?\d+$/.test(String(row.preferredVodId || '')) ? String(row.preferredVodId) : null
+    }));
+  const resultLimit = boundedInteger(
+    process.env.BACKER_TWITCH_VODS_PER_CHANNEL,
+    TWITCH_VODS_PER_CHANNEL,
+    1,
+    12
+  );
+  const scopeKey = JSON.stringify({
+    endpoint: 'twitch-public-vods', resultLimit,
+    channels: seeds.map((row) => [row.handle, row.preferredVodId])
+  });
+  const checkpoint = acquisitionCheckpoints.twitch;
+  const resuming = checkpoint && checkpoint.state === 'in_progress'
+    && checkpoint.scopeKey === scopeKey && Array.isArray(checkpoint.retryIndices);
+  if (!seeds.length) {
+    replaceProviderRun(createProviderRun({
+      provider: 'twitch', state: 'not_configured',
+      publishState: before.contentRecords ? 'last_good' : 'unavailable',
+      startedAt: generatedAt, finishedAt: new Date().toISOString(),
+      observedAt: priorRun && priorRun.observedAt,
+      lastSuccessAt: priorRun && (priorRun.lastSuccessAt || priorRun.observedAt),
+      pagesRead: 0, hasMore: false, reasonCode: 'provider_not_configured', resultCounts: before
+    }));
+    return;
+  }
+
+  await verifyTwitchInstalledRouter({
+    agentReachBin: process.env.BACKER_AGENT_REACH_BIN,
+    ytDlpBin: process.env.BACKER_YT_DLP_BIN,
+    env: process.env
+  });
+  const priorSnapshot = resuming ? null : clearProviderSnapshot('twitch');
+  const targetIndices = resuming
+    ? checkpoint.retryIndices.filter((index) => Number.isInteger(index) && index >= 0 && index < seeds.length)
+    : seeds.map((_row, index) => index);
+  const failedIndices = [];
+  let pagesRead = 0;
+  for (const index of targetIndices) {
+    const seed = seeds[index];
+    try {
+      const response = await fetchTwitchVodsWithInstalledRouter({
+        ytDlpBin: process.env.BACKER_YT_DLP_BIN,
+        handle: seed.handle,
+        resultLimit,
+        env: process.env
+      });
+      const owner = addOwner({
+        provider: 'twitch', nativeId: seed.handle, displayName: seed.displayName,
+        bio: '', avatarUrl: null, handle: seed.handle, profileUrl: response.channelUrl,
+        verified: null, observedAt: generatedAt
+      });
+      const orderedRows = seed.preferredVodId
+        ? response.rows.slice().sort((left, right) => Number(right.nativeId === seed.preferredVodId)
+          - Number(left.nativeId === seed.preferredVodId))
+        : response.rows;
+      let retained = 0;
+      for (const row of orderedRows) {
+        const record = addContent(owner, {
+          provider: 'twitch', nativeId: row.nativeId, contentType: 'video',
+          title: row.title, excerpt: '', canonicalUrl: row.canonicalUrl,
+          thumbnailUrl: row.thumbnailUrl, publishedAt: null, observedAt: generatedAt
+        });
+        if (!record) continue;
+        retained += 1;
+        addMetric({
+          entityType: 'content', entityId: record.id, provider: 'twitch', metric: 'views',
+          value: row.viewCount, observedAt: generatedAt, sourceUrl: row.canonicalUrl
+        });
+      }
+      if (!owner || !retained) throw Object.assign(new Error('no retained public VODs'), { code: 'no_matches' });
+      addMetric({
+        entityType: 'identity', entityId: owner.identity.id, provider: 'twitch',
+        metric: 'videos_observed', value: retained, observedAt: generatedAt,
+        sourceUrl: response.channelUrl
+      });
+      pagesRead += 1;
+      await sleep(350);
+    } catch (_error) {
+      failedIndices.push(index);
+    }
+  }
+
+  if (pagesRead === 0 && priorSnapshot) restoreProviderSnapshot(priorSnapshot);
+
+  acquisitionCheckpoints.twitch = failedIndices.length
+    ? {
+        state: 'in_progress', scopeKey, retryIndices: failedIndices,
+        updatedAt: generatedAt, reasonCode: 'partial_page_failure'
+      }
+    : {
+        state: 'exhausted', scopeKey, retryIndices: [],
+        updatedAt: generatedAt, reasonCode: 'scoped_public_vod_snapshot'
+      };
+  const counts = runCounts('twitch');
+  const succeeded = failedIndices.length === 0;
+  replaceProviderRun(createProviderRun({
+    provider: 'twitch',
+    state: succeeded ? (counts.contentRecords ? 'succeeded' : 'empty')
+      : (counts.contentRecords ? 'partial' : 'failed'),
+    publishState: counts.contentRecords ? 'fresh'
+      : (before.contentRecords ? 'last_good' : 'unavailable'),
+    startedAt: generatedAt, finishedAt: new Date().toISOString(),
+    observedAt: counts.contentRecords ? generatedAt : priorRun && priorRun.observedAt,
+    lastSuccessAt: counts.contentRecords ? generatedAt
+      : priorRun && (priorRun.lastSuccessAt || priorRun.observedAt),
+    pagesRead, hasMore: failedIndices.length > 0,
+    reasonCode: succeeded ? 'scoped_public_vod_snapshot' : 'partial_page_failure',
+    resultCounts: counts
+  }));
 }
 
 export function enrichDirectMetric(input, observedAt = generatedAt) {
@@ -1309,7 +1713,16 @@ async function main() {
     medium: collectMedium,
     substack: collectSubstack,
     rss: collectRss,
-    youtube: collectYouTube
+    youtube: collectYouTube,
+    bilibili: collectBilibili,
+    twitch: collectTwitch,
+    x: () => collectReviewedPublicProvider('x'),
+    tiktok: () => collectReviewedPublicProvider('tiktok'),
+    spotify: () => collectReviewedPublicProvider('spotify'),
+    soundcloud: () => collectReviewedPublicProvider('soundcloud'),
+    patreon: () => collectReviewedPublicProvider('patreon'),
+    kick: () => collectReviewedPublicProvider('kick'),
+    linkedin: () => collectReviewedPublicProvider('linkedin')
   };
   const providers = selectedProviders();
   const errors = (await Promise.all(providers.map((provider) => collectWithGuard(provider, collectors[provider]))))

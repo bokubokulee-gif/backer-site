@@ -6,7 +6,13 @@ const { applyReviewedIdentityLinks } = require('./discovery-identity-links');
 const PROVIDERS = Object.freeze([
   'github',
   'youtube',
+  'bilibili',
   'twitch',
+  'tiktok',
+  'spotify',
+  'soundcloud',
+  'patreon',
+  'kick',
   'dev',
   'medium',
   'substack',

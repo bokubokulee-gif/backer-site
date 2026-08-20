@@ -84,12 +84,24 @@ test('launch discovery snapshot covers every acquired public source', () => {
   catalog.contentRecords.forEach((row) => { counts[row.provider].content += 1; });
   catalog.metricObservations.forEach((row) => { counts[row.provider].metrics += 1; });
 
-  ['github', 'dev', 'medium', 'substack', 'rss'].forEach((provider) => {
+  [
+    'github', 'dev', 'medium', 'substack', 'rss', 'bilibili', 'twitch',
+    'x', 'tiktok', 'spotify', 'soundcloud', 'patreon', 'kick', 'linkedin'
+  ].forEach((provider) => {
     assert.ok(counts[provider] && counts[provider].creators.size > 0, `${provider} creator coverage missing`);
     assert.ok(counts[provider].content > 0, `${provider} content coverage missing`);
   });
   assert.ok(counts.github.metrics > 0);
   assert.ok(counts.dev.metrics > 0);
+  assert.ok(counts.bilibili.metrics > 0);
+  assert.ok(counts.twitch.metrics > 0);
+  assert.equal(counts.x.metrics, 0);
+  assert.equal(counts.tiktok.metrics, 0);
+  assert.equal(counts.spotify.metrics, 0);
+  assert.equal(counts.soundcloud.metrics, 0);
+  assert.equal(counts.patreon.metrics, 0);
+  assert.ok(counts.kick.metrics > 0);
+  assert.ok(counts.linkedin.metrics > 0);
   if (!counts.youtube) {
     const youtubeRun = catalog.providerRuns.find((run) => run.provider === 'youtube');
     assert.equal(youtubeRun && youtubeRun.state, 'not_configured');
@@ -98,6 +110,35 @@ test('launch discovery snapshot covers every acquired public source', () => {
   } else {
     assert.ok(counts.youtube.metrics > 0);
   }
+});
+
+test('credential-free Bilibili and reviewed Twitch snapshots stay materially source-backed', () => {
+  const catalog = normalizeCatalog(readCatalog());
+  const bilibiliIdentities = catalog.platformIdentities.filter((row) => row.provider === 'bilibili');
+  const bilibiliContent = catalog.contentRecords.filter((row) => row.provider === 'bilibili');
+  const bilibiliMetrics = catalog.metricObservations.filter((row) => row.provider === 'bilibili');
+  assert.ok(bilibiliIdentities.length >= 200, 'Bilibili creator coverage regressed below the public search scope');
+  assert.ok(bilibiliContent.length >= 40, 'Bilibili content coverage regressed below hot/rank scope');
+  assert.ok(bilibiliMetrics.length >= 500, 'Bilibili native evidence coverage regressed');
+  assert.ok(bilibiliIdentities.every((row) => /^https:\/\/space\.bilibili\.com\/\d+$/.test(row.profileUrl)));
+  assert.ok(bilibiliContent.every((row) => /^https:\/\/www\.bilibili\.com\/video\/BV[0-9A-Za-z]+$/.test(row.canonicalUrl)));
+  assert.ok(bilibiliMetrics.every((row) => /^https:\/\/(?:space|www)\.bilibili\.com\//.test(row.sourceUrl)
+    && ['bilibili-public-hot-rank-v1', 'bilibili-public-user-search-v1'].includes(row.methodologyVersion)));
+
+  const expectedTwitch = new Set(`firstcrimson,piratesoftware,repeatereater,headlessheadhunter,charlienounouvember,acegikmo,amchoon,bromorangersgo,chivurr,dahlia,kenthekoi,totally_kaal,ariathome,curoze_,rikardekberg,tiamatto,crusader4hymn,philipbowenmusic,coldiart,dizmadraws,heygreyyart,jmillustrates,thegreatshono,melonppuccino`.split(','));
+  const twitchIdentities = catalog.platformIdentities.filter((row) => row.provider === 'twitch');
+  assert.deepEqual(new Set(twitchIdentities.map((row) => row.handle)), expectedTwitch);
+  for (const identity of twitchIdentities) {
+    const works = catalog.contentRecords.filter((row) => row.platformIdentityId === identity.id);
+    assert.equal(works.length, 3, `${identity.handle} must retain its three validated public VODs`);
+    assert.ok(works.every((row) => /^https:\/\/www\.twitch\.tv\/videos\/\d+$/.test(row.canonicalUrl)));
+  }
+  const philip = twitchIdentities.find((row) => row.handle === 'philipbowenmusic');
+  const philipWorks = catalog.contentRecords.filter((row) => row.platformIdentityId === philip.id);
+  assert.equal(philipWorks[0].nativeId, 'v1418053287', 'reviewed self-describing Philip Bowen VOD must be preferred');
+  const twitchMetrics = catalog.metricObservations.filter((row) => row.provider === 'twitch');
+  assert.ok(twitchMetrics.every((row) => /^https:\/\/www\.twitch\.tv\//.test(row.sourceUrl)
+    && row.methodologyVersion === 'twitch-public-vod-playlist-v1'));
 });
 
 test('deployed source surfaces contain no private acquisition-layer branding', () => {
