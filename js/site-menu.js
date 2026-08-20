@@ -5,7 +5,7 @@
   var NAV = [
     {
       key: 'product', label: 'Product', items: [
-        { label: 'Marketplace', description: 'Back emerging creators before consensus.', href: BASE + 'backerdemo.html?view=market', icon: 'market' },
+        { label: 'Marketplace', description: 'Back emerging creators before consensus.', href: BASE + 'backerdemo.html#market2', icon: 'market' },
         { label: 'AI Search', description: 'Discover people through attention signals.', href: BASE + 'backerdemo.html?view=search', icon: 'search' },
         { label: 'Portfolio', href: BASE + 'portfolio.html', icon: 'portfolio' }
       ]
@@ -99,7 +99,7 @@
       '<div class="backer-menu__sheet" id="' + id + '-sheet" role="dialog" aria-modal="true" aria-label="Backer navigation" aria-hidden="true">' +
         '<div class="backer-menu__sheet-inner"><div class="backer-menu__sheet-head"><span class="backer-menu__sheet-title">Explore Backer</span><button class="backer-menu__mobile-close" type="button" aria-label="Close Backer menu"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="m4 4 10 10M14 4 4 14"/></svg></button></div>' +
         '<div class="backer-menu__accordion">' + mobileGroups + '</div>' +
-        '<div class="backer-menu__sheet-foot"><a class="backer-menu__launch" href="' + BASE + 'backerdemo.html?view=market">Enter Backer Market <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h11M10 5l4 4-4 4"/></svg></a></div></div></div></div>';
+        '<div class="backer-menu__sheet-foot"><a class="backer-menu__launch" href="' + BASE + 'backerdemo.html#market2">Enter Backer Market <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h11M10 5l4 4-4 4"/></svg></a></div></div></div></div>';
 
     init(root);
   }

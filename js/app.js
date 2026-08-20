@@ -8,6 +8,46 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const app = $('#app');
+  const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '::1', '[::1]']);
+  const legacyArchiveAllowed = LOOPBACK_HOSTS.has(String(location.hostname || '').toLowerCase());
+  let legacyArchiveAssets = null;
+  window.__backerLegacyArchiveAllowed = legacyArchiveAllowed;
+
+  function loadLegacyStyle() {
+    if (document.querySelector('link[data-backer-legacy-market]')) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'css/market.css?v=20260820-local-archive';
+      link.dataset.backerLegacyMarket = 'true';
+      link.onload = resolve;
+      link.onerror = () => reject(new Error('Legacy marketplace stylesheet unavailable'));
+      document.head.appendChild(link);
+    });
+  }
+
+  function loadLegacyScript(src, key) {
+    if (key === 'data' && window.BACKER_MKT) return Promise.resolve();
+    if (key === 'view' && window.BackerMarket) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.dataset.backerLegacyMarket = key;
+      script.onload = resolve;
+      script.onerror = () => reject(new Error('Legacy marketplace script unavailable: ' + src));
+      document.head.appendChild(script);
+    });
+  }
+
+  function ensureLegacyArchiveAssets() {
+    if (!legacyArchiveAllowed) return Promise.reject(new Error('Legacy marketplace is local-only'));
+    if (!legacyArchiveAssets) {
+      legacyArchiveAssets = loadLegacyStyle()
+        .then(() => loadLegacyScript('js/market-data.js?v=3', 'data'))
+        .then(() => loadLegacyScript('js/market.js?v=20260820-local-archive', 'view'));
+    }
+    return legacyArchiveAssets;
+  }
 
   function analyticsView(view, arg) {
     try {
@@ -180,7 +220,16 @@
     $$('.dock-btn', dock).forEach(b => b.classList.toggle('active', b.dataset.view === view));
   }
 
-  function go(view, arg) {
+  async function go(view, arg) {
+    if (view === 'market') view = 'market2';
+    if (view === 'market-archive' && !legacyArchiveAllowed) view = 'market2';
+    if (view === 'market-archive') {
+      try {
+        await ensureLegacyArchiveAssets();
+      } catch (error) {
+        view = 'market2';
+      }
+    }
     if (view === 'portfolio') { window.location.href = 'portfolio.html'; return; }
     if (view === 'home') {
       document.body.classList.remove('body-app', 'mkt-full', 'mkt2-full');
@@ -193,16 +242,16 @@
       return;
     }
     document.body.classList.add('body-app');
-    document.body.classList.toggle('mkt-full', view === 'market' || view === 'market2'); // market views escape the 1180px app cap
+    document.body.classList.toggle('mkt-full', view === 'market-archive' || view === 'market2'); // market views escape the 1180px app cap
     document.body.classList.toggle('mkt2-full', view === 'market2');
     app.classList.remove('hidden'); app.setAttribute('aria-hidden', 'false');
     window.scrollTo({ top: 0, behavior: 'auto' });
     if (view === 'market2') { renderMarket2(); setDock('market2'); }
-    else if (view === 'market') { renderMarket(); setDock('market'); }
+    else if (view === 'market-archive') { renderMarket(); setDock('market2'); }
     else if (view === 'creator') { renderCreator(arg); setDock('market'); }
     else if (view === 'portfolio') { renderPortfolio('investor'); setDock('portfolio'); }
     else if (view === 'search') { renderSearch(arg || ''); setDock('search'); }
-    analyticsView(view, arg);
+    analyticsView(view === 'market-archive' ? 'market' : view, arg);
   }
   window.__backerGo = go;
 
@@ -210,7 +259,11 @@
   function renderMarket2() {
     if (window.BackerMarket2 && typeof window.BackerMarket2.render === 'function') {
       try {
-        if (!/^#market2(?:\?|$)/.test(location.hash)) history.replaceState(null, '', location.pathname + location.search + '#market2');
+        if (!/^#market2(?:\?|$)/.test(location.hash) || new URLSearchParams(location.search).get('view') === 'market') {
+          var cleanParams = new URLSearchParams(location.search);
+          cleanParams.delete('view');
+          history.replaceState(null, '', location.pathname + (cleanParams.toString() ? '?' + cleanParams.toString() : '') + '#market2');
+        }
       } catch (e) {}
       window.BackerMarket2.render(app);
       return;
@@ -266,7 +319,7 @@
       </div>` : '';
 
     app.innerHTML = `
-      <a class="back-link" data-view="market"><svg viewBox="0 0 24 24" class="ic"><path d="M19 12H5M11 6l-6 6 6 6"/></svg> Back to marketplace</a>
+      <a class="back-link" data-view="market2"><svg viewBox="0 0 24 24" class="ic"><path d="M19 12H5M11 6l-6 6 6 6"/></svg> Back to marketplace</a>
       <div class="detail">
         <div class="detail-main">
           <div class="dhero">
@@ -336,7 +389,7 @@
           </div>` : `<div class="invest">
             <h3>${stateInfo.label}</h3>
             <p class="sub">Position controls appear only for a valid open simulated milestone contract. Attention and underwriting evidence stay fully visible either way.</p>
-            <button class="btn btn-ghost" data-view="market" style="width:100%;justify-content:center">Back to the market</button>
+            <button class="btn btn-ghost" data-view="market2" style="width:100%;justify-content:center">Back to the market</button>
           </div>`}
 
           <div class="ai-panel">
@@ -486,7 +539,7 @@
         <div class="chart-card"><div class="chart-head"><h3>Performance history</h3><span class="badge-pos">${s.ret >= 0 ? '+' : ''}${s.ret.toFixed(1)}%</span></div>${chartSVG(perf, '#56d39a')}<div class="chart-x">${months.map(m => `<span>${m}</span>`).join('')}</div></div>
         <div>
           <div class="holdings">${holdings || '<div class="empty">No positions yet.</div>'}</div>
-          <button class="btn btn-ghost" data-view="market" style="width:100%;justify-content:center;margin-top:14px">Find more creators</button>
+          <button class="btn btn-ghost" data-view="market2" style="width:100%;justify-content:center;margin-top:14px">Find more creators</button>
         </div>
       </div>`;
   }
@@ -716,6 +769,16 @@
   }
 
   /* ---------------- boot ---------------- */
+  function routeFromLocation() {
+    var dl = new URLSearchParams(location.search).get('view');
+    if (dl === 'market' || dl === 'market2') { go('market2'); return true; }
+    if (dl === 'search') { go('search'); return true; }
+    if (/^#market2(?:\?|$)/.test(location.hash)) { go('market2'); return true; }
+    if (/^#market-archive(?:\?|$)/.test(location.hash)) { go('market-archive'); return true; }
+    if (/^#market(?:\?|$)/.test(location.hash)) { go('market2'); return true; }
+    return false;
+  }
+
   function boot() {
     getPortfolio(); // seed
     initNav();
@@ -724,15 +787,11 @@
     initHero();
     initTyped();
     $('.dock-home').classList.add('active');
-    // deep-link from portfolio.html dock (e.g. index.html?view=market)
-    // and shareable marketplace state links (#market?window=…&genre=…)
-    try {
-      var dl = new URLSearchParams(location.search).get('view');
-      if (dl && (dl === 'market' || dl === 'market2' || dl === 'search')) go(dl);
-      else if (/^#market2(?:\?|$)/.test(location.hash)) go('market2');
-      else if (/^#market(?:\?|$)/.test(location.hash)) go('market');
-    } catch (e) {}
+    // Public legacy routes resolve to Creator Radar. The simulated board is
+    // retained only for loopback QA at #market-archive.
+    try { routeFromLocation(); } catch (e) {}
   }
+  window.addEventListener('hashchange', () => { try { routeFromLocation(); } catch (e) {} });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 })();
