@@ -18,6 +18,7 @@ if (root && canvas) {
   const markerElevation = 0.015;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const labelHost = root.querySelector('[data-globe-labels]');
+  const network = root.closest('.val-asset-network');
   const markerLabels = [];
 
   let globe = null;
@@ -42,7 +43,7 @@ if (root && canvas) {
       const dot = document.createElement('i');
       dot.className = 'val-globe-label-dot';
       const live = document.createElement('b');
-      live.textContent = 'SOURCE';
+      live.textContent = 'FLOW';
 
       label.append(dot, live);
       labelHost.appendChild(label);
@@ -112,14 +113,19 @@ if (root && canvas) {
   function startRendering() {
     if (!globe || frameId || !inView || document.hidden || destroyed) return;
     lastFrame = 0;
-    if (reduceMotion && !pointerStart) updateGlobe();
-    else frameId = requestAnimationFrame(render);
+    if (reduceMotion && !pointerStart) {
+      updateGlobe();
+    } else {
+      if (network) network.classList.add('is-globe-spinning');
+      frameId = requestAnimationFrame(render);
+    }
   }
 
   function stopRendering() {
     if (frameId) cancelAnimationFrame(frameId);
     frameId = 0;
     lastFrame = 0;
+    if (network) network.classList.remove('is-globe-spinning');
   }
 
   function initGlobe() {
