@@ -6,8 +6,8 @@
 <meta name="backer-public-view-counts" content="true" />
 <meta name="backer-hide-unavailable-analytics-ui" content="true" />
 <meta name="theme-color" content="#070809" />
-<title>Backer Market</title>
-<meta name="description" content="View traded market odds, outcomes, rules, and your simulated position on Backer." />
+<title>Backer Trade</title>
+<meta name="description" content="Review an approved demo simulation or a local growth proposal on Backer." />
 <link rel="icon" type="image/png" href="img/backer-mark.png?v=2" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -18,41 +18,42 @@
 <link rel="stylesheet" href="css/market-community.css?v=1" />
 <link rel="stylesheet" href="css/market-detail-page.css?v=7" />
 <link rel="stylesheet" href="css/analytics.css?v=20260820-3" />
+<link rel="stylesheet" href="css/backer-dock.css?v=20260821-1" />
 </head>
 <body class="mdp-page">
-  <header class="mdp-nav" aria-label="Backer market navigation">
+  <header class="mdp-nav" aria-label="Backer Trades navigation">
     <a class="mdp-brand" href="backerdemo.html" aria-label="Backer home">
       <span class="mdp-brand-mark" aria-hidden="true"><img src="img/backer-mark.png?v=2" alt="" /></span>
       <span>Backer</span>
     </a>
-    <nav class="mdp-nav-links" aria-label="Market sections">
-      <a class="is-active" href="backerdemo.html#market2" aria-current="page">Markets</a>
+    <nav class="mdp-nav-links" aria-label="Trade sections">
+      <a class="is-active" href="backerdemo.html#trades" aria-current="page">Trades</a>
       <a href="portfolio.html">Portfolio</a>
       <a href="backerdemo.html#proof">Proof of Attention</a>
     </nav>
-    <a class="mdp-back" href="backerdemo.html#market2">
+    <a class="mdp-back" href="backerdemo.html#trades">
       <span aria-hidden="true">←</span>
-      <span>Back to markets</span>
+      <span>Back to Trades</span>
     </a>
   </header>
 
   <main class="mdp-status" id="marketPageStatus" aria-live="polite" aria-busy="true">
     <section class="mdp-status-card" id="marketPageMessage" aria-labelledby="marketPageTitle">
-      <span class="mdp-kicker">Backer exchange</span>
+      <span class="mdp-kicker">Backer Trades</span>
       <div class="mdp-loader" aria-hidden="true"><span></span><span></span><span></span></div>
-      <h1 id="marketPageTitle">Opening market…</h1>
-      <p id="marketPageCopy">Loading the traded-odds history, outcomes, order ticket, rules, and your simulated fills.</p>
+      <h1 id="marketPageTitle">Opening trade view…</h1>
+      <p id="marketPageCopy">Loading an approved demo simulation or a device-local growth proposal.</p>
       <div class="mdp-error-actions" id="marketPageActions" hidden>
-        <a class="mdp-primary-action" href="backerdemo.html#market2">Browse markets</a>
+        <a class="mdp-primary-action" href="backerdemo.html#trades">Browse Trades</a>
       </div>
       <div class="mdp-market-suggestions" id="marketPageSuggestions"></div>
     </section>
     <noscript>
       <section class="mdp-status-card mdp-noscript">
         <span class="mdp-kicker">JavaScript required</span>
-        <h1>This market needs JavaScript to run.</h1>
-        <p>Enable JavaScript to view the interactive chart and simulated order ticket.</p>
-        <a class="mdp-primary-action" href="backerdemo.html#market2">Back to markets</a>
+        <h1>This trade view needs JavaScript to run.</h1>
+        <p>Enable JavaScript to review an approved demo simulation or a local proposal.</p>
+        <a class="mdp-primary-action" href="backerdemo.html#trades">Back to Trades</a>
       </section>
     </noscript>
   </main>
@@ -63,6 +64,9 @@
 <script src="js/market-data.js?v=3"></script>
 <script src="js/poa-terminal.js?v=15"></script>
 <script src="js/market-community.js?v=1"></script>
+<script src="js/market-draft-store.js?v=20260821-1"></script>
 <script src="js/market-detail-page.js?v=7"></script>
+<div data-backer-dock></div>
+<script src="js/backer-dock.js?v=20260821-1"></script>
 </body>
 </html>

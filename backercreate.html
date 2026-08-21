@@ -4,44 +4,48 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#08080a" />
-<title>Create a people market | Backer</title>
-<meta name="description" content="Define a clear, source-backed simulated Backer market on a person or their public work." />
+<title>Draft a growth proposal | Backer</title>
+<meta name="description" content="Draft a source-backed growth proposal on a person or one exact public work." />
 <link rel="icon" type="image/png" href="img/backer-mark.png?v=2" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/market-builder.css?v=2" />
+<link rel="stylesheet" href="css/backer-dock.css?v=20260821-1" />
 </head>
 <body class="mb-page">
-  <header class="mb-nav" aria-label="Backer market creation navigation">
-    <a class="mb-brand" href="backerdemo.html#market2" aria-label="Backer Market 2">
+  <header class="mb-nav" aria-label="Backer proposal navigation">
+    <a class="mb-brand" href="backerdemo.html#market2" aria-label="Backer Discovery">
       <img src="img/backer-mark.png?v=2" alt="" />
       <span>Backer</span>
     </a>
     <div class="mb-nav-context" aria-label="Page context">
-      <span>Create a market</span>
-      <b>Simulation</b>
+      <span>Draft a growth bet</span>
+      <b>Local proposal</b>
     </div>
-    <a class="mb-nav-close" href="backerdemo.html#market2">Return to Market 2</a>
+    <a class="mb-nav-close" href="backerdemo.html#market2">Return to Discovery</a>
   </header>
 
   <main id="marketBuilder" class="mb-root" aria-live="polite" aria-busy="true">
-    <section class="mb-loading" aria-label="Loading market builder">
+    <section class="mb-loading" aria-label="Loading proposal builder">
       <div class="mb-loading-line"></div>
       <div class="mb-loading-line short"></div>
-      <p>Loading the referenced public identity and evidence snapshot.</p>
+      <p>Loading the exact retained public identity, work, and evidence source.</p>
     </section>
   </main>
 
   <noscript>
     <section class="mb-noscript">
       <h1>JavaScript is required</h1>
-      <p>The builder needs JavaScript to validate settlement rules and save a local simulation proposal.</p>
-      <a href="backerdemo.html#market2">Return to Market 2</a>
+      <p>The builder needs JavaScript to validate resolution rules and save a local proposal on this device.</p>
+      <a href="backerdemo.html#market2">Return to Discovery</a>
     </section>
   </noscript>
 
-<script src="js/market2-data.js?v=20260812-2"></script>
-<script src="js/market-builder.js?v=2"></script>
+<script src="js/discovery-catalog-client.js?v=20260821-1"></script>
+<script src="js/market-draft-store.js?v=20260821-1"></script>
+<script src="js/market-builder.js?v=20260821-1"></script>
+<div data-backer-dock></div>
+<script src="js/backer-dock.js?v=20260821-1"></script>
 </body>
 </html>

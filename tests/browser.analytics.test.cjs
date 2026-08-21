@@ -395,7 +395,7 @@ test('accepted SPA views are canonical, single, revocable, and outage-safe', asy
     assert.equal(state.views[1].path, '/search');
     assert.equal(JSON.stringify(state.views[1]).includes('private search text'), false);
 
-    await page.evaluate(() => window.__backerGo('market'));
+    await page.evaluate(() => window.__backerGo('market2'));
     await waitUntil(() => state.views.length === 3);
     assert.equal(state.views[2].path, '/market2');
     await page.waitForSelector('[data-m2-filters]');

@@ -86,14 +86,15 @@ test('virtual routes sanitize public IDs and never place free-form search text i
   assert.equal(Core.canonicalRoute('creator', 'Kai Nakamura?email=x').path, '/creator');
   assert.equal(Core.initialRoute('https://backer.example/waitlist.html').path, '/waitlist');
   assert.deepEqual(Core.initialRoute('https://backer.example/backerdemo.html?view=market'), {
-    pageKey: 'market2',
-    path: '/market2',
-    virtualView: 'market2',
+    pageKey: 'trades',
+    path: '/trades',
+    virtualView: 'trades',
     publicId: ''
   });
-  assert.equal(Core.initialRoute('https://backer.example/backerdemo.html#market').path, '/market2');
-  assert.equal(Core.initialRoute('https://backer.example/backerdemo.html#market-archive').path, '/market2');
-  assert.equal(Core.initialRoute('http://127.0.0.1:8766/backerdemo.html#market-archive').path, '/market');
+  assert.equal(Core.initialRoute('https://backer.example/backerdemo.html#trades').path, '/trades');
+  assert.equal(Core.initialRoute('https://backer.example/backerdemo.html#market').path, '/trades');
+  assert.equal(Core.initialRoute('https://backer.example/backerdemo.html#market-archive').path, '/trades');
+  assert.equal(Core.initialRoute('http://127.0.0.1:8766/backerdemo.html#market-archive').path, '/trades');
   assert.equal(
     Core.initialRoute('https://backer.example/onboarding.html?role=creator&answer=private').path,
     '/onboarding'

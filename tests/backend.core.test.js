@@ -86,8 +86,14 @@ test('canonical routes remove queries and hashes and constrain dynamic public ID
   assert.deepEqual(canonicalizeRoute('market2', '/market2?platforms=instagram'), {
     pageKey: 'market2',
     path: '/market2',
-    title: 'Backer Market',
+    title: 'Backer Discovery',
     virtualView: 'market2'
+  });
+  assert.deepEqual(canonicalizeRoute('trades', '/trades?view=proposals'), {
+    pageKey: 'trades',
+    path: '/trades',
+    title: 'Backer Trades',
+    virtualView: 'trades'
   });
   assert.equal(
     canonicalizeRoute('creator', '/creator/Kai_Nakamura?search=secret').path,

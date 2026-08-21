@@ -411,9 +411,10 @@ em{font-style:normal}
 
 /* ---------- product surfaces ---------- */
 .surfaces{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.surfaces.surface-tags-heavy{grid-template-columns:repeat(2,minmax(0,1fr))}
 .surface{
   padding:30px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--card);
-  display:flex;flex-direction:column;cursor:pointer;transition:.3s var(--ease);
+  min-width:0;display:flex;flex-direction:column;cursor:pointer;transition:.3s var(--ease);
 }
 .surface:hover{transform:translateY(-5px);border-color:var(--card-hi);background:var(--card-2)}
 .surface-tag{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.02em;margin-bottom:16px}
@@ -721,31 +722,6 @@ em{font-style:normal}
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast .ic{width:17px;height:17px;color:var(--pos)}
-
-/* ---------- bottom dock ---------- */
-.dock{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:60;
-  display:flex;align-items:center;gap:6px;padding:8px;border-radius:999px;
-  background:rgba(16,16,19,.78);backdrop-filter:blur(20px);border:1px solid var(--line);
-  box-shadow:0 18px 50px rgba(0,0,0,.5);
-}
-.dock-btn{
-  width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:var(--muted);
-  position:relative;transition:.2s var(--ease);
-}
-.dock-btn:hover{color:var(--ink);background:var(--card-2)}
-.dock-btn.active{color:var(--ink);background:var(--card-hi)}
-.dock-btn .ic{width:20px;height:20px}
-.dock-home .dock-orb{width:34px;height:34px;border-radius:50%;background:
-  radial-gradient(circle at 32% 30%, #fff, #cfd6da 30%, #6b7378 70%, #2a2e31);
-  box-shadow:0 0 18px rgba(255,255,255,.25), inset -4px -6px 10px rgba(0,0,0,.4);transition:.2s}
-.dock-home:hover .dock-orb{transform:scale(1.08)}
-.dock-btn[data-tip]::after{
-  content:attr(data-tip);position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);
-  font-size:11px;color:var(--ink);background:var(--bg-2);border:1px solid var(--line);padding:4px 9px;border-radius:7px;
-  white-space:nowrap;opacity:0;pointer-events:none;transition:.2s;
-}
-.dock-btn:hover::after{opacity:1}
 
 /* =========================================================
    MARKET VALIDATION
@@ -1217,6 +1193,7 @@ p,li,figcaption,.section-lead,.val-node-d,.val-fact span,.val-big span,.val-bran
   .reading-links{grid-template-columns:1fr}
   .reading-link{min-height:104px;padding:22px}
   .scores,.surfaces,.benefit-grid,.creator-grid,.port-stats,.metric-grid{grid-template-columns:1fr}
+  .surfaces.surface-tags-heavy{grid-template-columns:1fr}
   .g-row{grid-template-columns:70px 1fr}
   .nav-cta .btn-ghost{display:none}
   .hero-title{gap:14px;font-size:clamp(48px,13.5vw,68px)}

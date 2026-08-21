@@ -59,35 +59,29 @@ test('static launch snapshot contains real identities and native metric provenan
   assert.doesNotMatch(JSON.stringify(metricRows), /watchers_count/);
 });
 
-test('Market2 keeps deep browse modes while discovery loads only the real public-source catalog', () => {
+test('Discovery keeps people-first browse modes and loads only the real public-source catalog', () => {
   const source = read('js/market2.js');
   [
     'Trending',
-    'Ending soon',
-    'Most backed',
-    'Risk watch',
+    'New',
+    'Rising',
+    'Most followed',
+    'Evidence rich',
     '24h',
     '7d',
     '30d',
     '90d',
-    'Proof of Attention',
-    'Create person-growth market',
-    'Create content-growth market',
-    'milestones',
-    'pk_market',
-    'creator_arena',
-    'creator_perps',
+    'Draft a bet',
     '/api/discovery/search',
     'data/discovery-catalog.json',
     'Contents to Back'
   ].forEach((term) => assert.match(source, new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'), `missing Market2 affordance: ${term}`));
-  assert.match(source, /PoaTerminal\.open/);
-  assert.match(source, /permission.required|Permission required/i);
+  assert.doesNotMatch(source.slice(source.indexOf('var BROWSE'), source.indexOf('var CATEGORIES')), /Ending soon|Most backed|Risk watch/);
   assert.doesNotMatch(source, /BACKER_MARKET2_DATA|Bundled fallback|Emergency bundled snapshot/);
   assert.doesNotMatch(read('backerdemo.html'), /js\/market2-data\.js/);
 });
 
-test('Market2 annotation release has one filter entry, profiles before contents, and no discarded evidence blocks', () => {
+test('Discovery has independent profile and content filters, profiles before contents, and no discarded evidence blocks', () => {
   const source = read('js/market2.js');
   const html = read('backerdemo.html');
   const styles = read('css/market2.css');
@@ -103,7 +97,11 @@ test('Market2 annotation release has one filter entry, profiles before contents,
   assert.match(source, /m2-context-track/);
   assert.match(styles, /m2-catalog-marquee/);
   assert.match(styles, /prefers-reduced-motion:\s*reduce/);
-  assert.equal((source.match(/data-m2-filters/g) || []).length, 2, 'one rendered filter control plus one delegated handler');
+  assert.match(source, /Filter ['"]? \+ scope/);
+  assert.match(source, /filterButtonHTML\('profiles'\)/);
+  assert.match(source, /filterButtonHTML\('contents'\)/);
+  assert.match(source, /drawerScope === 'contents'/);
+  assert.doesNotMatch(source, /data-m2-share|m2-share-button/);
   assert.doesNotMatch(source, /m2-category-row/);
   assert.doesNotMatch(source, /workSectionHTML\(person\) \+ ledgerHTML\(person\)/);
   assert.doesNotMatch(source, /<section class="m2-why-now"|<section class="m2-attention-metrics"/);
@@ -121,7 +119,8 @@ test('Market2 annotation release has one filter entry, profiles before contents,
   assert.match(source, /drawerInitialSort/);
   assert.match(source, /reloadCatalog[\s\S]*scheduleDataLoad\(\)[\s\S]*scheduleDiscovery/);
   assert.match(source, /drawerSnapshot/);
-  assert.match(source, /Available sources filter this catalog\. Instagram stays visible when a browser connection is needed\./);
+  assert.match(source, /Filter retained profiles by their original source\./);
+  assert.match(source, /Filter retained contents by their original source\./);
   assert.doesNotMatch(html, /css\/market\.css|js\/market-data\.js|js\/market\.js|data-view="market"/);
   assert.match(html, /<\/section>\s*<!-- SHARED FLICKERING FOOTER -->\s*<footer class="backer-footer/);
   assert.doesNotMatch(html, /Attention needs an evidence trail|<div class="val-proof">|>Records<|>Signals<|>Limits</);
@@ -193,18 +192,20 @@ test('separate builder stores a versioned draft and hands it to the full termina
   const html = read('backercreate.html');
   const builder = read('js/market-builder.js');
   const detail = read('js/market-detail-page.js');
+  const store = read('js/market-draft-store.js');
   assert.match(html, /id="marketBuilder"/);
-  assert.match(builder, /backer_market_route_draft_v1:/);
+  assert.match(store, /backer_site_market_draft_v2:/);
+  assert.match(store, /backer_market_route_draft_v1:/);
+  assert.match(builder, /BackerMarketDraftStore\.save/);
   assert.match(builder, /backermarket\.html\?draft=/);
+  assert.match(builder, /backerdemo\.html#trades\?view=proposals/);
   assert.match(builder, /milestone/i);
   assert.match(builder, /pk/i);
-  assert.match(builder, /Opening soon/i);
-  assert.match(builder, /No price, orders, volume, or market-implied probability exists/i);
-  assert.match(builder, /nativeMetricSnapshots/);
-  assert.match(builder, /stargazers_count/);
-  assert.match(builder, /subscribers_count/);
+  assert.match(builder, /discovery_proposal/);
+  assert.match(builder, /It has no price, order, probability, wallet, payout, or real-money execution/i);
+  assert.match(builder, /observationId/);
   assert.match(detail, /draft/i);
-  assert.match(detail, /sessionStorage/);
+  assert.match(detail, /BackerMarketDraftStore\.read/);
   assert.match(detail, /OPENING_SOON/);
 });
 

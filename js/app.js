@@ -8,45 +8,45 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const app = $('#app');
-  const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '::1', '[::1]']);
-  const legacyArchiveAllowed = LOOPBACK_HOSTS.has(String(location.hostname || '').toLowerCase());
-  let legacyArchiveAssets = null;
-  window.__backerLegacyArchiveAllowed = legacyArchiveAllowed;
+  let tradesAssets = null;
+  let tradesAssetError = null;
+  window.__backerLegacyArchiveAllowed = false;
 
-  function loadLegacyStyle() {
-    if (document.querySelector('link[data-backer-legacy-market]')) return Promise.resolve();
+  function loadTradesStyle() {
+    if (document.querySelector('link[data-backer-trades]')) return Promise.resolve();
     return new Promise((resolve, reject) => {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
-      link.href = 'css/market.css?v=20260820-local-archive';
-      link.dataset.backerLegacyMarket = 'true';
+      link.href = 'css/market.css?v=20260821-trades-1';
+      link.dataset.backerTrades = 'true';
       link.onload = resolve;
-      link.onerror = () => reject(new Error('Legacy marketplace stylesheet unavailable'));
+      link.onerror = () => reject(new Error('Trades stylesheet unavailable'));
       document.head.appendChild(link);
     });
   }
 
-  function loadLegacyScript(src, key) {
+  function loadTradesScript(src, key) {
     if (key === 'data' && window.BACKER_MKT) return Promise.resolve();
+    if (key === 'store' && window.BackerMarketDraftStore) return Promise.resolve();
     if (key === 'view' && window.BackerMarket) return Promise.resolve();
     return new Promise((resolve, reject) => {
       const script = document.createElement('script');
       script.src = src;
-      script.dataset.backerLegacyMarket = key;
+      script.dataset.backerTrades = key;
       script.onload = resolve;
-      script.onerror = () => reject(new Error('Legacy marketplace script unavailable: ' + src));
+      script.onerror = () => reject(new Error('Trades script unavailable: ' + src));
       document.head.appendChild(script);
     });
   }
 
-  function ensureLegacyArchiveAssets() {
-    if (!legacyArchiveAllowed) return Promise.reject(new Error('Legacy marketplace is local-only'));
-    if (!legacyArchiveAssets) {
-      legacyArchiveAssets = loadLegacyStyle()
-        .then(() => loadLegacyScript('js/market-data.js?v=3', 'data'))
-        .then(() => loadLegacyScript('js/market.js?v=20260820-local-archive', 'view'));
+  function ensureTradesAssets() {
+    if (!tradesAssets) {
+      tradesAssets = loadTradesStyle()
+        .then(() => loadTradesScript('js/market-data.js?v=4', 'data'))
+        .then(() => loadTradesScript('js/market-draft-store.js?v=20260821-1', 'store'))
+        .then(() => loadTradesScript('js/market.js?v=20260821-trades-1', 'view'));
     }
-    return legacyArchiveAssets;
+    return tradesAssets;
   }
 
   function analyticsView(view, arg) {
@@ -217,41 +217,46 @@
      ===================================================== */
   const dock = $('#dock');
   function setDock(view) {
-    $$('.dock-btn', dock).forEach(b => b.classList.toggle('active', b.dataset.view === view));
+    if (dock) $$('.dock-btn', dock).forEach(b => b.classList.toggle('active', b.dataset.view === view));
+    document.dispatchEvent(new CustomEvent('backer:routechange', { detail: { view: view } }));
+    if (window.BackerDock && typeof window.BackerDock.refresh === 'function') window.BackerDock.refresh();
   }
 
   async function go(view, arg) {
-    if (view === 'market') view = 'market2';
-    if (view === 'market-archive' && !legacyArchiveAllowed) view = 'market2';
-    if (view === 'market-archive') {
+    if (view === 'market' || view === 'market-archive') view = 'trades';
+    if (view === 'trades') {
       try {
-        await ensureLegacyArchiveAssets();
+        await ensureTradesAssets();
       } catch (error) {
-        view = 'market2';
+        tradesAssetError = error;
       }
     }
     if (view === 'portfolio') { window.location.href = 'portfolio.html'; return; }
     if (view === 'home') {
       document.body.classList.remove('body-app', 'mkt-full', 'mkt2-full');
       app.classList.add('hidden'); app.setAttribute('aria-hidden', 'true');
-      $$('.dock-btn', dock).forEach(b => b.classList.remove('active'));
-      $('.dock-home').classList.add('active');
+      if (dock) {
+        $$('.dock-btn', dock).forEach(b => b.classList.remove('active'));
+        var oldHome = $('.dock-home', dock);
+        if (oldHome) oldHome.classList.add('active');
+      }
       try { history.replaceState(null, '', location.pathname); } catch (e) {}
       window.scrollTo({ top: 0, behavior: 'auto' });
       analyticsView('home');
+      setDock('home');
       return;
     }
     document.body.classList.add('body-app');
-    document.body.classList.toggle('mkt-full', view === 'market-archive' || view === 'market2'); // market views escape the 1180px app cap
+    document.body.classList.toggle('mkt-full', view === 'trades' || view === 'market2'); // market views escape the 1180px app cap
     document.body.classList.toggle('mkt2-full', view === 'market2');
     app.classList.remove('hidden'); app.setAttribute('aria-hidden', 'false');
     window.scrollTo({ top: 0, behavior: 'auto' });
     if (view === 'market2') { renderMarket2(); setDock('market2'); }
-    else if (view === 'market-archive') { renderMarket(); setDock('market2'); }
-    else if (view === 'creator') { renderCreator(arg); setDock('market'); }
+    else if (view === 'trades') { renderMarket(); setDock('trades'); }
+    else if (view === 'creator') { renderCreator(arg); setDock('market2'); }
     else if (view === 'portfolio') { renderPortfolio('investor'); setDock('portfolio'); }
     else if (view === 'search') { renderSearch(arg || ''); setDock('search'); }
-    analyticsView(view === 'market-archive' ? 'market' : view, arg);
+    analyticsView(view, arg);
   }
   window.__backerGo = go;
 
@@ -268,34 +273,14 @@
       window.BackerMarket2.render(app);
       return;
     }
-    app.innerHTML = '<div class="m2-fatal" role="alert"><b>Marketplace unavailable.</b><span>The people-first market module did not load. Refresh this page to try again.</span></div>';
+    app.innerHTML = '<div class="m2-fatal" role="alert"><b>Discovery could not load.</b><span>The creator discovery module did not initialize. Refresh this page to try again.</span></div>';
   }
 
   /* ---------- MARKET ---------- */
-  let activeFilter = 'all';
-  const FILTERS = [['all', 'All'], ['ai', 'AI Research'], ['tech', 'Tech Education'], ['music', 'Music'], ['indie', 'Indie Hackers'], ['art', 'Digital Art'], ['gaming', 'Gaming'], ['cooking', 'Cooking'], ['writing', 'Writing'], ['video', 'Film']];
   function renderMarket() {
-    // Creator Attention Marketplace (js/market.js) owns this view when present
+    // Trades (js/market.js) owns this view when present.
     if (window.BackerMarket) { window.BackerMarket.render(app); return; }
-    const list = activeFilter === 'all' ? B.creators : B.creators.filter(c => c.cat === activeFilter);
-    app.innerHTML = `
-      <div class="app-head">
-        <div><h1>Marketplace</h1><p>Discover and back the next generation of high-growth creators — every profile underwritten by Proof of Attention.</p></div>
-        <div class="app-tools">
-          <div class="app-searchbar"><svg viewBox="0 0 24 24" class="ic"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="mktSearch" placeholder="Search creators…"/></div>
-        </div>
-      </div>
-      <div class="filters">${FILTERS.map(f => `<button class="chip ${f[0] === activeFilter ? 'active' : ''}" data-filter="${f[0]}">${f[1]}</button>`).join('')}</div>
-      <div class="creator-grid" id="grid">${list.map(card).join('')}</div>`;
-    mountCovers(app);
-    const s = $('#mktSearch');
-    s.addEventListener('input', () => {
-      const q = s.value.toLowerCase().trim();
-      const f = (activeFilter === 'all' ? B.creators : B.creators.filter(c => c.cat === activeFilter))
-        .filter(c => !q || c.name.toLowerCase().includes(q) || c.handle.toLowerCase().includes(q) || c.category.toLowerCase().includes(q));
-      $('#grid').innerHTML = f.length ? f.map(card).join('') : `<div class="empty" style="grid-column:1/-1"><svg viewBox="0 0 24 24" class="ic"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>No creators match “${s.value}”.</div>`;
-      mountCovers(app);
-    });
+    app.innerHTML = '<div class="mkt-fatal" role="alert"><b>Trades could not load.</b><span>' + (tradesAssetError ? 'Refresh to retry the demo simulation board and your device-local proposals.' : 'The Trades module did not initialize.') + '</span><a href="backerdemo.html#market2">Return to Discovery</a></div>';
   }
 
   /* ---------- CREATOR DETAIL ---------- */
@@ -668,7 +653,6 @@
     const navHome = t.closest('[data-nav="home"]');
     const navSection = t.closest('#navLinks a[href^="#"]');
     const scrollEl = t.closest('[data-scroll]');
-    const filterEl = t.closest('[data-filter]');
     const portMode = t.closest('[data-port-mode]');
     const raiseSubmit = t.closest('[data-raise-submit]');
     const shareEl = t.closest('[data-share]');
@@ -689,7 +673,6 @@
     if (close && viewEl) { closeModal(); go(viewEl.dataset.view); return; }
     if (close) { closeModal(); return; }
 
-    if (filterEl) { activeFilter = filterEl.dataset.filter; renderMarket(); return; }
     if (portMode) { renderPortfolio(portMode.dataset.portMode); return; }
     if (navSection && document.body.classList.contains('body-app')) {
       e.preventDefault();
@@ -771,11 +754,13 @@
   /* ---------------- boot ---------------- */
   function routeFromLocation() {
     var dl = new URLSearchParams(location.search).get('view');
-    if (dl === 'market' || dl === 'market2') { go('market2'); return true; }
+    if (dl === 'market' || dl === 'trades') { go('trades'); return true; }
+    if (dl === 'market2') { go('market2'); return true; }
     if (dl === 'search') { go('search'); return true; }
+    if (/^#trades(?:\?|$)/.test(location.hash)) { go('trades'); return true; }
     if (/^#market2(?:\?|$)/.test(location.hash)) { go('market2'); return true; }
-    if (/^#market-archive(?:\?|$)/.test(location.hash)) { go('market-archive'); return true; }
-    if (/^#market(?:\?|$)/.test(location.hash)) { go('market2'); return true; }
+    if (/^#market-archive(?:\?|$)/.test(location.hash)) { go('trades'); return true; }
+    if (/^#market(?:\?|$)/.test(location.hash)) { go('trades'); return true; }
     return false;
   }
 
@@ -786,9 +771,10 @@
     initInjections();
     initHero();
     initTyped();
-    $('.dock-home').classList.add('active');
-    // Public legacy routes resolve to Creator Radar. The simulated board is
-    // retained only for loopback QA at #market-archive.
+    var oldDockHome = $('.dock-home');
+    if (oldDockHome) oldDockHome.classList.add('active');
+    // Discovery and Trades are separate public product surfaces. Historical
+    // market hashes canonicalize to Trades.
     try { routeFromLocation(); } catch (e) {}
   }
   window.addEventListener('hashchange', () => { try { routeFromLocation(); } catch (e) {} });

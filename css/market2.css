@@ -8043,3 +8043,143 @@ html[data-theme="light"] body.mkt2-full .m2-profile-platform {
     grid-column: auto;
   }
 }
+
+/* Discovery/Trades separation: section-owned controls and proposal entry. */
+body.mkt2-full .m2-context-track i {
+  width: 1px;
+  height: 18px;
+  margin-inline: 16px;
+  background: var(--m2-line-strong);
+}
+
+body.mkt2-full .m2-section-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+body.mkt2-full .m2-section-actions .m2-filter-button {
+  flex: none;
+  min-width: 164px;
+  min-height: 48px;
+  justify-content: center;
+  border: 1px solid var(--m2-line-strong);
+  border-radius: 999px;
+  background: var(--m2-surface);
+  color: var(--m2-ink);
+  font-size: 15px;
+  font-weight: 680;
+}
+
+body.mkt2-full .m2-section-actions .m2-filter-button b {
+  display: grid;
+  min-width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--m2-accent);
+  color: var(--m2-bg);
+  font-size: 12px;
+}
+
+body.mkt2-full .m2-profile-card-actions,
+body.mkt2-full .m2-feed-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--m2-line);
+}
+
+body.mkt2-full :is(.m2-profile-card, .m2-feed-card)[data-m2-draft-card] {
+  cursor: pointer;
+}
+
+body.mkt2-full :is(.m2-profile-card, .m2-feed-card)[data-m2-draft-card]:focus-visible {
+  outline: 2px solid var(--m2-gold);
+  outline-offset: 4px;
+}
+
+body.mkt2-full .m2-profile-card-actions .m2-profile-source,
+body.mkt2-full .m2-feed-actions .m2-feed-person {
+  flex: 1 1 150px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+body.mkt2-full .m2-draft-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 15px;
+  border: 1px solid color-mix(in srgb, var(--m2-accent) 72%, var(--m2-line));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--m2-accent) 14%, var(--m2-surface));
+  color: var(--m2-ink);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+body.mkt2-full .m2-feed-actions .m2-draft-button {
+  flex: none;
+}
+
+body.mkt2-full .m2-filter-group :where(input, select, button, a):focus-visible,
+body.mkt2-full .m2-section-actions :where(button, a):focus-visible,
+body.mkt2-full .m2-draft-button:focus-visible {
+  outline: 2px solid var(--m2-accent);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) {
+  body.mkt2-full .m2-draft-button:hover,
+  body.mkt2-full .m2-section-actions .m2-filter-button:hover {
+    border-color: var(--m2-accent);
+    background: color-mix(in srgb, var(--m2-accent) 20%, var(--m2-surface));
+  }
+}
+
+@media (max-width: 700px) {
+  body.mkt2-full .m2-profile-catalog .m2-pane-head,
+  body.mkt2-full .m2-catalog-feed .m2-section-head {
+    align-items: stretch;
+  }
+
+  body.mkt2-full .m2-section-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  body.mkt2-full .m2-section-actions .m2-filter-button {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  body.mkt2-full .m2-section-actions .m2-see-all {
+    flex: none;
+  }
+}
+
+@media (max-width: 420px) {
+  body.mkt2-full .m2-section-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  body.mkt2-full .m2-section-actions .m2-see-all {
+    width: 100%;
+    text-align: center;
+  }
+
+  body.mkt2-full .m2-profile-card-actions .m2-draft-button,
+  body.mkt2-full .m2-feed-actions .m2-draft-button {
+    width: 100%;
+  }
+}

@@ -5,7 +5,8 @@
   var NAV = [
     {
       key: 'product', label: 'Product', items: [
-        { label: 'Marketplace', description: 'Back emerging creators before consensus.', href: BASE + 'backerdemo.html#market2', icon: 'market' },
+        { label: 'Discovery', description: 'Find source-linked creators and original work.', href: BASE + 'backerdemo.html#market2', icon: 'market' },
+        { label: 'Trades', description: 'Review people-growth proposals and demo simulations.', href: BASE + 'backerdemo.html#trades', icon: 'trades' },
         { label: 'AI Search', description: 'Discover people through attention signals.', href: BASE + 'backerdemo.html?view=search', icon: 'search' },
         { label: 'Portfolio', href: BASE + 'portfolio.html', icon: 'portfolio' }
       ]
@@ -27,6 +28,7 @@
 
   var ICONS = {
     market: '<path d="M3.5 18.5 8.2 13l3.3 2.8 5.7-7"/><path d="M14 8.8h3.4v3.4"/>',
+    trades: '<path d="M4 18V9m0 4h4M8 6v10m0-7h4m0 9V5m0 4h4m0 10V8m0 5h4m0 5V4"/>',
     search: '<circle cx="10.5" cy="10.5" r="5.5"/><path d="m15 15 4.5 4.5"/><path d="M8.2 10.8 10 12l3-3"/>',
     portfolio: '<path d="M4 19V5"/><path d="M4 19h16"/><path d="m7 15 3.5-4 3 2 4-6"/>',
     proof: '<path d="M2.8 12s3.3-5.2 9.2-5.2 9.2 5.2 9.2 5.2-3.3 5.2-9.2 5.2S2.8 12 2.8 12Z"/><circle cx="12" cy="12" r="2.2"/>',
@@ -55,7 +57,7 @@
     if (currentFile !== targetFile) return false;
     var targetView = target.searchParams.get('view');
     if (targetView) return new URLSearchParams(window.location.search).get('view') === targetView;
-    if (target.hash) return window.location.hash === target.hash;
+    if (target.hash) return window.location.hash === target.hash || window.location.hash.indexOf(target.hash + '?') === 0;
     return !window.location.search && !window.location.hash;
   }
 
@@ -99,7 +101,7 @@
       '<div class="backer-menu__sheet" id="' + id + '-sheet" role="dialog" aria-modal="true" aria-label="Backer navigation" aria-hidden="true">' +
         '<div class="backer-menu__sheet-inner"><div class="backer-menu__sheet-head"><span class="backer-menu__sheet-title">Explore Backer</span><button class="backer-menu__mobile-close" type="button" aria-label="Close Backer menu"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="m4 4 10 10M14 4 4 14"/></svg></button></div>' +
         '<div class="backer-menu__accordion">' + mobileGroups + '</div>' +
-        '<div class="backer-menu__sheet-foot"><a class="backer-menu__launch" href="' + BASE + 'backerdemo.html#market2">Enter Backer Market <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h11M10 5l4 4-4 4"/></svg></a></div></div></div></div>';
+        '<div class="backer-menu__sheet-foot"><a class="backer-menu__launch" href="' + BASE + 'backerdemo.html#trades">Open Trades <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h11M10 5l4 4-4 4"/></svg></a></div></div></div></div>';
 
     init(root);
   }

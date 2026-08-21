@@ -4,23 +4,16 @@
 (function () {
   'use strict';
 
-  var DATA_URL = 'data/market2-people.json';
-  var STORAGE_PREFIX = 'backer_market_route_draft_v1:';
+  var DATA_URL = 'data/discovery-catalog.json';
   var VALID_INSTRUMENTS = ['milestone', 'pk'];
   var STEPS = [
     { id: 'subject', label: 'Subject', note: 'Person or public work' },
-    { id: 'outcome', label: 'Outcome', note: 'Question and sides' },
-    { id: 'resolution', label: 'Resolution', note: 'Metric and cutoff' },
-    { id: 'validation', label: 'Validation', note: 'Safeguards and access' },
-    { id: 'preview', label: 'Preview', note: 'Review the proposal' }
+    { id: 'claim', label: 'Future claim', note: 'Metric, direction, and target' },
+    { id: 'when', label: 'When', note: 'Measurement cutoff' },
+    { id: 'resolution', label: 'How resolved', note: 'Source and edge cases' },
+    { id: 'preview', label: 'Review proposal', note: 'Exact terms before saving' }
   ];
-  var PLATFORM_LABELS = { x: 'X', youtube: 'YouTube', instagram: 'Instagram', github: 'GitHub' };
-  var NATIVE_METRIC_ALIASES = {
-    public_repositories: ['public_repos'],
-    repository_stars: ['stargazers_count'],
-    repository_forks: ['forks_count'],
-    repository_watchers: ['subscribers_count']
-  };
+  var PLATFORM_LABELS = { x: 'X', youtube: 'YouTube', instagram: 'Instagram', github: 'GitHub', dev: 'DEV', bilibili: 'Bilibili', twitch: 'Twitch', linkedin: 'LinkedIn', medium: 'Medium', substack: 'Substack', rss: 'RSS', tiktok: 'TikTok', spotify: 'Spotify', soundcloud: 'SoundCloud', patreon: 'Patreon', kick: 'Kick' };
   var METRICS = {
     x: {
       person: [
@@ -93,11 +86,11 @@
     if (!raw) return '';
     try {
       var url = new URL(raw, window.location.href);
-      return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : '';
+      return (url.protocol === 'https:' || url.protocol === 'http:') && !url.username && !url.password ? url.href : '';
     } catch (error) { return ''; }
   }
   function safeImage(value) { return safeURL(value) || 'img/backer-mark.png?v=2'; }
-  function platformLabel(id) { return PLATFORM_LABELS[id] || clean(id) || 'Platform'; }
+  function platformLabel(id) { return PLATFORM_LABELS[id] || clean(id).replace(/[_-]+/g, ' ').replace(/\b\w/g, function (letter) { return letter.toUpperCase(); }) || 'Platform'; }
   function isoDate(value) {
     var date = new Date(value);
     if (isNaN(date.getTime())) return '';
@@ -120,7 +113,7 @@
     var people = DATA && Array.isArray(DATA.people) ? DATA.people : [];
     return people.filter(function (person) { return clean(person.id) === clean(id); })[0] || null;
   }
-  function selectedPerson() { return personById(state.values.personId) || (DATA.people && DATA.people[0]) || null; }
+  function selectedPerson() { return personById(state && state.values && state.values.personId); }
   function workKey(work, fallback, personId) {
     if (!work) return fallback;
     return work.id || (work.url ? slug((personId || state.values.personId || 'work') + '-' + work.url) : '') || slug(work.title) || fallback;
@@ -128,15 +121,14 @@
   function selectedWork() {
     var person = selectedPerson();
     if (!person || state.values.scope !== 'content') return null;
-    var candidates = [
-      { key: 'recent', label: 'Latest work', work: person.recentWork },
-      { key: 'breakout', label: 'Breakout work', work: person.breakoutWork }
-    ].filter(function (item) { return item.work; });
+    var candidates = (Array.isArray(person.content) ? person.content : []).map(function (work, index) {
+      return { key: workKey(work, 'work-' + index, person.id), label: 'Public work', work: work };
+    });
     var needle = clean(state.values.contentKey).toLowerCase();
     return candidates.filter(function (item) {
       var normalizedId = workKey(item.work, item.key, person.id);
-      return needle === item.key || needle === normalizedId || needle === slug(item.work.title) || needle === clean(item.work.url).toLowerCase();
-    })[0] || candidates[0] || null;
+      return needle === clean(item.key).toLowerCase() || needle === clean(normalizedId).toLowerCase() || needle === clean(item.work.id).toLowerCase() || needle === slug(item.work.title) || needle === clean(item.work.url).toLowerCase();
+    })[0] || null;
   }
   function platformRecord(person, platformId) {
     return person && Array.isArray(person.platforms)
@@ -151,67 +143,50 @@
   }
   function metricList() {
     var platform = state.values.platform;
+    var person = selectedPerson();
+    var work = selectedWork();
+    var observed = state.values.scope === 'content' && work && work.work ? work.work.publicCounts : person && person.metrics;
+    var options = (Array.isArray(observed) ? observed : []).filter(function (row) {
+      return row && clean(row.provider) === platform && clean(row.id) && finiteNumber(row.value) != null && clean(row.sourceUrl) && clean(row.observedAt);
+    }).map(function (row) {
+      return {
+        key: 'observation:' + clean(row.id),
+        nativeKey: clean(row.metric || row.key),
+        label: clean(row.label || row.metric || row.key).replace(/[_-]+/g, ' ').replace(/\b\w/g, function (letter) { return letter.toUpperCase(); }),
+        unit: clean(row.unit || 'count'),
+        access: 'retained',
+        observationId: clean(row.id),
+        observation: row
+      };
+    });
+    var seenNative = {};
+    options.forEach(function (item) { seenNative[item.nativeKey] = true; });
     var group = state.values.scope === 'content' ? 'content' : 'person';
-    return METRICS[platform] && METRICS[platform][group] ? METRICS[platform][group] : [];
+    var ideas = METRICS[platform] && METRICS[platform][group] ? METRICS[platform][group] : [];
+    ideas.forEach(function (idea) {
+      if (seenNative[idea.key]) return;
+      options.push({ key: 'idea:' + idea.key, nativeKey: idea.key, label: idea.label, unit: idea.unit, access: 'unverified', observationId: '', observation: null, manualIdea: true });
+    });
+    if (state.values.metricKey && state.values.metricKey.indexOf('idea:') === 0 && !options.some(function (item) { return item.key === state.values.metricKey; })) {
+      var requestedIdea = state.values.metricKey.slice(5) || 'provider_native_count';
+      options.push({ key: state.values.metricKey, nativeKey: requestedIdea, label: requestedIdea.replace(/[_-]+/g, ' ').replace(/\b\w/g, function (letter) { return letter.toUpperCase(); }), unit: 'count', access: 'unverified', observationId: '', observation: null, manualIdea: true });
+    }
+    if (!options.length) options.push({ key: 'idea:provider_native_count', nativeKey: 'provider_native_count', label: 'Provider native count', unit: 'count', access: 'unverified', observationId: '', observation: null, manualIdea: true });
+    return options;
   }
   function selectedMetric() {
     return metricList().filter(function (metric) { return metric.key === state.values.metricKey; })[0] || null;
   }
-  function comparableURL(value) {
-    var url = safeURL(value);
-    if (!url) return '';
-    try {
-      var parsed = new URL(url);
-      return (parsed.hostname.replace(/^www\./, '') + parsed.pathname.replace(/\/$/, '')).toLowerCase();
-    } catch (error) { return url.toLowerCase(); }
-  }
-  function countRows() {
-    var person = selectedPerson();
-    var work = selectedWork();
-    var rows = [];
-    function add(list) { if (Array.isArray(list)) rows = rows.concat(list); }
-    var nativeSnapshot = person && DATA.nativeMetricSnapshots && DATA.nativeMetricSnapshots[person.id]
-      ? DATA.nativeMetricSnapshots[person.id][state.values.platform]
-      : null;
-    if (nativeSnapshot && Array.isArray(nativeSnapshot.metrics)) {
-      var workURL = work && work.work ? comparableURL(work.work.sourceUrl || work.work.url) : '';
-      add(nativeSnapshot.metrics.filter(function (row) {
-        if (!row || row.availability && row.availability !== 'observed') return false;
-        if (state.values.scope === 'content') {
-          if (row.subject !== 'repository' && row.subject !== 'content') return false;
-          return !workURL || comparableURL(row.sourceUrl) === workURL;
-        }
-        return row.subject === 'account' || !row.subject;
-      }).map(function (row) {
-        return Object.assign({}, row, {
-          observedAt: row.observedAt || nativeSnapshot.observedAt,
-          sourceUrl: row.sourceUrl || nativeSnapshot.sourceUrl,
-          nativeSnapshotState: nativeSnapshot.state,
-          accessClass: row.accessClass || nativeSnapshot.accessClass
-        });
-      }));
-    }
-    if (work && work.work) add(work.work.publicCounts);
-    if (person) {
-      add(person.publicCounts);
-      if (person.evidence) Object.keys(person.evidence).forEach(function (range) { add(person.evidence[range] && person.evidence[range].publicCounts); });
-    }
-    return rows;
-  }
   function retainedMetricValue(metric) {
-    if (!metric) return null;
-    var aliases = NATIVE_METRIC_ALIASES[metric.key] || [];
-    var needles = [metric.key, metric.label].concat(aliases).map(function (item) { return slug(item); });
-    var found = countRows().filter(function (row) {
-      var key = slug(row && (row.key || row.metric || row.label || row.name));
-      return needles.indexOf(key) >= 0 && finiteNumber(row && (row.value != null ? row.value : row.count)) != null;
-    })[0];
-    if (!found) return null;
+    var found = metric && metric.observation;
+    if (!found || !clean(found.id) || finiteNumber(found.value) == null || !safeURL(found.sourceUrl) || !clean(found.observedAt)) return null;
     return {
       value: finiteNumber(found.value != null ? found.value : found.count),
       asOf: found.asOf || found.observedAt || DATA.generatedAt,
       sourceUrl: safeURL(found.sourceUrl || found.url),
-      sourceKey: clean(found.key || found.metric),
+      sourceKey: clean(found.metric || found.key),
+      observationId: clean(found.id),
+      observation: found,
       accessClass: clean(found.accessClass),
       snapshotState: clean(found.nativeSnapshotState)
     };
@@ -222,10 +197,8 @@
     var provider = DATA.providerStatus && DATA.providerStatus[state.values.platform] || {};
     var retained = retainedMetricValue(metric);
     if (!metric) return { state: 'ambiguous', label: 'Choose one native metric', copy: 'A market cannot resolve from an unspecified or combined engagement score.', retained: null };
-    if (metric.access === 'authorized' && clean(person && person.consentStatus) !== 'approved') {
-      return { state: 'authorization_required', label: 'Creator authorization required', copy: metric.label + ' is not available from this public snapshot. It can be proposed, but not opened for trading.', retained: null };
-    }
     if (retained) return { state: 'available', label: 'Retained source observation', copy: 'The snapshot contains a numeric observation with provenance. Eligibility and consent are checked separately.', retained: retained };
+    if (metric.manualIdea) return { state: 'unverified_idea', label: 'Unverified metric idea', copy: 'This provider-native metric has no retained numeric observation for the selected subject. It can be saved only as an unverified local idea.', retained: null };
     if (provider.state === 'permission_required') {
       return { state: 'permission_required', label: 'Provider access is not connected', copy: 'Backer retained the public identity link, not a verified numeric series. This can only be saved as a discovery proposal.', retained: null };
     }
@@ -256,25 +229,44 @@
     return safeURL(platform && (platform.sourceUrl || platform.url));
   }
 
-  function initialState() {
+  function routeParams() {
     var params = new URLSearchParams(window.location.search);
-    var people = DATA && Array.isArray(DATA.people) ? DATA.people : [];
+    var hash = clean(window.location.hash);
+    var queryIndex = hash.indexOf('?');
+    if (queryIndex >= 0) new URLSearchParams(hash.slice(queryIndex + 1)).forEach(function (value, key) { params.set(key, value); });
+    return params;
+  }
+
+  function initialState() {
+    var params = routeParams();
+    var editId = clean(params.get('edit'));
+    var editResult = editId && window.BackerMarketDraftStore ? window.BackerMarketDraftStore.read(editId) : null;
+    if (editId && (!editResult || !editResult.ok)) throw new Error('Saved proposal was not found on this device');
+    var editDraft = editResult && editResult.draft;
     var requestedPerson = clean(params.get('person') || params.get('creator'));
-    var person = personById(requestedPerson) || people[0] || null;
-    var requestedContent = clean(params.get('content'));
-    var requestedScope = clean(params.get('scope') || params.get('subject'));
+    if (editDraft) requestedPerson = clean(editDraft.subject && editDraft.subject.person && editDraft.subject.person.id);
+    if (!requestedPerson) throw new Error('No discovery subject was specified');
+    var person = personById(requestedPerson);
+    if (!person) throw new Error('Subject no longer in the retained catalog');
+    var requestedContent = editDraft ? clean(editDraft.subject && editDraft.subject.content && editDraft.subject.content.id) : clean(params.get('content'));
+    var requestedScope = editDraft ? clean(editDraft.subject && editDraft.subject.type) : clean(params.get('scope') || params.get('subject'));
     var scope = requestedScope === 'content' || requestedScope === 'content-growth' || requestedContent ? 'content' : 'person';
-    var requestedInstrument = clean(params.get('instrument')).toLowerCase();
+    if (scope === 'content' && !requestedContent) throw new Error('No discovery work was specified');
+    if (scope === 'content' && requestedContent && (!person || !window.BackerDiscoveryCatalog.workById(person, requestedContent))) throw new Error('Subject no longer in the retained catalog');
+    var requestedInstrument = clean(editDraft ? editDraft.instrument : params.get('instrument')).toLowerCase();
     var instrument = VALID_INSTRUMENTS.indexOf(requestedInstrument) >= 0 ? requestedInstrument : 'milestone';
+    var firstContent = person && Array.isArray(person.content) && person.content[0] ? person.content[0].id : '';
     var temp = {
       step: 0,
       maxStep: 0,
       receipt: null,
+      editDraft: editDraft || null,
+      storageMode: editResult && editResult.storage || '',
       errors: {},
       values: {
         scope: scope,
         personId: person ? person.id : '',
-        contentKey: requestedContent || 'recent',
+        contentKey: requestedContent || firstContent,
         instrument: instrument,
         question: '',
         outcomeA: person ? person.name : '',
@@ -296,14 +288,30 @@
         tieRule: 'separate_outcome',
         voidRule: 'refund_original_cost',
         disputeHours: '48',
-        selectedSide: instrument === 'pk' ? 'A' : 'YES',
-        orderType: 'MARKET',
-        stake: ''
+        selectedSide: instrument === 'pk' ? 'A' : 'GROWS_TO_TARGET'
       }
     };
     state = temp;
     syncSubjectDefaults(true);
-    state.values.question = defaultQuestion();
+    if (editDraft) {
+      var resolution = editDraft.resolution || {};
+      var observation = resolution.observation;
+      state.values.platform = clean(resolution.platform);
+      var matchingMetric = metricList().filter(function (metric) { return observation && metric.observationId === clean(observation.id); })[0];
+      state.values.instrument = editDraft.instrument;
+      state.values.question = clean(editDraft.outcome && editDraft.outcome.question);
+      state.values.outcomeA = clean(editDraft.outcome && editDraft.outcome.outcomes && editDraft.outcome.outcomes[0] && editDraft.outcome.outcomes[0].label);
+      state.values.outcomeB = clean(editDraft.outcome && editDraft.outcome.outcomes && editDraft.outcome.outcomes[1] && editDraft.outcome.outcomes[1].label);
+      state.values.metricKey = matchingMetric ? matchingMetric.key : 'idea:' + clean(resolution.metricKey || 'provider_native_count');
+      state.values.baseline = String(resolution.baseline && resolution.baseline.value != null ? resolution.baseline.value : '');
+      state.values.baselineAt = isoDate(resolution.baseline && resolution.baseline.observedAt) || state.values.baselineAt;
+      state.values.baselineObservedAt = clean(resolution.baseline && resolution.baseline.observedAt);
+      state.values.baselineProvenance = observation ? 'retained' : 'manual';
+      state.values.target = String(resolution.target && resolution.target.value != null ? resolution.target.value : '');
+      state.values.deadline = isoDate(resolution.deadline) || state.values.deadline;
+      state.values.sourceUrl = safeURL(resolution.sourceUrl);
+      Object.keys(editDraft.rules || {}).forEach(function (key) { if (state.values[key] !== undefined) state.values[key] = String(editDraft.rules[key]); });
+    } else state.values.question = defaultQuestion();
     return temp;
   }
 
@@ -346,32 +354,34 @@
     var person = selectedPerson();
     var peopleOptions = DATA.people.map(function (item) { return '<option value="' + esc(item.id) + '" ' + (item.id === state.values.personId ? 'selected' : '') + '>' + esc(display(item.name)) + ' ' + esc(display(item.handle || '')) + '</option>'; }).join('');
     var work = selectedWork();
-    var workOptions = person ? [
-      person.recentWork ? '<option value="recent" ' + (work && work.key === 'recent' ? 'selected' : '') + '>Latest: ' + esc(display(person.recentWork.title)) + '</option>' : '',
-      person.breakoutWork ? '<option value="breakout" ' + (work && work.key === 'breakout' ? 'selected' : '') + '>Breakout: ' + esc(display(person.breakoutWork.title)) + '</option>' : ''
-    ].join('') : '';
-    return '<span class="mb-kicker">Choose the subject</span><h1>Start with the person, then define the event.</h1><p class="mb-lede">Backer keeps the human identity and original work in view while you write a measurable proposal. Public discovery does not imply consent to trade.</p>' +
+    var workOptions = person ? (person.content || []).map(function (item) {
+      return '<option value="' + esc(item.id) + '" ' + (work && work.work.id === item.id ? 'selected' : '') + '>' + esc(display(item.title)) + ' · ' + esc(platformLabel(item.platform)) + '</option>';
+    }).join('') : '';
+    return '<span class="mb-kicker">Choose the subject</span><h1>Start with the person or their exact work.</h1><p class="mb-lede">The selected profile or work stays attached to every step while you write a measurable growth proposal. Public discovery does not imply consent to trade.</p>' +
       '<section class="mb-section">' + personStrip() + '</section>' +
-      '<section class="mb-section"><div class="mb-section-head"><div><h2>What should this market follow?</h2></div><p>Person growth follows one native account metric. Content growth follows one public work.</p></div><div class="mb-choice-grid">' +
+      '<section class="mb-section"><div class="mb-section-head"><div><h2>What should this proposal follow?</h2></div><p>Person growth follows one native account metric. Content growth follows one exact public work.</p></div><div class="mb-choice-grid">' +
       '<button type="button" class="mb-choice ' + (state.values.scope === 'person' ? 'is-selected' : '') + '" data-action="scope" data-value="person"><b>Person growth</b><small>Followers, subscribers, channel views, or another native account metric.</small></button>' +
       '<button type="button" class="mb-choice ' + (state.values.scope === 'content' ? 'is-selected' : '') + '" data-action="scope" data-value="content"><b>Content growth</b><small>Views, likes, stars, forks, or another native metric on one work.</small></button></div></section>' +
-      '<section class="mb-section"><div class="mb-grid"><div class="mb-field mb-span-2"><label for="mbPerson">Person</label><select class="mb-control" id="mbPerson" data-field="personId"' + invalidAttr('personId') + '>' + peopleOptions + '</select><small>Loaded from the dated Market 2 public identity snapshot.</small>' + errorText('personId') + '</div>' +
+      '<section class="mb-section"><div class="mb-grid"><div class="mb-field mb-span-2"><label for="mbPerson">Person</label><select class="mb-control" id="mbPerson" data-field="personId"' + invalidAttr('personId') + '>' + peopleOptions + '</select><small>Loaded from Backer\'s retained public discovery catalog.</small>' + errorText('personId') + '</div>' +
       (state.values.scope === 'content' ? '<div class="mb-field mb-span-2"><label for="mbContent">Public work</label><select class="mb-control" id="mbContent" data-field="contentKey"' + invalidAttr('contentKey') + '>' + workOptions + '</select><small>Only the original public URL and retained snapshot metadata are carried into the proposal.</small>' + errorText('contentKey') + '</div>' : '') + '</div></section>';
   }
 
   function stepOutcome() {
     var isPk = state.values.instrument === 'pk';
-    return '<span class="mb-kicker">Define the outcome</span><h1>Write one neutral question people can understand.</h1><p class="mb-lede">A Milestone is binary. A PK market compares mutually exclusive outcomes using the same metric, window, and source standard.</p>' +
+    var availability = metricAvailability();
+    return '<span class="mb-kicker">Future claim</span><h1>Describe one measurable way this person or work could grow.</h1><p class="mb-lede">The title is a short summary. The retained metric, source, cutoff, and edge-case rules determine how the proposal would be resolved.</p>' +
       '<section class="mb-section">' + personStrip() + '</section>' +
-      '<section class="mb-section"><div class="mb-section-head"><div><h2>Instrument</h2></div><p>Creator Perps require an approved internal market and cannot be composed here.</p></div><div class="mb-choice-grid"><button type="button" class="mb-choice ' + (!isPk ? 'is-selected' : '') + '" data-action="instrument" data-value="milestone"><b>Milestone</b><small>Yes or No on one exact target and deadline.</small></button><button type="button" class="mb-choice ' + (isPk ? 'is-selected' : '') + '" data-action="instrument" data-value="pk"><b>PK Market</b><small>Two comparable outcomes, with an explicit tie rule.</small></button></div></section>' +
-      '<section class="mb-section"><div class="mb-grid"><div class="mb-field mb-span-2"><label for="mbQuestion">Market question</label><textarea class="mb-control" id="mbQuestion" maxlength="220" data-field="question"' + invalidAttr('question') + '>' + esc(display(state.values.question)) + '</textarea><small>Use a neutral, answerable sentence. Resolution details become the binding rule.</small>' + errorText('question') + '</div>' +
-      (isPk ? '<div class="mb-field"><label for="mbOutcomeA">Outcome A</label><input class="mb-control" id="mbOutcomeA" maxlength="80" data-field="outcomeA" value="' + esc(display(state.values.outcomeA)) + '"' + invalidAttr('outcomeA') + '/>' + errorText('outcomeA') + '</div><div class="mb-field"><label for="mbOutcomeB">Outcome B</label><input class="mb-control" id="mbOutcomeB" maxlength="80" data-field="outcomeB" value="' + esc(display(state.values.outcomeB)) + '" placeholder="Name the comparison outcome"' + invalidAttr('outcomeB') + '/>' + errorText('outcomeB') + '</div>' : '<div class="mb-field"><label>Outcome one</label><input class="mb-control" value="Yes: reaches target" disabled/><small>Settles to $1 per share only if the written rule is met.</small></div><div class="mb-field"><label>Outcome two</label><input class="mb-control" value="No: misses target" disabled/><small>Settles to $1 per share if the written rule is not met.</small></div>') + '</div><button type="button" class="mb-source-link" data-action="generate-question">Use a source-specific question</button></section>';
+      '<section class="mb-section"><div class="mb-section-head"><div><h2>Growth format</h2></div><p>Keep the proposal centered on the selected person or work.</p></div><div class="mb-choice-grid"><button type="button" class="mb-choice ' + (!isPk ? 'is-selected' : '') + '" data-action="instrument" data-value="milestone"><b>Growth milestone</b><small>Does one native metric grow from the retained baseline to an exact target?</small></button><button type="button" class="mb-choice ' + (isPk ? 'is-selected' : '') + '" data-action="instrument" data-value="pk"><b>Head-to-head growth</b><small>Compare two named subjects using the same metric, source standard, and cutoff.</small></button></div></section>' +
+      '<section class="mb-section"><div class="mb-grid"><div class="mb-field"><label for="mbPlatform">Platform</label><select class="mb-control" id="mbPlatform" data-field="platform" ' + (state.values.scope === 'content' ? 'disabled' : '') + invalidAttr('platform') + '>' + platformOptions() + '</select><small>' + (state.values.scope === 'content' ? 'Locked to the original work platform.' : 'Limited to retained public profile identities.') + '</small>' + errorText('platform') + '</div><div class="mb-field"><label for="mbMetric">Native metric</label><select class="mb-control" id="mbMetric" data-field="metricKey"' + invalidAttr('metricKey') + '>' + metricOptions() + '</select><small>One provider-native measurement. Backer does not combine unlike signals.</small>' + errorText('metricKey') + '</div><div class="mb-span-2">' + availabilityPanel() + '</div>' +
+      '<div class="mb-field"><label for="mbBaseline">Baseline value</label><input class="mb-control" id="mbBaseline" type="number" min="0" step="1" inputmode="numeric" data-field="baseline" value="' + esc(state.values.baseline) + '" placeholder="Enter an exact value"' + invalidAttr('baseline') + '/><small>' + (state.values.baselineProvenance === 'retained' ? 'Exact retained observation ' + display(state.values.baselineObservedAt) + '.' : 'Manual entry: unverified idea, not a platform observation.') + '</small>' + errorText('baseline') + '</div><div class="mb-field"><label for="mbTarget">Growth target</label><input class="mb-control" id="mbTarget" type="number" min="0" step="1" inputmode="numeric" data-field="target" value="' + esc(state.values.target) + '" placeholder="Greater than baseline"' + invalidAttr('target') + '/><small>The target must be greater than the baseline.</small>' + errorText('target') + '</div>' +
+      '<div class="mb-field mb-span-2"><label for="mbQuestion">Proposal title</label><textarea class="mb-control" id="mbQuestion" maxlength="220" data-field="question"' + invalidAttr('question') + '>' + esc(display(state.values.question)) + '</textarea><small>This is the human-readable summary. The source and written rules remain controlling.</small>' + errorText('question') + '</div>' +
+      (isPk ? '<div class="mb-field"><label for="mbOutcomeA">First subject</label><input class="mb-control" id="mbOutcomeA" maxlength="80" data-field="outcomeA" value="' + esc(display(state.values.outcomeA)) + '"' + invalidAttr('outcomeA') + '/>' + errorText('outcomeA') + '</div><div class="mb-field"><label for="mbOutcomeB">Second subject</label><input class="mb-control" id="mbOutcomeB" maxlength="80" data-field="outcomeB" value="' + esc(display(state.values.outcomeB)) + '" placeholder="Name the comparison subject"' + invalidAttr('outcomeB') + '/>' + errorText('outcomeB') + '</div>' : '<div class="mb-field"><label>Target reached</label><input class="mb-control" value="Grows to target" disabled/><small>The final valid observation meets or exceeds the target.</small></div><div class="mb-field"><label>Target not reached</label><input class="mb-control" value="Does not reach target" disabled/><small>The final valid observation remains below the target.</small></div>') + '</div><button type="button" class="mb-source-link" data-action="generate-question">Write a source-specific title</button><p class="mb-preview-note">' + esc(availability.state === 'available' ? 'This claim starts from an exact retained observation.' : 'This metric has no retained observation and will remain an unverified local idea.') + '</p></section>';
   }
 
   function metricOptions() {
     return metricList().map(function (metric) {
       var selected = metric.key === state.values.metricKey;
-      var suffix = metric.access === 'authorized' ? ' (authorization required)' : '';
+      var suffix = metric.observation ? ' (retained observation)' : ' (unverified idea)';
       return '<option value="' + esc(metric.key) + '" ' + (selected ? 'selected' : '') + '>' + esc(metric.label + suffix) + '</option>';
     }).join('');
   }
@@ -385,44 +395,28 @@
   }
 
   function stepResolution() {
-    var person = selectedPerson();
-    var platform = platformRecord(person, state.values.platform);
-    var provider = DATA.providerStatus && DATA.providerStatus[state.values.platform] || {};
-    var isContent = state.values.scope === 'content';
-    return '<span class="mb-kicker">Define resolution</span><h1>Make the measurement exact before anyone takes a side.</h1><p class="mb-lede">Choose one provider-native metric. Backer will not merge unlike engagement signals or treat a manually entered number as observed evidence.</p>' +
-      '<section class="mb-section"><div class="mb-grid"><div class="mb-field"><label for="mbPlatform">Platform</label><select class="mb-control" id="mbPlatform" data-field="platform" ' + (isContent ? 'disabled' : '') + invalidAttr('platform') + '>' + platformOptions() + '</select><small>' + (isContent ? 'Locked to the original work platform.' : 'Limited to linked public profiles in the snapshot.') + '</small>' + errorText('platform') + '</div><div class="mb-field"><label for="mbMetric">Native metric</label><select class="mb-control" id="mbMetric" data-field="metricKey"' + invalidAttr('metricKey') + '>' + metricOptions() + '</select><small>One native measurement only. Composite attention scores cannot settle a market.</small>' + errorText('metricKey') + '</div><div class="mb-span-2">' + availabilityPanel() + '</div></div></section>' +
-      '<section class="mb-section"><div class="mb-section-head"><div><h2>Baseline and target</h2></div><p>These values define the proposal. They are not labeled as observed unless the retained source contains them.</p></div><div class="mb-grid"><div class="mb-field"><label for="mbBaseline">Baseline value</label><input class="mb-control" id="mbBaseline" type="number" min="0" step="1" inputmode="numeric" data-field="baseline" value="' + esc(state.values.baseline) + '" placeholder="Enter an exact value"' + invalidAttr('baseline') + '/><small>' + (state.values.baselineProvenance === 'retained' ? 'Observed in the retained native snapshot at ' + display(state.values.baselineObservedAt) + '.' : 'Manual values remain unverified until a source snapshot is approved.') + '</small>' + errorText('baseline') + '</div><div class="mb-field"><label for="mbBaselineAt">Baseline timestamp</label><input class="mb-control" id="mbBaselineAt" type="date" data-field="baselineAt" value="' + esc(state.values.baselineAt) + '"' + invalidAttr('baselineAt') + '/><small>Use the date attached to the proposed baseline source.</small>' + errorText('baselineAt') + '</div><div class="mb-field"><label for="mbTarget">Target value</label><input class="mb-control" id="mbTarget" type="number" min="0" step="1" inputmode="numeric" data-field="target" value="' + esc(state.values.target) + '" placeholder="Enter an exact target"' + invalidAttr('target') + '/><small>' + (state.values.instrument === 'pk' ? 'Minimum qualifying value before highest-at-cutoff comparison.' : 'Must be greater than the baseline for a growth milestone.') + '</small>' + errorText('target') + '</div><div class="mb-field"><label for="mbDeadline">Measurement cutoff</label><input class="mb-control" id="mbDeadline" type="date" data-field="deadline" value="' + esc(state.values.deadline) + '"' + invalidAttr('deadline') + '/><small>Resolution uses the final valid observation at or before this cutoff.</small>' + errorText('deadline') + '</div></div></section>' +
-      '<section class="mb-section"><div class="mb-field"><label for="mbSource">Official resolution source</label><input class="mb-control" id="mbSource" type="url" inputmode="url" data-field="sourceUrl" value="' + esc(state.values.sourceUrl) + '" placeholder="https://"' + invalidAttr('sourceUrl') + '/><small>Use the exact public profile, content, repository, or authorized provider endpoint that will be snapshotted.</small>' + errorText('sourceUrl') + '</div>' +
-      (safeURL(state.values.sourceUrl) ? '<a class="mb-source-link" href="' + esc(safeURL(state.values.sourceUrl)) + '" target="_blank" rel="noopener noreferrer">Open proposed source</a>' : '') +
-      '<div class="mb-rule-stack"><div class="mb-rule-row"><span>Provider state</span><b>' + esc(display(provider.label || provider.state || 'Unknown')) + '</b></div><div class="mb-rule-row"><span>Retained as of</span><b>' + esc(humanDate(provider.asOf || DATA.generatedAt)) + '</b></div><div class="mb-rule-row"><span>Identity source</span><b>' + esc(display(platform && (platform.sourceUrl || platform.url) || state.values.sourceUrl || 'Not set')) + '</b></div></div></section>';
+    var retained = metricAvailability().retained;
+    var observedAt = retained ? retained.asOf : (state.values.baselineAt ? state.values.baselineAt + 'T00:00:00Z' : '');
+    return '<span class="mb-kicker">When</span><h1>Set the measurement cutoff.</h1><p class="mb-lede">The cutoff ends the measurement window. Determination happens later, after Backer receives the final valid provider observation and applies the written grace period.</p>' +
+      '<section class="mb-section">' + personStrip() + '</section>' +
+      '<section class="mb-section"><div class="mb-grid"><div class="mb-field mb-span-2"><label for="mbDeadline">Measurement cutoff</label><input class="mb-control" id="mbDeadline" type="date" data-field="deadline" value="' + esc(state.values.deadline) + '"' + invalidAttr('deadline') + '/><small>The final valid provider observation at or before 23:59:59 UTC on this date is used.</small>' + errorText('deadline') + '</div></div></section>' +
+      '<section class="mb-section"><div class="mb-section-head"><div><h2>Proposal timeline</h2></div><p>Cutoff and determination are deliberately separate.</p></div><div class="mb-rule-stack"><div class="mb-rule-row"><span>Baseline observed</span><b>' + esc(observedAt ? humanDate(observedAt) : 'Unverified manual entry') + '</b></div><div class="mb-rule-row"><span>Measurement cutoff</span><b>' + esc(humanDate(state.values.deadline)) + ' at 23:59:59 UTC</b></div><div class="mb-rule-row"><span>Provider grace period</span><b>' + esc(state.values.graceHours) + ' hours after cutoff</b></div><div class="mb-rule-row"><span>Determination</span><b>After the final valid observation is retained and edge-case rules are applied</b></div></div></section>';
   }
 
   function validationReport() {
-    var person = selectedPerson();
     var availability = metricAvailability();
     var errors = validateAll();
-    var blockers = [];
+    var blockers = [{ code: 'discovery_only', label: 'Local discovery proposal', copy: 'Saving this draft does not create creator consent, market approval, a price, an order, or real-money execution.' }];
     var warnings = [];
-    var instrumentKey = state.values.instrument === 'pk' ? 'pk_market' : 'milestones';
-    var instrument = person && person.instruments && person.instruments[instrumentKey] || {};
-    if (person && person.eligibility !== 'eligible' && person.eligibility !== 'tradable') blockers.push({ code: 'discovery_only', label: 'Discovery profile', copy: 'Public discovery does not make a person tradable. Creator claim, consent, and policy review are still required.' });
-    if (!person || person.consentStatus !== 'approved') blockers.push({ code: 'consent', label: 'Consent not approved', copy: 'The snapshot contains no approved consent record for an executable market.' });
     if (availability.state !== 'available') blockers.push({ code: 'metric', label: availability.label, copy: availability.copy });
-    if (instrument.status !== 'available' && instrument.status !== 'open') blockers.push({ code: 'instrument', label: (instrument.label || (state.values.instrument === 'pk' ? 'PK Market' : 'Milestone')) + ' is not approved', copy: instrument.reason || 'This instrument has no approved settlement configuration for the selected person.' });
-    if (!person || !person.poa || !person.poa.settlement || person.poa.settlement.status !== 'approved') blockers.push({ code: 'settlement', label: 'Settlement source not approved', copy: 'The proposal includes a source URL, but market operations have not approved it as an oracle.' });
-    var quote = finiteNumber(instrument.quote != null ? instrument.quote : instrument.price);
-    var feeRate = finiteNumber(instrument.feeRate);
-    if (quote == null || quote <= 0 || quote >= 100) blockers.push({ code: 'quote', label: 'No executable quote', copy: 'Backer will not create a pre-market price from the baseline, target, or Proof of Attention.' });
-    if (feeRate == null) blockers.push({ code: 'fee', label: 'No approved fee schedule', copy: 'Fees and maximum loss remain unavailable until this proposal is approved and quoted.' });
-    if (DATA.isSnapshot) warnings.push({ label: 'Dated snapshot', copy: 'Provider links and evidence reflect the last-good snapshot as of ' + humanDate(DATA.generatedAt) + ', not a live feed.' });
-    var executable = errors.length === 0 && blockers.length === 0;
-    return { errors: errors, blockers: blockers, warnings: warnings, executable: executable, proposalAllowed: errors.length === 0, quote: quote, feeRate: feeRate };
+    if (DATA.isSnapshot) warnings.push({ label: 'Retained snapshot', copy: 'Source observations reflect the catalog as of ' + humanDate(DATA.generatedAt) + ', not a continuously live counter.' });
+    return { errors: errors, blockers: blockers, warnings: warnings, executable: false, proposalAllowed: errors.length === 0, quote: null, feeRate: null };
   }
 
   function validationItems() {
     var report = validationReport();
     var html = '';
-    if (!report.errors.length) html += '<div class="mb-validation-item"><span class="mb-validation-mark">OK</span><div><b>Resolution terms are structurally complete</b><p>The question, metric, baseline, target, cutoff, source, and safeguard rules are all present.</p></div></div>';
+    if (!report.errors.length) html += '<div class="mb-validation-item"><span class="mb-validation-mark">OK</span><div><b>Proposal terms are structurally complete</b><p>The subject, future claim, cutoff, exact source, and edge-case rules are all present.</p></div></div>';
     report.errors.forEach(function (item) { html += '<div class="mb-validation-item is-error"><span class="mb-validation-mark">X</span><div><b>' + esc(item.message) + '</b><p>Return to ' + esc(STEPS[item.step].label) + ' to correct this field.</p></div></div>'; });
     report.blockers.forEach(function (item) { html += '<div class="mb-validation-item is-blocker"><span class="mb-validation-mark">!</span><div><b>' + esc(display(item.label)) + '</b><p>' + esc(display(item.copy)) + '</p></div></div>'; });
     report.warnings.forEach(function (item) { html += '<div class="mb-validation-item is-blocker"><span class="mb-validation-mark">i</span><div><b>' + esc(display(item.label)) + '</b><p>' + esc(display(item.copy)) + '</p></div></div>'; });
@@ -430,18 +424,27 @@
   }
 
   function stepValidation() {
-    return '<span class="mb-kicker">Resolution safeguards</span><h1>Decide what happens when the source is late, changed, or gone.</h1><p class="mb-lede">These rules are part of settlement, not fine print. They are shown to every participant before a position can be confirmed.</p>' +
-      '<section class="mb-section"><div class="mb-grid"><div class="mb-field"><label for="mbGrace">Provider grace period</label><input class="mb-control" id="mbGrace" type="number" min="0" max="168" step="1" data-field="graceHours" value="' + esc(state.values.graceHours) + '"' + invalidAttr('graceHours') + '/><small>Hours to wait for a delayed provider observation.</small>' + errorText('graceHours') + '</div><div class="mb-field"><label for="mbDispute">Dispute window</label><input class="mb-control" id="mbDispute" type="number" min="1" max="168" step="1" data-field="disputeHours" value="' + esc(state.values.disputeHours) + '"' + invalidAttr('disputeHours') + '/><small>Hours after the provisional result for evidence review.</small>' + errorText('disputeHours') + '</div>' +
-      '<div class="mb-field"><label for="mbDeletion">Deletion or private-content rule</label><select class="mb-control" id="mbDeletion" data-field="deletionRule"><option value="pause_then_void" ' + (state.values.deletionRule === 'pause_then_void' ? 'selected' : '') + '>Pause through grace, then void</option><option value="last_valid_snapshot" ' + (state.values.deletionRule === 'last_valid_snapshot' ? 'selected' : '') + '>Use approved last valid snapshot</option></select><small>No zero value is inferred from deletion or private status.</small></div>' +
+    var person = selectedPerson();
+    var platform = platformRecord(person, state.values.platform);
+    var provider = DATA.providerStatus && DATA.providerStatus[state.values.platform] || {};
+    var availability = metricAvailability();
+    var observation = availability.retained && availability.retained.observation;
+    return '<span class="mb-kicker">How resolved</span><h1>Keep the source and edge cases explicit.</h1><p class="mb-lede">The proposal title is only a summary. This exact provider observation path and these written rules control any later determination.</p>' +
+      '<section class="mb-section">' + personStrip() + '</section>' +
+      '<section class="mb-section"><div class="mb-field"><label for="mbSource">Resolution source</label><input class="mb-control" id="mbSource" type="url" inputmode="url" data-field="sourceUrl" value="' + esc(state.values.sourceUrl) + '" placeholder="https://" ' + (observation ? 'disabled' : '') + invalidAttr('sourceUrl') + '/><small>' + (observation ? 'Locked to the exact retained observation source.' : 'Use the exact public profile, work, repository, or provider page attached to the selected subject.') + '</small>' + errorText('sourceUrl') + '</div>' +
+      (safeURL(state.values.sourceUrl) ? '<a class="mb-source-link" href="' + esc(safeURL(state.values.sourceUrl)) + '" target="_blank" rel="noopener noreferrer">Open retained source</a>' : '') +
+      '<div class="mb-rule-stack"><div class="mb-rule-row"><span>Provider</span><b>' + esc(platformLabel(state.values.platform)) + '</b></div><div class="mb-rule-row"><span>Observation ID</span><b>' + esc(observation && observation.id || 'None retained - unverified idea') + '</b></div><div class="mb-rule-row"><span>Observed at</span><b>' + esc(observation ? humanDate(observation.observedAt) : 'Not retained') + '</b></div><div class="mb-rule-row"><span>Identity source</span><b>' + esc(display(platform && (platform.sourceUrl || platform.url) || state.values.sourceUrl || 'Not set')) + '</b></div><div class="mb-rule-row"><span>Provider run</span><b>' + esc(display(provider.publishState || provider.state || 'Retained catalog')) + '</b></div></div></section>' +
+      '<section class="mb-section"><div class="mb-section-head"><div><h2>Edge-case rules</h2></div><p>Missing access never becomes a zero. A delayed or deleted source follows these rules.</p></div><div class="mb-grid"><div class="mb-field"><label for="mbGrace">Provider grace period</label><input class="mb-control" id="mbGrace" type="number" min="0" max="168" step="1" data-field="graceHours" value="' + esc(state.values.graceHours) + '"' + invalidAttr('graceHours') + '/><small>Hours to wait after cutoff for a delayed valid observation.</small>' + errorText('graceHours') + '</div><div class="mb-field"><label for="mbDispute">Evidence review window</label><input class="mb-control" id="mbDispute" type="number" min="1" max="168" step="1" data-field="disputeHours" value="' + esc(state.values.disputeHours) + '"' + invalidAttr('disputeHours') + '/><small>Hours after a provisional determination to review source evidence.</small>' + errorText('disputeHours') + '</div>' +
+      '<div class="mb-field"><label for="mbDeletion">Deletion or private-content rule</label><select class="mb-control" id="mbDeletion" data-field="deletionRule"><option value="pause_then_void" ' + (state.values.deletionRule === 'pause_then_void' ? 'selected' : '') + '>Pause through grace, then no result</option><option value="last_valid_snapshot" ' + (state.values.deletionRule === 'last_valid_snapshot' ? 'selected' : '') + '>Use approved last valid snapshot</option></select><small>No zero value is inferred from deletion or private status.</small></div>' +
       '<div class="mb-field"><label for="mbCorrection">Provider correction rule</label><select class="mb-control" id="mbCorrection" data-field="correctionRule"><option value="latest_valid_before_cutoff" ' + (state.values.correctionRule === 'latest_valid_before_cutoff' ? 'selected' : '') + '>Latest valid correction before cutoff</option><option value="freeze_at_cutoff" ' + (state.values.correctionRule === 'freeze_at_cutoff' ? 'selected' : '') + '>Freeze retained value at cutoff</option></select><small>Later corrections require a timestamped audit entry.</small></div>' +
-      (state.values.instrument === 'pk' ? '<div class="mb-field"><label for="mbTie">Tie rule</label><select class="mb-control" id="mbTie" data-field="tieRule"><option value="separate_outcome" ' + (state.values.tieRule === 'separate_outcome' ? 'selected' : '') + '>Separate tie outcome</option><option value="void_on_tie" ' + (state.values.tieRule === 'void_on_tie' ? 'selected' : '') + '>Void and refund on exact tie</option></select><small>The rule applies to equal retained values at the cutoff.</small></div>' : '') +
-      '<div class="mb-field"><label for="mbVoid">Void and refund rule</label><select class="mb-control" id="mbVoid" data-field="voidRule"><option value="refund_original_cost" ' + (state.values.voidRule === 'refund_original_cost' ? 'selected' : '') + '>Refund at original cost</option><option value="refund_equal_value" ' + (state.values.voidRule === 'refund_equal_value' ? 'selected' : '') + '>Refund outcomes at equal value</option></select><small>Applies when the source remains invalid or incomparable.</small></div></div></section>' +
-      '<section class="mb-section"><div class="mb-section-head"><div><h2>Readiness check</h2></div><p>Blocking items prevent an executable market, but a complete discovery proposal can still be saved for review.</p></div><div class="mb-validation">' + validationItems() + '</div></section>';
+      (state.values.instrument === 'pk' ? '<div class="mb-field"><label for="mbTie">Tie rule</label><select class="mb-control" id="mbTie" data-field="tieRule"><option value="separate_outcome" ' + (state.values.tieRule === 'separate_outcome' ? 'selected' : '') + '>Separate tie outcome</option><option value="void_on_tie" ' + (state.values.tieRule === 'void_on_tie' ? 'selected' : '') + '>No result on exact tie</option></select><small>The rule applies to equal retained values at the cutoff.</small></div>' : '') +
+      '<div class="mb-field"><label for="mbVoid">Unresolved-source rule</label><select class="mb-control" id="mbVoid" data-field="voidRule"><option value="refund_original_cost" ' + (state.values.voidRule === 'refund_original_cost' ? 'selected' : '') + '>Record no proposal result</option><option value="refund_equal_value" ' + (state.values.voidRule === 'refund_equal_value' ? 'selected' : '') + '>Record outcomes as unresolved</option></select><small>This local draft has no funds to return.</small></div></div></section>' +
+      '<section class="mb-section"><div class="mb-section-head"><div><h2>Readiness check</h2></div><p>A complete local proposal can be saved for review. It does not open a market or create execution controls.</p></div><div class="mb-validation">' + validationItems() + '</div></section>';
   }
 
   function outcomesText() {
     if (state.values.instrument === 'pk') return [state.values.outcomeA, state.values.outcomeB].filter(Boolean).concat(state.values.tieRule === 'separate_outcome' ? ['Tie or no winner'] : []).join(' / ');
-    return 'Yes: reaches target / No: misses target';
+    return 'Grows to target / Does not reach target';
   }
   function rulesRows() {
     var metric = selectedMetric();
@@ -458,25 +461,17 @@
       ['Provider delay', state.values.graceHours + ' hour grace period'],
       ['Deletion', state.values.deletionRule === 'last_valid_snapshot' ? 'Use approved last valid snapshot' : 'Pause through grace period, then void'],
       ['Correction', state.values.correctionRule === 'freeze_at_cutoff' ? 'Freeze retained value at cutoff' : 'Use latest valid correction before cutoff'],
-      ['Tie', state.values.instrument === 'pk' ? (state.values.tieRule === 'separate_outcome' ? 'Separate tie outcome' : 'Void and refund') : 'Not applicable'],
-      ['Void', state.values.voidRule === 'refund_equal_value' ? 'Refund outcomes at equal value' : 'Refund at original cost'],
+      ['Tie', state.values.instrument === 'pk' ? (state.values.tieRule === 'separate_outcome' ? 'Separate tie outcome' : 'No result on exact tie') : 'Not applicable'],
+      ['Unresolved source', state.values.voidRule === 'refund_equal_value' ? 'Record outcomes as unresolved' : 'Record no proposal result'],
       ['Dispute', state.values.disputeHours + ' hour evidence review window']
     ];
   }
   function ruleStack() { return '<div class="mb-rule-stack">' + rulesRows().map(function (row) { return '<div class="mb-rule-row"><span>' + esc(display(row[0])) + '</span><b>' + esc(display(row[1])) + '</b></div>'; }).join('') + '</div>'; }
-  function orderReview(compact) {
-    var report = validationReport();
-    var sideA = state.values.instrument === 'pk' ? state.values.outcomeA || 'Outcome A' : 'Yes';
-    var sideB = state.values.instrument === 'pk' ? state.values.outcomeB || 'Outcome B' : 'No';
-    var quote = report.executable ? report.quote : null;
-    var stake = finiteNumber(state.values.stake);
-    var fee = report.executable && stake != null ? stake * report.feeRate : null;
-    var maxLoss = report.executable && stake != null ? stake + fee : null;
-    return '<div class="mb-preview-ticket"><div class="mb-preview-ticket-head"><b>Position preview</b><span>' + (report.executable ? 'Approved simulation' : 'Locked until approval') + '</span></div><div class="mb-side-row"><button type="button" class="mb-side ' + (state.values.selectedSide === (state.values.instrument === 'pk' ? 'A' : 'YES') ? 'is-selected' : '') + '" data-action="side" data-value="' + (state.values.instrument === 'pk' ? 'A' : 'YES') + '" ' + (!report.executable ? 'disabled' : '') + '>' + esc(display(sideA)) + '</button><button type="button" class="mb-side ' + (state.values.selectedSide === (state.values.instrument === 'pk' ? 'B' : 'NO') ? 'is-selected' : '') + '" data-action="side" data-value="' + (state.values.instrument === 'pk' ? 'B' : 'NO') + '" ' + (!report.executable ? 'disabled' : '') + '>' + esc(display(sideB)) + '</button></div><div class="mb-ticket-grid"><div class="mb-ticket-cell"><small>Price</small><b>' + (quote == null ? 'No quote' : quote + ' cents') + '</b></div><div class="mb-ticket-cell"><small>Stake</small><b>' + (stake == null ? 'Not entered' : '$' + stake.toFixed(2)) + '</b></div><div class="mb-ticket-cell"><small>Estimated fees</small><b>' + (fee == null ? 'Unavailable' : '$' + fee.toFixed(2)) + '</b></div><div class="mb-ticket-cell"><small>Maximum loss</small><b>' + (maxLoss == null ? 'Unavailable' : '$' + maxLoss.toFixed(2)) + '</b></div></div>' + (!compact && report.executable ? '<div class="mb-field" style="margin-top:12px"><label for="mbStake">Simulation stake</label><input class="mb-control" id="mbStake" type="number" min="1" step="1" inputmode="numeric" data-field="stake" value="' + esc(state.values.stake) + '" placeholder="Enter stake"/></div>' : '') + '<p class="mb-preview-note">No real money moves. Price, fees, payout, and maximum loss remain blank until an approved market has an actual simulation quote.</p></div>';
+  function proposalBoundary() {
+    return '<div class="mb-preview-ticket"><div class="mb-preview-ticket-head"><b>Local proposal only</b><span>Saved on this device</span></div><p class="mb-preview-note">This draft records a future growth claim and its evidence rules. It has no price, order, probability, wallet, payout, or real-money execution.</p></div>';
   }
   function stepPreview() {
-    var report = validationReport();
-    return '<span class="mb-kicker">Review the proposal</span><h1>' + esc(display(state.values.question || canonicalQuestion())) + '</h1><p class="mb-lede">Check the exact settlement terms. ' + (report.executable ? 'This configuration has the required approval and quote to open a simulation ticket.' : 'This will be saved as a discovery proposal and will open in the full terminal as Opening soon.') + '</p><section class="mb-section"><div class="mb-section-head"><div><h2>Binding resolution terms</h2></div><p>Editing any field creates a new version of the local draft.</p></div>' + ruleStack() + '</section><section class="mb-section"><div class="mb-section-head"><div><h2>Familiar position flow</h2></div><p>Side, price, stake, fees, and maximum loss appear only after an actual approved quote exists.</p></div>' + orderReview(false) + '</section><section class="mb-section"><div class="mb-section-head"><div><h2>Approval boundary</h2></div></div><div class="mb-validation">' + validationItems() + '</div></section>';
+    return '<span class="mb-kicker">Review proposal</span><h1>' + esc(display(state.values.question || canonicalQuestion())) + '</h1><p class="mb-lede">Confirm the subject, future claim, cutoff, exact source, and edge cases before saving this local proposal.</p><section class="mb-section">' + personStrip() + '</section><section class="mb-section"><div class="mb-section-head"><div><h2>Resolution terms</h2></div><p>The title summarizes the proposal; these terms define it.</p></div>' + ruleStack() + '</section><section class="mb-section"><div class="mb-section-head"><div><h2>Proposal boundary</h2></div></div>' + proposalBoundary() + '</section><section class="mb-section"><div class="mb-section-head"><div><h2>Final check</h2></div></div><div class="mb-validation">' + validationItems() + '</div></section>';
   }
 
   function renderStage() {
@@ -487,24 +482,23 @@
     return stepPreview();
   }
   function stepRail() {
-    return '<aside class="mb-rail"><p class="mb-rail-label">Market proposal</p><ol class="mb-step-list">' + STEPS.map(function (step, index) {
+    return '<aside class="mb-rail"><p class="mb-rail-label">Growth proposal</p><ol class="mb-step-list">' + STEPS.map(function (step, index) {
       var klass = index === state.step ? 'is-active' : index < state.step ? 'is-complete' : '';
       var disabled = index > state.maxStep ? 'disabled' : '';
       return '<li><button type="button" class="mb-step-button ' + klass + '" data-action="step" data-value="' + index + '" ' + disabled + '><span class="mb-step-number">' + (index < state.step ? 'OK' : index + 1) + '</span><span class="mb-step-copy"><b>' + esc(step.label) + '</b><small>' + esc(step.note) + '</small></span></button></li>';
-    }).join('') + '</ol><p class="mb-rail-note">This builder creates a versioned local simulation proposal. It does not create consent, a real-money product, or a market price.</p></aside>';
+    }).join('') + '</ol><p class="mb-rail-note">This builder saves a versioned local proposal. It does not create consent, a price, an order, or a real-money product.</p></aside>';
   }
   function previewPanel() {
     var person = selectedPerson();
     var metric = selectedMetric();
-    var report = validationReport();
-    return '<aside class="mb-preview" aria-label="Live market proposal preview"><div class="mb-preview-inner"><div class="mb-preview-label"><span>Live proposal</span><b>' + (report.executable ? 'Approved simulation' : 'Discovery only') + '</b></div><div class="mb-preview-shell"><div class="mb-preview-card"><div class="mb-preview-subject"><img src="' + esc(safeImage(person && person.avatar)) + '" alt=""/><div><small>' + esc(state.values.scope === 'content' ? 'Public work by ' + (person ? person.name : '') : 'Person growth') + '</small><b>' + esc(display(subjectName())) + '</b></div></div><div class="mb-preview-question"><small>' + esc(state.values.instrument === 'pk' ? 'PK Market' : 'Milestone') + '</small><h2>' + esc(display(state.values.question || canonicalQuestion())) + '</h2></div><div class="mb-preview-facts"><div class="mb-preview-fact"><small>Metric</small><b>' + esc(metric ? metric.label : 'Not set') + '</b></div><div class="mb-preview-fact"><small>Cutoff</small><b>' + esc(humanDate(state.values.deadline)) + '</b></div><div class="mb-preview-fact"><small>Baseline</small><b>' + esc(state.values.baseline || 'Not set') + '</b></div><div class="mb-preview-fact"><small>Target</small><b>' + esc(state.values.target || 'Not set') + '</b></div></div>' + orderReview(true) + '</div></div><p class="mb-preview-note">Proof of Attention remains a separate underwriting interface. It does not settle this proposal or supply a pre-market quote.</p></div></aside>';
+    return '<aside class="mb-preview" aria-label="Growth proposal preview"><div class="mb-preview-inner"><div class="mb-preview-label"><span>Proposal preview</span><b>Local draft</b></div><div class="mb-preview-shell"><div class="mb-preview-card"><div class="mb-preview-subject"><img src="' + esc(safeImage(person && person.avatar)) + '" alt=""/><div><small>' + esc(state.values.scope === 'content' ? 'Public work by ' + (person ? person.name : '') : 'Person growth') + '</small><b>' + esc(display(subjectName())) + '</b></div></div><div class="mb-preview-question"><small>' + esc(state.values.instrument === 'pk' ? 'Head-to-head growth' : 'Growth milestone') + '</small><h2>' + esc(display(state.values.question || canonicalQuestion())) + '</h2></div><div class="mb-preview-facts"><div class="mb-preview-fact"><small>Metric</small><b>' + esc(metric ? metric.label : 'Not set') + '</b></div><div class="mb-preview-fact"><small>Cutoff</small><b>' + esc(humanDate(state.values.deadline)) + '</b></div><div class="mb-preview-fact"><small>Baseline</small><b>' + esc(state.values.baseline || 'Not set') + '</b></div><div class="mb-preview-fact"><small>Target</small><b>' + esc(state.values.target || 'Not set') + '</b></div></div>' + proposalBoundary() + '</div></div><p class="mb-preview-note">Proof of Attention remains separate research evidence. It does not supply a proposal price or determine the result.</p></div></aside>';
   }
   function actions() {
     var report = validationReport();
     var isLast = state.step === STEPS.length - 1;
-    var primaryLabel = isLast ? (report.executable ? 'Create simulated market' : 'Save discovery proposal') : 'Continue';
+    var primaryLabel = isLast ? (state.editDraft ? 'Save changes' : 'Save proposal') : 'Continue';
     var disabled = isLast && !report.proposalAllowed ? 'disabled' : '';
-    return '<footer class="mb-actions"><div class="mb-action-status">' + (report.blockers.length ? '<b>' + report.blockers.length + ' opening blocker' + (report.blockers.length === 1 ? '' : 's') + '</b> remain. A complete proposal can still be saved.' : 'All approval checks passed for simulation.') + '</div><div class="mb-action-group">' + (state.step > 0 ? '<button type="button" class="mb-btn" data-action="previous">Back</button>' : '') + '<button type="button" class="mb-btn primary" data-action="' + (isLast ? 'save' : 'next') + '" ' + disabled + '>' + primaryLabel + '</button></div></footer>';
+    return '<footer class="mb-actions"><div class="mb-action-status">' + (report.errors.length ? '<b>Complete the required terms before saving.</b>' : 'Ready to save as a local discovery proposal.') + '</div><div class="mb-action-group">' + (state.step > 0 ? '<button type="button" class="mb-btn" data-action="previous">Back</button>' : '') + '<button type="button" class="mb-btn primary" data-action="' + (isLast ? 'save' : 'next') + '" ' + disabled + '>' + primaryLabel + '</button></div></footer>';
   }
   function render() {
     if (!root || !state) return;
@@ -520,28 +514,27 @@
     var target = finiteNumber(state.values.target);
     function add(field, message) { errors.push({ field: field, message: message, step: step }); }
     if (step === 0) {
-      if (!person) add('personId', 'Choose a person from the Market 2 snapshot.');
+      if (!person) add('personId', 'Choose a person from the retained discovery catalog.');
       if (state.values.scope === 'content' && !selectedWork()) add('contentKey', 'Choose a public work by this person.');
     } else if (step === 1) {
-      if (VALID_INSTRUMENTS.indexOf(state.values.instrument) < 0) add('instrument', 'Choose Milestone or PK Market.');
-      if (clean(state.values.question).length < 12) add('question', 'Write a neutral question with enough detail to understand the event.');
-      if (clean(state.values.question).length > 220) add('question', 'Keep the market question under 220 characters.');
-      if (state.values.instrument === 'pk') {
-        if (!clean(state.values.outcomeA)) add('outcomeA', 'Name the first mutually exclusive outcome.');
-        if (!clean(state.values.outcomeB)) add('outcomeB', 'Name the second mutually exclusive outcome.');
-        if (clean(state.values.outcomeA).toLowerCase() === clean(state.values.outcomeB).toLowerCase()) add('outcomeB', 'PK outcomes must be distinct.');
-      }
-    } else if (step === 2) {
+      if (VALID_INSTRUMENTS.indexOf(state.values.instrument) < 0) add('instrument', 'Choose a growth milestone or head-to-head comparison.');
       if (availablePlatforms().indexOf(state.values.platform) < 0) add('platform', 'Choose a platform linked to this subject.');
       if (!selectedMetric()) add('metricKey', 'Choose one provider-native metric.');
       if (baseline == null || baseline < 0) add('baseline', 'Enter an exact non-negative baseline value.');
-      if (!state.values.baselineAt || isNaN(Date.parse(state.values.baselineAt + 'T00:00:00Z'))) add('baselineAt', 'Enter the baseline observation date.');
       if (target == null || target < 0) add('target', 'Enter an exact non-negative target value.');
-      if (baseline != null && target != null && target <= baseline) add('target', 'A growth target must be greater than the proposed baseline.');
+      if (baseline != null && target != null && target <= baseline) add('target', 'A growth target must be greater than the baseline.');
+      if (clean(state.values.question).length < 12) add('question', 'Write a clear future growth claim.');
+      if (clean(state.values.question).length > 220) add('question', 'Keep the proposal title under 220 characters.');
+      if (state.values.instrument === 'pk') {
+        if (!clean(state.values.outcomeA)) add('outcomeA', 'Name the first comparison subject.');
+        if (!clean(state.values.outcomeB)) add('outcomeB', 'Name the second comparison subject.');
+        if (clean(state.values.outcomeA).toLowerCase() === clean(state.values.outcomeB).toLowerCase()) add('outcomeB', 'Comparison subjects must be distinct.');
+      }
+    } else if (step === 2) {
       if (!state.values.deadline || isNaN(Date.parse(state.values.deadline + 'T23:59:59Z'))) add('deadline', 'Choose an exact measurement cutoff.');
       else if (Date.parse(state.values.deadline + 'T23:59:59Z') <= Date.now()) add('deadline', 'The measurement cutoff must be in the future.');
-      if (!safeURL(state.values.sourceUrl)) add('sourceUrl', 'Enter a complete HTTP or HTTPS resolution source.');
     } else if (step === 3) {
+      if (!safeURL(state.values.sourceUrl)) add('sourceUrl', 'Enter a complete HTTP or HTTPS resolution source.');
       var grace = finiteNumber(state.values.graceHours);
       var dispute = finiteNumber(state.values.disputeHours);
       if (grace == null || grace < 0 || grace > 168) add('graceHours', 'Set a provider grace period from 0 to 168 hours.');
@@ -549,7 +542,7 @@
       if (!state.values.deletionRule) add('deletionRule', 'Choose a deletion or private-content rule.');
       if (!state.values.correctionRule) add('correctionRule', 'Choose a correction rule.');
       if (state.values.instrument === 'pk' && !state.values.tieRule) add('tieRule', 'Choose an explicit tie rule.');
-      if (!state.values.voidRule) add('voidRule', 'Choose a void and refund rule.');
+      if (!state.values.voidRule) add('voidRule', 'Choose an unresolved-source rule.');
     }
     return errors;
   }
@@ -588,21 +581,24 @@
     var work = selectedWork();
     var metric = selectedMetric();
     var availability = metricAvailability();
-    var id = draftId();
+    var existing = state.editDraft;
+    var id = existing ? existing.draftId : draftId();
     var now = new Date().toISOString();
-    var approvalStatus = report.executable ? 'approved_simulation' : 'discovery_proposal';
+    var retained = state.values.baselineProvenance === 'retained' && availability.retained ? availability.retained : null;
+    var observed = retained && retained.observation;
+    var resolutionSource = retained ? retained.sourceUrl : safeURL(state.values.sourceUrl);
     var outcomes = state.values.instrument === 'pk'
       ? [{ id: 'A', label: clean(state.values.outcomeA) }, { id: 'B', label: clean(state.values.outcomeB) }].concat(state.values.tieRule === 'separate_outcome' ? [{ id: 'TIE', label: 'Tie or no winner' }] : [])
-      : [{ id: 'YES', label: 'Yes: reaches target' }, { id: 'NO', label: 'No: misses target' }];
+      : [{ id: 'GROWS_TO_TARGET', label: 'Grows to target' }, { id: 'DOES_NOT_REACH_TARGET', label: 'Does not reach target' }];
     return {
-      schemaVersion: 1,
+      schemaVersion: 2,
       draftId: id,
-      createdAt: now,
+      createdAt: existing && existing.createdAt ? existing.createdAt : now,
       updatedAt: now,
-      source: 'market2-builder',
+      source: 'discovery-builder',
       executionMode: 'simulation',
-      status: approvalStatus,
-      approvalStatus: approvalStatus,
+      status: 'local_draft',
+      approvalStatus: 'discovery_proposal',
       subject: {
         type: state.values.scope === 'content' ? 'content-growth' : 'person-growth',
         person: {
@@ -611,7 +607,9 @@
           handle: clean(person.handle),
           avatar: safeImage(person.avatar),
           category: clean(person.category),
-          platforms: (person.platforms || []).map(function (item) { return { id: clean(item.id), handle: clean(item.handle), url: safeURL(item.url), sourceUrl: safeURL(item.sourceUrl), asOf: clean(item.asOf) }; }),
+          identityKind: 'public_discovery',
+          tradable: false,
+          platforms: (person.platforms || []).map(function (item) { return { id: clean(item.id), provider: clean(item.provider || item.id), sourceIdentityId: clean(item.sourceIdentityId), nativeId: clean(item.nativeId), handle: clean(item.handle), url: safeURL(item.url), sourceUrl: safeURL(item.sourceUrl), observedAt: clean(item.observedAt) }; }),
           eligibility: clean(person.eligibility),
           claimStatus: clean(person.claimStatus),
           consentStatus: clean(person.consentStatus)
@@ -635,24 +633,43 @@
         type: state.values.instrument === 'pk' ? 'multi' : 'binary',
         question: clean(state.values.question),
         outcomes: outcomes,
-        selectedSide: clean(state.values.selectedSide)
+        selectedSide: null
       },
       resolution: {
         platform: state.values.platform,
-        metricKey: metric.key,
+        metricKey: metric.nativeKey,
         metricLabel: metric.label,
         unit: metric.unit,
-        availability: availability.state,
-        availabilityLabel: availability.label,
+        readiness: retained ? 'retained_observation' : 'unverified_idea',
+        availability: retained ? 'retained_observation' : 'unverified_idea',
+        availabilityLabel: retained ? 'Retained source observation' : 'Unverified metric idea',
+        observation: observed ? {
+          id: clean(observed.id),
+          entityType: clean(observed.entityType),
+          entityId: clean(observed.entityId),
+          provider: clean(observed.provider),
+          metric: clean(observed.metric || observed.key),
+          value: finiteNumber(observed.value),
+          unit: clean(observed.unit),
+          observedAt: clean(observed.observedAt),
+          sourceUrl: safeURL(observed.sourceUrl),
+          methodologyVersion: clean(observed.methodologyVersion),
+          window: observed.window == null ? null : clean(observed.window),
+          visibility: clean(observed.visibility),
+          access: clean(observed.access),
+          availability: clean(observed.availability),
+          freshness: observed.freshness && typeof observed.freshness === 'object' ? Object.assign({}, observed.freshness) : null,
+          confidence: observed.confidence && typeof observed.confidence === 'object' ? Object.assign({}, observed.confidence) : null
+        } : null,
         baseline: {
           value: finiteNumber(state.values.baseline),
-          observedAt: state.values.baselineProvenance === 'retained' && state.values.baselineObservedAt ? state.values.baselineObservedAt : state.values.baselineAt + 'T00:00:00Z',
-          provenance: state.values.baselineProvenance === 'retained' ? 'retained_source_observation' : 'user_entered_unverified',
-          sourceUrl: state.values.baselineProvenance === 'retained' && availability.retained ? availability.retained.sourceUrl : safeURL(state.values.sourceUrl)
+          observedAt: retained && state.values.baselineObservedAt ? state.values.baselineObservedAt : state.values.baselineAt + 'T00:00:00Z',
+          provenance: retained ? 'retained_source_observation' : 'user_entered_unverified',
+          sourceUrl: resolutionSource
         },
         target: { value: finiteNumber(state.values.target), direction: state.values.instrument === 'pk' ? 'highest_at_cutoff_above_minimum' : 'at_least' },
         deadline: state.values.deadline + 'T23:59:59Z',
-        sourceUrl: safeURL(state.values.sourceUrl),
+        sourceUrl: resolutionSource,
         providerState: DATA.providerStatus && DATA.providerStatus[state.values.platform] ? clean(DATA.providerStatus[state.values.platform].state) : 'unknown',
         sourceSnapshotAsOf: clean(DATA.generatedAt)
       },
@@ -665,27 +682,27 @@
         disputeHours: finiteNumber(state.values.disputeHours)
       },
       market: {
-        lifecycle: report.executable ? 'OPEN' : 'OPENING_SOON',
-        approvalStatus: approvalStatus,
-        hasSyntheticQuote: false,
-        quote: report.executable ? report.quote : null,
-        feeRate: report.executable ? report.feeRate : null,
-        stake: report.executable ? finiteNumber(state.values.stake) : null,
-        maxLoss: null
+        lifecycle: 'DRAFT',
+        approvalStatus: 'discovery_proposal',
+        quote: null,
+        feeRate: null,
+        stake: null,
+        maxLoss: null,
+        payout: null
       },
       validation: {
         structurallyValid: report.errors.length === 0,
-        executable: report.executable,
+        executable: false,
         errors: report.errors.map(function (item) { return { field: item.field, message: item.message }; }),
         blockers: report.blockers.map(function (item) { return { code: item.code, label: item.label, copy: item.copy }; }),
         warnings: report.warnings
       },
       provenance: {
-        market2SchemaVersion: DATA.schemaVersion,
-        market2GeneratedAt: clean(DATA.generatedAt),
+        discoveryCatalogSchemaVersion: DATA.schemaVersion,
+        discoveryCatalogGeneratedAt: clean(DATA.generatedAt),
         dataMode: state.dataMode || 'snapshot',
-        noAiImagery: true,
-        noFabricatedMetrics: true
+        noFabricatedMetrics: true,
+        manualMetricUnverified: !retained
       }
     };
   }
@@ -700,12 +717,14 @@
       return;
     }
     var draft = buildDraft();
-    try {
-      sessionStorage.setItem(STORAGE_PREFIX + draft.draftId, JSON.stringify(draft));
-    } catch (error) {
-      showError('This browser could not save the proposal', 'Session storage is unavailable. Keep this tab open, allow site storage, and try again.');
+    var result = window.BackerMarketDraftStore && window.BackerMarketDraftStore.save(draft);
+    if (!result || !result.ok) {
+      showError('This browser could not save the proposal', result && result.message || 'Local and tab storage are unavailable. Allow site storage and try again.');
       return;
     }
+    state.editDraft = draft;
+    state.storageMode = result.storage;
+    state.storageDisclosure = result.disclosure;
     state.receipt = draft;
     renderReceipt();
     try {
@@ -715,9 +734,10 @@
 
   function renderReceipt() {
     var draft = state.receipt;
-    var route = 'backermarket.html?draft=' + encodeURIComponent(draft.draftId) + '&instrument=' + encodeURIComponent(draft.instrument) + '&source=market2-builder';
-    var discovery = draft.approvalStatus !== 'approved_simulation';
-    root.innerHTML = '<section class="mb-receipt"><div class="mb-receipt-head"><span class="mb-receipt-status">' + (discovery ? 'Discovery proposal saved' : 'Simulation market created') + '</span><h1>' + (discovery ? 'The proposal is ready for review.' : 'The simulated market is ready.') + '</h1><p>' + (discovery ? 'Backer saved the exact question and settlement terms in this browser session. The full terminal will show Opening soon with no quote or order controls until consent, policy, source, and market approval are complete.' : 'The approved simulation can open the familiar position ticket in the full Backer market terminal.') + '</p></div><div class="mb-receipt-grid"><div class="mb-receipt-panel"><div class="mb-receipt-core"><span class="mb-receipt-id">' + esc(draft.draftId) + '</span><h2>' + esc(display(draft.outcome.question)) + '</h2>' + ruleStack() + '</div></div><div class="mb-receipt-panel"><div class="mb-receipt-core"><h2>Next</h2><div class="mb-validation-item ' + (discovery ? 'is-blocker' : '') + '"><span class="mb-validation-mark">' + (discovery ? '!' : 'OK') + '</span><div><b>' + (discovery ? 'Opening soon' : 'Open for simulation') + '</b><p>' + (discovery ? 'No price, orders, volume, or market-implied probability exists for this proposal.' : 'Review the quote, stake, fees, maximum loss, and confirmation before placing a simulated position.') + '</p></div></div><div class="mb-receipt-actions"><a class="mb-btn primary" href="' + esc(route) + '">Open in full market terminal</a><a class="mb-btn" href="backerdemo.html#market2">Return to Market 2</a><button type="button" class="mb-btn" data-action="edit-receipt">Edit proposal</button></div></div></div></div></section>';
+    var tradesRoute = 'backerdemo.html#trades?view=proposals&proposal=' + encodeURIComponent(draft.draftId);
+    var previewRoute = 'backermarket.html?draft=' + encodeURIComponent(draft.draftId) + '&source=trades';
+    var disclosure = state.storageDisclosure || (state.storageMode === 'session' ? 'Saved for this tab only' : 'Saved on this device');
+    root.innerHTML = '<section class="mb-receipt"><div class="mb-receipt-head"><span class="mb-receipt-status">Discovery proposal saved</span><h1>The proposal is ready for review.</h1><p>' + esc(disclosure) + '. The exact subject, future claim, cutoff, source, and edge-case rules were retained. No market, price, or position was created.</p></div><div class="mb-receipt-grid"><div class="mb-receipt-panel"><div class="mb-receipt-core"><span class="mb-receipt-id">' + esc(draft.draftId) + '</span><h2>' + esc(display(draft.outcome.question)) + '</h2>' + ruleStack() + '</div></div><div class="mb-receipt-panel"><div class="mb-receipt-core"><h2>Next</h2><div class="mb-validation-item is-blocker"><span class="mb-validation-mark">!</span><div><b>Local proposal only</b><p>It has no price, odds, orders, volume, payout, or real-money execution.</p></div></div><div class="mb-receipt-actions"><a class="mb-btn primary" href="' + esc(tradesRoute) + '">View in Trades</a><a class="mb-btn" href="' + esc(previewRoute) + '">Preview proposal terms</a><a class="mb-btn" href="backerdemo.html#market2">Return to Discovery</a><button type="button" class="mb-btn" data-action="edit-receipt">Edit proposal</button></div></div></div></div></section>';
     root.setAttribute('aria-busy', 'false');
     var primary = root.querySelector('.mb-btn.primary');
     if (primary) primary.focus();
@@ -725,7 +745,7 @@
 
   function showError(title, copy) {
     if (!root) return;
-    root.innerHTML = '<section class="mb-error-state"><span class="mb-kicker">Builder unavailable</span><h1>' + esc(title) + '</h1><p>' + esc(copy) + '</p><a class="mb-btn" href="backerdemo.html#market2">Return to Market 2</a></section>';
+    root.innerHTML = '<section class="mb-error-state"><span class="mb-kicker">Builder unavailable</span><h1>' + esc(title) + '</h1><p>' + esc(copy) + '</p><a class="mb-btn" href="backerdemo.html#market2">Return to Discovery</a></section>';
     root.setAttribute('aria-busy', 'false');
   }
 
@@ -738,7 +758,8 @@
     }
     delete state.errors[field];
     if (field === 'personId') {
-      state.values.contentKey = 'recent';
+      var changedPerson = selectedPerson();
+      state.values.contentKey = changedPerson && changedPerson.content && changedPerson.content[0] ? changedPerson.content[0].id : '';
       state.values.platform = '';
       state.values.metricKey = '';
       state.values.baseline = '';
@@ -785,7 +806,8 @@
     var value = button.dataset.value;
     if (action === 'scope') {
       state.values.scope = value === 'content' ? 'content' : 'person';
-      state.values.contentKey = 'recent';
+      var currentPerson = selectedPerson();
+      state.values.contentKey = currentPerson && currentPerson.content && currentPerson.content[0] ? currentPerson.content[0].id : '';
       state.values.platform = '';
       state.values.metricKey = '';
       state.values.baseline = '';
@@ -798,7 +820,7 @@
     } else if (action === 'instrument') {
       state.values.instrument = value === 'pk' ? 'pk' : 'milestone';
       state.values.direction = state.values.instrument === 'pk' ? 'highest_at_cutoff' : 'at_least';
-      state.values.selectedSide = state.values.instrument === 'pk' ? 'A' : 'YES';
+      state.values.selectedSide = state.values.instrument === 'pk' ? 'A' : 'GROWS_TO_TARGET';
       state.values.question = defaultQuestion();
       render();
     } else if (action === 'generate-question') {
@@ -846,12 +868,11 @@
 
   function validData(data) { return data && Array.isArray(data.people) && data.people.length > 0; }
   function loadData() {
-    var bundled = window.BACKER_MARKET2_DATA || window.BackerMarket2Data || null;
-    if (typeof window.fetch !== 'function') return Promise.resolve({ data: bundled, mode: 'bundled_fallback' });
-    return window.fetch(DATA_URL, { cache: 'no-store', credentials: 'same-origin' })
-      .then(function (response) { if (!response.ok) throw new Error('HTTP ' + response.status); return response.json(); })
-      .then(function (data) { if (!validData(data)) throw new Error('Invalid Market 2 snapshot'); return { data: data, mode: 'static_json' }; })
-      .catch(function () { return { data: bundled, mode: 'bundled_fallback' }; });
+    if (!window.BackerDiscoveryCatalog || typeof window.BackerDiscoveryCatalog.load !== 'function') return Promise.reject(new Error('The retained discovery catalog client did not load'));
+    return window.BackerDiscoveryCatalog.load({ url: DATA_URL }).then(function (data) {
+      if (!validData(data)) throw new Error('The retained discovery catalog is empty');
+      return { data: data, mode: 'retained_catalog' };
+    });
   }
 
   function boot() {
@@ -866,8 +887,9 @@
       initialState();
       state.dataMode = result.mode;
       render();
-    }).catch(function () {
-      showError('The public identity snapshot did not load', 'Refresh this page from the Backer site. No market proposal was created.');
+    }).catch(function (error) {
+      var message = clean(error && error.message) || 'The retained discovery catalog did not load';
+      showError(message, 'The builder stopped instead of substituting another profile or work. Return to Discovery and choose an item that still exists in the retained catalog.');
     });
   }
 

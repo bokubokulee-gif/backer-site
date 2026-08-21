@@ -156,15 +156,6 @@
 
   /* ===== bottom dock (matches demo) ===== */
   .wrap{padding-bottom:118px}
-  .dock{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:6px;padding:8px;border-radius:999px;background:rgba(16,16,19,.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--line);box-shadow:0 18px 50px rgba(0,0,0,.5)}
-  .dock-btn{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:var(--muted);position:relative;transition:.2s var(--ease)}
-  .dock-btn:hover{color:var(--ink);background:var(--card-2)}
-  .dock-btn.active{color:var(--ink);background:var(--card-hi)}
-  .dock-btn .ic{width:20px;height:20px}
-  .dock-home .dock-orb{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 32% 30%,#fff,#cfd6da 30%,#6b7378 70%,#2a2e31);box-shadow:0 0 18px rgba(255,255,255,.25),inset -4px -6px 10px rgba(0,0,0,.4);transition:.2s}
-  .dock-home:hover .dock-orb{transform:scale(1.08)}
-  .dock-btn[data-tip]::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);font-size:11px;color:var(--ink);background:var(--bg-2);border:1px solid var(--line);padding:4px 9px;border-radius:7px;white-space:nowrap;opacity:0;pointer-events:none;transition:.2s}
-  .dock-btn:hover::after{opacity:1}
 
   /* ===== CREATOR TERMINAL ===== */
   .ct-strip{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--card);padding:20px;margin-bottom:18px}
@@ -243,6 +234,7 @@
 <link rel="stylesheet" href="css/site-menu.css?v=3" />
 <script src="js/theme.js?v=20260731-1"></script>
 <script src="js/site-menu.js?v=5" defer></script>
+<link rel="stylesheet" href="css/backer-dock.css?v=20260821-1" />
 </head>
 <body class="page-portfolio">
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -260,7 +252,7 @@
       <span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☼</span>
       <span class="theme-toggle-label" data-theme-label>Light</span>
     </button>
-    <a class="btn btn-fill market-link" href="backerdemo.html#market2">Enter Backer Market<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="btn btn-fill market-link" href="backerdemo.html#trades">Open Trades<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
   </div>
 </header>
 
@@ -556,22 +548,6 @@
   <button class="drawer-x" id="drawerX" aria-label="Close">✕</button>
   <div id="drawerContent"></div>
 </aside>
-
-<!-- ===== bottom dock (demo navigation) ===== -->
-<nav class="dock" aria-label="Demo navigation">
-  <a class="dock-btn" href="backerdemo.html?view=search" data-tip="Search" aria-label="AI Search">
-    <svg viewBox="0 0 24 24" class="ic"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-  </a>
-  <a class="dock-btn" href="backerdemo.html#market2" data-tip="Market" aria-label="Marketplace">
-    <svg viewBox="0 0 24 24" class="ic"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-  </a>
-  <a class="dock-btn dock-home" href="backerdemo.html" data-tip="Home" aria-label="Home">
-    <span class="dock-orb"></span>
-  </a>
-  <a class="dock-btn active" href="portfolio.html" data-tip="Portfolio" aria-label="Portfolio">
-    <svg viewBox="0 0 24 24" class="ic"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
-  </a>
-</nav>
 
 <script src="js/shader.js"></script>
 <script src="js/liquid-glass.js"></script>
@@ -938,5 +914,7 @@
   }
 })();
 </script>
+<div data-backer-dock></div>
+<script src="js/backer-dock.js?v=20260821-1"></script>
 </body>
 </html>

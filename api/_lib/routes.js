@@ -5,7 +5,8 @@ const { HttpError } = require('./errors');
 const STATIC_ROUTES = Object.freeze({
   home: { path: '/', title: 'Backer', virtualView: 'home' },
   market: { path: '/market', title: 'Backer Market', virtualView: 'market' },
-  market2: { path: '/market2', title: 'Backer Market', virtualView: 'market2' },
+  market2: { path: '/market2', title: 'Backer Discovery', virtualView: 'market2' },
+  trades: { path: '/trades', title: 'Backer Trades', virtualView: 'trades' },
   market_position: {
     path: '/market/position',
     title: 'Backer Market',
