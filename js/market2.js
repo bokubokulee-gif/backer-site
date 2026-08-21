@@ -70,6 +70,9 @@
   var failedMediaURLs = Object.create(null);
   var retainedCatalogPromise = null;
   var retainedDatasetPromise = null;
+  var tradesEligibilityPromise = null;
+  var tradeEligiblePeople = Object.create(null);
+  var tradeEligibleWorks = Object.create(null);
   var booted = false;
   var state = {
     view: 'radar', browse: 'trending', categoryRail: 'all', range: '7d',
@@ -82,7 +85,8 @@
     feedVisibleCount: INITIAL_CONTENT_COUNT,
     rosterVisibleCount: 40,
     discoveryLoading: false, discoveryError: '', discoveryStatus: 'not-requested',
-    discoveryNextCursor: null, discoveryQuery: '', discoveryTotal: null, discoveryPages: 0
+    discoveryNextCursor: null, discoveryQuery: '', discoveryTotal: null, discoveryPages: 0,
+    focusContentId: '', focusContentHandled: ''
   };
 
   function esc(value) {
@@ -1017,6 +1021,9 @@
     if (params.get('sort')) state.sort = params.get('sort');
     if (params.get('q')) state.query = params.get('q').slice(0, 240);
     if (params.get('person')) state.selectedId = params.get('person');
+    var focusContentId = params.get('content') || params.get('work') || '';
+    if (focusContentId !== state.focusContentId) state.focusContentHandled = '';
+    state.focusContentId = focusContentId;
     if (INSTRUMENTS.some(function (item) { return item.id === params.get('instrument'); })) state.instrument = params.get('instrument');
     if (params.get('categories')) state.categories = params.get('categories').split(',').filter(Boolean);
     if (params.get('confidence')) state.confidence = params.get('confidence');
@@ -1048,6 +1055,7 @@
     if (state.engagementBand !== 'all') params.set('engagement', state.engagementBand);
     if (state.query) params.set('q', state.query);
     if (state.peerId) params.set('peer', state.peerId);
+    if (state.focusContentId) params.set('work', state.focusContentId);
     var urlContentPlatforms = state.loadedOnce ? state.contentPlatforms.filter(function (id) { return providerAvailability(id).available; }) : state.contentPlatforms.slice();
     if (urlContentPlatforms.length) params.set('cf_platforms', urlContentPlatforms.join(','));
     if (state.contentRange !== 'all') params.set('cf_range', state.contentRange);
@@ -1177,8 +1185,47 @@
     return retainedCatalogPromise;
   }
 
+  async function hydrateTradesEligibility(payload) {
+    if (!tradesEligibilityPromise) tradesEligibilityPromise = (async function () {
+      if (!window.BackerTradeCatalog || typeof window.BackerTradeCatalog.build !== 'function') {
+        throw new Error('Trades eligibility model is unavailable');
+      }
+      var response = await fetch('data/trades-reviewed-humans.json', {
+        credentials: 'same-origin', headers: { Accept: 'application/json' }, cache: 'no-store'
+      });
+      if (!response.ok) throw new Error('Reviewed Trades registry returned ' + response.status);
+      var registry = await response.json();
+      var catalog = window.BackerTradeCatalog.build(payload, {
+        reviewRegistry: registry,
+        signals: {},
+        simulationBucket: payload && (payload.generatedAt || payload.generated_at) || undefined
+      });
+      var people = Object.create(null), works = Object.create(null);
+      array(catalog && catalog.people).forEach(function (person) {
+        if (person && person.id) people[person.id] = true;
+      });
+      array(catalog && catalog.contents).forEach(function (work) {
+        if (work && work.id) works[work.id] = true;
+      });
+      tradeEligiblePeople = people;
+      tradeEligibleWorks = works;
+      return { people: people, works: works };
+    })().catch(function () {
+      tradeEligiblePeople = Object.create(null);
+      tradeEligibleWorks = Object.create(null);
+      return { people: tradeEligiblePeople, works: tradeEligibleWorks };
+    });
+    return tradesEligibilityPromise;
+  }
+
+  function isTradeEligible(scope, person, work) {
+    if (scope === 'content') return Boolean(work && work.id && tradeEligibleWorks[work.id]);
+    return Boolean(person && person.id && tradeEligiblePeople[person.id]);
+  }
+
   async function staticDiscoveryDataset() {
-    if (!retainedDatasetPromise) retainedDatasetPromise = staticDiscovery().then(function (payload) {
+    if (!retainedDatasetPromise) retainedDatasetPromise = staticDiscovery().then(async function (payload) {
+      await hydrateTradesEligibility(payload);
       return normalizeDiscoveryPayload(payload, 'static');
     }).catch(function (error) {
       retainedDatasetPromise = null;
@@ -1344,6 +1391,13 @@
     return 'backercreate.html#draft?' + params.toString();
   }
 
+  function tradesURL(scope, person, work) {
+    var params = new URLSearchParams();
+    params.set('view', scope === 'content' ? 'contents' : 'profiles');
+    params.set('subject', scope === 'content' && work ? work.id : person.id);
+    return 'backerdemo.html#trades?' + params.toString();
+  }
+
   function commandHTML() {
     return '<header class="m2-command" aria-label="Backer creator discovery"><div class="m2-command-copy"><span class="m2-kicker">Backer discovery</span><p class="m2-command-summary">Discover profiles and contents to back</p></div>' +
       '<div class="m2-command-side"><label class="m2-search"><span class="m2-search-label">Search</span><input id="m2Search" type="search" value="' + esc(state.query) + '" placeholder="People, handles, or work" autocomplete="off" /><kbd>/</kbd></label>' +
@@ -1507,7 +1561,9 @@
       ? '<a class="m2-profile-source" href="' + esc(profileURL) + '" target="_blank" rel="noreferrer">Open source profile ↗</a>'
       : '<span class="m2-profile-source is-muted">Source profile link not retained</span>';
     var draftURL = builderURL('person', person);
-    return '<article class="m2-profile-card' + (person.id === state.selectedId ? ' is-selected' : '') + '" data-m2-draft-card="' + esc(draftURL) + '" tabindex="0" aria-label="Draft a bet on ' + esc(person.name) + '">' +
+    var tradeEligible = isTradeEligible('person', person);
+    var tradeURL = tradeEligible ? tradesURL('person', person) : '';
+    return '<article class="m2-profile-card' + (person.id === state.selectedId ? ' is-selected' : '') + '"' + (tradeEligible ? ' data-m2-trade-card="' + esc(tradeURL) + '" tabindex="0" aria-label="Open the growth market for ' + esc(person.name) + '"' : '') + '>' +
       '<div class="m2-profile-media' + (avatar ? (retainedAvatar ? ' is-avatar' : ' is-work-art') : ' is-image-fallback') + '">' +
       (avatar ? '<img src="' + esc(avatar) + '" alt="' + esc(person.name) + ' profile" loading="' + (index < INITIAL_CREATOR_COUNT ? 'eager' : 'lazy') + '" referrerpolicy="no-referrer" />' : '') +
       '<div class="m2-profile-image-fallback"><b>' + esc(initials(person.name)) + '</b><span>Profile image not retained</span></div>' +
@@ -1518,7 +1574,7 @@
       '<div class="m2-profile-metrics">' + (facts.length ? facts.map(function (fact) {
         return '<a href="' + esc(fact.sourceUrl) + '" target="_blank" rel="noreferrer"><b>' + esc(fact.value) + '</b><span>' + esc(PLATFORM_LABELS[fact.provider] || fact.provider || 'Source') + ' · ' + esc(fact.label) + '</span></a>';
       }).join('') : '<span class="m2-profile-metric-state">Source-linked profile · native metrics not retained</span>') + '</div>' +
-      '<div class="m2-profile-card-actions">' + sourceAction + watchButton(person, true) + '<a class="m2-draft-button" data-m2-create="person" data-creator-id="' + esc(person.id) + '" href="' + esc(draftURL) + '">Draft a bet</a></div></div></article>';
+      '<div class="m2-profile-card-actions">' + sourceAction + watchButton(person, true) + '<a class="m2-custom-bet" data-m2-create="person" data-creator-id="' + esc(person.id) + '" href="' + esc(draftURL) + '">Draft custom</a>' + (tradeEligible ? '<a class="m2-trade-button" data-m2-trade="person" data-creator-id="' + esc(person.id) + '" href="' + esc(tradeURL) + '">Trade growth</a>' : '') + '</div></div></article>';
   }
 
   function peopleHTML(list) {
@@ -1566,7 +1622,12 @@
       if (engagement) return engagement;
       return Date.parse(b.work.publishedAt || b.work.observedAt || 0) - Date.parse(a.work.publishedAt || a.work.observedAt || 0);
     });
-    return sourceDiverseWithMedia(rows, function (entry) { return entry.work.platform; }, function (entry) { return entry.work.thumbnail; });
+    rows = sourceDiverseWithMedia(rows, function (entry) { return entry.work.platform; }, function (entry) { return entry.work.thumbnail; });
+    if (state.focusContentId) {
+      var focusIndex = rows.findIndex(function (entry) { return text(entry.work && entry.work.id) === state.focusContentId; });
+      if (focusIndex >= 0) rows = [rows[focusIndex]].concat(rows.filter(function (_entry, index) { return index !== focusIndex; }));
+    }
+    return rows;
   }
 
   function catalogWorkCardHTML(entry, index) {
@@ -1576,12 +1637,15 @@
     var platform = PLATFORM_LABELS[work.platform] || work.platform || 'Original source';
     var profileURL = primaryProfileURL(person);
     var draftURL = builderURL('content', person, work);
-    return '<article class="m2-feed-card" data-m2-draft-card="' + esc(draftURL) + '" tabindex="0" aria-label="Draft a bet on ' + esc(work.title) + '"><a class="m2-feed-media' + (thumb ? '' : ' is-image-fallback') + '" href="' + esc(entry.url) + '" target="_blank" rel="noreferrer">' +
+    var tradeEligible = isTradeEligible('content', person, work);
+    var tradeURL = tradeEligible ? tradesURL('content', person, work) : '';
+    var routeFocused = text(work.id) === state.focusContentId;
+    return '<article class="m2-feed-card' + (routeFocused ? ' is-route-focus' : '') + '" data-m2-content-id="' + esc(work.id) + '"' + (routeFocused ? ' aria-current="true"' : '') + (tradeEligible ? ' data-m2-trade-card="' + esc(tradeURL) + '" tabindex="0" aria-label="Open the growth market for ' + esc(work.title) + '"' : '') + '><a class="m2-feed-media' + (thumb ? '' : ' is-image-fallback') + '" href="' + esc(entry.url) + '" target="_blank" rel="noreferrer">' +
       (thumb ? '<img src="' + esc(thumb) + '" alt="" loading="' + (index < INITIAL_CONTENT_COUNT ? 'eager' : 'lazy') + '" referrerpolicy="no-referrer" />' : '') +
       '<span class="m2-feed-fallback"><b>' + esc(platform) + '</b><small>Content preview not retained</small></span><span>Open source ↗</span></a>' +
       '<div class="m2-feed-body"><div class="m2-feed-byline">' + avatarHTML(person, 'feed', index < 4) + '<span><b>' + esc(person.name) + '</b><small>' + esc(platform) + ' · ' + esc(formatDate(work.publishedAt || work.observedAt, false)) + '</small></span></div>' +
       '<h3><a href="' + esc(entry.url) + '" target="_blank" rel="noreferrer">' + esc(work.title) + '</a></h3><div class="m2-work-native">' + workCountsHTML(work) + '</div>' +
-      '<div class="m2-feed-actions">' + (profileURL ? '<a class="m2-feed-person" href="' + esc(profileURL) + '" target="_blank" rel="noreferrer">Open creator profile ↗</a>' : '<span class="m2-feed-person is-muted">Creator source link not retained</span>') + '<a class="m2-draft-button" data-m2-create="content" data-creator-id="' + esc(person.id) + '" data-content-id="' + esc(work.id) + '" href="' + esc(draftURL) + '">Draft a bet</a></div></div></article>';
+      '<div class="m2-feed-actions">' + (profileURL ? '<a class="m2-feed-person" href="' + esc(profileURL) + '" target="_blank" rel="noreferrer">Open creator profile ↗</a>' : '<span class="m2-feed-person is-muted">Creator source link not retained</span>') + '<a class="m2-custom-bet" data-m2-create="content" data-creator-id="' + esc(person.id) + '" data-content-id="' + esc(work.id) + '" href="' + esc(draftURL) + '">Draft custom</a>' + (tradeEligible ? '<a class="m2-trade-button" data-m2-trade="content" data-creator-id="' + esc(person.id) + '" data-content-id="' + esc(work.id) + '" href="' + esc(tradeURL) + '">Trade growth</a>' : '') + '</div></div></article>';
   }
 
   function catalogFeedHTML(list) {
@@ -1918,6 +1982,19 @@
     root.innerHTML = '<div class="market2-shell">' + commandHTML() + '<div class="m2-underlayer">' + browseHTML() + contextHTML() + '</div>' + dataBannerHTML() + workspace + catalogFeedHTML(people()) + drawerHTML() + rosterSheetHTML(list.length ? list : people()) + '</div>';
     root.classList.remove('hidden'); root.setAttribute('aria-hidden', 'false');
     bindImageFallbacks(); if (!state.drawer) syncHash();
+    if (state.focusContentId && state.focusContentHandled !== state.focusContentId) {
+      window.requestAnimationFrame(function () {
+        var cards = root.querySelectorAll('.m2-feed-card[data-m2-content-id]');
+        var focused = Array.prototype.filter.call(cards, function (card) {
+          return card.getAttribute('data-m2-content-id') === state.focusContentId;
+        })[0];
+        if (!focused) return;
+        focused.classList.add('is-route-focus');
+        focused.setAttribute('aria-current', 'true');
+        focused.scrollIntoView({ block: 'center' });
+        state.focusContentHandled = state.focusContentId;
+      });
+    }
     if (focusSearch) {
       var search = document.getElementById('m2Search');
       if (search) { search.focus(); search.setSelectionRange(search.value.length, search.value.length); }
@@ -1976,14 +2053,23 @@
       });
       return;
     }
-    if ((el = target.closest('[data-m2-draft-card]'))) {
+    if ((el = target.closest('[data-m2-trade]'))) {
+      var tradePerson = personById(el.getAttribute('data-creator-id') || state.selectedId);
+      var tradeContentId = el.getAttribute('data-content-id') || '';
+      var tradeWork = tradePerson && tradeContentId ? array(tradePerson.content).filter(function (work) { return work && work.id === tradeContentId; })[0] : null;
+      rememberDiscoveryInterest(tradePerson, tradeWork, 'opened');
+      track('trades_subject_opened', { creator_id: tradePerson && tradePerson.id || '', content_id: tradeContentId, subject_type: el.getAttribute('data-m2-trade'), source: 'discovery' });
+      return;
+    }
+    if ((el = target.closest('[data-m2-trade-card]'))) {
       if (target.closest('a,button,input,select,textarea,[role="button"]')) return;
       var cardPersonId = el.querySelector('[data-creator-id]') && el.querySelector('[data-creator-id]').getAttribute('data-creator-id');
       var cardContentId = el.querySelector('[data-content-id]') && el.querySelector('[data-content-id]').getAttribute('data-content-id');
       var cardPerson = personById(cardPersonId);
       var cardWork = cardPerson && cardContentId ? array(cardPerson.content).filter(function (work) { return work && work.id === cardContentId; })[0] : null;
       rememberDiscoveryInterest(cardPerson, cardWork, 'opened');
-      window.location.href = el.getAttribute('data-m2-draft-card');
+      track('trades_subject_opened', { creator_id: cardPersonId || '', content_id: cardContentId || '', subject_type: cardContentId ? 'content' : 'person', source: 'discovery' });
+      window.location.href = el.getAttribute('data-m2-trade-card');
       return;
     }
     if ((el = target.closest('[data-m2-select]'))) {
@@ -2087,15 +2173,15 @@
   }
 
   function keyHandler(event) {
-    var draftCard = event.target && event.target.closest && event.target.closest('[data-m2-draft-card]');
-    if (draftCard && event.target === draftCard && (event.key === 'Enter' || event.key === ' ')) {
+    var tradeCard = event.target && event.target.closest && event.target.closest('[data-m2-trade-card]');
+    if (tradeCard && event.target === tradeCard && (event.key === 'Enter' || event.key === ' ')) {
       event.preventDefault();
-      var draftAction = draftCard.querySelector('[data-creator-id]');
-      var keyboardPerson = draftAction && personById(draftAction.getAttribute('data-creator-id'));
-      var keyboardContentId = draftAction && draftAction.getAttribute('data-content-id');
+      var tradeAction = tradeCard.querySelector('[data-creator-id]');
+      var keyboardPerson = tradeAction && personById(tradeAction.getAttribute('data-creator-id'));
+      var keyboardContentId = tradeAction && tradeAction.getAttribute('data-content-id');
       var keyboardWork = keyboardPerson && keyboardContentId ? array(keyboardPerson.content).filter(function (work) { return work && work.id === keyboardContentId; })[0] : null;
       rememberDiscoveryInterest(keyboardPerson, keyboardWork, 'opened');
-      window.location.href = draftCard.getAttribute('data-m2-draft-card');
+      window.location.href = tradeCard.getAttribute('data-m2-trade-card');
       return;
     }
     if (event.key === '/' && !/input|textarea|select/i.test((event.target || {}).tagName || '')) { var search = document.getElementById('m2Search'); if (search) { event.preventDefault(); search.focus(); } }
