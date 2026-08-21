@@ -2,6 +2,7 @@
    persistent product nav, with no marketplace grid or shader behind it. */
 :root{
   --mdp-nav-h:64px;
+  --bd-top-clearance:var(--mdp-nav-h);
   color-scheme:dark;
   background:var(--bg,#08080a);
 }
@@ -251,7 +252,12 @@ body.mdp-page::before{
 /* Convert the shared terminal from a viewport modal into the content region
    of this dedicated route. The shared JS can still repaint it normally. */
 body.mdp-page .poa-term-root{
-  inset:var(--mdp-nav-h) 0 0;
+  --pt-root-z:11000;
+  inset:
+    calc(var(--mdp-nav-h) + var(--backer-dock-clearance-top,0px))
+    var(--backer-dock-clearance-right,0px)
+    var(--backer-dock-clearance-bottom,0px)
+    var(--backer-dock-clearance-left,0px);
   height:auto;
 }
 

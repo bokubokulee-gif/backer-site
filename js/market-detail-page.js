@@ -4,8 +4,7 @@
 (function () {
   'use strict';
 
-  var BACK_TO_MARKETS = 'backerdemo.html#market2';
-  var DRAFT_STORAGE_PREFIX = 'backer_market_route_draft_v1:';
+  var BACK_TO_MARKETS = 'backerdemo.html#trades';
   var routeBackHref = BACK_TO_MARKETS;
   var VALID_INSTRUMENTS = ['milestone', 'pk', 'perps'];
   var terminalObserver = null;
@@ -26,7 +25,7 @@
     if (!raw) return '';
     try {
       var url = new URL(raw, window.location.href);
-      return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : '';
+      return (url.protocol === 'https:' || url.protocol === 'http:') && !url.username && !url.password ? url.href : '';
     } catch (error) { return ''; }
   }
 
@@ -40,31 +39,10 @@
   }
 
   function storedDraft(id) {
-    var raw;
-    try { raw = sessionStorage.getItem(DRAFT_STORAGE_PREFIX + id); }
-    catch (storageError) { return draftError('This browser session cannot read the saved proposal. Return to Market 2 and create it again.'); }
-    if (!raw) return draftError('This proposal is not available in the current browser session. Return to Market 2 and create it again.');
-    var draft;
-    try { draft = JSON.parse(raw); }
-    catch (parseError) { return draftError('The saved proposal is not valid JSON. Return to Market 2 and create it again.'); }
-    if (!draft || Number(draft.schemaVersion) !== 1 || clean(draft.draftId) !== clean(id)) return draftError('The saved proposal has an unsupported version or identifier.');
-    if (draft.executionMode !== 'simulation') return draftError('Only simulation proposals can open on this public route.');
-    if (draft.instrument !== 'milestone' && draft.instrument !== 'pk') return draftError('This proposal uses an unsupported market instrument.');
-    if (!draft.subject || !draft.subject.person || !clean(draft.subject.person.id) || !clean(draft.subject.person.name)) return draftError('The proposal is missing its referenced public identity.');
-    if (!draft.outcome || clean(draft.outcome.question).length < 12 || !Array.isArray(draft.outcome.outcomes) || draft.outcome.outcomes.length < 2) return draftError('The proposal is missing a complete question or outcome set.');
-    if (!draft.resolution || !clean(draft.resolution.metricKey) || !clean(draft.resolution.metricLabel)) return draftError('The proposal is missing a provider-native resolution metric.');
-    var baseline = finiteNumber(draft.resolution.baseline && draft.resolution.baseline.value);
-    var target = finiteNumber(draft.resolution.target && draft.resolution.target.value);
-    if (baseline == null || baseline < 0 || target == null || target <= baseline) return draftError('The proposal baseline and growth target are invalid.');
-    if (!safeURL(draft.resolution.sourceUrl)) return draftError('The proposal does not contain a valid HTTP or HTTPS resolution source.');
-    if (!draft.resolution.deadline || isNaN(Date.parse(draft.resolution.deadline))) return draftError('The proposal does not contain a valid resolution cutoff.');
-    if (!draft.rules || finiteNumber(draft.rules.graceHours) == null || finiteNumber(draft.rules.disputeHours) == null || !clean(draft.rules.deletionRule) || !clean(draft.rules.correctionRule) || !clean(draft.rules.voidRule)) return draftError('The proposal is missing required resolution safeguards.');
-    var approved = draft.approvalStatus === 'approved_simulation'
-      && draft.market && draft.market.lifecycle === 'OPEN'
-      && draft.market.approvalStatus === 'approved_simulation'
-      && finiteNumber(draft.market.quote) > 0
-      && finiteNumber(draft.market.quote) < 100;
-    return { ok: true, draft: draft, approved: approved, discovery: !approved };
+    if (!window.BackerMarketDraftStore || typeof window.BackerMarketDraftStore.read !== 'function') return draftError('The local proposal store did not load. Return to Trades and try again.');
+    var result = window.BackerMarketDraftStore.read(id);
+    if (!result || !result.ok) return draftError(result && result.message || 'This proposal is not available on this device. Return to Trades and choose a saved proposal.');
+    return { ok: true, draft: result.draft, approved: false, discovery: true, storage: result.storage, disclosure: result.disclosure || (result.durable ? 'Saved on this device' : 'Saved for this tab only'), legacy: result.legacy === true };
   }
 
   function formatNumber(value) {
@@ -88,7 +66,7 @@
     var contractId = 'DRAFT-' + clean(draft.draftId).toUpperCase().replace(/[^A-Z0-9]+/g, '-').slice(0, 32);
     var contract = {
       id: contractId,
-      version: 'draft-v1',
+      version: 'draft-v2',
       title: clean(draft.outcome.question),
       source: safeURL(resolution.sourceUrl),
       deadlineLabel: formatDraftDate(resolution.deadline),
@@ -158,15 +136,15 @@
 
   function configureReturn(source) {
     var fromPortfolio = source === 'portfolio' || source === 'portfolio_creator';
-    var fromMarket2 = source === 'market2' || source === 'market2-builder' || source === 'builder';
-    var fromLocalArchive = source === 'market-archive';
-    routeBackHref = source === 'portfolio_creator' ? 'portfolio.html?mode=creator' : source === 'portfolio' ? 'portfolio.html' : fromLocalArchive ? 'backerdemo.html#market-archive' : fromMarket2 ? 'backerdemo.html#market2' : BACK_TO_MARKETS;
-    document.body.dataset.returnSource = fromPortfolio ? 'portfolio' : 'markets';
+    var fromDiscovery = source === 'market2' || source === 'discovery' || source === 'builder';
+    var fromTrades = source === 'trades' || source === 'market' || source === 'market-archive';
+    routeBackHref = source === 'portfolio_creator' ? 'portfolio.html?mode=creator' : source === 'portfolio' ? 'portfolio.html' : fromDiscovery ? 'backerdemo.html#market2' : 'backerdemo.html#trades';
+    document.body.dataset.returnSource = fromPortfolio ? 'portfolio' : fromDiscovery ? 'discovery' : 'trades';
     var back = document.querySelector('.mdp-back');
     if (back) {
       back.href = routeBackHref;
       var label = back.querySelector('span:last-child');
-      if (label) label.textContent = fromPortfolio ? 'Back to portfolio' : fromMarket2 ? 'Back to Market 2' : 'Back to markets';
+      if (label) label.textContent = fromPortfolio ? 'Back to portfolio' : fromDiscovery ? 'Back to Discovery' : fromTrades ? 'Back to Trades' : 'Back to Trades';
     }
   }
 
@@ -208,16 +186,17 @@
       ['Target', formatNumber(resolution.target.value)],
       ['Measurement cutoff', formatDraftDate(resolution.deadline)],
       ['Resolution source', safeURL(resolution.sourceUrl)],
+      ['Observation', resolution.observation ? clean(resolution.observation.id) + ' · ' + formatDraftDate(resolution.observation.observedAt) : 'Unverified metric idea; no retained observation'],
       ['Provider grace', rules.graceHours + ' hours'],
-      ['Deletion or private status', draftRuleLabel(rules.deletionRule, { pause_then_void: 'Pause through grace period, then void', last_valid_snapshot: 'Use the approved last valid snapshot' })],
+      ['Deletion or private status', draftRuleLabel(rules.deletionRule, { pause_then_void: 'Pause through grace period, then record no result', last_valid_snapshot: 'Use the approved last valid snapshot' })],
       ['Provider correction', draftRuleLabel(rules.correctionRule, { latest_valid_before_cutoff: 'Use the latest valid correction before cutoff', freeze_at_cutoff: 'Freeze the retained value at cutoff' })],
-      ['Tie rule', draft.instrument === 'pk' ? draftRuleLabel(rules.tieRule, { separate_outcome: 'Separate tie outcome', void_on_tie: 'Void and refund on an exact tie' }) : 'Not applicable'],
-      ['Void and refund', draftRuleLabel(rules.voidRule, { refund_original_cost: 'Refund at original cost', refund_equal_value: 'Refund outcomes at equal value' })],
+      ['Tie rule', draft.instrument === 'pk' ? draftRuleLabel(rules.tieRule, { separate_outcome: 'Separate tie outcome', void_on_tie: 'Record no result on an exact tie' }) : 'Not applicable'],
+      ['Unresolved source', draftRuleLabel(rules.voidRule, { refund_original_cost: 'Record no proposal result', refund_equal_value: 'Record outcomes as unresolved' })],
       ['Dispute window', rules.disputeHours + ' hours']
     ];
     container.replaceChildren();
     rows.forEach(function (row) { container.appendChild(kv(row[0], row[1])); });
-    var note = element('p', 'pt-rule-callout', 'Proposal terms are versioned in this browser session. Backer must approve consent, provider access, policy, and settlement provenance before trading can open.');
+    var note = element('p', 'pt-rule-callout', (activeDraftContext && activeDraftContext.disclosure || 'Saved on this device') + '. This local proposal does not create consent, market approval, a price, or execution.');
     container.appendChild(note);
   }
 
@@ -229,25 +208,25 @@
     if (surface.dataset.draftSanitized === draft.draftId) return true;
     surface.dataset.draftSanitized = draft.draftId;
     surface.dataset.draftProposal = 'true';
-    surface.dataset.marketStatus = 'OPENING_SOON';
+    surface.dataset.marketStatus = 'DRAFT';
     surface.dataset.marketOpen = 'false';
     surface.dataset.hasHistory = 'false';
 
     var question = surface.querySelector('.pt-name');
     if (question) question.textContent = clean(draft.outcome.question);
     var type = surface.querySelector('.pt-id-t .pt-sub');
-    if (type) type.textContent = (draft.instrument === 'pk' ? 'PK MARKET' : 'MILESTONE') + ' PROPOSAL';
+    if (type) type.textContent = draft.instrument === 'pk' ? 'HEAD-TO-HEAD GROWTH PROPOSAL' : 'GROWTH MILESTONE PROPOSAL';
     var statusStats = Array.prototype.slice.call(surface.querySelectorAll('.pt-hstat'));
     statusStats.forEach(function (stat) {
       var small = stat.querySelector('small');
       var bold = stat.querySelector('b');
-      if (small && bold && clean(small.textContent).toLowerCase() === 'status') bold.textContent = 'Opening soon';
+      if (small && bold && clean(small.textContent).toLowerCase() === 'status') bold.textContent = 'Proposal draft';
     });
 
     var platformLegend = surface.querySelector('.pt-plats');
     if (platformLegend) {
       Array.prototype.slice.call(platformLegend.children).forEach(function (child) { if (!child.matches('[data-goto-poa]')) child.remove(); });
-      platformLegend.appendChild(element('span', 'pt-plat', 'No executed trades or quotes yet'));
+      platformLegend.appendChild(element('span', 'pt-plat', 'Local proposal · no execution'));
       platformLegend.appendChild(element('span', 'pt-plat', 'Draft ' + draft.draftId));
       platformLegend.appendChild(element('span', 'pt-plat', 'Cutoff ' + formatDraftDate(draft.resolution.deadline)));
     }
@@ -262,18 +241,18 @@
           button.disabled = true;
           button.setAttribute('aria-disabled', 'true');
         });
-        controls.replaceChildren(tabs, element('div', 'pt-layer-legend', 'Proposal only: no market history'));
-      } else controls.replaceChildren(element('div', 'pt-layer-legend', 'Proposal only: no market history'));
+        controls.replaceChildren(tabs, element('div', 'pt-layer-legend', 'Proposal terms · no market history'));
+      } else controls.replaceChildren(element('div', 'pt-layer-legend', 'Proposal terms · no market history'));
     }
 
     var disclosure = surface.querySelector('.pt-disc span');
-    if (disclosure) disclosure.textContent = 'Proposal only. No executions, quotes, volume, or market-implied probability exists. Trading can open only after consent, policy, provider access, and settlement-source approval.';
+    if (disclosure) disclosure.textContent = 'Local discovery proposal only. It has no executions, quotes, volume, probability, wallet, or real-money controls.';
 
     var chart = surface.querySelector('.pt-chartwrap');
     if (chart) {
       var chartEmpty = element('div', 'pt-empty pt-preopen-history');
-      chartEmpty.appendChild(element('b', '', 'No executed market history.'));
-      chartEmpty.appendChild(element('p', '', 'This discovery proposal has no candles, quotes, trades, volume, or inferred probability. The chart begins only after an approved simulation market records real simulation executions.'));
+      chartEmpty.appendChild(element('b', '', 'No market history for a local proposal.'));
+      chartEmpty.appendChild(element('p', '', 'The saved draft contains a future growth claim and evidence rules, not a price series or execution history.'));
       chart.replaceChildren(chartEmpty);
     }
 
@@ -285,7 +264,7 @@
         var outcomeText = draft.outcome.outcomes.map(function (outcome) { return clean(outcome.label); }).join(' / ');
         var outcomeEmpty = element('div', 'pt-empty');
         outcomeEmpty.appendChild(element('b', '', outcomeText));
-        outcomeEmpty.appendChild(element('p', '', 'Outcomes are defined, but no price or normalized market probability exists before approval and opening.'));
+        outcomeEmpty.appendChild(element('p', '', 'These are plain-language proposal outcomes. No price or normalized probability has been created.'));
         outcomeBody.appendChild(outcomeEmpty);
       }
     }
@@ -293,13 +272,13 @@
     var trade = surface.querySelector('.pt-side > .pt-trade');
     if (trade) {
       var tradeHead = element('div', 'pt-trade-h');
-      tradeHead.appendChild(element('div', 'mk', draft.instrument === 'pk' ? 'PK market proposal' : 'Milestone proposal'));
+      tradeHead.appendChild(element('div', 'mk', draft.instrument === 'pk' ? 'Head-to-head growth proposal' : 'Growth milestone proposal'));
       tradeHead.appendChild(element('h3', '', clean(draft.outcome.question)));
-      tradeHead.appendChild(element('p', '', 'Opening soon. No executable quote exists.'));
+      tradeHead.appendChild(element('p', '', 'Local draft for review.'));
       var tradeBody = element('div', 'pt-trade-b');
       var tradeEmpty = element('div', 'pt-empty');
-      tradeEmpty.appendChild(element('b', '', 'This proposal is not tradable.'));
-      tradeEmpty.appendChild(element('p', '', 'There is no order ticket, bid, ask, price, fee, maximum loss, or fill until Backer approves the market and an actual simulation quote exists.'));
+      tradeEmpty.appendChild(element('b', '', 'This proposal is not an open market.'));
+      tradeEmpty.appendChild(element('p', '', 'It has no order ticket, bid, ask, price, fee, loss, payout, or fill.'));
       tradeBody.appendChild(tradeEmpty);
       tradeBody.appendChild(element('p', 'pt-sim', 'Simulation proposal only. No real money moves.'));
       trade.replaceChildren(tradeHead, tradeBody);
@@ -310,11 +289,11 @@
       var proposalBlock = element('div', 'pt-block');
       var proposalHead = element('div', 'pt-block-h');
       proposalHead.appendChild(element('h4', '', 'Proposal status'));
-      proposalHead.appendChild(element('span', 'note', 'opening soon'));
+      proposalHead.appendChild(element('span', 'note', 'local draft'));
       var proposalBody = element('div', 'pt-block-b');
       var proposalEmpty = element('div', 'pt-empty');
-      proposalEmpty.appendChild(element('b', '', 'Discovery review is pending.'));
-      proposalEmpty.appendChild(element('p', '', 'Community market activity remains unavailable because this proposal has no open market, trades, or quotes.'));
+      proposalEmpty.appendChild(element('b', '', 'Saved proposal for review.'));
+      proposalEmpty.appendChild(element('p', '', 'Community market activity does not apply to a local discovery draft.'));
       proposalBody.appendChild(proposalEmpty);
       proposalBlock.append(proposalHead, proposalBody);
       community.replaceWith(proposalBlock);
@@ -349,8 +328,8 @@
       var fillsBody = fillBlock.querySelector('.pt-block-b');
       if (fillsBody) {
         var fillsEmpty = element('div', 'pt-empty');
-        fillsEmpty.appendChild(element('b', '', 'No fills exist.'));
-        fillsEmpty.appendChild(element('p', '', 'The proposal is Opening soon and has no order ticket or execution history.'));
+        fillsEmpty.appendChild(element('b', '', 'Fills do not apply.'));
+        fillsEmpty.appendChild(element('p', '', 'A local proposal has no position or execution history.'));
         fillsBody.replaceChildren(fillsEmpty);
       }
     }
@@ -360,14 +339,14 @@
       var sourceRow = sourceFooter.querySelector('.row1');
       if (sourceRow) {
         sourceRow.replaceChildren();
-        [['Draft', draft.draftId], ['Status', 'Opening soon'], ['Metric', clean(draft.resolution.metricLabel)], ['Cutoff', formatDraftDate(draft.resolution.deadline)], ['Settlement', safeURL(draft.resolution.sourceUrl)], ['Price basis', 'No executions or quotes yet']].forEach(function (row) {
+        [['Draft', draft.draftId], ['Status', 'Local proposal'], ['Metric', clean(draft.resolution.metricLabel)], ['Cutoff', formatDraftDate(draft.resolution.deadline)], ['Resolution source', safeURL(draft.resolution.sourceUrl)], ['Observation', draft.resolution.observation ? clean(draft.resolution.observation.id) : 'Unverified idea']].forEach(function (row) {
           var span = element('span', '', row[0] + ' ');
           span.appendChild(element('b', '', row[1]));
           sourceRow.appendChild(span);
         });
       }
       var footerDisclosure = sourceFooter.querySelector('.disclosure');
-      if (footerDisclosure) footerDisclosure.textContent = 'This local simulation proposal contains no real users, money, executions, quotes, volume, or market-implied probability. Public identity evidence does not create consent or settlement authority.';
+      if (footerDisclosure) footerDisclosure.textContent = 'This device-local discovery proposal contains no money, execution, quote, volume, or market-implied probability. Public identity evidence does not create consent or settlement authority.';
       var acts = sourceFooter.querySelector('.acts');
       if (acts) Array.prototype.slice.call(acts.querySelectorAll('button')).forEach(function (button) { if (!button.hasAttribute('data-goto-poa')) button.remove(); });
     }
@@ -421,7 +400,7 @@
       terminal.removeAttribute('aria-modal');
     }
     var close = root.querySelector('.pt-x[data-close]');
-    if (close) close.setAttribute('aria-label', document.body.dataset.returnSource === 'portfolio' ? 'Back to portfolio' : 'Back to markets');
+    if (close) close.setAttribute('aria-label', document.body.dataset.returnSource === 'portfolio' ? 'Back to portfolio' : document.body.dataset.returnSource === 'discovery' ? 'Back to Discovery' : 'Back to Trades');
     if ((!activeDraftContext || !activeDraftContext.discovery) && window.BackerMarketCommunity && typeof window.BackerMarketCommunity.mount === 'function') {
       window.BackerMarketCommunity.mount(root);
     }
@@ -489,14 +468,14 @@
         return;
       }
       if (!window.PoaTerminal || typeof window.PoaTerminal.open !== 'function') {
-        showError('Market view unavailable', 'The full Backer market terminal did not load. Refresh the page or return to Market 2.');
+        showError('Proposal view unavailable', 'The proposal review surface did not load. Refresh the page or return to Trades.');
         return;
       }
       activeDraftContext = draftResult;
       var requestedDraftInstrument = instrument === draftResult.draft.instrument ? instrument : draftResult.draft.instrument;
       var draftContext = draftTerminalContext(draftResult, source);
       draftContext.defaultMarket = requestedDraftInstrument;
-      document.title = clean(draftResult.draft.outcome.question) + ' | Backer Market';
+      document.title = clean(draftResult.draft.outcome.question) + ' | Backer Proposal';
       document.body.dataset.marketId = draftResult.draft.draftId;
       document.body.dataset.creatorId = clean(draftResult.draft.subject.person.id);
       document.body.dataset.marketSource = source;
@@ -508,10 +487,10 @@
         window.dispatchEvent(new CustomEvent('backer:market-route-opened', { detail: { draftId: draftResult.draft.draftId, instrument: requestedDraftInstrument, source: source, approvalStatus: draftResult.draft.approvalStatus } }));
       } catch (draftOpenError) {
         activeDraftContext = null;
-        showError('Could not open this proposal', 'The saved terms were valid, but the full market terminal could not render them. Return to Market 2 and try again.');
+        showError('Could not open this proposal', 'The saved terms were valid, but the proposal review surface could not render them. Return to Trades and try again.');
         return;
       }
-      window.setTimeout(function () { if (!adaptTerminal()) showError('Proposal took too long to load', 'Refresh the page or return to Market 2 and open the proposal again.'); }, 2400);
+      window.setTimeout(function () { if (!adaptTerminal()) showError('Proposal took too long to load', 'Refresh the page or return to Trades and open the proposal again.'); }, 2400);
       return;
     }
 

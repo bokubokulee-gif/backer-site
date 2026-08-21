@@ -24,6 +24,7 @@
 <script src="js/theme.js?v=20260731-1"></script>
 <script src="js/site-menu.js?v=5" defer></script>
 <script src="js/bubble-text.js?v=1" defer></script>
+<link rel="stylesheet" href="css/backer-dock.css?v=20260821-1" />
 </head>
 <body class="page-product">
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -42,7 +43,7 @@
       <span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☼</span>
       <span class="theme-toggle-label" data-theme-label>Light</span>
     </button>
-    <button class="btn btn-primary" data-view="market2">Enter Backer Market<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    <button class="btn btn-primary" data-view="trades">Open Trades<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
   </div>
 </header>
 
@@ -266,11 +267,22 @@
         <div class="surface-demo surface-feed" id="backerLandingCreatorFeed" aria-live="polite">
           <div class="mini-card is-loading"><span class="mini-auth">Public sources</span><span class="mini-name">Loading creator catalog…</span></div>
         </div>
-        <span class="surface-cta">Open the marketplace <svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        <span class="surface-cta">Open Discovery <svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </article>
+
+      <article class="surface reveal" data-view="trades">
+        <div class="surface-tag">03 · Trades</div>
+        <h3>Turn a future creator milestone into a reviewable proposal.</h3>
+        <p>Choose a person or original work, define the native metric, target, cutoff, source, and edge cases, then review it in Trades. Approved demo simulations stay separate from device-local proposals.</p>
+        <div class="surface-demo surface-port">
+          <div class="port-stat"><span class="ps-label">Subject</span><span class="ps-val">Person</span></div>
+          <div class="port-stat"><span class="ps-label">State</span><span class="ps-val grade">Draft</span></div>
+        </div>
+        <span class="surface-cta">Open Trades <svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </article>
 
       <article class="surface reveal" data-view="portfolio">
-        <div class="surface-tag">03 · Investment &amp; Portfolio</div>
+        <div class="surface-tag">04 · Portfolio</div>
         <h3>From $1. Milestones set the terms.</h3>
         <p>"If I reach 50K subscribers in 12 months, early backers receive 1.5×." Your portfolio isn't just a tracker — it's public proof-of-taste. A record of early bets that paid off is its own social capital.</p>
         <div class="surface-demo surface-port">
@@ -298,8 +310,8 @@
     <h2 class="finale-line">Attention has always been currency.</h2>
     <h2 class="finale-line grad-text">Now it can be equity.</h2>
     <div class="finale-cta">
-      <button class="btn btn-primary btn-lg" data-view="market2">Enter Backer Market<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-      <button class="btn btn-ghost btn-lg" data-view="market2">Search people and work</button>
+      <button class="btn btn-primary btn-lg" data-view="trades">Open Trades<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <button class="btn btn-ghost btn-lg" data-view="market2">Discover people and work</button>
     </div>
   </section>
 
@@ -320,7 +332,8 @@
           <nav class="backer-footer__group" aria-label="Product">
             <h2>Product</h2>
             <ul>
-              <li><a class="backer-footer__link" href="backerdemo.html#market2" data-view="market2">Marketplace<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+              <li><a class="backer-footer__link" href="backerdemo.html#market2" data-view="market2">Discovery<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
+              <li><a class="backer-footer__link" href="backerdemo.html#trades" data-view="trades">Trades<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
               <li><a class="backer-footer__link" href="backerdemo.html#market2" data-view="market2">AI Search<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
               <li><a class="backer-footer__link" href="portfolio.html" data-view="portfolio">Portfolio<span class="backer-footer__arrow" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></svg></span></a></li>
             </ul>
@@ -355,22 +368,6 @@
 <!-- TOAST -->
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-<!-- BOTTOM DOCK -->
-<nav class="dock" id="dock" aria-label="App navigation">
-  <button class="dock-btn" data-view="market2" data-tip="Search" aria-label="Search people and work">
-    <svg viewBox="0 0 24 24" class="ic"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-  </button>
-  <button class="dock-btn" data-view="market2" data-tip="Market" aria-label="Marketplace">
-    <svg viewBox="0 0 24 24" class="ic"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-  </button>
-  <button class="dock-btn dock-home" data-nav="home" data-tip="Home" aria-label="Home">
-    <span class="dock-orb"></span>
-  </button>
-  <button class="dock-btn" data-view="portfolio" data-tip="Portfolio" aria-label="Portfolio">
-    <svg viewBox="0 0 24 24" class="ic"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
-  </button>
-</nav>
-
 <script src="js/shader.js"></script>
 <script src="js/liquid-glass.js"></script>
 <script src="js/data.js"></script>
@@ -382,5 +379,7 @@
 <script type="module" src="js/globe-live.mjs?v=20260821-1"></script>
 <script src="js/poa-terminal.js?v=20260819-1"></script>
 <script src="js/flickering-footer.js?v=20260731-2"></script>
+<div data-backer-dock></div>
+<script src="js/backer-dock.js?v=20260821-1"></script>
 </body>
 </html>

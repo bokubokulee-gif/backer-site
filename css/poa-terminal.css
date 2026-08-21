@@ -7,13 +7,13 @@
 .poa-term-root{
   --pt-bg:#070708; --pt-bg2:#0c0d10; --pt-surface:#0f1114; --pt-surface2:#14161b;
   --pt-line:rgba(255,255,255,.08); --pt-line2:rgba(255,255,255,.14);
-  --pt-ink:#f4f2ec; --pt-muted:#a7a9ad; --pt-muted2:#74767b; --pt-faint:#4c4e54;
+  --pt-ink:#f4f2ec; --pt-muted:#c0c2c7; --pt-muted2:#989ba3; --pt-faint:#787b84;
   --pt-up:#37c98b; --pt-down:#e5605a; --pt-warn:#f1b45a;
   --pt-accent:#7ea6ff; --pt-accent2:#b7d0ff; --pt-gray:#5b5e66;
   --pt-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
   --pt-sans:'Inter',system-ui,-apple-system,sans-serif;
   --pt-serif:'Instrument Serif',Georgia,serif;
-  position:fixed; inset:0; z-index:2147483000; display:none;
+  position:fixed; inset:0; z-index:var(--pt-root-z,2147483000); display:none;
   color:var(--pt-ink); font-family:var(--pt-sans);
 }
 .poa-term-root.open{display:block}
@@ -425,6 +425,40 @@ figure.pt-figure{margin:0;position:relative}
 .pt-measure-state{display:flex;justify-content:space-between;gap:14px;padding:10px 11px;margin-bottom:9px;border:1px solid var(--pt-line);border-radius:9px;background:var(--pt-bg2);font-size:11px}
 .pt-measure-state span{color:var(--pt-muted)}.pt-measure-state b{font-family:var(--pt-mono);text-align:right}
 
+/* Readability floor. Keep the terminal dense, but never make evidence or
+   transaction context depend on 8-11px text. */
+.pt-plat,.pt-hstat small,.pt-ctl-label,.pt-layer-legend span,.pt-scard small,
+.pt-mini-h small,.pt-trade-h .mk,.pt-side-btn small,.pt-field label,.pt-book small,
+.flag-tag,.pt-ev-cat,.pt-dur-state,.pt-evcard-h .evk,.pt-otc-head,
+.pt-otc-row small,.pt-underlying-lead small{font-size:12px;line-height:1.35}
+.pt-sub,.pt-asof,.pt-disc,.pt-scard p,.pt-chart-title em,.pt-cm,.pt-tip,
+.pt-tip .tt-note,.pt-rail-chip,.pt-block-h .note,.pt-comp-def,.pt-trade-h p,
+.pt-ladder-row .lr-chg,.pt-kv,.pt-sim,.pt-audit,.pt-content-m .cs,
+.pt-idx-range,.pt-idx p,.pt-idx ul,.pt-ev-top .en small,.pt-ev-detail,
+.pt-dur-note,.pt-sources,.pt-sources .disclosure,.pt-sources button,.pt-table,
+.pt-evcard-b,.pt-evcard-b .pt-kv,.pt-review-ack span,.pt-empty p,.pt-fill-row small,
+.pt-fill-row .fill-action,.pt-rule-callout,.pt-underlying-note,.pt-measure-state{
+  font-size:13px;line-height:1.5
+}
+.pt-hstat b,.pt-scard b,.pt-mini-h b,.pt-comp-top .cv,.pt-side-btn b,
+.pt-ladder-row .lr-odds,.pt-content-bar .pct,.pt-idx-h b,.pt-ev-top .ev-val,
+.pt-otc-row .otc-pct,.pt-otc-row .otc-num,.pt-fill-row b,.pt-book b{
+  font-size:16px;line-height:1.3
+}
+.pt-chart-title,.pt-block-h h4,.pt-comp-top .cl,.pt-trade-h h3,
+.pt-ladder-row .lr-name,.pt-content-m .ct,.pt-ev-top .en,.pt-empty b,
+.pt-otc-row .otc-name{font-size:14px;line-height:1.4}
+.pt-tip .tt-time,.pt-ev-top .ev-val small{font-size:12px;line-height:1.35}
+.pt-axis text{font-size:11.5px}
+.pt-tab,.pt-seg button,.pt-rb,.pt-side-btn,.pt-ladder-row,.pt-order,.pt-chip,
+.pt-lev button,.pt-otc-row .otc-actions button,.pt-otc-row .otc-select,
+.pt-creator-chip,.pt-x,.pt-rail-chip,.pt-content-row,.pt-ev-top,
+.pt-sources button,.pt-rule-callout button,.pt-hstat.pt-link{min-height:44px}
+.pt-rb{width:44px;height:44px}
+.pt-order{min-height:44px;font-size:15px}
+.pt-chip,.pt-lev button{min-height:44px;font-size:13px}
+.pt-amt input{min-height:44px;font-size:16px}
+
 @media (max-width:680px){
   .pt-term{width:100vw;height:100dvh;max-height:100dvh;border:0}
   .pt-head{align-items:flex-start;gap:9px;padding:10px}
@@ -434,32 +468,47 @@ figure.pt-figure{margin:0;position:relative}
   .pt-plats{max-height:48px;overflow:hidden}
   .pt-creator-chip{min-height:44px}
   .pt-head-stats{display:none}.pt-x{width:44px;height:44px;margin-left:auto}
-  .pt-controls{padding:8px 10px;gap:7px;flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-inline:contain}
-  .pt-controls>*{flex:none}.pt-controls .spacer{display:none}.pt-ctl-label{display:none}
+  .pt-controls{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,3fr);padding:8px 10px;gap:8px;overflow-x:hidden}
+  .pt-controls>*{min-width:0}.pt-controls .spacer{display:none}.pt-ctl-label{display:none}
   .pt-layer-legend{display:none}
+  .pt-tabs{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%}
+  .pt-tab{justify-content:center;padding-inline:8px}
+  .pt-seg{width:100%;overflow:visible}
+  .pt-seg button{flex:1;min-width:44px;padding-inline:4px}
+  .pt-replay{grid-column:1/-1;display:grid;grid-template-columns:auto minmax(0,1fr);width:100%;gap:8px}
+  .pt-replay>.pt-seg{width:auto}
+  .pt-replay-btns{display:grid;grid-template-columns:repeat(4,44px);gap:2px}
   .pt-tab,.pt-seg button,.pt-rb{min-height:44px}.pt-rb{width:44px;height:44px}
-  .pt-scrub{width:130px;max-width:none;height:44px;background:linear-gradient(90deg,var(--pt-accent) var(--pct,100%),var(--pt-line2) var(--pct,100%)) center/100% 4px no-repeat}.pt-asof{white-space:nowrap}
-  .pt-disc{padding:7px 10px;font-size:9.5px}.pt-disc span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .pt-scrub{width:100%;max-width:none;height:44px;background:linear-gradient(90deg,var(--pt-accent) var(--pct,100%),var(--pt-line2) var(--pct,100%)) center/100% 4px no-repeat}
+  .pt-asof{white-space:normal;align-self:center}
+  .pt-disc{padding:8px 10px;font-size:12.5px}.pt-disc span{display:block;overflow:visible}
   .pt-main,.pt-side{padding:10px 10px 28px}.pt-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
-  .pt-scard{padding:8px}.pt-scard b{font-size:13px}
+  .pt-scard{padding:10px}.pt-scard b{font-size:16px}
   .pt-chart-head{align-items:flex-start}.pt-chart-metrics{margin-left:0;gap:9px}
-  figure.pt-figure{overflow-x:auto;overscroll-behavior-inline:contain}.pt-svg{width:720px;max-width:none;touch-action:pan-x pan-y}
+  figure.pt-figure{overflow-x:hidden}.pt-svg{width:100%;max-width:100%;touch-action:pan-y}
+  .pt-rail{flex-wrap:wrap;overflow-x:hidden}
   .pt-rail-chip,.pt-content-row,.pt-ev-top,.pt-comp-band,.pt-side-btn,.pt-ladder-row,.pt-order,.pt-chip,.pt-lev button,.pt-hstat.pt-link,.pt-rule-callout button{min-height:44px}
-  .pt-block-b:has(.pt-otc-row){overflow-x:auto;overscroll-behavior-inline:contain}
+  .pt-block-b:has(.pt-otc-row){overflow-x:hidden}
+  .pt-otc-head{display:none}
+  .pt-otc-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-width:0;width:100%;padding:12px 0;align-items:stretch}
+  .pt-otc-row .otc-select,.pt-otc-row .otc-actions{grid-column:1/-1}
+  .pt-otc-row .otc-select{white-space:normal;overflow:visible;text-overflow:clip}
+  .pt-otc-row .otc-pct,.pt-otc-row .otc-num{display:grid;gap:3px;padding:8px;border:1px solid var(--pt-line);border-radius:8px;background:var(--pt-bg2);text-align:left}
+  .pt-otc-row small{display:block;color:var(--pt-muted2);font-family:var(--pt-mono);font-weight:400}
   .pt-otc-row .otc-actions button,.pt-otc-row .otc-select{min-height:44px}
   .pt-fill-row{grid-template-columns:68px minmax(0,1fr);min-height:68px}.pt-fill-row>span:last-child{grid-column:2;text-align:left}
-  .pt-underlying-lead{align-items:flex-start}.pt-underlying-lead b{font-size:14px}.pt-underlying-lead strong{font-size:18px}
+  .pt-underlying-lead{align-items:flex-start}.pt-underlying-lead b{font-size:16px}.pt-underlying-lead strong{font-size:20px}
   .pt-measure-state{flex-direction:column;gap:4px}.pt-measure-state b{text-align:left}
-  .pt-sources{padding:7px 10px;max-height:96px;overflow:auto}
-  .pt-sources .row1{display:none}.pt-sources .disclosure{font-size:9px;line-height:1.35;max-height:25px;overflow:hidden}
-  .pt-sources .acts{margin-top:4px;flex-wrap:nowrap;overflow-x:auto}.pt-sources button{min-height:44px;white-space:nowrap}
+  .pt-sources{padding:8px 10px;max-height:132px;overflow-y:auto;overflow-x:hidden}
+  .pt-sources .row1{display:none}.pt-sources .disclosure{font-size:12.5px;line-height:1.4;max-height:36px;overflow:hidden}
+  .pt-sources .acts{margin-top:6px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow-x:hidden}.pt-sources button{min-height:44px;white-space:normal;padding-inline:6px}
 }
 @media (max-width:1080px) and (min-width:681px), (pointer:coarse){
   .pt-tab,.pt-seg button,.pt-rb,.pt-side-btn,.pt-ladder-row,.pt-order,.pt-chip,.pt-lev button,.pt-otc-row .otc-actions button,.pt-otc-row .otc-select,.pt-creator-chip,.pt-x,.pt-rail-chip,.pt-content-row,.pt-ev-top,.pt-sources button,.pt-rule-callout button,.pt-hstat.pt-link{min-height:44px}
   .pt-x{min-width:44px}
   .pt-scrub{height:44px;background:linear-gradient(90deg,var(--pt-accent) var(--pct,100%),var(--pt-line2) var(--pct,100%)) center/100% 4px no-repeat}
 }
-@media (max-width:390px){.pt-summary{grid-template-columns:1fr}.pt-tabs .pt-tab{padding-inline:9px}.pt-replay{flex-wrap:nowrap}.pt-sources{max-height:72px}.pt-sources .disclosure{display:none}.pt-disc span{-webkit-line-clamp:2}}
+@media (max-width:390px){.pt-summary{grid-template-columns:1fr}.pt-tabs .pt-tab{padding-inline:6px}.pt-sources{max-height:104px}.pt-sources .disclosure{display:none}.pt-disc span{display:block}}
 
 @media (prefers-reduced-motion:reduce){
   .pt-term,.pt-tip,.pt-x,.pt-comp-band{transition:none!important}
