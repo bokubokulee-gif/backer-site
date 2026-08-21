@@ -104,12 +104,12 @@
       '<div class="tp-number"><span>Cost</span><b>' + esc(money(position.cost)) + '</b></div>' +
       '<div class="tp-number"><span>Mark</span><b>' + esc(money(mark)) + '</b></div>' +
       '<div class="tp-number is-pnl ' + (pnl >= 0 ? 'is-up' : 'is-down') + '"><span>P/L</span><b>' + esc(signedMoney(pnl)) + '</b></div>' +
-      '<section class="tp-position-contract"><span>Contract</span><h4>' + esc(contract.question) + '</h4><p>' + esc(contract.baselineLabel) + ' baseline → ' + esc(contract.targetLabel) + ' target · ' + esc(date(contract.cutoff)) + '</p></section>' +
+      '<section class="tp-position-contract"><span>Contract</span><h4>' + esc(contract.question) + '</h4><p>' + esc(contract.baselineLabel) + ' baseline → ' + esc(contract.targetLabel) + ' target · ' + esc(date(contract.cutoff)) + '</p><div class="tp-receipt-economics"><div><span>Estimated payout if correct</span><b>' + esc(money(position.estimatedPayout)) + '</b></div><div><span>Profit if correct</span><b>' + esc(money(position.profitIfCorrect)) + '</b></div></div></section>' +
       '<div class="tp-position-links"><a href="' + esc(discoveryHref(position)) + '">Open in Discovery</a><a href="' + esc(snapshot.sourceUrl) + '" target="_blank" rel="noopener noreferrer">View subject source</a><a href="' + esc(contract.metricSourceUrl) + '" target="_blank" rel="noopener noreferrer">Resolution source</a>' + (position.proposalHref ? '<a href="' + esc(position.proposalHref) + '">Draft rules</a>' : '') + '<span>Receipt ' + esc(position.receiptId) + ' · Contract ' + esc(position.contractId) + '</span></div>' +
     '</article>';
   }
   function emptyHTML() {
-    return '<div class="tp-empty"><span class="tp-eyebrow">Position ledger</span><h2>No positions yet</h2><p>Back or fade a real profile or source-linked work. The subject, quote, side, quantity, cost, and evidence IDs will stay attached to the receipt.</p><div><a class="btn btn-fill" href="backerdemo.html#trades">Explore Trades</a><a class="btn btn-line" href="backerdemo.html#market2">Open Discovery</a></div></div>';
+    return '<div class="tp-empty"><span class="tp-eyebrow">Position ledger</span><h2>No positions yet</h2><p>Back or fade a source-backed creator account or source-linked work. The subject, quote, side, quantity, cost, and evidence IDs will stay attached to the receipt.</p><div><a class="btn btn-fill" href="backerdemo.html#trades">Explore Trades</a><a class="btn btn-line" href="backerdemo.html#market2">Open Discovery</a></div></div>';
   }
   function render() {
     var positions = store.list(root.localStorage);

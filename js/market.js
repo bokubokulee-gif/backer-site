@@ -16,14 +16,15 @@
   var POSITION_SCHEMA = 'backer-trades-position-v1';
   var ACCOUNT_SCHEMA = 'backer-trades-account-v1';
   var STARTING_CASH = 10000;
-  var MODEL_SRC = 'js/trades-catalog-model.js?v=20260821-real-catalog-1';
-  var PAGE_SIZE = 12;
+  var MODEL_SRC = 'js/trades-catalog-model.js?v=20260821-account-metrics-1';
+  var PAGE_SIZE = 15;
   var mountedRoot = null;
   var modelPromise = null;
   var refreshTimer = null;
   var ticketReturnFocus = null;
+  var firstCardPaintScheduled = false;
   var state = {
-    view: 'feed', query: '', provider: 'all', sort: 'personalized', shown: PAGE_SIZE,
+    view: 'feed', query: '', provider: 'all', metric: 'all', sort: 'personalized', page: 1,
     proposalId: '', pendingDeleteId: '', loading: true, loadError: '', catalog: null,
     ticket: null, receipt: null, routeSubjectId: '', routeSide: '', routeHandled: '', routeMissing: false
   };
@@ -69,6 +70,10 @@
     if (typeof B.fmt === 'function') return B.fmt(parsed);
     return new Intl.NumberFormat('en-US', { notation: Math.abs(parsed) >= 10000 ? 'compact' : 'standard', maximumFractionDigits: 1 }).format(parsed);
   }
+  function formatExactCount(value) {
+    var parsed = number(value);
+    return parsed == null ? display(value) : new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(parsed);
+  }
   function formatMoney(value) {
     var parsed = number(value) || 0;
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(parsed);
@@ -88,6 +93,23 @@
   }
   function analytics(event, props) {
     try { if (root.BackerAnalytics) root.BackerAnalytics.track(event, props || {}); } catch (error) {}
+  }
+  function performanceNow() {
+    return root.performance && typeof root.performance.now === 'function' ? root.performance.now() : Date.now();
+  }
+  function performanceMark(name) {
+    if (!root.performance || typeof root.performance.mark !== 'function') return;
+    try { root.performance.mark(name); } catch (_error) {}
+  }
+  function performanceMeasure(name, start, end) {
+    if (!root.performance || typeof root.performance.measure !== 'function') return;
+    try { root.performance.measure(name, start, end); } catch (_error) {}
+  }
+  function performanceState() {
+    if (!root.__backerTradesPerformance || typeof root.__backerTradesPerformance !== 'object') {
+      root.__backerTradesPerformance = {};
+    }
+    return root.__backerTradesPerformance;
   }
   function toast(message, kind) {
     if (root.__backerToast) { root.__backerToast(message, kind); return; }
@@ -175,14 +197,18 @@
   }
   function personalizationSummary() {
     var signals = deviceSignals();
-    var parts = [];
-    if (signals.watchedPersonIds.length) parts.push(signals.watchedPersonIds.length + ' watched profile' + (signals.watchedPersonIds.length === 1 ? '' : 's'));
-    if (signals.watchedContentIds.length) parts.push(signals.watchedContentIds.length + ' watched work' + (signals.watchedContentIds.length === 1 ? '' : 's'));
-    if (signals.proposedPersonIds.length + signals.proposedContentIds.length) parts.push(signals.proposedPersonIds.length + signals.proposedContentIds.length + ' proposal' + (signals.proposedPersonIds.length + signals.proposedContentIds.length === 1 ? '' : 's'));
-    if (signals.positionSubjectIds.length) parts.push(signals.positionSubjectIds.length + ' simulated trade' + (signals.positionSubjectIds.length === 1 ? '' : 's'));
-    if (signals.recentActions.length) parts.push(signals.recentActions.length + ' recent Discovery action' + (signals.recentActions.length === 1 ? '' : 's'));
-    if (parts.length) return 'Ranked from ' + parts.join(', ') + '. Preferences stay on this device.';
-    return signals.resetAt ? 'Default catalog order restored. Saved proposals, receipts, positions, and paper cash were kept.' : 'Watch a profile, inspect source work, or draft a proposal to shape this feed. Preferences stay on this device.';
+    function reason(count, singular) {
+      return count ? count + ' ' + singular + (count === 1 ? '' : 's') : '';
+    }
+    var reasons = [
+      reason(signals.watchedPersonIds.length, 'watched profile'),
+      reason(signals.watchedContentIds.length, 'watched work'),
+      reason(signals.proposedPersonIds.length + signals.proposedContentIds.length, 'saved proposal'),
+      reason(signals.positionSubjectIds.length, 'simulated trade'),
+      reason(signals.recentActions.length, 'recent Discovery action')
+    ].filter(Boolean);
+    if (reasons.length) return 'Ranked by ' + reasons.join(', ') + '. Preferences stay on this device.';
+    return signals.resetAt ? 'Default order restored. All saved data remains.' : 'Watch or trade to rank this local feed.';
   }
 
   function readURL() {
@@ -194,6 +220,12 @@
     state.view = VIEW_VALUES.indexOf(next) >= 0 ? next : 'feed';
     state.proposalId = clean(params.get('proposal'));
     state.routeSubjectId = clean(params.get('subject'));
+    state.query = clean(params.get('q'));
+    state.provider = clean(params.get('provider')).toLowerCase() || 'all';
+    state.metric = clean(params.get('metric')).toLowerCase() || 'all';
+    state.sort = ['personalized', 'evidence', 'price', 'movement', 'volume', 'name'].indexOf(clean(params.get('order')).toLowerCase()) >= 0
+      ? clean(params.get('order')).toLowerCase() : 'personalized';
+    state.page = Math.max(1, Math.floor(number(params.get('page')) || 1));
     state.routeSide = clean(params.get('side')).toUpperCase();
     if (state.routeSide !== 'BACK' && state.routeSide !== 'FADE') state.routeSide = '';
     if (state.routeSubjectId && state.view !== 'profiles' && state.view !== 'contents') state.routeSubjectId = '';
@@ -206,6 +238,13 @@
     if ((state.view === 'profiles' || state.view === 'contents') && state.routeSubjectId) {
       params.set('subject', state.routeSubjectId);
       if (state.routeSide) params.set('side', state.routeSide.toLowerCase());
+    }
+    if (state.view === 'profiles' || state.view === 'contents') {
+      if (state.query) params.set('q', state.query);
+      if (state.provider !== 'all') params.set('provider', state.provider);
+      if (state.metric !== 'all') params.set('metric', state.metric);
+      if (state.sort !== 'personalized') params.set('order', state.sort);
+      if (state.page > 1) params.set('page', String(state.page));
     }
     try { root.history.replaceState(null, '', root.location.pathname + root.location.search + '#trades' + (params.toString() ? '?' + params.toString() : '')); } catch (error) {}
   }
@@ -239,10 +278,16 @@
     if (modelPromise && !force) return modelPromise;
     state.loading = true;
     state.loadError = '';
+    var timing = performanceState();
+    timing.catalogLoadStartedAt = performanceNow();
+    performanceMark('backer-trades:catalog-load-start');
     renderContent();
     modelPromise = catalogAPI().then(function (api) { return api.load({ signals: deviceSignals() }); }).then(function (catalog) {
-      if (!catalog || !array(catalog.people).length) throw new Error('The retained catalog did not return public profiles');
+      if (!catalog || !array(catalog.people).length) throw new Error('The retained catalog did not return eligible creator accounts');
       state.catalog = normalizeCatalog(catalog);
+      timing.catalogLoadedAt = performanceNow();
+      performanceMark('backer-trades:catalog-load-end');
+      performanceMeasure('backer-trades:catalog-load', 'backer-trades:catalog-load-start', 'backer-trades:catalog-load-end');
       state.loading = false;
       prepareSubjectRoute();
       scheduleModelRefresh(state.catalog);
@@ -278,7 +323,7 @@
     });
     return {
       generatedAt: clean(catalog.generatedAt), people: people, contents: contents, feed: array(catalog.feed),
-      counts: catalog.counts && typeof catalog.counts === 'object' ? catalog.counts : { people: people.length, contents: contents.length },
+      counts: { people: people.length, contents: contents.length },
       simulationDisclosure: clean(catalog.simulationDisclosure),
       simulationBucket: catalog.simulationBucket && typeof catalog.simulationBucket === 'object' ? Object.assign({}, catalog.simulationBucket) : null
     };
@@ -299,7 +344,9 @@
     var rows = kind === 'content' ? state.catalog.contents : state.catalog.people;
     var index = rows.findIndex(function (row) { return subjectId(kind, row) === state.routeSubjectId; });
     if (index < 0) { state.routeMissing = true; return; }
-    state.shown = Math.max(state.shown, index + 1);
+    /* Route subjects are pinned into the first bounded page. Never expand the
+       mounted card count to the subject's original position in a 1K+ list. */
+    state.page = 1;
     var handle = [kind, state.routeSubjectId, state.routeSide].join(':');
     if (state.routeSide && state.routeHandled !== handle) {
       var row = rows[index], sim = subjectSimulation(row), contract = validContract(row);
@@ -339,6 +386,21 @@
   function subjectSource(kind, row) { return kind === 'profile' ? profileURL(row) : contentURL(row); }
   function subjectSimulation(row) { return row && row.simulation && row.simulation.isSimulation === true ? row.simulation : null; }
   function subjectContract(row) { return row && row.contract && typeof row.contract === 'object' ? row.contract : null; }
+  function contractMetric(row) {
+    var contract = subjectContract(row);
+    return contract && contract.metric && typeof contract.metric === 'object' ? contract.metric : {};
+  }
+  function contractProvider(kind, row) {
+    return clean(contractMetric(row).provider || subjectProvider(kind, row)).toLowerCase();
+  }
+  function contractMetricKey(row) {
+    var metric = contractMetric(row);
+    return clean(metric.key || metric.metric || metric.label).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || 'other';
+  }
+  function contractMetricName(row) {
+    var metric = contractMetric(row);
+    return display(metric.label || metric.metric || metric.key).replace(/_/g, ' ') || 'Other metric';
+  }
   function validContract(row) {
     var contract = subjectContract(row), metric = contract && contract.metric;
     return contract && clean(contract.id) && clean(contract.question) && clean(contract.baseline && contract.baseline.label)
@@ -356,9 +418,18 @@
     }).sort(function (a, b) { return Date.parse(b.observedAt || 0) - Date.parse(a.observedAt || 0); });
   }
   function metricLabel(metric) { return display(metric && (metric.label || metric.metric || metric.key)).replace(/_/g, ' ') || 'Public metric'; }
+  function freshnessState(value) {
+    var freshness = value && value.freshness && typeof value.freshness === 'object' ? value.freshness : value;
+    return clean(freshness && freshness.state).toLowerCase();
+  }
+  function baselineEvidenceText(value, observedAt) {
+    var date = formatDate(observedAt || value && value.observedAt);
+    return freshnessState(value) === 'last_good' ? 'Last good · observed ' + date : date;
+  }
   function metricHTML(metric) {
     var value = metric.value != null ? metric.value : metric.count;
-    return '<a class="mkt-fact" href="' + esc(safeURL(metric.sourceUrl || metric.url)) + '" target="_blank" rel="noopener noreferrer" data-mkt-source-open><b>' + esc(formatCount(value)) + '</b><span>' + esc(platformLabel(metric.provider || metric.platform) + ' · ' + metricLabel(metric)) + '</span></a>';
+    var lastGood = freshnessState(metric) === 'last_good';
+    return '<a class="mkt-fact' + (lastGood ? ' is-last-good' : '') + '" href="' + esc(safeURL(metric.sourceUrl || metric.url)) + '" target="_blank" rel="noopener noreferrer" data-mkt-source-open><b>' + esc(formatCount(value)) + '</b><span>' + esc(platformLabel(metric.provider || metric.platform) + ' · ' + metricLabel(metric)) + '</span>' + (lastGood ? '<small>' + esc(baselineEvidenceText(metric, metric.observedAt)) + '</small>' : '') + '</a>';
   }
   function evidenceHTML(kind, row) {
     var metrics = validMetrics(subjectMetrics(kind, row)).slice(0, 2);
@@ -369,7 +440,7 @@
     var contract = validContract(row);
     if (!contract) return '';
     var metric = contract.metric, baseline = contract.baseline, target = contract.target;
-    return '<section class="mkt-contract" aria-label="Paper market proposition"><span class="mkt-contract-label">Market question</span><h3>' + esc(contract.question) + '</h3><div class="mkt-contract-facts"><div><span>Baseline</span><b>' + esc(baseline.label) + '</b><small>' + esc(formatDate(baseline.observedAt)) + '</small></div><div><span>Target</span><b>' + esc(target.label) + '</b><small>by ' + esc(formatDate(contract.cutoff)) + '</small></div><a href="' + esc(safeURL(metric.sourceUrl)) + '" target="_blank" rel="noopener noreferrer" data-mkt-source-open><span>Metric</span><b>' + esc(metric.label) + '</b><small>' + esc(platformLabel(metric.provider)) + ' source ↗</small></a></div></section>';
+    return '<section class="mkt-contract" aria-label="Paper market proposition"><span class="mkt-contract-label">Market question</span><h3>' + esc(contract.question) + '</h3><div class="mkt-contract-facts"><div><span>Baseline</span><b>' + esc(baseline.label) + '</b><small>' + esc(baselineEvidenceText(baseline, baseline.observedAt)) + '</small></div><div><span>Target</span><b>' + esc(target.label) + '</b><small>by ' + esc(formatDate(contract.cutoff)) + '</small></div><a href="' + esc(safeURL(metric.sourceUrl)) + '" target="_blank" rel="noopener noreferrer" data-mkt-source-open><span>Metric</span><b>' + esc(metric.label) + '</b><small>' + esc(platformLabel(metric.provider)) + ' source ↗</small></a></div></section>';
   }
   function providerBadges(person) {
     return array(person && (person.accounts || person.platforms)).slice(0, 4).map(function (account) {
@@ -393,8 +464,8 @@
     var reasons = array(row && row.personalizationReasons);
     return display(reasons[0]) || (row && row.evidenceState === 'retained_native_observations' ? 'Retained native observation' : 'Retained public source');
   }
-  function personalScore(kind, row, index) {
-    var signals = deviceSignals();
+  function personalScore(kind, row, index, signals) {
+    signals = signals || deviceSignals();
     var pid = personId(subjectPerson(kind, row));
     var id = subjectId(kind, row);
     var score = -index;
@@ -413,7 +484,8 @@
     return score;
   }
   function personalize(kind, rows) {
-    return array(rows).map(function (row, index) { return { row: row, index: index, score: personalScore(kind, row, index) }; }).sort(function (a, b) {
+    var signals = deviceSignals();
+    return array(rows).map(function (row, index) { return { row: row, index: index, score: personalScore(kind, row, index, signals) }; }).sort(function (a, b) {
       return b.score - a.score || a.index - b.index || subjectId(kind, a.row).localeCompare(subjectId(kind, b.row));
     }).map(function (entry) { return entry.row; });
   }
@@ -450,7 +522,7 @@
     var id = personId(person), name = personName(person), provider = primaryProvider(person), source = profileURL(person);
     var avatar = usableMedia(person.avatar || person.avatarUrl || person.image), watched = isWatched(id);
     var research = safeURL(person.researchHref);
-    return '<article class="mkt-catalog-card is-profile" data-mkt-subject-kind="profile" data-mkt-subject-id="' + esc(id) + '"><div class="mkt-catalog-top">' + mediaHTML('profile', avatar, name + ' public profile picture', name, source) + '<div class="mkt-catalog-heading"><div class="mkt-card-kind"><span>Profile market</span><div>' + providerBadges(person) + '</div></div><h2>' + esc(name) + '</h2><p class="mkt-handle">' + esc(display(person.handle || primaryAccount(person).handle) || platformLabel(provider) + ' public profile') + '</p><p class="mkt-description">' + esc(display(person.bio) || 'Public profile linked to retained original work and source evidence.') + '</p></div></div>' + evidenceHTML('profile', person) + contractHTML(person) + simulationHTML('profile', person) + '<div class="mkt-why"><b>For you</b><span>' + esc(personalReason('profile', person)) + '</span></div><footer class="mkt-catalog-footer">' + (source ? '<a href="' + esc(source) + '" target="_blank" rel="noopener noreferrer" data-mkt-source-open>View source</a>' : '') + (research ? '<a class="mkt-research-link" href="' + esc(research) + '" data-mkt-research data-subject-kind="profile" data-subject-id="' + esc(id) + '">Research in Discovery</a>' : '') + '<button type="button" data-mkt-watch="' + esc(id) + '" aria-pressed="' + watched + '">' + (watched ? 'Watching' : 'Watch') + '</button><a class="mkt-draft-link" href="' + esc(draftURL('profile', person)) + '" data-mkt-draft data-subject-kind="profile" data-subject-id="' + esc(id) + '">Draft custom bet</a></footer></article>';
+    return '<article class="mkt-catalog-card is-profile" data-mkt-subject-kind="profile" data-mkt-subject-id="' + esc(id) + '"><div class="mkt-catalog-top">' + mediaHTML('profile', avatar, name + ' public profile picture', name, source) + '<div class="mkt-catalog-heading"><div class="mkt-card-kind"><span>Profile market</span><div>' + providerBadges(person) + '</div></div><h2>' + esc(name) + '</h2><p class="mkt-handle">' + esc(display(person.handle || primaryAccount(person).handle) || platformLabel(provider) + ' public profile') + '</p><p class="mkt-description">' + esc(display(person.bio) || 'Public profile linked to retained account-native source evidence.') + '</p></div></div>' + evidenceHTML('profile', person) + contractHTML(person) + simulationHTML('profile', person) + '<div class="mkt-why"><b>For you</b><span>' + esc(personalReason('profile', person)) + '</span></div><footer class="mkt-catalog-footer">' + (source ? '<a href="' + esc(source) + '" target="_blank" rel="noopener noreferrer" data-mkt-source-open>View source</a>' : '') + (research ? '<a class="mkt-research-link" href="' + esc(research) + '" data-mkt-research data-subject-kind="profile" data-subject-id="' + esc(id) + '">Research in Discovery</a>' : '') + '<button type="button" data-mkt-watch="' + esc(id) + '" aria-pressed="' + watched + '">' + (watched ? 'Watching' : 'Watch') + '</button><a class="mkt-draft-link" href="' + esc(draftURL('profile', person)) + '" data-mkt-draft data-subject-kind="profile" data-subject-id="' + esc(id) + '">Draft custom bet</a></footer></article>';
   }
   function contentCard(work) {
     var id = contentId(work), person = contentPerson(work) || {}, pid = personId(person) || clean(work.personId || work.creatorId);
@@ -458,7 +530,7 @@
     var title = display(work.title), thumb = usableMedia(work.thumbnail || work.thumbnailUrl || work.image), avatar = usableMedia(person.avatar || person.avatarUrl);
     var research = safeURL(work.researchHref);
     var watched = readWorkWatchSet().has(id);
-    return '<article class="mkt-catalog-card is-content" data-mkt-subject-kind="content" data-mkt-subject-id="' + esc(id) + '">' + mediaHTML('content', thumb, '', title, source) + '<div class="mkt-catalog-heading"><div class="mkt-card-kind"><span>Content market · ' + esc(platformLabel(provider)) + '</span><small>' + esc(formatDate(work.publishedAt || work.observedAt, false)) + '</small></div><div class="mkt-byline">' + (avatar ? '<img src="' + esc(avatar) + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer"/>' : '<span>' + esc(initials(name)) + '</span>') + '<b>' + esc(name) + '</b></div><h2>' + esc(title) + '</h2>' + (work.excerpt ? '<p class="mkt-description">' + esc(display(work.excerpt)) + '</p>' : '') + '</div>' + evidenceHTML('content', work) + contractHTML(work) + simulationHTML('content', work) + '<div class="mkt-why"><b>For you</b><span>' + esc(personalReason('content', work)) + '</span></div><footer class="mkt-catalog-footer"><a href="' + esc(source) + '" target="_blank" rel="noopener noreferrer" data-mkt-source-open>View source</a>' + (research ? '<a class="mkt-research-link" href="' + esc(research) + '" data-mkt-research data-subject-kind="content" data-subject-id="' + esc(id) + '">Research in Discovery</a>' : '') + '<button type="button" data-mkt-watch-work="' + esc(id) + '" aria-pressed="' + watched + '">' + (watched ? 'Watching' : 'Watch') + '</button><a class="mkt-draft-link" href="' + esc(draftURL('content', work)) + '" data-mkt-draft data-subject-kind="content" data-subject-id="' + esc(id) + '">Draft custom bet</a></footer></article>';
+    return '<article class="mkt-catalog-card is-content" data-mkt-subject-kind="content" data-mkt-subject-id="' + esc(id) + '">' + mediaHTML('content', thumb, title + ' source thumbnail', title, source) + '<div class="mkt-catalog-heading"><div class="mkt-card-kind"><span>Content market · ' + esc(platformLabel(provider)) + '</span><small>' + esc(formatDate(work.publishedAt || work.observedAt, false)) + '</small></div><div class="mkt-byline">' + (avatar ? '<img src="' + esc(avatar) + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer"/>' : '<span>' + esc(initials(name)) + '</span>') + '<b>' + esc(name) + '</b></div><h2>' + esc(title) + '</h2>' + (work.excerpt ? '<p class="mkt-description">' + esc(display(work.excerpt)) + '</p>' : '') + '</div>' + evidenceHTML('content', work) + contractHTML(work) + simulationHTML('content', work) + '<div class="mkt-why"><b>For you</b><span>' + esc(personalReason('content', work)) + '</span></div><footer class="mkt-catalog-footer"><a href="' + esc(source) + '" target="_blank" rel="noopener noreferrer" data-mkt-source-open>View source</a>' + (research ? '<a class="mkt-research-link" href="' + esc(research) + '" data-mkt-research data-subject-kind="content" data-subject-id="' + esc(id) + '">Research in Discovery</a>' : '') + '<button type="button" data-mkt-watch-work="' + esc(id) + '" aria-pressed="' + watched + '">' + (watched ? 'Watching' : 'Watch') + '</button><a class="mkt-draft-link" href="' + esc(draftURL('content', work)) + '" data-mkt-draft data-subject-kind="content" data-subject-id="' + esc(id) + '">Draft custom bet</a></footer></article>';
   }
 
   function proposalReviewState(draft) {
@@ -487,42 +559,55 @@
     return { people: number(catalog.counts.people || catalog.counts.profiles) || catalog.people.length, contents: number(catalog.counts.contents || catalog.counts.works) || catalog.contents.length };
   }
   function tabButton(view, label, count) {
-    return '<button type="button" role="tab" aria-selected="' + (state.view === view) + '" class="' + (state.view === view ? 'is-active' : '') + '" data-trades-view="' + view + '"><span>' + esc(label) + '</span><b>' + esc(formatCount(count)) + '</b></button>';
+    return '<button type="button" role="tab" aria-selected="' + (state.view === view) + '" class="' + (state.view === view ? 'is-active' : '') + '" data-trades-view="' + view + '"><span>' + esc(label) + '</span><b>' + esc(formatExactCount(count)) + '</b></button>';
   }
   function headerHTML() {
     var counts = catalogCounts(), generated = formatDate(state.catalog && state.catalog.generatedAt);
-    return '<header class="mkt-header"><div><span class="mkt-kicker">Backer Trades</span><h1>Trade future growth in people and work</h1><p>Real profiles and original content from Discovery. Back, fade, or draft exact market rules around what grows next.</p></div></header><div class="mkt-catalog-line"><span class="mkt-paper-status"><i></i>Paper market · modeled quotes</span><span><b>' + esc(formatMoney(readAccount().cash)) + '</b> paper cash</span><span><b>' + esc(formatCount(counts.people)) + '</b> profiles</span><span><b>' + esc(formatCount(counts.contents)) + '</b> works</span>' + (generated ? '<span>Observed ' + esc(generated) + '</span>' : '') + '<a href="backerdemo.html#market2">Open Discovery ↗</a></div><nav class="mkt-tabs" role="tablist" aria-label="Trades views">' + tabButton('feed', 'For you', counts.people + counts.contents) + tabButton('profiles', 'Profiles', counts.people) + tabButton('contents', 'Contents', counts.contents) + tabButton('positions', 'Your trades', listPositions().length) + tabButton('proposals', 'Proposals', proposalRows().length) + '</nav>';
+    return '<header class="mkt-header"><div><span class="mkt-kicker">Backer Trades</span><h1>Trade future growth in creator accounts and work</h1><p>Source-backed creator accounts and original content from Discovery. Back, fade, or draft exact market rules around what grows next.</p></div></header><div class="mkt-catalog-line"><span class="mkt-paper-status"><i></i>Paper market · modeled quotes</span><span><b>' + esc(formatMoney(readAccount().cash)) + '</b> paper cash</span><span><b>' + esc(formatExactCount(counts.people)) + '</b> creator-account markets</span><span><b>' + esc(formatExactCount(counts.contents)) + '</b> work markets</span><span><b>' + esc(formatExactCount(counts.people + counts.contents)) + '</b> active contracts</span>' + (generated ? '<span>Observed ' + esc(generated) + '</span>' : '') + '<a href="backerdemo.html#market2">Open Discovery ↗</a></div><nav class="mkt-tabs" role="tablist" aria-label="Trades views">' + tabButton('feed', 'For you', counts.people + counts.contents) + tabButton('profiles', 'Profiles', counts.people) + tabButton('contents', 'Contents', counts.contents) + tabButton('positions', 'Your trades', listPositions().length) + tabButton('proposals', 'Proposals', proposalRows().length) + '</nav>';
   }
-  function providersFor(view) {
+  function facetOptions(view, facet) {
     var map = Object.create(null);
     if (!state.catalog) return [];
-    if (view === 'profiles') state.catalog.people.forEach(function (person) { array(person.accounts || person.platforms).forEach(function (account) { var id = clean(account.provider || account.id || account.platform).toLowerCase(); if (id) map[id] = platformLabel(id); }); });
-    else state.catalog.contents.forEach(function (work) { var id = contentProvider(work); if (id) map[id] = platformLabel(id); });
-    return Object.keys(map).sort(function (a, b) { return map[a].localeCompare(map[b]); }).map(function (id) { return { id: id, label: map[id] }; });
+    var kind = view === 'profiles' ? 'profile' : 'content';
+    var rows = kind === 'profile' ? state.catalog.people : state.catalog.contents;
+    rows.forEach(function (row) {
+      var id = facet === 'metric' ? contractMetricKey(row) : contractProvider(kind, row);
+      if (!id) return;
+      if (!map[id]) map[id] = { id: id, label: facet === 'metric' ? contractMetricName(row) : platformLabel(id), count: 0 };
+      map[id].count += 1;
+    });
+    return Object.keys(map).map(function (id) { return map[id]; }).sort(function (a, b) {
+      return b.count - a.count || a.label.localeCompare(b.label);
+    });
   }
   function toolbarHTML(view) {
     var noun = view === 'profiles' ? 'profiles' : 'contents';
-    return '<div class="mkt-toolbar"><label class="mkt-search"><span>Search ' + noun + '</span><input type="search" data-trades-query value="' + esc(state.query) + '" placeholder="' + (view === 'profiles' ? 'Name or handle' : 'Title or creator') + '" autocomplete="off"/></label><label><span>Source</span><select data-trades-provider><option value="all">All retained sources</option>' + providersFor(view).map(function (row) { return '<option value="' + esc(row.id) + '"' + (state.provider === row.id ? ' selected' : '') + '>' + esc(row.label) + '</option>'; }).join('') + '</select></label><label><span>Order</span><select data-trades-sort><option value="personalized"' + (state.sort === 'personalized' ? ' selected' : '') + '>For you</option><option value="evidence"' + (state.sort === 'evidence' ? ' selected' : '') + '>Recent evidence</option><option value="price"' + (state.sort === 'price' ? ' selected' : '') + '>Highest sim price</option><option value="volume"' + (state.sort === 'volume' ? ' selected' : '') + '>Most sim volume</option><option value="name"' + (state.sort === 'name' ? ' selected' : '') + '>Name</option></select></label></div>';
+    var providers = facetOptions(view, 'provider');
+    var metrics = facetOptions(view, 'metric');
+    return '<div class="mkt-toolbar"><label class="mkt-search"><span>Search all ' + noun + '</span><input type="search" data-trades-query value="' + esc(state.query) + '" placeholder="' + (view === 'profiles' ? 'Name, handle, or market question' : 'Title, creator, or market question') + '" autocomplete="off"/></label><label><span>Resolution source</span><select data-trades-provider><option value="all">All sources</option>' + providers.map(function (row) { return '<option value="' + esc(row.id) + '"' + (state.provider === row.id ? ' selected' : '') + '>' + esc(row.label + ' (' + formatExactCount(row.count) + ')') + '</option>'; }).join('') + '</select></label><label><span>Market metric</span><select data-trades-metric><option value="all">All metrics</option>' + metrics.map(function (row) { return '<option value="' + esc(row.id) + '"' + (state.metric === row.id ? ' selected' : '') + '>' + esc(row.label + ' (' + formatExactCount(row.count) + ')') + '</option>'; }).join('') + '</select></label><label><span>Order</span><select data-trades-sort><option value="personalized"' + (state.sort === 'personalized' ? ' selected' : '') + '>For you</option><option value="evidence"' + (state.sort === 'evidence' ? ' selected' : '') + '>Recent evidence</option><option value="price"' + (state.sort === 'price' ? ' selected' : '') + '>Highest price</option><option value="movement"' + (state.sort === 'movement' ? ' selected' : '') + '>Largest 24h move</option><option value="volume"' + (state.sort === 'volume' ? ' selected' : '') + '>Most paper volume</option><option value="name"' + (state.sort === 'name' ? ' selected' : '') + '>Name</option></select></label></div>';
   }
   function sortCatalog(kind, rows) {
     if (state.sort === 'personalized') return personalize(kind, rows);
     if (state.sort === 'name') return rows.slice().sort(function (a, b) { return subjectName(kind, a).localeCompare(subjectName(kind, b)); });
     if (state.sort === 'price') return rows.slice().sort(function (a, b) { return number(subjectSimulation(b) && subjectSimulation(b).supportPriceCents) - number(subjectSimulation(a) && subjectSimulation(a).supportPriceCents); });
+    if (state.sort === 'movement') return rows.slice().sort(function (a, b) { return Math.abs(number(subjectSimulation(b) && subjectSimulation(b).move24hPoints) || 0) - Math.abs(number(subjectSimulation(a) && subjectSimulation(a).move24hPoints) || 0); });
     if (state.sort === 'volume') return rows.slice().sort(function (a, b) { return number(subjectSimulation(b) && subjectSimulation(b).simulatedVolume) - number(subjectSimulation(a) && subjectSimulation(a).simulatedVolume); });
     return rows.slice().sort(function (a, b) { return Date.parse(b.lastObservedAt || b.observedAt || b.publishedAt || 0) - Date.parse(a.lastObservedAt || a.observedAt || a.publishedAt || 0); });
   }
   function filterPeople() {
     var query = state.query.toLowerCase();
     return sortCatalog('profile', array(state.catalog && state.catalog.people).filter(function (person) {
-      if (state.provider !== 'all' && !array(person.accounts || person.platforms).some(function (account) { return clean(account.provider || account.id || account.platform).toLowerCase() === state.provider; })) return false;
-      return !query || [personName(person), person.handle, person.bio, primaryProvider(person)].join(' ').toLowerCase().indexOf(query) >= 0;
+      if (state.provider !== 'all' && contractProvider('profile', person) !== state.provider) return false;
+      if (state.metric !== 'all' && contractMetricKey(person) !== state.metric) return false;
+      return !query || [personName(person), person.handle, person.bio, contractProvider('profile', person), contractMetricName(person), subjectContract(person) && subjectContract(person).question].join(' ').toLowerCase().indexOf(query) >= 0;
     }));
   }
   function filterContents() {
     var query = state.query.toLowerCase();
     return sortCatalog('content', array(state.catalog && state.catalog.contents).filter(function (work) {
-      if (state.provider !== 'all' && contentProvider(work) !== state.provider) return false;
-      return !query || [work.title, work.excerpt, personName(contentPerson(work)), contentProvider(work)].join(' ').toLowerCase().indexOf(query) >= 0;
+      if (state.provider !== 'all' && contractProvider('content', work) !== state.provider) return false;
+      if (state.metric !== 'all' && contractMetricKey(work) !== state.metric) return false;
+      return !query || [work.title, work.excerpt, personName(contentPerson(work)), contractProvider('content', work), contractMetricName(work), subjectContract(work) && subjectContract(work).question].join(' ').toLowerCase().indexOf(query) >= 0;
     }));
   }
   function hoistRouteSubject(kind, rows) {
@@ -535,20 +620,35 @@
     }));
   }
   function gridHTML(kind, rows, limit) {
-    var shown = rows.slice(0, limit == null ? state.shown : limit);
-    if (!shown.length) return '<section class="mkt-empty"><span class="mkt-eyebrow">No matching subjects</span><h2>Try a broader source or search</h2><p>Trades only displays subjects retained in the shared Discovery catalog.</p><button type="button" class="mkt-button is-secondary" data-clear-trades-filters>Clear filters</button></section>';
-    return '<div class="mkt-catalog-grid is-' + kind + '">' + shown.map(kind === 'profile' ? personCard : contentCard).join('') + '</div>';
+    var visible = limit == null ? rows : rows.slice(0, limit);
+    if (!visible.length) return '<section class="mkt-empty"><span class="mkt-eyebrow">No matching subjects</span><h2>Try a broader source or search</h2><p>Search and filters run across the complete shared Discovery catalog.</p><button type="button" class="mkt-button is-secondary" data-clear-trades-filters>Clear filters</button></section>';
+    return '<div class="mkt-catalog-grid is-' + kind + '">' + visible.map(kind === 'profile' ? personCard : contentCard).join('') + '</div>';
   }
   function sectionHTML(kind, title, copy, rows) {
     var view = kind === 'profile' ? 'profiles' : 'contents';
     return '<section class="mkt-feed-section"><div class="mkt-section-head"><div><span class="mkt-eyebrow">Same retained catalog as Discovery</span><h2>' + esc(title) + '</h2><p>' + esc(copy) + '</p></div><button type="button" class="mkt-text-action" data-trades-view="' + view + '">Browse all →</button></div>' + gridHTML(kind, rows, 6) + '</section>';
   }
   function feedHTML() {
-    return '<section class="mkt-personalization"><div><b>For you · on this device</b><p>' + esc(personalizationSummary()) + '</p></div><div class="mkt-personalization-actions"><a href="backerdemo.html#market2">Refine in Discovery</a><button type="button" data-reset-personalization>Reset personalization</button></div></section>' + sectionHTML('profile', 'Profile markets', 'Back or fade attention around real public people, then draft exact resolution rules when you want a custom bet.', personalize('profile', state.catalog.people)) + sectionHTML('content', 'Content markets', 'Express conviction around real original work while its creator, source, and native evidence stay attached.', personalize('content', state.catalog.contents));
+    return '<section class="mkt-personalization"><div><b>For you · on this device</b><p>' + esc(personalizationSummary()) + '</p></div><div class="mkt-personalization-actions"><a href="backerdemo.html#market2">Refine Discovery</a><button type="button" aria-label="Reset personalization" data-reset-personalization>Reset feed</button></div></section>' + sectionHTML('profile', 'Profile markets', 'Back or fade attention around source-backed creator accounts, then draft exact resolution rules when you want a custom bet.', personalize('profile', state.catalog.people)) + sectionHTML('content', 'Content markets', 'Express conviction around retained original work while its creator, source, and native evidence stay attached.', personalize('content', state.catalog.contents));
+  }
+  function pageSlice(rows) {
+    var pages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+    state.page = Math.max(1, Math.min(pages, Math.floor(number(state.page) || 1)));
+    var startIndex = (state.page - 1) * PAGE_SIZE;
+    return {
+      rows: rows.slice(startIndex, startIndex + PAGE_SIZE), total: rows.length,
+      page: state.page, pages: pages, start: rows.length ? startIndex + 1 : 0,
+      end: Math.min(rows.length, startIndex + PAGE_SIZE)
+    };
+  }
+  function paginationHTML(result, noun) {
+    if (!result.total) return '';
+    return '<nav class="mkt-pagination" aria-label="' + esc(noun + ' catalog pages') + '"><p aria-live="polite">Showing <b>' + esc(formatExactCount(result.start)) + '-' + esc(formatExactCount(result.end)) + '</b> of <b>' + esc(formatExactCount(result.total)) + '</b> matching ' + esc(noun) + '</p><div><button type="button" data-trades-page="previous"' + (result.page <= 1 ? ' disabled' : '') + '>Previous</button><label><span>Page</span><input type="number" min="1" max="' + result.pages + '" value="' + result.page + '" inputmode="numeric" data-trades-page-input aria-label="Page number"/></label><span>of ' + esc(formatExactCount(result.pages)) + '</span><button type="button" data-trades-page="next"' + (result.page >= result.pages ? ' disabled' : '') + '>Next</button></div></nav>';
   }
   function browseHTML(kind) {
     var isProfile = kind === 'profile', rows = hoistRouteSubject(kind, isProfile ? filterPeople() : filterContents());
-    return toolbarHTML(isProfile ? 'profiles' : 'contents') + '<section class="mkt-section-head is-browse"><div><span class="mkt-eyebrow">Retained public catalog</span><h2>' + (isProfile ? 'Profile markets' : 'Content markets') + '</h2><p>Inspect the real subject and evidence, then Back, Fade, or write a custom outcome.</p></div></section>' + gridHTML(kind, rows) + (rows.length > state.shown ? '<div class="mkt-more"><button type="button" class="mkt-button is-secondary" data-trades-more>Show more</button><span>' + state.shown + ' of ' + rows.length + '</span></div>' : '');
+    var result = pageSlice(rows), noun = isProfile ? 'creator-account markets' : 'work markets';
+    return toolbarHTML(isProfile ? 'profiles' : 'contents') + '<section class="mkt-section-head is-browse"><div><span class="mkt-eyebrow">Complete retained catalog</span><h2>' + (isProfile ? 'Profile markets' : 'Content markets') + '</h2><p>Search every eligible contract, then Back, Fade, or write a custom outcome.</p></div></section>' + paginationHTML(result, noun) + gridHTML(kind, result.rows) + paginationHTML(result, noun);
   }
   function positionCard(position) {
     var snapshot = position.subjectSnapshot || {}, current = lookupSubject(position.subjectKind, position.subjectId), sim = current && subjectSimulation(current);
@@ -559,7 +659,7 @@
   }
   function positionsHTML() {
     var rows = listPositions().slice().sort(function (a, b) { return clean(b.createdAt).localeCompare(clean(a.createdAt)); });
-    if (!rows.length) return '<section class="mkt-empty"><span class="mkt-eyebrow">Your trades</span><h2>No paper trades yet</h2><p>Back or fade a real profile or work. You will review the quote and maximum loss before anything is saved.</p><button type="button" class="mkt-button is-primary" data-trades-view="feed">Explore markets</button></section>';
+    if (!rows.length) return '<section class="mkt-empty"><span class="mkt-eyebrow">Your trades</span><h2>No paper trades yet</h2><p>Back or fade a source-backed creator account or retained work. You will review the quote and maximum loss before anything is saved.</p><button type="button" class="mkt-button is-primary" data-trades-view="feed">Explore markets</button></section>';
     var cost = 0, mark = 0;
     rows.forEach(function (position) {
       var current = lookupSubject(position.subjectKind, position.subjectId), sim = current && subjectSimulation(current);
@@ -572,11 +672,11 @@
   }
   function proposalsHTML() {
     var rows = proposalRows(), selected = state.proposalId && proposalById(state.proposalId);
-    if (!rows.length) return '<section class="mkt-empty"><span class="mkt-eyebrow">Proposals</span><h2>No custom bets on this device</h2><p>Choose a real profile or work, then define a measurable target, cutoff, and public resolution source.</p><button type="button" class="mkt-button is-primary" data-trades-view="feed">Find a subject</button></section>';
-    return '<section class="mkt-section-head"><div><span class="mkt-eyebrow">Device-local proposal inbox</span><h2>Custom growth bets</h2><p>These drafts use retained real subjects. They are not approved or externally executable.</p></div><button type="button" class="mkt-button is-secondary" data-trades-view="feed">Draft another</button></section><div class="mkt-proposal-grid">' + rows.map(function (row) { return proposalCard(row, selected && selected.draft.draftId === row.draft.draftId); }).join('') + '</div>';
+    if (!rows.length) return '<section class="mkt-empty"><span class="mkt-eyebrow">Proposals</span><h2>No custom bets on this device</h2><p>Choose a source-backed creator account or retained work, then define a measurable target, cutoff, and public resolution source.</p><button type="button" class="mkt-button is-primary" data-trades-view="feed">Find a subject</button></section>';
+    return '<section class="mkt-section-head"><div><span class="mkt-eyebrow">Device-local proposal inbox</span><h2>Custom growth bets</h2><p>These drafts use retained catalog subjects. They are not approved or externally executable.</p></div><button type="button" class="mkt-button is-secondary" data-trades-view="feed">Draft another</button></section><div class="mkt-proposal-grid">' + rows.map(function (row) { return proposalCard(row, selected && selected.draft.draftId === row.draft.draftId); }).join('') + '</div>';
   }
   function loadingHTML() {
-    return '<section class="mkt-loading" aria-live="polite" aria-busy="true"><span></span><div><b>Loading real profiles and work</b><p>Source links, retained media, and public observations stay attached.</p></div></section><div class="mkt-skeleton-grid">' + new Array(6).fill('<span></span>').join('') + '</div>';
+    return '<section class="mkt-loading" aria-live="polite" aria-busy="true"><span></span><div><b>Loading creator accounts and work</b><p>Source links, retained media, and public observations stay attached.</p></div></section><div class="mkt-skeleton-grid">' + new Array(6).fill('<span></span>').join('') + '</div>';
   }
   function errorHTML() {
     return '<section class="mkt-empty is-error"><span class="mkt-eyebrow">Catalog read paused</span><h2>Trades could not read the retained catalog</h2><p>' + esc(state.loadError) + '. No fixture profile or synthetic content was substituted.</p><button type="button" class="mkt-button is-primary" data-trades-retry>Retry catalog</button><a class="mkt-button is-secondary" href="backerdemo.html#market2">Open Discovery</a></section>';
@@ -584,7 +684,7 @@
   function canvasHTML() {
     if (state.loading) return loadingHTML();
     if (state.loadError || !state.catalog) return errorHTML();
-    if (state.routeMissing) return '<section class="mkt-empty is-route-missing"><span class="mkt-eyebrow">Not listed in Trades</span><h2>This Discovery subject has no reviewed paper contract</h2><p>Trades only admits exact reviewed human profiles and owned works with retained media, a native observation, and a complete resolution contract. Nothing else is substituted.</p><a class="mkt-button is-primary" href="backerdemo.html#market2">Return to Discovery</a><button type="button" class="mkt-button is-secondary" data-trades-view="feed">Explore listed markets</button></section>';
+    if (state.routeMissing) return '<section class="mkt-empty is-route-missing"><span class="mkt-eyebrow">Not listed in Trades</span><h2>This Discovery subject has no eligible paper contract</h2><p>Trades lists source-backed creator accounts and retained works with media, a native observation, and a complete resolution contract. Account eligibility does not verify personhood or legal identity, and nothing else is substituted.</p><a class="mkt-button is-primary" href="backerdemo.html#market2">Return to Discovery</a><button type="button" class="mkt-button is-secondary" data-trades-view="feed">Explore listed markets</button></section>';
     if (state.view === 'profiles') return browseHTML('profile');
     if (state.view === 'contents') return browseHTML('content');
     if (state.view === 'positions') return positionsHTML();
@@ -621,12 +721,25 @@
     if (!math) return '';
     var row = math.row, kind = state.ticket.kind, title = subjectName(kind, row), source = subjectSource(kind, row), contract = math.contract;
     var account = readAccount(), canAfford = math.amount <= account.cash;
-    return '<div class="mkt-ticket-layer" data-ticket-backdrop><section class="mkt-ticket" role="dialog" aria-modal="true" aria-labelledby="mktTicketTitle" tabindex="-1"><button type="button" class="mkt-ticket-x" data-ticket-close aria-label="Close">×</button><span class="mkt-ticket-kicker">Review paper trade</span><h2 id="mktTicketTitle">' + esc(state.ticket.side + ' · ' + title) + '</h2><section class="mkt-ticket-contract"><span>Contract</span><h3>' + esc(contract.question) + '</h3><p><b>' + esc(contract.baseline.label) + '</b> baseline → <b>' + esc(contract.target.label) + '</b> target by ' + esc(formatDate(contract.cutoff)) + '</p></section><dl><div><dt>Side / price</dt><dd>' + state.ticket.side + ' / ' + math.price + '¢</dd></div><div><dt>Available paper cash</dt><dd>' + formatMoney(account.cash) + '</dd></div><div><dt>Native metric</dt><dd><a href="' + esc(safeURL(contract.metric.sourceUrl)) + '" target="_blank" rel="noopener noreferrer">' + esc(contract.metric.label + ' · ' + platformLabel(contract.metric.provider)) + ' ↗</a></dd></div><div><dt>Observed baseline</dt><dd>' + esc(formatDate(contract.baseline.observedAt)) + '</dd></div><div><dt>Resolution rule</dt><dd>' + esc(contract.resolutionRule) + '</dd></div><div><dt>Resolution source</dt><dd><a href="' + esc(safeURL(contract.metric.sourceUrl)) + '" target="_blank" rel="noopener noreferrer">Re-observe ' + esc(contract.metric.label + ' on ' + platformLabel(contract.metric.provider)) + ' ↗</a></dd></div><div><dt>Model</dt><dd>' + esc(math.sim.modelVersion || math.sim.methodology) + ' · hourly</dd></div><div><dt>Source subject</dt><dd><a href="' + esc(source) + '" target="_blank" rel="noopener noreferrer">' + esc(platformLabel(subjectProvider(kind, row))) + ' public source ↗</a></dd></div></dl><label class="mkt-ticket-amount"><span>Paper amount</span><input type="number" min="5" max="' + esc(Math.max(0, account.cash)) + '" step="5" value="' + esc(state.ticket.amount) + '" data-ticket-amount/></label><div class="mkt-ticket-totals"><div><span>Quantity</span><b data-ticket-quantity>' + formatNumber(math.quantity) + '</b></div><div><span>Maximum loss</span><b data-ticket-loss>' + formatMoney(math.maxLoss) + '</b></div><div><span>Estimated payout if correct</span><b data-ticket-payout>' + formatMoney(math.estimatedPayout) + '</b></div><div><span>Profit if correct</span><b data-ticket-profit>' + formatMoney(math.profitIfCorrect) + '</b></div></div><p class="mkt-ticket-error" data-ticket-error' + (canAfford && !state.ticket.error ? ' hidden' : '') + '>' + esc(state.ticket.error || 'Amount exceeds available paper cash.') + '</p><label class="mkt-ticket-ack"><input type="checkbox" data-ticket-ack' + (state.ticket.ack ? ' checked' : '') + '/><span>I understand the quote is a deterministic paper simulation, no external order will be sent, and the retained source observation is separate from the modeled price.</span></label><div class="mkt-ticket-actions"><a class="mkt-button is-secondary" href="' + esc(draftURL(kind, row)) + '" data-mkt-draft data-subject-kind="' + kind + '" data-subject-id="' + esc(subjectId(kind, row)) + '">Draft custom rules</a><button type="button" class="mkt-button is-primary" data-ticket-confirm' + (state.ticket.ack && canAfford ? '' : ' disabled') + '>Record paper position</button></div></section></div>';
+    return '<div class="mkt-ticket-layer" data-ticket-backdrop><section class="mkt-ticket" role="dialog" aria-modal="true" aria-labelledby="mktTicketTitle" tabindex="-1"><button type="button" class="mkt-ticket-x" data-ticket-close aria-label="Close">×</button><span class="mkt-ticket-kicker">Review paper trade</span><h2 class="mkt-ticket-subject" id="mktTicketTitle">' + esc(state.ticket.side + ' · ' + title) + '</h2><section class="mkt-ticket-contract"><span>Contract</span><h3>' + esc(contract.question) + '</h3><p><b>' + esc(contract.baseline.label) + '</b> baseline → <b>' + esc(contract.target.label) + '</b> target by ' + esc(formatDate(contract.cutoff)) + '</p></section><section class="mkt-ticket-quote" aria-label="Paper quote"><div><span>Side / price</span><strong>' + state.ticket.side + ' / ' + math.price + '¢</strong></div><div><span>Available cash</span><strong>' + formatMoney(account.cash) + '</strong></div></section><label class="mkt-ticket-amount"><span>Paper amount</span><input type="number" min="5" max="' + esc(Math.max(0, account.cash)) + '" step="5" value="' + esc(state.ticket.amount) + '" data-ticket-amount/></label><div class="mkt-ticket-totals"><div><span>Quantity</span><b data-ticket-quantity>' + formatNumber(math.quantity) + '</b></div><div><span>Maximum loss</span><b data-ticket-loss>' + formatMoney(math.maxLoss) + '</b></div><div><span>Estimated payout if correct</span><b data-ticket-payout>' + formatMoney(math.estimatedPayout) + '</b></div><div><span>Profit if correct</span><b data-ticket-profit>' + formatMoney(math.profitIfCorrect) + '</b></div></div><p class="mkt-ticket-error" data-ticket-error' + (canAfford && !state.ticket.error ? ' hidden' : '') + '>' + esc(state.ticket.error || 'Amount exceeds available paper cash.') + '</p><label class="mkt-ticket-ack"><input type="checkbox" data-ticket-ack' + (state.ticket.ack ? ' checked' : '') + '/><span>I understand this is a deterministic paper quote. No external order or real money is involved.</span></label><div class="mkt-ticket-actions"><a class="mkt-button is-secondary" href="' + esc(draftURL(kind, row)) + '" data-mkt-draft data-subject-kind="' + kind + '" data-subject-id="' + esc(subjectId(kind, row)) + '">Draft custom rules</a><button type="button" class="mkt-button is-primary" data-ticket-confirm' + (state.ticket.ack && canAfford ? '' : ' disabled') + '>Record paper position</button></div><details class="mkt-ticket-details" open><summary>Resolution and source details</summary><dl><div><dt>Native metric</dt><dd><a href="' + esc(safeURL(contract.metric.sourceUrl)) + '" target="_blank" rel="noopener noreferrer">' + esc(contract.metric.label + ' · ' + platformLabel(contract.metric.provider)) + ' ↗</a></dd></div><div><dt>Observed baseline</dt><dd>' + esc(baselineEvidenceText(contract.baseline, contract.baseline.observedAt)) + '</dd></div><div><dt>Resolution rule</dt><dd>' + esc(contract.resolutionRule) + '</dd></div><div><dt>Resolution source</dt><dd><a href="' + esc(safeURL(contract.metric.sourceUrl)) + '" target="_blank" rel="noopener noreferrer">Re-observe ' + esc(contract.metric.label + ' on ' + platformLabel(contract.metric.provider)) + ' ↗</a></dd></div><div><dt>Model</dt><dd>' + esc(math.sim.modelVersion || math.sim.methodology) + ' · hourly</dd></div><div><dt>Source subject</dt><dd><a href="' + esc(source) + '" target="_blank" rel="noopener noreferrer">' + esc(platformLabel(subjectProvider(kind, row))) + ' public source ↗</a></dd></div></dl></details></section></div>';
   }
   function renderContent() {
     if (!mountedRoot) return;
     if (document.body && document.body.classList) document.body.classList.toggle('trades-ticket-open', Boolean(state.ticket || state.receipt));
     mountedRoot.innerHTML = '<div class="mkt">' + headerHTML() + '<main class="mkt-canvas" id="tradesPanel" role="tabpanel">' + canvasHTML() + '</main>' + ticketHTML() + '</div>';
+    if (!firstCardPaintScheduled && mountedRoot.querySelector('.mkt-catalog-card')) {
+      firstCardPaintScheduled = true;
+      var timing = performanceState();
+      timing.firstCardDOMAt = performanceNow();
+      performanceMark('backer-trades:first-card-dom');
+      root.requestAnimationFrame(function () {
+        root.requestAnimationFrame(function () {
+          timing.firstCardPaintedAt = performanceNow();
+          performanceMark('backer-trades:first-card-painted');
+          performanceMeasure('backer-trades:first-card-render', 'backer-trades:render-requested', 'backer-trades:first-card-painted');
+        });
+      });
+    }
     if (state.ticket || state.receipt) {
       var layer = mountedRoot.querySelector('.mkt-ticket-layer');
       if (layer && layer.parentNode) Array.prototype.forEach.call(layer.parentNode.children, function (child) {
@@ -685,7 +798,7 @@
     } catch (error) { toast('Personalization could not be reset'); return; }
     state.catalog = null;
     state.sort = 'personalized';
-    state.shown = PAGE_SIZE;
+    state.page = 1;
     toast('Personalization reset; saved trades and proposals were kept');
     ensureCatalog(true).catch(function () {});
   }
@@ -720,6 +833,7 @@
       id: clean(contract.id), question: display(contract.question), claim: display(contract.claim),
       modelVersion: clean(contract.modelVersion), baselineValue: number(contract.baseline && contract.baseline.value),
       baselineLabel: display(contract.baseline && contract.baseline.label), baselineObservedAt: clean(contract.baseline && contract.baseline.observedAt),
+      baselineFreshnessState: freshnessState(contract.baseline),
       targetValue: number(contract.target && contract.target.value), targetLabel: display(contract.target && contract.target.label),
       cutoff: clean(contract.cutoff), horizonDays: number(contract.horizonDays), metricKey: clean(contract.metric && contract.metric.key),
       metricLabel: display(contract.metric && contract.metric.label), metricUnit: clean(contract.metric && contract.metric.unit),
@@ -810,8 +924,14 @@
   }
   function switchView(view) {
     if (VIEW_VALUES.indexOf(view) < 0) return;
-    state.view = view; state.proposalId = ''; state.pendingDeleteId = ''; state.query = ''; state.provider = 'all'; state.sort = 'personalized'; state.shown = PAGE_SIZE; state.ticket = null; state.receipt = null; state.routeSubjectId = ''; state.routeSide = ''; state.routeHandled = ''; state.routeMissing = false;
+    state.view = view; state.proposalId = ''; state.pendingDeleteId = ''; state.query = ''; state.provider = 'all'; state.metric = 'all'; state.sort = 'personalized'; state.page = 1; state.ticket = null; state.receipt = null; state.routeSubjectId = ''; state.routeSide = ''; state.routeHandled = ''; state.routeMissing = false;
     writeURL(); renderContent();
+  }
+  function clearRouteSubject() {
+    state.routeSubjectId = '';
+    state.routeSide = '';
+    state.routeHandled = '';
+    state.routeMissing = false;
   }
   function openDraft(kind, id) {
     var row = lookupSubject(kind, id);
@@ -828,8 +948,14 @@
     }
     var view = target.getAttribute('data-trades-view');
     if (view) { event.preventDefault(); switchView(view); return; }
-    if (target.hasAttribute('data-trades-more')) { state.shown += PAGE_SIZE; renderContent(); return; }
-    if (target.hasAttribute('data-clear-trades-filters')) { state.query = ''; state.provider = 'all'; state.sort = 'personalized'; state.shown = PAGE_SIZE; renderContent(); return; }
+    var pageAction = target.getAttribute('data-trades-page');
+    if (pageAction) {
+      clearRouteSubject();
+      state.page = Math.max(1, state.page + (pageAction === 'previous' ? -1 : 1));
+      writeURL(); renderContent(); return;
+    }
+    if (target.hasAttribute('data-trades-more')) { clearRouteSubject(); state.page += 1; writeURL(); renderContent(); return; }
+    if (target.hasAttribute('data-clear-trades-filters')) { clearRouteSubject(); state.query = ''; state.provider = 'all'; state.metric = 'all'; state.sort = 'personalized'; state.page = 1; writeURL(); renderContent(); return; }
     if (target.hasAttribute('data-reset-personalization')) { resetPersonalization(); return; }
     if (target.hasAttribute('data-trades-retry')) { ensureCatalog(true).catch(function () {}); return; }
     var watchId = target.getAttribute('data-mkt-watch');
@@ -861,8 +987,10 @@
     if (proposalConfirm) removeProposal(proposalConfirm);
   }
   function onChange(event) {
-    if (event.target.matches('[data-trades-provider]')) { state.provider = event.target.value || 'all'; state.shown = PAGE_SIZE; renderContent(); return; }
-    if (event.target.matches('[data-trades-sort]')) { state.sort = event.target.value || 'personalized'; state.shown = PAGE_SIZE; renderContent(); return; }
+    if (event.target.matches('[data-trades-provider]')) { clearRouteSubject(); state.provider = event.target.value || 'all'; state.page = 1; writeURL(); renderContent(); return; }
+    if (event.target.matches('[data-trades-metric]')) { clearRouteSubject(); state.metric = event.target.value || 'all'; state.page = 1; writeURL(); renderContent(); return; }
+    if (event.target.matches('[data-trades-sort]')) { clearRouteSubject(); state.sort = event.target.value || 'personalized'; state.page = 1; writeURL(); renderContent(); return; }
+    if (event.target.matches('[data-trades-page-input]')) { clearRouteSubject(); state.page = Math.max(1, Math.floor(number(event.target.value) || 1)); writeURL(); renderContent(); return; }
     if (event.target.matches('[data-ticket-ack]')) {
       if (state.ticket) state.ticket.ack = event.target.checked;
       var confirm = mountedRoot.querySelector('[data-ticket-confirm]'), math = ticketMath();
@@ -871,7 +999,7 @@
   }
   function onInput(event) {
     if (event.target.matches('[data-trades-query]')) {
-      state.query = event.target.value; state.shown = PAGE_SIZE; renderContent();
+      clearRouteSubject(); state.query = event.target.value; state.page = 1; writeURL(); renderContent();
       var input = mountedRoot.querySelector('[data-trades-query]'); if (input) { input.focus(); input.setSelectionRange(state.query.length, state.query.length); }
       return;
     }
@@ -914,6 +1042,9 @@
   }
   function render(target) {
     mountedRoot = target;
+    var timing = performanceState();
+    timing.renderRequestedAt = performanceNow();
+    performanceMark('backer-trades:render-requested');
     readURL();
     if (!mountedRoot.dataset.tradesBound) {
       mountedRoot.dataset.tradesBound = 'true';

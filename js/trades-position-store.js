@@ -110,6 +110,9 @@
     var quantity = finite(row.quantity);
     var cost = finite(row.cost);
     var maxLoss = finite(row.maxLoss);
+    var estimatedPayout = finite(row.estimatedPayout);
+    var profitIfCorrect = finite(row.profitIfCorrect);
+    var expectedPayout = quantity == null ? null : Math.round(quantity * 100) / 100;
     var observationIds = Array.isArray(row.observationIds) ? row.observationIds.map(clean).filter(Boolean).slice(0, 100) : [];
     if ((kind !== 'profile' && kind !== 'content') || (side !== 'BACK' && side !== 'FADE') || !clean(row.id)
       || !clean(row.receiptId) || !subjectId || !personId || (kind === 'content' && (!contentId || contentId !== subjectId))
@@ -122,7 +125,10 @@
       || supportPriceCents == null || supportPriceCents < 1 || supportPriceCents > 99
       || priceCents == null || priceCents < 1 || priceCents > 99 || quantity == null || quantity <= 0
       || cost == null || cost <= 0 || Math.abs(quantity * priceCents / 100 - cost) > 0.011
-      || maxLoss == null || Math.abs(maxLoss - cost) > 0.011 || observationIds.indexOf(contract.observationId) < 0
+      || maxLoss == null || Math.abs(maxLoss - cost) > 0.011
+      || estimatedPayout == null || expectedPayout == null || Math.abs(estimatedPayout - expectedPayout) > 0.011
+      || profitIfCorrect == null || Math.abs(profitIfCorrect - (estimatedPayout - cost)) > 0.011
+      || observationIds.indexOf(contract.observationId) < 0
       || clean(row.status) !== 'OPEN_SIMULATION') return null;
     return {
       schemaVersion: SCHEMA_VERSION,
@@ -147,6 +153,8 @@
       quantity: quantity,
       cost: cost,
       maxLoss: maxLoss,
+      estimatedPayout: estimatedPayout,
+      profitIfCorrect: profitIfCorrect,
       status: 'OPEN_SIMULATION',
       isSimulation: true,
       createdAt: createdAt,

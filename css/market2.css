@@ -7624,6 +7624,15 @@ body.mkt2-full .m2-profile-metrics a span {
   white-space: nowrap;
 }
 
+@media (min-width: 640px) and (max-width: 767px) {
+  body.mkt2-full .m2-profile-metrics a span {
+    min-height: 2.6em;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+  }
+}
+
 body.mkt2-full .m2-profile-card-actions {
   display: flex;
   align-items: center;

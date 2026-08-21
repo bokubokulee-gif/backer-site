@@ -1,5 +1,5 @@
 /* Backer Trades catalog model.
-   Projects the retained Discovery catalog into real profile/work subjects.
+   Projects the retained Discovery catalog into source-backed profile/work subjects.
    Source evidence and deterministic simulation state stay strictly separate. */
 (function (root, factory) {
   'use strict';
@@ -10,11 +10,21 @@
   'use strict';
 
   var CATALOG_URL = 'data/discovery-catalog.json';
-  var REVIEW_URL = 'data/trades-reviewed-humans.json';
+  var ELIGIBILITY_URL = 'data/trades-eligible-accounts.json';
   var SCHEMA_VERSION = 'backer-trades-catalog-v1';
-  var REVIEW_SCHEMA_VERSION = 'backer-reviewed-humans-v1';
+  var REVIEW_SCHEMA_VERSION = 'backer-trades-account-eligibility-v4';
+  var REVIEW_METHOD_VERSION = 'source-backed-account-eligibility-v4';
+  var WORK_METHOD_VERSION = 'source-backed-work-eligibility-v1';
   var SIMULATION_MODEL_VERSION = 'backer-support-market-hourly-v1';
-  var ORGANIZATION_WORDS = /(?:\b(?:agency|association|collective|community|company|corp(?:oration)?|foundation|group|institute|labs?|media|network|official|organization|podcast|press|staff|studio|team|technologies|technology|university)\b|(?:^|[-_])(?:ai|inc|llc|org)(?:$|[-_]))/i;
+  var PROFILE_OBSERVATION_RULES = {
+    github: { metric: 'followers', methodologyVersion: 'github-rest-v3-user-profile-v1' },
+    dev: { metric: 'published_posts', methodologyVersion: 'forem-api-v1-public-user-articles-v1' }
+  };
+  var browserRoot = typeof window !== 'undefined' ? window : null;
+  var ORGANIZATION_WORDS = /(?:\b(?:agency|association|collective|community|company|corp(?:oration)?|foundation|group|institute|labs?|magazine|media|network|news|official|organization|platform|podcast|press|software|staff|studio|systems|team|technologies|technology|university|ventures)\b|(?:^|[-_])(?:ai|inc|llc|org)(?:$|[-_]))/i;
+  var PRODUCT_ACCOUNT_SHAPES = /(?:\b(?:solutions|tools?|apps?|editorial|engineering note|utility hub|watcher|model|project|messenger|intelligence|apis?|devops daily)\b|(?:kit|labs?|studios?|devs|tools|apps|hub|bot|os)$)/i;
+  var KNOWN_NON_PERSON_ACCOUNTS = Object.create(null);
+  ('abel solutions|accreditly|agent island|agent-risk|agentskit|ai explore|ai jewelry model|all in one utility hub|apalon|apogee watcher|bazi clarity|bitcoin_devto|block_hacks|broke to built|chomping tools alligator|codexlancers|creatortoolsjp|destlabs|devops daily|draftkit|flowork os|freeviralkit|genesis project|getinfo toyou|gridport|haven messenger|iconsearch|image splitting field notes|insightlab|insightraider|instasla|junoengine devs|kai x intelligence|loginsoft|lottolens ph editorial|mininglamp|mock health|quantizelab|raxxo studios|review-it|singularitystudiosdev|skillselion|snap loom|stockpulse|sunverseai|synergic-apis|telegram bot engineering note|uncommon apps|uptime architect|vividbeam|wayknow|zuidaima|agentziseparator|alphabinproxy|dacnay816y62-hub|donutlabs|ghoulgateproxy10|lincwang123-bot|ooolabdev|opentokenz|openvapecn|pc2005-cloud|smnetstudio|steel-api6666859|teamjourneymanmarina|tonbistudio|vectoragentdiscover|weightpebbleproxy|awesome-dsh-plugin|trycompai|moonshotai|nova|nova-agent|aigclink|fuxicode|fuxicodex|ddosi|fufankeji|beyondata|disc makers|the guardian|txt_official|playstation|四川观察|影视飓风|music money makeover show|more best ever food review show|the filmy folk|one more time').split('|').forEach(function (name) { KNOWN_NON_PERSON_ACCOUNTS[name] = true; });
 
   function clean(value) { return String(value == null ? '' : value).trim(); }
   function array(value) { return Array.isArray(value) ? value : []; }
@@ -31,6 +41,37 @@
       if ((parsed.protocol !== 'https:' && parsed.protocol !== 'http:') || parsed.username || parsed.password) return '';
       return parsed.href;
     } catch (error) { return ''; }
+  }
+
+  /* Search, Discovery, Trades, and Portfolio are separate projections of the
+     same retained files. Keep one promise per absolute source URL for the
+     lifetime of the page so hash-route changes do not repeatedly transfer and
+     parse the multi-megabyte catalog. A reload starts a new cache and performs
+     a fresh no-store request. Custom fetchers used by tests remain isolated. */
+  function loadSourceJSON(url, labelText, options) {
+    options = options || {};
+    var fetcher = options.fetch || (browserRoot && browserRoot.fetch ? browserRoot.fetch.bind(browserRoot) : (typeof fetch === 'function' ? fetch : null));
+    if (!fetcher) return Promise.reject(new Error('Fetch is unavailable'));
+    var request = function () {
+      return fetcher(url, { cache: 'no-store', credentials: 'same-origin' }).then(function (response) {
+        if (!response || !response.ok) throw new Error(labelText + ' HTTP ' + (response && response.status));
+        return response.json();
+      });
+    };
+    if (!browserRoot || options.fetch || options.shared === false) return request();
+    var cache = browserRoot.__backerRetainedSourcePromises;
+    if (!cache || typeof cache !== 'object') cache = browserRoot.__backerRetainedSourcePromises = Object.create(null);
+    var key;
+    try { key = new URL(url, browserRoot.location && browserRoot.location.href || undefined).href; }
+    catch (_error) { key = String(url); }
+    if (!cache[key]) {
+      var pending = request().catch(function (error) {
+        if (cache[key] === pending) delete cache[key];
+        throw error;
+      });
+      cache[key] = pending;
+    }
+    return cache[key];
   }
   function iso(value) {
     var parsed = new Date(value);
@@ -52,6 +93,7 @@
     });
   }
   function label(value) {
+    if (clean(value).toLowerCase() === 'published_posts') return 'Published posts';
     return clean(value).replace(/[_-]+/g, ' ').replace(/\b\w/g, function (letter) { return letter.toUpperCase(); });
   }
   function stableHash(value) {
@@ -62,6 +104,14 @@
       hash = Math.imul(hash, 16777619);
     }
     return hash >>> 0;
+  }
+  function performanceMark(name) {
+    if (!browserRoot || !browserRoot.performance || typeof browserRoot.performance.mark !== 'function') return;
+    try { browserRoot.performance.mark(name); } catch (_error) {}
+  }
+  function performanceMeasure(name, start, end) {
+    if (!browserRoot || !browserRoot.performance || typeof browserRoot.performance.measure !== 'function') return;
+    try { browserRoot.performance.measure(name, start, end); } catch (_error) {}
   }
   function seededNumber(seed) {
     var value = seed >>> 0;
@@ -119,8 +169,7 @@
     parsed.setUTCMinutes(0, 0, 0);
     return parsed.toISOString();
   }
-  function simulationPoint(subjectKind, subjectId, observations, bucket, modelVersion, contractId) {
-    var evidence = evidenceFingerprint(observations);
+  function simulationPoint(subjectKind, subjectId, evidence, bucket, modelVersion, contractId) {
     var subjectSeed = stableHash([modelVersion, contractId || '', subjectKind, subjectId, evidence].join('|'));
     var bucketSeed = stableHash([subjectSeed, bucket].join('|'));
     var base = 24 + (subjectSeed % 53);
@@ -136,18 +185,21 @@
     var bucket = utcHourBucket(bucketInput);
     var bucketTime = Date.parse(bucket);
     var previousDayBucket = new Date(bucketTime - 24 * 60 * 60 * 1000).toISOString();
-    var supportPriceCents = simulationPoint(subjectKind, subjectId, observations, bucket, SIMULATION_MODEL_VERSION, contractId);
-    var previousPrice = simulationPoint(subjectKind, subjectId, observations, previousDayBucket, SIMULATION_MODEL_VERSION, contractId);
+    /* The evidence set is immutable during one projection. Fingerprint it once
+       per subject instead of sorting and joining it for every sparkline point. */
+    var evidence = evidenceFingerprint(observations);
+    var supportPriceCents = simulationPoint(subjectKind, subjectId, evidence, bucket, SIMULATION_MODEL_VERSION, contractId);
+    var previousPrice = simulationPoint(subjectKind, subjectId, evidence, previousDayBucket, SIMULATION_MODEL_VERSION, contractId);
     var move24hPoints = Math.round((supportPriceCents - previousPrice) * 10) / 10;
     var random = seededNumber(stableHash([SIMULATION_MODEL_VERSION, contractId || '', subjectKind, subjectId,
-      evidenceFingerprint(observations), bucket, 'depth'].join('|')));
+      evidence, bucket, 'depth'].join('|')));
     var simulatedVolume = 750 + Math.floor(random() * 49250);
     var liquidityDepth = 20 + Math.floor(random() * 81);
     var sparkline = [];
     var series = [];
     for (var i = 15; i >= 0; i -= 1) {
       var pointBucket = new Date(bucketTime - i * 60 * 60 * 1000).toISOString();
-      var point = simulationPoint(subjectKind, subjectId, observations, pointBucket, SIMULATION_MODEL_VERSION, contractId);
+      var point = simulationPoint(subjectKind, subjectId, evidence, pointBucket, SIMULATION_MODEL_VERSION, contractId);
       sparkline.push(point);
       series.push({ bucket: pointBucket, supportPriceCents: point });
     }
@@ -225,6 +277,8 @@
     var metricLabel = label(observation.metric);
     var baselineLabel = countLabel(observation.value, observation.unit);
     var targetLabel = countLabel(target.value, observation.unit);
+    var freshness = observation.freshness && typeof observation.freshness === 'object'
+      ? Object.assign({}, observation.freshness) : null;
     var referenceTitle = clean(referenceContent && referenceContent.title);
     var subjectLabel = referenceTitle ? clean(subjectName) + '\u2019s \u201c' + referenceTitle + '\u201d' : clean(subjectName);
     var question = 'Will ' + subjectLabel + ' reach ' + targetLabel + ' ' + metricLabel.toLowerCase()
@@ -245,7 +299,8 @@
       baseline: {
         value: observation.value,
         label: baselineLabel,
-        observedAt: observation.observedAt
+        observedAt: observation.observedAt,
+        freshness: freshness ? Object.assign({}, freshness) : null
       },
       target: {
         value: target.value,
@@ -264,7 +319,11 @@
         sourceUrl: observation.sourceUrl,
         observationId: observation.id,
         entityType: observation.entityType,
-        entityId: observation.entityId
+        entityId: observation.entityId,
+        observedAt: observation.observedAt,
+        access: observation.access,
+        methodologyVersion: observation.methodologyVersion,
+        freshness: freshness ? Object.assign({}, freshness) : null
       },
       referenceWork: referenceContent ? {
         id: referenceContent.id,
@@ -292,8 +351,18 @@
     var name = clean(person && person.name);
     var handle = clean(person && person.handle).replace(/^@/, '');
     if (ORGANIZATION_WORDS.test(name) || ORGANIZATION_WORDS.test(handle)) return true;
-    if (/\b(?:department of|school of|the .* blog|made by google|associated press|microsoft|github|deepseek|moonshot|minimax|youtube creators)\b/i.test(name)) return true;
+    if (/(?:\b(?:department of|school of|the .* blog|made by google|associated press|microsoft|github|deepseek|moonshot|minimax|youtube creators|firecrawl|informer tech|autocomp)\b|^(?:ted|time)$|黑神话|鸣潮)/i.test(name)) return true;
+    if (PRODUCT_ACCOUNT_SHAPES.test(name)) return true;
+    if (KNOWN_NON_PERSON_ACCOUNTS[name.toLowerCase()] || KNOWN_NON_PERSON_ACCOUNTS[handle.toLowerCase()]) return true;
     return false;
+  }
+  function providerUrlOwnsIdentity(provider, url, identity) {
+    if (provider !== 'dev' && provider !== 'github') return true;
+    try {
+      var owner = new URL(url).pathname.split('/').filter(Boolean)[0].toLowerCase();
+      var handle = clean(identity && (identity.handle || identity.nativeId)).replace(/^@/, '').toLowerCase();
+      return Boolean(owner && handle && owner === handle);
+    } catch (error) { return false; }
   }
   function normalizeSignalIds(values) {
     return new Set(array(values).map(function (value) {
@@ -375,8 +444,8 @@
       if (media) return media;
       var organization = a.organizationPenalty - b.organizationPenalty;
       if (organization) return organization;
-      /* Without device signals, preserve the reviewed registry/catalog order so
-         Trades opens on clearly human creator-person accounts. Personal signals
+      /* Without device signals, preserve the eligibility registry/catalog order
+         for source-backed creator accounts. Personal signals
          still dominate this order as soon as the user watches, opens, or trades. */
       if (a.personalWeight === 0 && b.personalWeight === 0 && a.index !== b.index) return a.index - b.index;
       return b.evidenceCount - a.evidenceCount || b.time - a.time || a.index - b.index
@@ -411,9 +480,9 @@
       recentActions: recent
     });
   }
-  function normalizeReviewRegistry(raw, creatorsById, identityById) {
+  function normalizeReviewRegistry(raw, creatorsById, identityById, rawContentById, exactObservationsById) {
     if (!raw || typeof raw !== 'object' || clean(raw.schemaVersion || raw.schema_version) !== REVIEW_SCHEMA_VERSION) {
-      throw new Error('Invalid reviewed-human registry');
+      throw new Error('Invalid Trades account-eligibility registry');
     }
     var byCreator = Object.create(null);
     var approved = [];
@@ -425,35 +494,59 @@
       var provider = clean(row && row.provider).toLowerCase();
       var nativeId = clean(row && (row.nativeId || row.native_id));
       var profileUrl = safeURL(row && (row.profileUrl || row.profile_url));
-      var reviewedAt = iso(row && (row.reviewedAt || row.reviewed_at));
+      var assessedAt = iso(row && (row.assessedAt || row.assessed_at));
       var methodology = clean(row && row.methodology);
-      var reviewScope = clean(row && (row.reviewScope || row.review_scope));
+      var eligibilityScope = clean(row && (row.eligibilityScope || row.eligibility_scope));
       var evidenceUrls = unique(array(row && (row.evidenceUrls || row.evidence_urls)).map(safeURL).filter(Boolean));
+      var referenceObservationId = clean(row && (row.referenceObservationId || row.reference_observation_id));
+      var sourceAccountType = clean(row && (row.sourceAccountType || row.source_account_type));
       var creator = creatorsById[creatorId];
       var identity = identityById[identityId];
-      var valid = row && row.reviewState === 'approved' && row.entityKind === 'human'
-        && reviewScope === 'public_creator_person_account'
-        && methodology === 'public-creator-person-account-review-v1'
+      var referenceObservation = exactObservationsById[referenceObservationId];
+      var creatorName = clean(creator && (creator.displayName || creator.display_name || creator.name));
+      var creatorAvatar = safeURL(creator && (creator.avatarUrl || creator.avatar_url));
+      var creatorAvatarSource = safeURL(creator && (creator.avatarSourceUrl || creator.avatar_source_url));
+      var expectedSourceAccountType = provider === 'github' ? 'user' : 'creator_account';
+      var profileObservationRule = PROFILE_OBSERVATION_RULES[provider];
+      var valid = row && row.eligibilityState === 'eligible' && row.entityKind === 'creator_account'
+        && eligibilityScope === 'public_creator_account_shape'
+        && methodology === REVIEW_METHOD_VERSION
+        && profileObservationRule
         && creator && identity && identity.creatorId === creatorId
         && identity.provider === provider && identity.nativeId === nativeId
+        && sourceAccountType === expectedSourceAccountType
+        && (provider !== 'github' || clean(identity.accountType) === 'user')
         && identity.profileUrl === profileUrl && evidenceUrls.indexOf(profileUrl) >= 0
-        && evidenceUrls.length >= 2 && reviewedAt && !byCreator[creatorId] && !seenIdentity[identityId];
+        && referenceObservation && referenceObservation.entityType === 'identity'
+        && referenceObservation.entityId === identityId && referenceObservation.provider === provider
+        && referenceObservation.metric === profileObservationRule.metric
+        && referenceObservation.methodologyVersion === profileObservationRule.methodologyVersion
+        && referenceObservation.access === 'public_api'
+        && referenceObservation.sourceUrl === profileUrl
+        && evidenceUrls.indexOf(referenceObservation.sourceUrl) >= 0
+        && creatorAvatar && creatorAvatarSource && !organizationLike({ name: creatorName, handle: identity.handle })
+        && evidenceUrls.length >= 1 && assessedAt && !byCreator[creatorId] && !seenIdentity[identityId];
       if (!valid) {
-        rejected.push({ index: index, creatorId: creatorId, identityId: identityId, reason: 'exact_review_contract_mismatch' });
+        rejected.push({ index: index, creatorId: creatorId, identityId: identityId, reason: 'exact_eligibility_contract_mismatch' });
         return;
       }
       var review = {
-        reviewState: 'approved',
-        entityKind: 'human',
-        reviewScope: reviewScope,
+        eligibilityState: 'eligible',
+        entityKind: 'creator_account',
+        eligibilityScope: eligibilityScope,
         creatorId: creatorId,
         identityId: identityId,
         provider: provider,
         nativeId: nativeId,
         profileUrl: profileUrl,
-        reviewedAt: reviewedAt,
+        sourceAccountType: sourceAccountType,
+        assessedAt: assessedAt,
         methodology: methodology,
         evidenceUrls: evidenceUrls,
+        referenceObservationId: referenceObservationId,
+        automatedEligibility: true,
+        accountClaim: 'source_backed_creator_account_not_legal_identity',
+        personhoodVerified: false,
         legalIdentityVerified: false
       };
       byCreator[creatorId] = review;
@@ -461,17 +554,71 @@
       approved.push(review);
     });
     approved.sort(function (a, b) { return a.creatorId.localeCompare(b.creatorId); });
+    var workByContent = Object.create(null);
+    var approvedWorks = [];
+    var rejectedWorks = [];
+    array(raw.workEntries || raw.work_entries).forEach(function (row, index) {
+      var contentId = clean(row && (row.contentId || row.content_id));
+      var creatorId = clean(row && (row.creatorId || row.creator_id));
+      var identityId = clean(row && (row.identityId || row.identity_id));
+      var provider = clean(row && row.provider).toLowerCase();
+      var assessedAt = iso(row && (row.assessedAt || row.assessed_at));
+      var methodology = clean(row && row.methodology);
+      var eligibilityScope = clean(row && (row.eligibilityScope || row.eligibility_scope));
+      var evidenceUrls = unique(array(row && (row.evidenceUrls || row.evidence_urls)).map(safeURL).filter(Boolean));
+      var referenceObservationId = clean(row && (row.referenceObservationId || row.reference_observation_id));
+      var creator = creatorsById[creatorId];
+      var identity = identityById[identityId];
+      var content = rawContentById[contentId];
+      var observation = exactObservationsById[referenceObservationId];
+      var canonicalUrl = safeURL(content && (content.canonicalUrl || content.canonical_url || content.url));
+      var valid = row && row.eligibilityState === 'eligible' && row.entityKind === 'content'
+        && eligibilityScope === 'public_source_work' && methodology === WORK_METHOD_VERSION
+        && creator && identity && content && identity.creatorId === creatorId && identity.provider === provider
+        && clean(content.creatorId || content.creator_id) === creatorId
+        && clean(content.platformIdentityId || content.platform_identity_id) === identityId
+        && clean(content.provider || content.platform).toLowerCase() === provider
+        && canonicalUrl && evidenceUrls.indexOf(canonicalUrl) >= 0
+        && observation && observation.entityType === 'content' && observation.entityId === contentId
+        && observation.provider === provider && evidenceUrls.indexOf(observation.sourceUrl) >= 0
+        && assessedAt && !workByContent[contentId];
+      if (!valid) {
+        rejectedWorks.push({ index: index, contentId: contentId, reason: 'exact_work_eligibility_mismatch' });
+        return;
+      }
+      var eligibility = {
+        eligibilityState: 'eligible',
+        entityKind: 'content',
+        eligibilityScope: eligibilityScope,
+        contentId: contentId,
+        creatorId: creatorId,
+        identityId: identityId,
+        provider: provider,
+        assessedAt: assessedAt,
+        methodology: methodology,
+        evidenceUrls: evidenceUrls,
+        referenceObservationId: referenceObservationId,
+        automatedEligibility: true
+      };
+      workByContent[contentId] = eligibility;
+      approvedWorks.push(eligibility);
+    });
+    approvedWorks.sort(function (a, b) { return a.contentId.localeCompare(b.contentId); });
     return {
       schemaVersion: REVIEW_SCHEMA_VERSION,
       generatedAt: iso(raw.generatedAt || raw.generated_at),
       policy: clean(raw.policy),
       byCreator: byCreator,
       approved: approved,
-      rejected: rejected
+      rejected: rejected,
+      workByContent: workByContent,
+      approvedWorks: approvedWorks,
+      rejectedWorks: rejectedWorks
     };
   }
   function build(raw, options) {
     options = options || {};
+    performanceMark('backer-trades:model-build-start');
     if (!raw || typeof raw !== 'object') throw new Error('Invalid retained Discovery catalog');
     var rawCreators = array(raw.creators);
     var rawIdentities = array(raw.platformIdentities || raw.platform_identities);
@@ -486,7 +633,11 @@
       creatorsById[id] = row;
     });
     var observationsByEntity = Object.create(null);
-    observations.forEach(function (row) { (observationsByEntity[row.entityId] = observationsByEntity[row.entityId] || []).push(row); });
+    var exactObservationsById = Object.create(null);
+    observations.forEach(function (row) {
+      exactObservationsById[row.id] = row;
+      (observationsByEntity[row.entityId] = observationsByEntity[row.entityId] || []).push(row);
+    });
     Object.keys(observationsByEntity).forEach(function (id) { observationsByEntity[id].sort(observationOrder); });
 
     var identitiesByCreator = Object.create(null);
@@ -508,6 +659,7 @@
         profileUrl: url,
         sourceUrl: url,
         verified: row.verified === true,
+        accountType: clean(row.accountType || row.account_type),
         observedAt: iso(row.observedAt || row.observed_at),
         metrics: array(observationsByEntity[id]).map(function (metric) { return Object.assign({}, metric); })
       };
@@ -517,7 +669,13 @@
     Object.keys(identitiesByCreator).forEach(function (creatorId) {
       identitiesByCreator[creatorId].sort(function (a, b) { return a.id.localeCompare(b.id); });
     });
-    var reviewRegistry = normalizeReviewRegistry(options.reviewRegistry, creatorsById, identityById);
+    var rawContentById = Object.create(null);
+    rawContents.forEach(function (row) {
+      var contentId = clean(row && row.id);
+      if (contentId) rawContentById[contentId] = row;
+    });
+    var reviewRegistry = normalizeReviewRegistry(options.eligibilityRegistry || options.reviewRegistry, creatorsById, identityById,
+      rawContentById, exactObservationsById);
     var reviewedByCreator = reviewRegistry.byCreator;
     var simulationBucket = utcHourBucket(options.simulationBucket || options.now);
 
@@ -531,10 +689,11 @@
       var creator = creatorsById[creatorId];
       var identity = identityById[identityId];
       var humanReview = reviewedByCreator[creatorId];
+      var workEligibility = reviewRegistry.workByContent[id];
       var title = clean(row && row.title);
-      if (!id || !creator || !identity || !humanReview || identityId !== humanReview.identityId
-        || identity.creatorId !== creatorId || identity.provider !== humanReview.provider || provider !== humanReview.provider
-        || !provider || !url || !title
+      if (!id || !creator || !identity || !workEligibility || identityId !== workEligibility.identityId
+        || identity.creatorId !== creatorId || identity.provider !== workEligibility.provider || provider !== workEligibility.provider
+        || !provider || !url || !title || !providerUrlOwnsIdentity(provider, url, identity)
         || /^(?:demo|fixture|synthetic)[-_]/i.test(id)) return null;
       var avatar = safeURL(creator.avatarUrl || creator.avatar_url);
       var avatarSourceUrl = avatar ? safeURL(creator.avatarSourceUrl || creator.avatar_source_url) : '';
@@ -575,16 +734,20 @@
         lastObservedAt: newest([row.observedAt, row.observed_at].concat(metrics.map(function (metric) { return metric.observedAt; }))),
         metrics: metrics,
         publicCounts: metrics,
-        humanReview: Object.assign({}, humanReview),
+        accountEligibility: humanReview ? Object.assign({}, humanReview) : null,
+        workEligibility: Object.assign({}, workEligibility),
         evidenceState: 'retained_native_observations',
         executionApproved: false,
         simulationOnly: true,
         proposalHref: proposalHref('content', creatorId, id),
         researchHref: researchHref(creatorId, id)
       };
-      item.contract = growthContract('content', id, title, contractObservation(metrics), null);
+      var workLeadObservation = metrics.filter(function (metric) {
+        return metric.id === workEligibility.referenceObservationId;
+      })[0] || null;
+      item.contract = growthContract('content', id, title, workLeadObservation, null);
       if (!item.contract) return null;
-      item.simulation = simulatedMarket('content', id, metrics, simulationBucket, item.contract.id);
+      item.simulation = simulatedMarket('content', id, [workLeadObservation], simulationBucket, item.contract.id);
       (contentByCreator[creatorId] = contentByCreator[creatorId] || []).push(item);
       return item;
     }).filter(Boolean);
@@ -611,11 +774,10 @@
       relatedMetrics.sort(observationOrder);
       var avatar = safeURL(creator.avatarUrl || creator.avatar_url);
       var avatarSourceUrl = avatar ? safeURL(creator.avatarSourceUrl || creator.avatar_source_url || primary.url) : '';
-      if (!avatar || !avatarSourceUrl || !relatedContent.length || (!personMetrics.length && !relatedMetrics.length)) return null;
-      var leadObservation = contractObservation(personMetrics.concat(relatedMetrics));
-      var referenceContent = leadObservation && leadObservation.entityType === 'content'
-        ? relatedContent.filter(function (content) { return content.id === leadObservation.entityId; })[0] || null
-        : null;
+      if (!avatar || !avatarSourceUrl || !personMetrics.length) return null;
+      var leadObservation = personMetrics.filter(function (metric) {
+        return metric.id === humanReview.referenceObservationId;
+      })[0] || null;
       var person = {
         id: creatorId,
         personId: creatorId,
@@ -638,21 +800,32 @@
         contentCount: relatedContent.length,
         observedAt: iso(creator.observedAt || creator.observed_at),
         lastObservedAt: newest([creator.observedAt, creator.observed_at].concat(accounts.map(function (account) { return account.observedAt; }), personMetrics.map(function (metric) { return metric.observedAt; }), relatedMetrics.map(function (metric) { return metric.observedAt; }))),
-        identityReview: 'confirmed_public_creator_person_account',
-        humanConfirmed: true,
-        humanReview: Object.assign({}, humanReview),
-        evidenceState: personMetrics.length ? 'retained_native_observations'
-          : relatedMetrics.length ? 'related_work_observations' : 'source_linked',
+        identityReview: 'source_backed_public_creator_account',
+        humanConfirmed: false,
+        creatorAccount: true,
+        accountEligibility: Object.assign({}, humanReview),
+        evidenceState: 'retained_native_observations',
         executionApproved: false,
         simulationOnly: true,
         proposalHref: proposalHref('profile', creatorId, ''),
         researchHref: researchHref(creatorId, '')
       };
-      person.contract = growthContract('profile', creatorId, person.name, leadObservation, referenceContent);
+      person.contract = growthContract('profile', creatorId, person.name, leadObservation, null);
       if (!person.contract) return null;
-      person.simulation = simulatedMarket('profile', creatorId, personMetrics.concat(relatedMetrics), simulationBucket, person.contract.id);
+      /* The quote replay key is the exact contract observation. Unrelated
+         account metrics must not move a market whose baseline did not move. */
+      person.simulation = simulatedMarket('profile', creatorId, [leadObservation], simulationBucket, person.contract.id);
       return person;
     }).filter(Boolean);
+
+    var standardObservationIds = Object.create(null);
+    people.concat(contents).forEach(function (subject) {
+      var observationId = clean(subject && subject.contract && subject.contract.metric && subject.contract.metric.observationId);
+      if (!observationId || standardObservationIds[observationId]) {
+        throw new Error('Trades standard contracts require globally unique retained observations');
+      }
+      standardObservationIds[observationId] = true;
+    });
 
     var rankedPeople = rankCandidates(people, options.signals, 'profile');
     var rankedContents = rankCandidates(contents, options.signals, 'content');
@@ -690,26 +863,30 @@
       content.metrics.forEach(function (metric) { eligibleObservationIds[metric.id] = true; });
     });
     var simulationBucketEndsAt = new Date(Date.parse(simulationBucket) + 60 * 60 * 1000).toISOString();
-    return {
+    var projection = {
       schemaVersion: SCHEMA_VERSION,
       catalogSchemaVersion: clean(raw.schemaVersion || raw.schema_version || '1'),
       generatedAt: iso(raw.generatedAt || raw.generated_at),
       source: CATALOG_URL,
-      reviewSource: REVIEW_URL,
-      status: 'reviewed_real_human_subjects',
-      simulationDisclosure: 'All support prices, movement, volume, charts, and liquidity shown in Trades are deterministic paper simulations. Creator-person accounts, works, source links, media, and labeled observations come from the retained public catalog.',
+      eligibilitySource: ELIGIBILITY_URL,
+      status: 'source_backed_creator_accounts',
+      simulationDisclosure: 'All support prices, movement, volume, charts, and liquidity shown in Trades are deterministic paper simulations. Creator accounts, works, source links, media, and labeled observations come from the retained public catalog; account eligibility does not verify personhood or legal identity.',
       simulationBucket: {
         id: simulationBucket,
         endsAt: simulationBucketEndsAt,
         intervalMs: 60 * 60 * 1000,
         modelVersion: SIMULATION_MODEL_VERSION
       },
-      humanReview: {
+      accountEligibility: {
         schemaVersion: reviewRegistry.schemaVersion,
         generatedAt: reviewRegistry.generatedAt,
         policy: reviewRegistry.policy,
-        approvedCount: reviewRegistry.approved.length,
+        eligibleCount: reviewRegistry.approved.length,
         rejectedCount: reviewRegistry.rejected.length,
+        eligibleWorkCount: reviewRegistry.approvedWorks.length,
+        rejectedWorkCount: reviewRegistry.rejectedWorks.length,
+        automated: true,
+        personhoodVerified: false,
         legalIdentityVerified: false
       },
       people: rankedPeople,
@@ -724,34 +901,33 @@
       retainedSources: Object.keys(retainedSources).sort().map(function (provider) { return retainedSources[provider]; }),
       personalization: { deviceLocal: true, active: signalCount > 0, signalCount: signalCount }
     };
+    performanceMark('backer-trades:model-build-end');
+    performanceMeasure('backer-trades:model-build', 'backer-trades:model-build-start', 'backer-trades:model-build-end');
+    return projection;
   }
   function load(options) {
     options = options || {};
-    var fetcher = options.fetch || (typeof fetch === 'function' ? fetch : null);
-    if (!fetcher) return Promise.reject(new Error('Fetch is unavailable'));
-    function fetchJson(url, labelText) {
-      return fetcher(url, { cache: 'no-store', credentials: 'same-origin' }).then(function (response) {
-        if (!response || !response.ok) throw new Error(labelText + ' HTTP ' + (response && response.status));
-        return response.json();
-      });
-    }
-    var catalogPromise = fetchJson(options.url || CATALOG_URL, 'Trades catalog');
-    var reviewPromise = options.reviewRegistry
-      ? Promise.resolve(options.reviewRegistry)
-      : fetchJson(options.reviewUrl || REVIEW_URL, 'Reviewed-human registry');
-    return Promise.all([catalogPromise, reviewPromise]).then(function (rows) {
-      return build(rows[0], Object.assign({}, options, { reviewRegistry: rows[1] }));
+    var catalogPromise = options.catalog
+      ? Promise.resolve(options.catalog)
+      : loadSourceJSON(options.url || CATALOG_URL, 'Trades catalog', options);
+    var eligibilityRegistry = options.eligibilityRegistry || options.reviewRegistry;
+    var eligibilityPromise = eligibilityRegistry
+      ? Promise.resolve(eligibilityRegistry)
+      : loadSourceJSON(options.eligibilityUrl || options.reviewUrl || ELIGIBILITY_URL, 'Trades account-eligibility registry', options);
+    return Promise.all([catalogPromise, eligibilityPromise]).then(function (rows) {
+      return build(rows[0], Object.assign({}, options, { eligibilityRegistry: rows[1] }));
     });
   }
 
   return {
     CATALOG_URL: CATALOG_URL,
-    REVIEW_URL: REVIEW_URL,
+    ELIGIBILITY_URL: ELIGIBILITY_URL,
     SCHEMA_VERSION: SCHEMA_VERSION,
     REVIEW_SCHEMA_VERSION: REVIEW_SCHEMA_VERSION,
     SIMULATION_MODEL_VERSION: SIMULATION_MODEL_VERSION,
     build: build,
     load: load,
+    loadSourceJSON: loadSourceJSON,
     normalizeSignals: normalizeSignals,
     signalsFromStorage: signalsFromStorage,
     rankPeople: function (rows, signals) { return rankCandidates(rows, signals, 'profile'); },
