@@ -1050,18 +1050,19 @@ test('a Discovery filter drawer does not reopen after a Trades round trip', asyn
   }
 });
 
-test('legacy synthetic search asset and routes are absent from the public page', async () => {
+test('restored Search stays source-backed while legacy synthetic creators remain absent', async () => {
   const html = await fs.readFile(path.join(ROOT, 'backerdemo.html'), 'utf8');
-  assert.doesNotMatch(html, /js\/search-engine\.js/);
-  assert.doesNotMatch(html, /data-view="search"/);
+  assert.match(html, /js\/search-engine\.js\?v=20260821-retained-1/);
+  assert.equal((html.match(/data-view="search"/g) || []).length, 2);
   assert.doesNotMatch(html, /Jeff Delaney|ThePrimeagen|Theo Browne|Wes Bos/);
   assert.match(html, /id="market2HeroSearch"/);
   assert.doesNotMatch(html, /css\/market\.css|js\/market-data\.js|js\/market\.js/);
   assert.doesNotMatch(html, /data-view="market"|href="[^"]*#market(?:[?"#])/);
-  assert.equal((html.match(/data-view="market2"/g) || []).length, 5);
+  assert.equal((html.match(/data-view="market2"/g) || []).length, 3);
   assert.equal((html.match(/data-view="trades"/g) || []).length, 4);
   assert.match(html, /href="backerdemo\.html#market2"[^>]*data-view="market2">Discovery/);
   assert.match(html, /href="backerdemo\.html#trades"[^>]*data-view="trades">Trades/);
+  assert.match(html, /href="backerdemo\.html#search"[^>]*data-view="search">AI Search/);
   assert.match(html, /<\/section>\s*<!-- SHARED FLICKERING FOOTER -->\s*<footer class="backer-footer/);
   const market = await fs.readFile(path.join(ROOT, 'js', 'market2.js'), 'utf8');
   assert.match(market, /method:\s*'POST'/);

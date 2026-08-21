@@ -49,7 +49,7 @@
     if (/backermarket\.html$/.test(path)) return 'trades';
     if (/backercreate\.html$/.test(path)) return 'discovery';
     if (/^#trades(?:\?|$)/.test(hash) || /^#market(?:-archive)?(?:\?|$)/.test(hash)) return 'trades';
-    if (/^#market2\?/.test(hash) && /(?:^|[?&])focus=search(?:&|$)/.test(hash)) return 'search';
+    if (/^#search(?:\?|$)/.test(hash)) return 'search';
     if (/^#market2(?:\?|$)/.test(hash)) return 'discovery';
     if (query.get('view') === 'search') return 'search';
     if (/backerdemo\.html$/.test(path) || /\/$/.test(path) || /index\.html$/.test(path)) return 'home';
@@ -68,7 +68,7 @@
     dock.setAttribute('aria-label', 'Backer navigation');
     dock.innerHTML =
       '<button class="backer-dock-move backer-dock-expanded" type="button" data-label="Move or minimize" aria-label="Move or minimize Backer navigation. Use arrow keys or drag.">' + ICONS.move + '</button>' +
-      linkHTML('search', 'backerdemo.html#market2?focus=search', 'Search', ICONS.search, 'backer-dock-expanded') +
+      linkHTML('search', 'backerdemo.html#search', 'Search', ICONS.search, 'backer-dock-expanded') +
       linkHTML('discovery', 'backerdemo.html#market2', 'Discovery', ICONS.discovery, 'backer-dock-expanded') +
       linkHTML('home', 'backerdemo.html', 'Home', '<span class="backer-dock-orb" aria-hidden="true"></span>', 'backer-dock-home backer-dock-expanded') +
       linkHTML('trades', 'backerdemo.html#trades', 'Trades', ICONS.trades, 'backer-dock-expanded') +
@@ -242,14 +242,14 @@
       attributeFilter: ['open', 'aria-modal', 'aria-hidden', 'class', 'style']
     });
 
-    handle.addEventListener('pointerdown', function (event) {
+    function beginDrag(control, event) {
       if (event.button !== undefined && event.button !== 0) return;
       var rect = dock.getBoundingClientRect();
-      drag = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, left: rect.left, top: rect.top, moved: false };
-      handle.setPointerCapture(event.pointerId);
+      drag = { control: control, pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, left: rect.left, top: rect.top, moved: false };
+      try { control.setPointerCapture(event.pointerId); } catch (error) {}
       event.preventDefault();
-    });
-    handle.addEventListener('pointermove', function (event) {
+    }
+    function moveDrag(event) {
       if (!drag || drag.pointerId !== event.pointerId) return;
       var dx = event.clientX - drag.startX;
       var dy = event.clientY - drag.startY;
@@ -257,21 +257,26 @@
       drag.moved = true;
       dock.classList.add('is-dragging');
       setPixels(drag.left + dx, drag.top + dy);
-    });
+    }
     function finishDrag(event) {
       if (!drag || drag.pointerId !== event.pointerId) return;
-      try { handle.releasePointerCapture(event.pointerId); } catch (error) {}
+      var control = drag.control;
+      try { control.releasePointerCapture(event.pointerId); } catch (error) {}
       var moved = drag.moved;
       drag = null;
       dock.classList.remove('is-dragging');
       if (moved) {
-        handle.__suppressClick = true;
+        control.__suppressClick = true;
         saveSnapped();
-        setTimeout(function () { handle.__suppressClick = false; }, 0);
+        setTimeout(function () { control.__suppressClick = false; }, 0);
       }
     }
-    handle.addEventListener('pointerup', finishDrag);
-    handle.addEventListener('pointercancel', finishDrag);
+    [handle, restore].forEach(function (control) {
+      control.addEventListener('pointerdown', function (event) { beginDrag(control, event); });
+      control.addEventListener('pointermove', moveDrag);
+      control.addEventListener('pointerup', finishDrag);
+      control.addEventListener('pointercancel', finishDrag);
+    });
     handle.addEventListener('keydown', function (event) {
       if ((event.key === 'Enter' || event.key === ' ') && !event.repeat) {
         event.preventDefault();
@@ -326,6 +331,7 @@
       requestAnimationFrame(function () { restore.focus(); });
     });
     restore.addEventListener('click', function () {
+      if (restore.__suppressClick || dock.classList.contains('is-dragging')) return;
       state.minimized = false;
       writeState(state);
       applyState();

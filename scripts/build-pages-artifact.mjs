@@ -73,6 +73,7 @@ const PUBLIC_FILES = Object.freeze([
   'js/poa-preview.js',
   'js/poa-terminal.js',
   'js/research.js',
+  'js/search-engine.js',
   'js/sections.js',
   'js/shader.js',
   'js/site-menu.js',

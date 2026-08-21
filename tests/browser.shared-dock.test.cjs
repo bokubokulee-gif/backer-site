@@ -4,8 +4,11 @@ const { test, before, after } = require('node:test');
 const assert = require('node:assert/strict');
 const http = require('node:http');
 const fs = require('node:fs/promises');
+const fsSync = require('node:fs');
 const path = require('node:path');
 const { chromium } = require('playwright');
+const SearchEngine = require('../js/search-engine.js');
+const TradeCatalog = require('../js/trades-catalog-model.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const CHROME = process.env.PLAYWRIGHT_EXECUTABLE_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
@@ -21,6 +24,15 @@ const TERMINAL_VIEWPORTS = [
   { width: 1440, height: 1000 }
 ];
 const TERMINAL_PROPOSAL_ID = 'dock_proposal_123';
+const SEARCH_CATALOG = JSON.parse(fsSync.readFileSync(path.join(ROOT, 'data/discovery-catalog.json'), 'utf8'));
+const SEARCH_INDEX = SearchEngine.__test.buildIndex(SEARCH_CATALOG);
+const SEARCH_REVIEW_REGISTRY = JSON.parse(fsSync.readFileSync(path.join(ROOT, 'data/trades-reviewed-humans.json'), 'utf8'));
+const SEARCH_TRADE_MODEL = TradeCatalog.build(SEARCH_CATALOG, {
+  reviewRegistry: SEARCH_REVIEW_REGISTRY,
+  simulationBucket: '2026-08-21T00:00:00.000Z'
+});
+const SEARCH_ELIGIBLE_PROFILE = SEARCH_INDEX.profiles.find((row) => SEARCH_TRADE_MODEL.people.some((person) => person.id === row.id));
+const SEARCH_INELIGIBLE_PROFILE = SEARCH_INDEX.profiles.find((row) => !SEARCH_TRADE_MODEL.people.some((person) => person.id === row.id));
 const TERMINAL_DOCK_STATES = ['bottom', 'left', 'right', 'top'].flatMap((edge) => [
   { edge, crossAxisRatio: 0.5, minimized: false },
   { edge, crossAxisRatio: 0.5, minimized: true }
@@ -341,6 +353,250 @@ after(async () => {
   }
 });
 
+test('Search dock route opens the dedicated retained-catalog interface from Home, Discovery, and Trades', async () => {
+  const instance = await context({ width: 1000, height: 820 });
+  const page = await instance.newPage();
+  try {
+    for (const route of ['', '#market2', '#trades']) {
+      await page.goto(`${origin}/backerdemo.html${route}`);
+      await waitForDock(page);
+      await page.locator('.backer-dock-search').click();
+      await page.waitForSelector('.search-view.sx', { state: 'visible' });
+      await page.waitForSelector('#sxProviderFilters [data-plat]', { state: 'visible' });
+      assert.match(await page.evaluate(() => location.hash), /^#search(?:\?|$)/, `${route || 'Home'} should enter #search`);
+      assert.equal(await page.locator('.sx-orbit-ring').count(), 3, 'restored social orbit should render');
+      const reducedAnimations = await page.evaluate(() => ({
+        rings: Array.from(document.querySelectorAll('.sx-orbit-ring'), (node) => getComputedStyle(node).animationName),
+        icons: Array.from(document.querySelectorAll('.sx-app-icon'), (node) => getComputedStyle(node).animationName)
+      }));
+      assert.deepEqual(reducedAnimations.rings, ['none', 'none', 'none'], 'reduced motion must stop every orbit ring');
+      assert.equal(reducedAnimations.icons.length, 15);
+      assert.ok(reducedAnimations.icons.every((name) => name === 'none'), 'reduced motion must stop every counter-orbit icon');
+      assert.equal(await page.locator('#sxInput').count(), 1, 'natural-language input should render');
+      assert.equal(await page.locator('.sxr-card').count(), 0, 'Search should not dump the full catalog before the user asks');
+      assert.equal(await page.locator('.market2-shell').count(), 0, 'Search must not fall through to Discovery');
+      assert.equal(await page.locator('.mkt').count(), 0, 'Search must not fall through to Trades');
+      assert.equal(await page.locator('.backer-dock-search').getAttribute('aria-current'), 'page');
+      if (route === '') {
+        await page.locator('#sxInput').fill('Jem');
+        await page.locator('#sxForm').press('Enter');
+        await page.waitForSelector('.sxr-card', { state: 'visible' });
+        assert.match(await page.locator('.sxr-summary h2').innerText(), /matches for “Jem”/);
+        assert.ok(await page.locator('.sxr-actions a[href^="https://"]').count() > 0, 'results should retain public source links');
+        assert.doesNotMatch(await page.locator('.search-view.sx').innerText(), /simulated catalog|generated creator/i);
+        assert.doesNotMatch(await page.locator('.search-view.sx').innerText(), /Jan 1, 1970/);
+      }
+    }
+  } finally {
+    await instance.close();
+  }
+});
+
+for (const viewport of VIEWPORTS) {
+  test(`initial Search filter clears the expanded bottom dock with all motion stopped at ${viewport.width}px`, async () => {
+    const instance = await context(viewport);
+    await instance.addInitScript(() => {
+      localStorage.setItem('backer_shared_dock_v1', JSON.stringify({ edge: 'bottom', crossAxisRatio: 0.5, minimized: false }));
+    });
+    const page = await instance.newPage();
+    try {
+      await page.goto(`${origin}/backerdemo.html#search`);
+      await page.waitForSelector('#sxProviderFilters [data-plat]', { state: 'visible' });
+      await waitForDock(page);
+      const geometry = await page.evaluate(() => {
+        const dock = document.querySelector('.backer-float-dock').getBoundingClientRect();
+        const filters = document.querySelector('.sx-plat-filter').getBoundingClientRect();
+        const overlaps = dock.left < filters.right - 1 && dock.right > filters.left + 1
+          && dock.top < filters.bottom - 1 && dock.bottom > filters.top + 1;
+        return {
+          overlaps,
+          dockTop: dock.top,
+          filterBottom: filters.bottom,
+          scrollWidth: document.documentElement.scrollWidth,
+          innerWidth,
+          rings: Array.from(document.querySelectorAll('.sx-orbit-ring'), (node) => getComputedStyle(node).animationName),
+          icons: Array.from(document.querySelectorAll('.sx-app-icon'), (node) => getComputedStyle(node).animationName)
+        };
+      });
+      assert.equal(geometry.overlaps, false, 'retained-source filters must clear the expanded dock');
+      assert.ok(geometry.filterBottom <= geometry.dockTop - 12, 'Search should retain a readable gap above the bottom dock');
+      assert.ok(geometry.scrollWidth <= geometry.innerWidth + 1, 'dock clearance must not create horizontal overflow');
+      assert.deepEqual(geometry.rings, ['none', 'none', 'none']);
+      assert.equal(geometry.icons.length, 15);
+      assert.ok(geometry.icons.every((name) => name === 'none'));
+    } finally {
+      await instance.close();
+    }
+  });
+
+  test(`top Search dock clears the fixed 95px header when expanded and minimized at ${viewport.width}px`, async () => {
+    const instance = await context(viewport);
+    const page = await instance.newPage();
+    try {
+      for (const minimized of [false, true]) {
+        await page.goto(`${origin}/backerdemo.html`);
+        await page.evaluate((value) => {
+          localStorage.setItem('backer_shared_dock_v1', JSON.stringify({ edge: 'top', crossAxisRatio: 0.5, minimized: value }));
+        }, minimized);
+        await page.reload();
+        await page.goto(`${origin}/backerdemo.html#search`);
+        await page.waitForSelector('header.site-menu-header', { state: 'visible' });
+        await page.waitForSelector('#sxProviderFilters [data-plat]', { state: 'visible' });
+        await waitForDock(page);
+        const geometry = await page.evaluate(() => {
+          const header = document.querySelector('header.site-menu-header').getBoundingClientRect();
+          const dock = document.querySelector('.backer-float-dock').getBoundingClientRect();
+          return {
+            headerBottom: header.bottom,
+            dockTop: dock.top,
+            dockBottom: dock.bottom,
+            edge: document.querySelector('.backer-float-dock').dataset.edge,
+            minimized: document.querySelector('.backer-float-dock').classList.contains('is-minimized'),
+            overlaps: dock.left < header.right - 1 && dock.right > header.left + 1
+              && dock.top < header.bottom - 1 && dock.bottom > header.top + 1,
+            scrollWidth: document.documentElement.scrollWidth,
+            innerWidth
+          };
+        });
+        assert.equal(geometry.edge, 'top');
+        assert.equal(geometry.minimized, minimized);
+        assert.equal(geometry.overlaps, false, 'top dock must never cover the fixed Backer header');
+        assert.ok(geometry.dockTop >= geometry.headerBottom + 11, 'top dock should retain the shared 12px header gap');
+        assert.ok(geometry.dockBottom <= viewport.height - 12, 'top clearance must preserve viewport bounds');
+        assert.ok(geometry.scrollWidth <= geometry.innerWidth + 1, 'top clearance must not create horizontal overflow');
+      }
+    } finally {
+      await instance.close();
+    }
+  });
+}
+
+test('Search filter respects every persisted dock edge in expanded and minimized states', async () => {
+  const instance = await context({ width: 390, height: 900 });
+  const page = await instance.newPage();
+  try {
+    for (const state of TERMINAL_DOCK_STATES) {
+      await page.goto(`${origin}/backerdemo.html`);
+      await page.evaluate((value) => localStorage.setItem('backer_shared_dock_v1', JSON.stringify(value)), state);
+      await page.reload();
+      await page.goto(`${origin}/backerdemo.html#search`);
+      await page.waitForSelector('#sxProviderFilters [data-plat]', { state: 'visible' });
+      await waitForDock(page);
+      const layout = await page.evaluate(() => {
+        const dock = document.querySelector('.backer-float-dock').getBoundingClientRect();
+        const filters = document.querySelector('.sx-plat-filter').getBoundingClientRect();
+        return {
+          edge: document.querySelector('.backer-float-dock').dataset.edge,
+          minimized: document.querySelector('.backer-float-dock').classList.contains('is-minimized'),
+          overlaps: dock.left < filters.right - 1 && dock.right > filters.left + 1
+            && dock.top < filters.bottom - 1 && dock.bottom > filters.top + 1,
+          scrollWidth: document.documentElement.scrollWidth,
+          innerWidth
+        };
+      });
+      assert.equal(layout.edge, state.edge);
+      assert.equal(layout.minimized, state.minimized);
+      assert.equal(layout.overlaps, false, `${state.edge}/${state.minimized}: filters must clear dock`);
+      assert.ok(layout.scrollWidth <= layout.innerWidth + 1);
+    }
+  } finally {
+    await instance.close();
+  }
+});
+
+test('homepage form and suggestion pill enter canonical Search with exact retained actions', async () => {
+  assert.ok(SEARCH_ELIGIBLE_PROFILE && SEARCH_INELIGIBLE_PROFILE);
+  const instance = await context({ width: 1000, height: 820 });
+  const page = await instance.newPage();
+  try {
+    await page.goto(`${origin}/backerdemo.html`);
+    await page.locator('#heroSearchInput').fill(SEARCH_ELIGIBLE_PROFILE.name);
+    await page.locator('#heroSearchInput').press('Enter');
+    const eligibleCard = page.locator(`[data-search-subject="${SEARCH_ELIGIBLE_PROFILE.id}"]`);
+    await eligibleCard.waitFor({ state: 'visible' });
+    assert.equal(await page.locator('#sxInput').inputValue(), SEARCH_ELIGIBLE_PROFILE.name);
+    assert.equal(await page.evaluate(() => new URLSearchParams(location.hash.split('?')[1] || '').get('q')), SEARCH_ELIGIBLE_PROFILE.name);
+    assert.equal(
+      await eligibleCard.locator('[data-search-action="discovery"]').getAttribute('href'),
+      `backerdemo.html#market2?view=radar&person=${SEARCH_ELIGIBLE_PROFILE.creatorId}`
+    );
+    assert.equal(
+      await eligibleCard.locator('[data-search-action="trade"]').getAttribute('href'),
+      `backerdemo.html#trades?view=profiles&subject=${SEARCH_ELIGIBLE_PROFILE.id}`
+    );
+    assert.equal(await eligibleCard.locator('[data-search-action="source"]').getAttribute('href'), SEARCH_ELIGIBLE_PROFILE.sourceUrl);
+
+    await page.locator('#sxInput').fill(SEARCH_INELIGIBLE_PROFILE.name);
+    await page.locator('#sxInput').press('Enter');
+    const ineligibleCard = page.locator(`[data-search-subject="${SEARCH_INELIGIBLE_PROFILE.id}"]`);
+    await ineligibleCard.waitFor({ state: 'visible' });
+    assert.equal(await ineligibleCard.locator('[data-search-action="trade"]').count(), 0, 'ineligible exact ID must not receive a fallback Trades route');
+    assert.equal(
+      await ineligibleCard.locator('[data-search-action="discovery"]').getAttribute('href'),
+      `backerdemo.html#market2?view=radar&person=${SEARCH_INELIGIBLE_PROFILE.creatorId}`
+    );
+
+    await page.goto(`${origin}/backerdemo.html`);
+    const pill = page.locator('#market2HeroPills button[data-q]').first();
+    const pillQuery = await pill.getAttribute('data-q');
+    await pill.click();
+    await page.waitForSelector('.search-view.sx', { state: 'visible' });
+    assert.match(await page.evaluate(() => location.hash), /^#search\?q=/);
+    assert.equal(await page.locator('#sxInput').inputValue(), pillQuery);
+    assert.equal(await page.evaluate(() => new URLSearchParams(location.hash.split('?')[1] || '').get('q')), pillQuery);
+  } finally {
+    await instance.close();
+  }
+});
+
+test('missing Search asset shows an honest error and never substitutes fixture results', async () => {
+  const instance = await context({ width: 1000, height: 820 });
+  const page = await instance.newPage();
+  try {
+    await page.route('**/js/search-engine.js*', (route) => route.abort());
+    await page.goto(`${origin}/backerdemo.html#search?q=Ali%20Abdaal`);
+    await page.waitForSelector('[data-search-state="asset-error"]', { state: 'visible' });
+    assert.match(await page.locator('[data-search-state="asset-error"]').innerText(), /retained Discovery search asset is unavailable/i);
+    assert.match(await page.locator('[data-search-state="asset-error"]').innerText(), /No fallback profiles, works, or metrics were substituted/i);
+    assert.equal(await page.locator('.sxr-card, .creator-card, [data-search-subject]').count(), 0);
+    assert.equal(await page.locator('.market2-shell, .mkt').count(), 0);
+  } finally {
+    await instance.close();
+  }
+});
+
+test('historical Market2 Search bookmark migrates on cold load and hashchange without redirecting other focus values', async () => {
+  const coldInstance = await context({ width: 1000, height: 820 });
+  const coldPage = await coldInstance.newPage();
+  try {
+    await coldPage.goto(`${origin}/backerdemo.html#market2?focus=search&q=Ali%20Abdaal`);
+    await coldPage.waitForFunction(() => location.hash === '#search?q=Ali+Abdaal');
+    await coldPage.waitForSelector('.search-view.sx', { state: 'visible' });
+    assert.equal(await coldPage.locator('#sxInput').inputValue(), 'Ali Abdaal');
+    assert.equal(await coldPage.locator('.market2-shell').count(), 0);
+  } finally {
+    await coldInstance.close();
+  }
+
+  const hashInstance = await context({ width: 1000, height: 820 });
+  const page = await hashInstance.newPage();
+  try {
+    await page.goto(`${origin}/backerdemo.html`);
+    await page.evaluate(() => { location.hash = '#market2?focus=search&q=GitHub%20developers'; });
+    await page.waitForFunction(() => location.hash === '#search?q=GitHub+developers');
+    await page.waitForSelector('.search-view.sx', { state: 'visible' });
+    assert.equal(await page.locator('#sxInput').inputValue(), 'GitHub developers');
+    assert.equal(await page.locator('.market2-shell').count(), 0);
+
+    await page.evaluate(() => { location.hash = '#market2?focus=profiles&q=Ali%20Abdaal'; });
+    await page.waitForSelector('.market2-shell', { state: 'visible' });
+    assert.match(await page.evaluate(() => location.hash), /^#market2(?:\?|$)/);
+    assert.equal(await page.locator('.search-view.sx').count(), 0);
+  } finally {
+    await hashInstance.close();
+  }
+});
+
 test('canonical and legacy marketplace hashes all render the public Trades interface', async () => {
   const instance = await context();
   const page = await instance.newPage();
@@ -393,6 +649,88 @@ test('dock drag, minimize, restore, and persisted state survive navigation to a 
     await page.locator('.backer-dock-restore').click();
     await page.waitForFunction(() => !document.querySelector('.backer-float-dock').classList.contains('is-minimized'));
     assert.equal((await persistedDock(page)).minimized, false);
+  } finally {
+    await instance.close();
+  }
+});
+
+for (const viewport of VIEWPORTS) {
+  test(`minimized dock orb drags without expanding and persists on Home/Search at ${viewport.width}px`, async () => {
+    const instance = await context(viewport);
+    const page = await instance.newPage();
+    try {
+      await page.goto(`${origin}/backerdemo.html`);
+      await waitForDock(page);
+      await page.locator('.backer-dock-minimize').click();
+      await page.waitForFunction(() => document.querySelector('.backer-float-dock').classList.contains('is-minimized'));
+      const orb = page.locator('.backer-dock-restore');
+      const box = await orb.boundingBox();
+      assert.ok(box);
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(viewport.width - 16, Math.round(viewport.height * 0.42), { steps: 10 });
+      await page.mouse.up();
+      await page.waitForFunction(() => document.querySelector('.backer-float-dock').dataset.edge === 'right');
+      assert.equal(await page.locator('.backer-float-dock').evaluate((node) => node.classList.contains('is-minimized')), true, 'drag must not restore the dock');
+      assert.equal((await persistedDock(page)).minimized, true);
+
+      await page.goto(`${origin}/backerdemo.html#search`);
+      await page.waitForSelector('.search-view.sx', { state: 'visible' });
+      await waitForDock(page);
+      assert.equal(await page.locator('.backer-float-dock').getAttribute('data-edge'), 'right');
+      assert.equal(await page.locator('.backer-float-dock').evaluate((node) => node.classList.contains('is-minimized')), true);
+      let bounds = await page.locator('.backer-float-dock').boundingBox();
+      assert.ok(bounds.x >= 0 && bounds.y >= 0 && bounds.x + bounds.width <= viewport.width + 1 && bounds.y + bounds.height <= viewport.height + 1);
+
+      const searchOrbBox = await page.locator('.backer-dock-restore').boundingBox();
+      await page.mouse.move(searchOrbBox.x + searchOrbBox.width / 2, searchOrbBox.y + searchOrbBox.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(16, Math.round(viewport.height * 0.62), { steps: 10 });
+      await page.mouse.up();
+      await page.waitForFunction(() => document.querySelector('.backer-float-dock').dataset.edge === 'left');
+      assert.equal(await page.locator('.backer-float-dock').evaluate((node) => node.classList.contains('is-minimized')), true);
+      await page.reload();
+      await page.waitForSelector('.search-view.sx', { state: 'visible' });
+      await waitForDock(page);
+      assert.equal(await page.locator('.backer-float-dock').getAttribute('data-edge'), 'left');
+      assert.equal(await page.locator('.backer-float-dock').evaluate((node) => node.classList.contains('is-minimized')), true);
+      bounds = await page.locator('.backer-float-dock').boundingBox();
+      assert.ok(bounds.x >= 0 && bounds.y >= 0 && bounds.x + bounds.width <= viewport.width + 1 && bounds.y + bounds.height <= viewport.height + 1);
+      await page.locator('.backer-dock-restore').click();
+      await page.waitForFunction(() => !document.querySelector('.backer-float-dock').classList.contains('is-minimized'));
+    } finally {
+      await instance.close();
+    }
+  });
+}
+
+test('minimized dock orb accepts touch-pointer drag without accidental restore', async () => {
+  const instance = await context({ width: 390, height: 900 });
+  const page = await instance.newPage();
+  try {
+    await page.goto(`${origin}/backerdemo.html#search`);
+    await waitForDock(page);
+    await page.locator('.backer-dock-minimize').click();
+    await page.waitForFunction(() => document.querySelector('.backer-float-dock').classList.contains('is-minimized'));
+    await page.locator('.backer-dock-restore').evaluate((control) => {
+      const box = control.getBoundingClientRect();
+      const dispatch = (type, x, y) => control.dispatchEvent(new PointerEvent(type, {
+        bubbles: true,
+        cancelable: true,
+        pointerId: 73,
+        pointerType: 'touch',
+        isPrimary: true,
+        button: 0,
+        clientX: x,
+        clientY: y
+      }));
+      dispatch('pointerdown', box.left + box.width / 2, box.top + box.height / 2);
+      dispatch('pointermove', 18, 410);
+      dispatch('pointerup', 18, 410);
+    });
+    await page.waitForFunction(() => document.querySelector('.backer-float-dock').dataset.edge === 'left');
+    assert.equal(await page.locator('.backer-float-dock').evaluate((node) => node.classList.contains('is-minimized')), true);
+    assert.equal((await persistedDock(page)).edge, 'left');
   } finally {
     await instance.close();
   }
