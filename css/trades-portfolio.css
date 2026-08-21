@@ -34,6 +34,10 @@
 .tp-position-contract>span{display:block;color:var(--accent);font-family:var(--mono);font-size:10px;font-weight:650;letter-spacing:.07em;text-transform:uppercase}
 .tp-position-contract h4{margin-top:6px;color:var(--ink);font-size:14px;font-weight:650;line-height:1.45}
 .tp-position-contract p{margin-top:5px;color:var(--muted);font-size:12px;line-height:1.45}
+.tp-receipt-economics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.tp-receipt-economics>div{padding:10px 12px;border:1px solid var(--line-2);border-radius:10px;background:var(--card)}
+.tp-receipt-economics span{display:block;color:var(--muted);font-size:12px;font-weight:600}
+.tp-receipt-economics b{display:block;margin-top:4px;color:var(--ink);font-family:var(--mono);font-size:14px;font-weight:650}
 .tp-position-links{grid-column:1/-1;display:flex;gap:18px;padding-top:12px;border-top:1px solid var(--line-2)}
 .tp-position-links a{color:var(--muted);font-size:12px;font-weight:600;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:4px}
 .tp-position-links>span{margin-left:auto;color:var(--muted-2);font-family:var(--mono);font-size:10px}
@@ -69,6 +73,7 @@ html[data-theme="light"] .tp-position-media{background:#f3efe8;border-color:rgba
   .tp-side{min-width:58px}
   .tp-position-links{gap:12px;overflow-x:auto;white-space:nowrap}
   .tp-position-links>span{margin-left:0}
+  .tp-receipt-economics{grid-template-columns:1fr}
   .tp-empty{padding:32px 20px}
 }
 @media(prefers-reduced-motion:reduce){.tp-position-links a{transition:none}}

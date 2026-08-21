@@ -112,6 +112,16 @@ test('launch discovery snapshot covers every acquired public source', () => {
   }
 });
 
+test('GitHub snapshot retains the official owner account type for every account', () => {
+  const raw = readCatalog();
+  const identities = raw.platformIdentities.filter((row) => row.provider === 'github');
+  assert.ok(identities.length >= 900, 'GitHub account coverage regressed below the bounded search window');
+  assert.ok(identities.every((row) => ['user', 'organization'].includes(row.accountType)),
+    'GitHub account without retained official owner.type');
+  assert.ok(identities.some((row) => row.accountType === 'user'));
+  assert.ok(identities.some((row) => row.accountType === 'organization'));
+});
+
 test('credential-free Bilibili and reviewed Twitch snapshots stay materially source-backed', () => {
   const catalog = normalizeCatalog(readCatalog());
   const bilibiliIdentities = catalog.platformIdentities.filter((row) => row.provider === 'bilibili');

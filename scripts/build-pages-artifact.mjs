@@ -86,7 +86,7 @@ const PUBLIC_FILES = Object.freeze([
   'js/vendor/cobe.mjs',
   'data/discovery-catalog.json',
   'data/market2-people.json',
-  'data/trades-reviewed-humans.json',
+  'data/trades-eligible-accounts.json',
   'img/backer-mark.png',
   'img/pitch/altman.jpg',
   'img/pitch/andreessen.jpg',

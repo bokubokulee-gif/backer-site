@@ -4,20 +4,52 @@
    ========================================================= */
 (function () {
   'use strict';
-  const B = window.BACKER;
+  let B = window.BACKER || null;
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const app = $('#app');
   let tradesAssets = null;
   let tradesAssetError = null;
+  let legacyDataAsset = null;
+  let legacyMarketingReady = false;
   window.__backerLegacyArchiveAllowed = false;
+
+  function ensureLegacyData() {
+    if (B || window.BACKER) {
+      B = window.BACKER;
+      return Promise.resolve(B);
+    }
+    if (!legacyDataAsset) {
+      legacyDataAsset = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'js/data.js?v=20260821-lazy-1';
+        script.dataset.backerLegacyData = 'true';
+        script.onload = () => {
+          B = window.BACKER || null;
+          if (B) resolve(B);
+          else reject(new Error('Legacy homepage data did not initialize'));
+        };
+        script.onerror = () => reject(new Error('Legacy homepage data unavailable'));
+        document.head.appendChild(script);
+      });
+    }
+    return legacyDataAsset;
+  }
+
+  async function ensureLegacyMarketing() {
+    if (legacyMarketingReady) return;
+    await ensureLegacyData();
+    getPortfolio();
+    initInjections();
+    legacyMarketingReady = true;
+  }
 
   function loadTradesStyle() {
     if (document.querySelector('link[data-backer-trades]')) return Promise.resolve();
     return new Promise((resolve, reject) => {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
-      link.href = 'css/market.css?v=20260821-trades-2';
+      link.href = 'css/market.css?v=20260821-account-metrics-1';
       link.dataset.backerTrades = 'true';
       link.onload = resolve;
       link.onerror = () => reject(new Error('Trades stylesheet unavailable'));
@@ -43,8 +75,8 @@
     if (!tradesAssets) {
       tradesAssets = loadTradesStyle()
         .then(() => loadTradesScript('js/market-draft-store.js?v=20260821-1', 'store'))
-        .then(() => loadTradesScript('js/trades-catalog-model.js?v=20260821-real-catalog-2', 'catalog'))
-        .then(() => loadTradesScript('js/market.js?v=20260821-real-catalog-2', 'view'));
+        .then(() => loadTradesScript('js/trades-catalog-model.js?v=20260821-account-metrics-1', 'catalog'))
+        .then(() => loadTradesScript('js/market.js?v=20260821-account-metrics-1', 'view'));
     }
     return tradesAssets;
   }
@@ -233,6 +265,7 @@
     }
     if (view === 'portfolio') { window.location.href = 'portfolio.html'; return; }
     if (view === 'home') {
+      try { await ensureLegacyMarketing(); } catch (error) { console.error(error); }
       document.body.classList.remove('body-app', 'mkt-full', 'mkt2-full');
       app.classList.add('hidden'); app.setAttribute('aria-hidden', 'true');
       if (dock) {
@@ -251,6 +284,13 @@
     document.body.classList.toggle('mkt2-full', view === 'market2');
     app.classList.remove('hidden'); app.setAttribute('aria-hidden', 'false');
     window.scrollTo({ top: 0, behavior: 'auto' });
+    if (view === 'creator') {
+      try { await ensureLegacyMarketing(); }
+      catch (error) {
+        app.innerHTML = '<div class="mkt-fatal" role="alert"><b>This profile could not load.</b><span>Refresh to retry the legacy profile data.</span></div>';
+        return;
+      }
+    }
     if (view === 'market2') { renderMarket2(); setDock('market2'); }
     else if (view === 'trades') { renderMarket(); setDock('trades'); }
     else if (view === 'creator') { renderCreator(arg); setDock('market2'); }
@@ -280,7 +320,7 @@
   function renderMarket() {
     // Trades (js/market.js) owns this view when present.
     if (window.BackerMarket) { window.BackerMarket.render(app); return; }
-    app.innerHTML = '<div class="mkt-fatal" role="alert"><b>Trades could not load.</b><span>' + (tradesAssetError ? 'Refresh to retry the demo simulation board and your device-local proposals.' : 'The Trades module did not initialize.') + '</span><a href="backerdemo.html#market2">Return to Discovery</a></div>';
+    app.innerHTML = '<div class="mkt-fatal" role="alert"><b>Trades could not load.</b><span>' + (tradesAssetError ? 'Refresh to retry the retained catalog, paper quotes, and your device-local proposals.' : 'The Trades module did not initialize.') + '</span><a href="backerdemo.html#market2">Return to Discovery</a></div>';
   }
 
   /* ---------- CREATOR DETAIL ---------- */
@@ -718,17 +758,17 @@
   }
 
   function boot() {
-    getPortfolio(); // seed
     initNav();
     initReveal();
-    initInjections();
     initHero();
     initTyped();
     var oldDockHome = $('.dock-home');
     if (oldDockHome) oldDockHome.classList.add('active');
     // Discovery and Trades are separate public product surfaces. Historical
     // market hashes canonicalize to Trades.
-    try { routeFromLocation(); } catch (e) {}
+    try {
+      if (!routeFromLocation()) ensureLegacyMarketing().catch(error => console.error(error));
+    } catch (e) {}
   }
   window.addEventListener('hashchange', () => { try { routeFromLocation(); } catch (e) {} });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);

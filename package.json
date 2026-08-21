@@ -12,7 +12,7 @@
     "lint": "node scripts/lint.js",
     "test": "node --test tests/core*.test.js tests/backend*.test.js tests/market2-v21-release.test.js",
     "test:backend": "node --test tests/backend*.test.js",
-    "test:browser": "node --test tests/browser*.test.cjs",
+    "test:browser": "node --test --test-concurrency=1 tests/browser*.test.cjs",
     "test:core": "node --test tests/core*.test.js",
     "sync:github": "node scripts/sync-github-momentum.mjs",
     "sync:market2": "node scripts/sync-market2-people.mjs",

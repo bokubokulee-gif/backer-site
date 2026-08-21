@@ -15,7 +15,7 @@ const SNAPSHOT = path.join(ROOT, 'data', 'market2-people.json');
 const TRADE_MODEL = TradeCatalog.build(
   JSON.parse(fsSync.readFileSync(path.join(ROOT, 'data', 'discovery-catalog.json'), 'utf8')),
   {
-    reviewRegistry: JSON.parse(fsSync.readFileSync(path.join(ROOT, 'data', 'trades-reviewed-humans.json'), 'utf8')),
+    reviewRegistry: JSON.parse(fsSync.readFileSync(path.join(ROOT, 'data', 'trades-eligible-accounts.json'), 'utf8')),
     simulationBucket: '2026-08-21T08:00:00.000Z'
   }
 );
@@ -321,8 +321,30 @@ test('Market2 loads trending discovery, keeps research controls safe, and pagina
     assert.equal(await tab.locator('[data-m2-create="content"]').count(), 12);
     assert.equal(await tab.locator('[data-m2-create]').filter({ hasText: 'Draft custom' }).count(), 21,
       'every first-glance profile and content card can still open the five-step custom proposal composer');
-    assert.equal(await tab.locator('[data-m2-trade]').count(), 0,
-      'connected test-only subjects must not gain a Trade growth link without an exact reviewed catalog contract');
+    const connectedRoutes = await tab.evaluate(() => ({
+      profiles: Array.from(document.querySelectorAll('.m2-profile-card')).map((card) => ({
+        id: card.querySelector('[data-m2-create="person"]')?.getAttribute('data-creator-id') || '',
+        tradeHref: card.querySelector('[data-m2-trade="person"]')?.getAttribute('href') || ''
+      })),
+      contents: Array.from(document.querySelectorAll('.m2-feed-card')).map((card) => ({
+        id: card.querySelector('[data-m2-create="content"]')?.getAttribute('data-content-id') || '',
+        tradeHref: card.querySelector('[data-m2-trade="content"]')?.getAttribute('href') || ''
+      }))
+    }));
+    for (const row of connectedRoutes.profiles) {
+      const eligible = TRADE_PROFILE_IDS.has(row.id);
+      assert.equal(Boolean(row.tradeHref), eligible, `${row.id} connected profile route must match exact account eligibility`);
+      if (eligible) assert.equal(row.tradeHref, `backerdemo.html#trades?view=profiles&subject=${encodeURIComponent(row.id)}`);
+    }
+    for (const row of connectedRoutes.contents) {
+      const eligible = TRADE_CONTENT_IDS.has(row.id);
+      assert.equal(Boolean(row.tradeHref), eligible, `${row.id} connected content route must match exact work eligibility`);
+      if (eligible) assert.equal(row.tradeHref, `backerdemo.html#trades?view=contents&subject=${encodeURIComponent(row.id)}`);
+    }
+    assert.equal(connectedRoutes.profiles.find((row) => row.id === 'public-person-youtube-neon-byte')?.tradeHref || '', '',
+      'a connected test-only profile must not inherit another account contract');
+    assert.equal(connectedRoutes.contents.find((row) => row.id === 'neon-video-1')?.tradeHref || '', '',
+      'a connected test-only work must not inherit another work contract');
     assert.ok(await tab.locator('[data-m2-create="person"]').first().getAttribute('href').then((href) => /^backercreate\.html#draft\?scope=person&person=/.test(href)));
     assert.ok(await tab.locator('[data-m2-create="content"]').first().getAttribute('href').then((href) => /^backercreate\.html#draft\?scope=content&person=.+&content=/.test(href)));
     assert.equal(await tab.locator('.m2-ticket, .m2-research-boundary').count(), 0);
@@ -404,8 +426,6 @@ test('Discovery Trade growth links fail closed to exact reviewed Trades subjects
     }));
 
     assert.ok(rendered.profiles.some((row) => !TRADE_PROFILE_IDS.has(row.id)), 'the first Discovery profile set should exercise an ineligible research profile');
-    assert.ok(rendered.contents.some((row) => !TRADE_CONTENT_IDS.has(row.id)), 'the first Discovery content set should exercise an ineligible work');
-
     for (const row of rendered.profiles) {
       const eligible = TRADE_PROFILE_IDS.has(row.id);
       assert.equal(Boolean(row.tradeHref), eligible, `${row.id} profile Trade growth CTA must match exact reviewed eligibility`);
@@ -568,7 +588,19 @@ test('a creator work continuation makes the fifth and sixth retained records vis
   try {
     await tab.goto(`${origin}/backerdemo.html#market2`);
     await tab.waitForSelector('.m2-profile-card');
+    const queryPage = tab.waitForResponse((response) => {
+      if (!response.url().endsWith('/api/discovery/search')) return false;
+      const request = response.request();
+      if (request.method() !== 'POST') return false;
+      try {
+        const body = request.postDataJSON();
+        return body.query === 'Deep Owner' && !body.cursor;
+      } catch (_error) {
+        return false;
+      }
+    });
     await tab.fill('#m2Search', 'Deep Owner');
+    await queryPage;
     await tab.waitForFunction(() => Array.from(document.querySelectorAll('.m2-person-name')).some((node) => node.textContent === 'Deep Owner'));
     assert.match(await tab.locator('.m2-profile-card', { hasText: 'Deep Owner' }).locator('.m2-profile-metrics').innerText(), /native metrics not retained/i);
     assert.equal(await tab.locator('.m2-feed-card').count(), 4);
@@ -760,6 +792,13 @@ test('Market2 light theme keeps visible text and controls at readable computed c
         }).filter((row) => row.actual < row.minimum);
       });
       assert.deepEqual(fontFailures, [], `font-size failures at ${viewport.width}x${viewport.height}: ${JSON.stringify(fontFailures)}`);
+      if (viewport.width === 648) {
+        const clippedMetricLabels = await tab.evaluate(() => Array.from(document.querySelectorAll('.m2-profile-metrics a span'))
+          .filter((node) => node.getClientRects().length)
+          .map((node) => ({ text: node.textContent.trim(), clientWidth: node.clientWidth, scrollWidth: node.scrollWidth, clientHeight: node.clientHeight, scrollHeight: node.scrollHeight }))
+          .filter((row) => row.scrollWidth > row.clientWidth + 1 || row.scrollHeight > row.clientHeight + 1));
+        assert.deepEqual(clippedMetricLabels, [], `648px profile metric labels must render complete words: ${JSON.stringify(clippedMetricLabels)}`);
+      }
     } finally {
       await context.close();
     }
@@ -1020,10 +1059,13 @@ test('Trades owns the public market route and every legacy market alias renders 
       await tab.goto(`${origin}/backerdemo.html${route}`);
       await tab.waitForSelector('.mkt');
       assert.equal(await tab.locator('.market2-shell, .m2-local-archive').count(), 0);
-      assert.match(await tab.locator('.mkt-header').innerText(), /Backer Trades[\s\S]*Trade future growth in people and work[\s\S]*Real profiles and original content from Discovery/i);
+      assert.match(await tab.locator('.mkt-header').innerText(), /Backer Trades[\s\S]*Trade future growth in creator accounts and work[\s\S]*Source-backed creator accounts and original content from Discovery/i);
       assert.equal(await tab.locator('.mkt-paper-status').count(), 1);
       assert.equal((await tab.locator('.mkt-paper-status').innerText()).trim(), 'Paper market · modeled quotes');
-      assert.match(await tab.locator('.mkt-catalog-line').innerText(), /\$10,000(?:\.00)?\s+paper cash[\s\S]*26\s+profiles[\s\S]*43\s+works/i);
+      const inventory = await tab.locator('.mkt-catalog-line').innerText();
+      assert.match(inventory, /\$10,000(?:\.00)?\s+paper cash/i);
+      assert.match(inventory, new RegExp(`${TRADE_MODEL.people.length.toLocaleString('en-US')}\\s+creator-account markets`, 'i'));
+      assert.match(inventory, new RegExp(`${TRADE_MODEL.contents.length.toLocaleString('en-US')}\\s+work markets`, 'i'));
       assert.doesNotMatch(await tab.locator('.mkt').innerText(), /Ada Maker|Marcus Stillwater|BACKER_MKT|Demo simulations/i);
     } finally {
       await context.close();
@@ -1052,7 +1094,7 @@ test('a Discovery filter drawer does not reopen after a Trades round trip', asyn
 
 test('restored Search stays source-backed while legacy synthetic creators remain absent', async () => {
   const html = await fs.readFile(path.join(ROOT, 'backerdemo.html'), 'utf8');
-  assert.match(html, /js\/search-engine\.js\?v=20260821-retained-1/);
+  assert.match(html, /js\/search-engine\.js\?v=20260821-account-metrics-1/);
   assert.equal((html.match(/data-view="search"/g) || []).length, 2);
   assert.doesNotMatch(html, /Jeff Delaney|ThePrimeagen|Theo Browne|Wes Bos/);
   assert.match(html, /id="market2HeroSearch"/);

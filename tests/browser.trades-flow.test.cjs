@@ -13,9 +13,9 @@ const ROOT = path.resolve(__dirname, '..');
 const CHROME = process.env.PLAYWRIGHT_EXECUTABLE_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const PORTFOLIO_SENTINEL = '[{"id":"existing-position-must-survive"}]';
 const TRADE_CATALOG = JSON.parse(fsSync.readFileSync(path.join(ROOT, 'data', 'discovery-catalog.json'), 'utf8'));
-const TRADE_REVIEW = JSON.parse(fsSync.readFileSync(path.join(ROOT, 'data', 'trades-reviewed-humans.json'), 'utf8'));
+const TRADE_ELIGIBILITY = JSON.parse(fsSync.readFileSync(path.join(ROOT, 'data', 'trades-eligible-accounts.json'), 'utf8'));
 const TRADE_MODEL = TradeCatalog.build(TRADE_CATALOG, {
-  reviewRegistry: TRADE_REVIEW,
+  reviewRegistry: TRADE_ELIGIBILITY,
   simulationBucket: '2026-08-21T08:00:00.000Z'
 });
 
@@ -138,12 +138,103 @@ after(async () => {
   }
 });
 
+test('direct Trades loads the complete scaled inventory without loading Discovery data or mounting a giant card wall', async () => {
+  assert.ok(TRADE_MODEL.people.length >= 1000, `expected at least 1,000 creator-account markets, received ${TRADE_MODEL.people.length}`);
+  assert.ok(TRADE_MODEL.contents.length >= 1000, `expected at least 1,000 work markets, received ${TRADE_MODEL.contents.length}`);
+  const context = await newContext({ width: 1440, height: 1000 });
+  const page = await context.newPage();
+  const requestedPaths = [];
+  page.on('request', (request) => {
+    try { requestedPaths.push(new URL(request.url()).pathname); } catch (_error) {}
+  });
+  try {
+    await page.goto(`${origin}/backerdemo.html#trades?view=profiles`);
+    await page.locator('.mkt-catalog-card.is-profile').first().waitFor({ state: 'visible', timeout: 30000 });
+
+    assert.equal(requestedPaths.some((pathname) => pathname.endsWith('/js/data.js')), false,
+      'a direct #trades route must not request the heavy Discovery data bundle');
+    assert.equal(requestedPaths.some((pathname) => pathname.endsWith('/js/market-data.js')), false,
+      'a direct #trades route must not request legacy market fixtures');
+    const inventory = await page.locator('.mkt-catalog-line').innerText();
+    assert.match(inventory, new RegExp(`${TRADE_MODEL.people.length.toLocaleString('en-US')}\\s+creator-account markets`, 'i'));
+    assert.match(inventory, new RegExp(`${TRADE_MODEL.contents.length.toLocaleString('en-US')}\\s+work markets`, 'i'));
+    assert.match(inventory, new RegExp(`${(TRADE_MODEL.people.length + TRADE_MODEL.contents.length).toLocaleString('en-US')}\\s+active contracts`, 'i'));
+    assert.equal(await page.locator('.mkt-catalog-card').count(), 15, 'browse routes mount exactly one 15-card page');
+    assert.equal(await page.locator('.mkt-pagination').count(), 2, 'page controls remain reachable above and below the bounded result slice');
+    assert.match(await page.locator('.mkt-pagination').first().innerText(), new RegExp(`Showing\\s+1-15\\s+of\\s+${TRADE_MODEL.people.length.toLocaleString('en-US')}`, 'i'));
+
+    const firstPageFirst = await page.locator('.mkt-catalog-card').first().getAttribute('data-mkt-subject-id');
+    await page.locator('.mkt-pagination').first().getByRole('button', { name: 'Next' }).click();
+    await page.waitForFunction((id) => document.querySelector('.mkt-catalog-card')?.getAttribute('data-mkt-subject-id') !== id, firstPageFirst);
+    assert.equal(await page.locator('.mkt-catalog-card').count(), 15);
+    assert.match(await page.locator('.mkt-pagination').first().innerText(), /Showing\s+16-30\s+of/i);
+
+    const lastProfile = TRADE_MODEL.people.at(-1);
+    await page.goto(`${origin}/backerdemo.html#trades?view=profiles&subject=${encodeURIComponent(lastProfile.id)}`);
+    const routed = page.locator(`.mkt-catalog-card[data-mkt-subject-id="${lastProfile.id}"]`);
+    await routed.waitFor({ state: 'visible', timeout: 30000 });
+    assert.equal(await page.locator('.mkt-catalog-card').count(), 15, 'a far deep link is hoisted instead of mounting all preceding rows');
+    assert.equal(await page.locator('.mkt-catalog-card').first().getAttribute('data-mkt-subject-id'), lastProfile.id);
+
+    await page.goto(`${origin}/backerdemo.html#trades?view=profiles`);
+    await page.locator('.mkt-catalog-card.is-profile').first().waitFor({ state: 'visible', timeout: 30000 });
+    const providerValue = await page.locator('[data-trades-provider] option').nth(1).getAttribute('value');
+    const expectedProviderCount = TRADE_MODEL.people.filter((row) => String(row.contract?.metric?.provider || '').toLowerCase() === providerValue).length;
+    assert.ok(providerValue && expectedProviderCount > 15, 'the scale fixture needs a provider facet larger than one page');
+    await page.locator('[data-trades-provider]').selectOption(providerValue);
+    await page.waitForFunction((expected) => document.querySelector('.mkt-pagination')?.textContent.includes(expected), expectedProviderCount.toLocaleString('en-US'));
+    assert.match(await page.locator('.mkt-pagination').first().innerText(), new RegExp(`of\\s+${expectedProviderCount.toLocaleString('en-US')}\\s+matching`, 'i'));
+    assert.equal(await page.locator('.mkt-catalog-card').count(), 15, 'provider filtering runs across the full catalog but keeps one bounded page');
+
+    await page.locator('[data-trades-provider]').selectOption('all');
+    const metricValue = await page.locator('[data-trades-metric] option').nth(1).getAttribute('value');
+    const expectedMetricCount = TRADE_MODEL.people.filter((row) => String(row.contract?.metric?.key || '').toLowerCase() === metricValue).length;
+    assert.ok(metricValue && expectedMetricCount > 0);
+    await page.locator('[data-trades-metric]').selectOption(metricValue);
+    await page.waitForFunction((expected) => document.querySelector('.mkt-pagination')?.textContent.includes(expected), expectedMetricCount.toLocaleString('en-US'));
+    assert.match(await page.locator('.mkt-pagination').first().innerText(), new RegExp(`of\\s+${expectedMetricCount.toLocaleString('en-US')}\\s+matching`, 'i'));
+    assert.ok(await page.locator('.mkt-catalog-card').count() <= 15);
+
+    await page.locator('[data-trades-metric]').selectOption('all');
+    const nameCounts = new Map();
+    for (const row of TRADE_MODEL.people) nameCounts.set(row.name, (nameCounts.get(row.name) || 0) + 1);
+    const searchedProfile = [...TRADE_MODEL.people].reverse().find((row) => row.name && nameCounts.get(row.name) === 1);
+    assert.ok(searchedProfile, 'the scaled inventory needs a uniquely searchable profile');
+    await page.locator('[data-trades-query]').fill(searchedProfile.name);
+    await page.locator(`.mkt-catalog-card[data-mkt-subject-id="${searchedProfile.id}"]`).waitFor({ state: 'visible', timeout: 30000 });
+    assert.ok(await page.locator('.mkt-catalog-card').count() <= 15, 'full-inventory search stays bounded');
+
+    for (const [width, expectedColumns] of [[1440, 3], [648, 2], [390, 1], [320, 1]]) {
+      await page.setViewportSize({ width, height: 900 });
+      const layout = await page.evaluate(() => {
+        const grid = document.querySelector('.mkt-catalog-grid');
+        const card = document.querySelector('.mkt-catalog-card');
+        const action = document.querySelector('.mkt-side-actions button');
+        const support = document.querySelector('.mkt-description');
+        return {
+          columns: getComputedStyle(grid).gridTemplateColumns.split(/\s+/).filter(Boolean).length,
+          cardWidth: card.getBoundingClientRect().width,
+          actionHeight: action.getBoundingClientRect().height,
+          supportFont: Number.parseFloat(getComputedStyle(support).fontSize),
+          innerWidth,
+          scrollWidth: document.documentElement.scrollWidth
+        };
+      });
+      assert.equal(layout.columns, expectedColumns, `${width}px must render ${expectedColumns} catalog column(s)`);
+      assert.ok(layout.cardWidth > 0 && layout.actionHeight >= 44 && layout.supportFont >= 15);
+      assert.ok(layout.scrollWidth <= layout.innerWidth + 1, `${width}px Trades must not overflow horizontally`);
+    }
+  } finally {
+    await context.close();
+  }
+});
+
 test('real-catalog Trades deep link, paper account, Back/Fade ticket, receipt, position, and personalized feed stay coherent', async () => {
-  assert.equal(TRADE_MODEL.people.length, 26);
-  assert.equal(TRADE_MODEL.contents.length, 43);
+  assert.ok(TRADE_MODEL.people.length >= 1000);
+  assert.ok(TRADE_MODEL.contents.length >= 1000);
   const subject = TRADE_MODEL.people.at(-1);
-  assert.ok(subject && subject.id && subject.contract && subject.simulation, 'the reviewed model needs a complete profile contract');
-  const context = await newContext({ width: 390, height: 900 });
+  assert.ok(subject && subject.id && subject.contract && subject.simulation, 'the eligible model needs a complete creator-account contract');
+  const context = await newContext({ width: 320, height: 780 });
   const page = await context.newPage();
   const requestedPaths = [];
   page.on('request', (request) => {
@@ -166,17 +257,35 @@ test('real-catalog Trades deep link, paper account, Back/Fade ticket, receipt, p
       '#trades must never request the legacy fixture data module');
     assert.equal(await page.locator('.mkt-paper-status').count(), 1, 'the board uses one compact paper-model status');
     assert.equal((await page.locator('.mkt-paper-status').innerText()).trim(), 'Paper market · modeled quotes');
-    assert.match(await page.locator('.mkt-catalog-line').innerText(), /\$20(?:\.00)?\s+paper cash[\s\S]*26\s+profiles[\s\S]*43\s+works/i);
+    const inventoryText = await page.locator('.mkt-catalog-line').innerText();
+    assert.match(inventoryText, /\$20(?:\.00)?\s+paper cash/i);
+    assert.match(inventoryText, new RegExp(`${TRADE_MODEL.people.length.toLocaleString('en-US')}\\s+creator-account markets`, 'i'));
+    assert.match(inventoryText, new RegExp(`${TRADE_MODEL.contents.length.toLocaleString('en-US')}\\s+work markets`, 'i'));
     assert.equal(await page.locator('.mkt-disclosure').count(), 0);
     assert.doesNotMatch(await page.locator('.mkt').innerText(), /Ada Maker|Marcus Stillwater|BACKER_MKT|Demo simulations/i);
     assert.equal((await card.locator('.mkt-contract h3').innerText()).trim(), subject.contract.question);
     assert.match(await card.locator('.mkt-contract-facts').innerText(), new RegExp(subject.contract.baseline.label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
     assert.match(await card.locator('.mkt-contract-facts').innerText(), new RegExp(subject.contract.target.label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-    assert.match(await card.locator('.mkt-sim-market').innerText(), /\d+¢[\s\S]*[+-]\d+(?:\.\d)? pts[\s\S]*\$[\d.]+[KM]?\s+paper vol[\s\S]*Back[\s\S]*Fade/i);
+    assert.match(await card.locator('.mkt-sim-market').innerText(), /\d+¢[\s\S]*[+-]\d+(?:\.\d)? pts[\s\S]*\$[\d,.]+[KM]?\s+paper vol[\s\S]*Back[\s\S]*Fade/i);
     assert.match(await card.locator('[data-mkt-source-open]').first().getAttribute('href'), /^https?:\/\//);
 
     await card.locator('[data-mkt-trade="BACK"]').click();
     await page.waitForFunction(() => document.activeElement?.matches('.mkt-ticket'));
+    const primaryTicketGeometry = await page.evaluate(() => {
+      const dialog = document.querySelector('.mkt-ticket').getBoundingClientRect();
+      const amount = document.querySelector('.mkt-ticket-amount').getBoundingClientRect();
+      const actions = document.querySelector('.mkt-ticket-actions').getBoundingClientRect();
+      const contract = document.querySelector('.mkt-ticket-contract').getBoundingClientRect();
+      const quote = document.querySelector('.mkt-ticket-quote').getBoundingClientRect();
+      const totals = document.querySelector('.mkt-ticket-totals').getBoundingClientRect();
+      const error = document.querySelector('.mkt-ticket-error').getBoundingClientRect();
+      const ack = document.querySelector('.mkt-ticket-ack').getBoundingClientRect();
+      return { dialog, contract, quote, amount, totals, error, ack, actions };
+    });
+    assert.ok(primaryTicketGeometry.amount.top >= primaryTicketGeometry.dialog.top - 1,
+      'the paper amount must appear in the first mobile ticket viewport');
+    assert.ok(primaryTicketGeometry.actions.bottom <= primaryTicketGeometry.dialog.bottom + 1,
+      `the primary paper action must appear before the supporting details on mobile: ${JSON.stringify(primaryTicketGeometry)}`);
     assert.equal(await page.locator('.mkt-ticket').getAttribute('tabindex'), '-1');
     assert.equal(await page.locator('.mkt-ticket-layer').evaluate((layer) => [...layer.parentElement.children]
       .filter((child) => child !== layer).every((child) => child.inert && child.getAttribute('aria-hidden') === 'true')), true,
@@ -185,7 +294,10 @@ test('real-catalog Trades deep link, paper account, Back/Fade ticket, receipt, p
     assert.equal(await page.locator('[data-ticket-confirm]').isDisabled(), true, 'paper cash below the amount blocks the fill');
     assert.match(await page.locator('[data-ticket-error]').innerText(), /Amount exceeds available paper cash/i);
     assert.equal((await page.locator('.mkt-ticket-contract h3').innerText()).trim(), subject.contract.question);
-    assert.match(await page.locator('.mkt-ticket').innerText(), /Resolution rule[\s\S]*Resolve BACK if[\s\S]*Resolution source[\s\S]*Estimated payout if correct[\s\S]*Profit if correct/i);
+    const blockedTicketText = await page.locator('.mkt-ticket').innerText();
+    assert.match(blockedTicketText, /Resolution rule[\s\S]*Resolve BACK if/i);
+    assert.match(blockedTicketText, /Resolution source/i);
+    assert.match(blockedTicketText, /Estimated payout if correct[\s\S]*Profit if correct/i);
     await page.keyboard.press('Escape');
     await page.waitForFunction((id) => document.activeElement?.matches(`[data-mkt-trade="BACK"][data-subject-id="${id}"]`), subject.id);
 
@@ -199,16 +311,22 @@ test('real-catalog Trades deep link, paper account, Back/Fade ticket, receipt, p
     await card.waitFor({ state: 'visible', timeout: 20000 });
     await card.locator('[data-mkt-trade="FADE"]').click();
     await page.waitForFunction(() => document.activeElement?.matches('.mkt-ticket'));
-    assert.match(await page.locator('.mkt-ticket').innerText(), /Available paper cash[\s\S]*\$10,000(?:\.00)?[\s\S]*Native metric[\s\S]*Observed baseline[\s\S]*Resolution rule[\s\S]*Resolve BACK if[\s\S]*Estimated payout if correct[\s\S]*Profit if correct/i);
+    const ticketText = await page.locator('.mkt-ticket').innerText();
+    assert.match(ticketText, /Available cash[\s\S]*\$10,000(?:\.00)?/i);
+    assert.match(ticketText, /Estimated payout if correct[\s\S]*Profit if correct/i);
+    assert.match(ticketText, /Native metric[\s\S]*Observed baseline[\s\S]*Resolution rule[\s\S]*Resolve BACK if/i);
     const ticketClose = page.locator('.mkt-ticket [data-ticket-close]').first();
     await ticketClose.focus();
     await page.keyboard.press('Shift+Tab');
-    assert.equal(await page.evaluate(() => document.activeElement?.matches('.mkt-ticket a[data-mkt-draft]')), true,
+    assert.equal(await page.evaluate(() => {
+      const links = document.querySelectorAll('.mkt-ticket-details a');
+      return document.activeElement === links[links.length - 1];
+    }), true,
       'Shift+Tab from the first ticket control must wrap to the last enabled control');
     await page.locator('[data-ticket-amount]').fill('25');
     await page.locator('[data-ticket-ack]').check();
     assert.equal(await page.locator('[data-ticket-confirm]').isEnabled(), true);
-    await page.locator('[data-ticket-confirm]').focus();
+    await page.locator('.mkt-ticket-details a').last().focus();
     await page.keyboard.press('Tab');
     assert.equal(await page.evaluate(() => document.activeElement?.matches('.mkt-ticket [data-ticket-close]')), true,
       'Tab from the last ticket control must wrap to the close control');
@@ -248,7 +366,7 @@ test('real-catalog Trades deep link, paper account, Back/Fade ticket, receipt, p
     assert.equal(await page.locator('.mkt-feed-section').first().locator('.mkt-catalog-card').first().getAttribute('data-mkt-subject-id'), subject.id,
       'the exact traded profile should lead the device-personalized profile feed');
     await page.getByRole('button', { name: 'Reset personalization' }).click();
-    await page.waitForFunction(() => document.querySelector('.mkt-personalization')?.textContent.includes('Default catalog order restored'));
+    await page.waitForFunction(() => document.querySelector('.mkt-personalization')?.textContent.includes('Default order restored'));
     const resetState = await page.evaluate(() => ({
       watches: localStorage.getItem('backer_market2_watch_v1'),
       actions: localStorage.getItem('backer_discovery_interest_v1'),
@@ -266,10 +384,38 @@ test('real-catalog Trades deep link, paper account, Back/Fade ticket, receipt, p
   }
 });
 
+test('desktop paper ticket keeps its primary actions inside the initial dialog viewport', async () => {
+  const subject = TRADE_MODEL.people[0];
+  assert.ok(subject?.id, 'the model needs a profile subject for desktop ticket geometry');
+  const context = await newContext({ width: 1440, height: 1000 });
+  const page = await context.newPage();
+  try {
+    await page.goto(`${origin}/backerdemo.html#trades?view=profiles&subject=${encodeURIComponent(subject.id)}`);
+    const card = page.locator(`.mkt-catalog-card[data-mkt-subject-kind="profile"][data-mkt-subject-id="${subject.id}"]`);
+    await card.waitFor({ state: 'visible', timeout: 20000 });
+    await card.locator('[data-mkt-trade="BACK"]').click();
+    await page.waitForFunction(() => document.activeElement?.matches('.mkt-ticket'));
+    const geometry = await page.evaluate(() => {
+      const dialog = document.querySelector('.mkt-ticket').getBoundingClientRect();
+      const actions = document.querySelector('.mkt-ticket-actions').getBoundingClientRect();
+      return {
+        dialog: { top: dialog.top, bottom: dialog.bottom },
+        actions: { top: actions.top, bottom: actions.bottom },
+        scrollTop: document.querySelector('.mkt-ticket').scrollTop
+      };
+    });
+    assert.equal(geometry.scrollTop, 0, 'the ticket must open at its top');
+    assert.ok(geometry.actions.top >= geometry.dialog.top - 1, `desktop actions must begin inside the dialog: ${JSON.stringify(geometry)}`);
+    assert.ok(geometry.actions.bottom <= geometry.dialog.bottom - 11, `desktop actions need a readable bottom inset: ${JSON.stringify(geometry)}`);
+  } finally {
+    await context.close();
+  }
+});
+
 test('Trades profile and content cards return their exact retained subjects to Discovery', async () => {
   const profile = TRADE_MODEL.people.find((row) => row.researchHref && row.contract && row.simulation);
   const content = TRADE_MODEL.contents.find((row) => row.researchHref && row.contract && row.simulation);
-  assert.ok(profile && content, 'the reviewed catalog needs exact Discovery return routes');
+  assert.ok(profile && content, 'the eligible catalog needs exact Discovery return routes');
   const context = await newContext();
   const page = await context.newPage();
   try {
@@ -309,7 +455,7 @@ test('Trades profile and content cards return their exact retained subjects to D
     assert.equal(await aliasFocused.locator(`[data-m2-create="content"][data-content-id="${content.id}"]`).count(), 1,
       'the content= compatibility route must retain the same exact work ID');
 
-    await page.goto(`${origin}/backerdemo.html?route-check=ineligible#trades?view=contents&subject=${encodeURIComponent('not-a-reviewed-work')}`);
+    await page.goto(`${origin}/backerdemo.html?route-check=ineligible#trades?view=contents&subject=${encodeURIComponent('not-an-eligible-work')}`);
     await page.locator('.mkt-empty.is-route-missing').waitFor({ state: 'visible', timeout: 20000 });
     assert.equal(await page.locator('.mkt-catalog-card.is-route-focus').count(), 0,
       'an ineligible subject must fail closed without substituting another card');
@@ -412,7 +558,7 @@ test('watching an exact work reorders personalized content and reset restores de
     assert.match(await page.locator('.mkt-personalization').innerText(), /1 watched work/i);
 
     await page.getByRole('button', { name: 'Reset personalization' }).click();
-    await page.waitForFunction(() => document.querySelector('.mkt-personalization')?.textContent.includes('Default catalog order restored'));
+    await page.waitForFunction(() => document.querySelector('.mkt-personalization')?.textContent.includes('Default order restored'));
     await page.waitForFunction((id) => document.querySelectorAll('.mkt-feed-section')[1]?.querySelector('.mkt-catalog-card.is-content')?.getAttribute('data-mkt-subject-id') === id, defaultFirst);
     const reset = await page.evaluate(() => ({
       work: localStorage.getItem('backer_trades_work_watch_v1'),

@@ -370,6 +370,9 @@ function addOwner(input) {
     observedAt: input.observedAt
   });
   if (!identity) return null;
+  if (input.accountType === 'user' || input.accountType === 'organization') {
+    identity.accountType = input.accountType;
+  }
   creator.primaryIdentityId = identity.id;
   bundle.creators.push(creator);
   bundle.platformIdentities.push(identity);
@@ -1225,7 +1228,14 @@ async function collectGitHub() {
     ? checkpoint.since
     : new Date(Date.parse(generatedAt) - 30 * 86_400_000).toISOString().slice(0, 10);
   const startPage = resuming ? boundedInteger(checkpoint.nextPage, 1, 1, GITHUB_ANONYMOUS_RESULT_PAGES) : 1;
-  const result = await exhaustPages({
+  // A complete GitHub search pass replaces the provider snapshot. Keeping the
+  // old snapshot in the bundle would retain organization owners collected
+  // before account.type was enforced. Restore only when no fresh page can be
+  // retained, preserving the previous last-good snapshot on source failure.
+  const priorSnapshot = clearProviderSnapshot('github');
+  let result;
+  try {
+    result = await exhaustPages({
     startPage,
     pageSize: perPage,
     providerPageLimit: GITHUB_ANONYMOUS_RESULT_PAGES,
@@ -1253,11 +1263,13 @@ async function collectGitHub() {
     for (const repository of repositories) {
       const account = repository && repository.owner || {};
       const login = String(account.login || '').trim();
-      if (!login || !account.html_url || !repository.html_url) continue;
+      if (!login || !['User', 'Organization'].includes(account.type)
+        || !account.html_url || !repository.html_url) continue;
       const owner = addOwner({
         provider: 'github', nativeId: String(account.id || login), displayName: login,
         bio: '', avatarUrl: account.avatar_url, handle: login, profileUrl: account.html_url,
-        verified: null, observedAt: generatedAt
+        verified: null, observedAt: generatedAt,
+        accountType: account.type === 'User' ? 'user' : 'organization'
       });
       const record = addContent(owner, {
         provider: 'github', nativeId: String(repository.id || repository.full_name || ''),
@@ -1282,7 +1294,13 @@ async function collectGitHub() {
       // keeps the zero-credential collector inside its public allowance.
       await sleep(6_250);
     }
-  });
+    });
+  } catch (error) {
+    restoreProviderSnapshot(priorSnapshot);
+    throw error;
+  }
+
+  if (!runCounts('github').contentRecords) restoreProviderSnapshot(priorSnapshot);
 
   acquisitionCheckpoints.github = result.hasMore
     ? {
@@ -1776,7 +1794,7 @@ async function collectYouTubeViaInstalledRouter(priorRun) {
   });
   const counts = runCounts('youtube');
   const scopeKey = JSON.stringify({
-    endpoint: 'youtube-public-search', backend: discovery.backend,
+    endpoint: 'youtube-public-search',
     resultLimit, minimumViews, queries: YOUTUBE_QUERIES
   });
   acquisitionCheckpoints.youtube = {
@@ -2086,6 +2104,28 @@ export function materialCatalogView(value) {
   return JSON.stringify(copy);
 }
 
+export function sanitizePublicCheckpoints(value) {
+  const output = structuredClone(value && typeof value === 'object' ? value : {});
+  for (const checkpoint of Object.values(output)) {
+    if (!checkpoint || typeof checkpoint !== 'object' || typeof checkpoint.scopeKey !== 'string') continue;
+    try {
+      const scope = JSON.parse(checkpoint.scopeKey);
+      if (!scope || typeof scope !== 'object' || Array.isArray(scope)) continue;
+      delete scope.backend;
+      delete scope.command;
+      delete scope.tool;
+      checkpoint.scopeKey = JSON.stringify(scope);
+    } catch (_error) {
+      // Non-JSON scope keys identify public provider/methodology only. Never
+      // expose an internal acquisition implementation if one slips into them.
+      if (PRIVATE_ACQUISITION_MARKER.test(checkpoint.scopeKey) || /yt-dlp/i.test(checkpoint.scopeKey)) {
+        delete checkpoint.scopeKey;
+      }
+    }
+  }
+  return output;
+}
+
 async function collectWithGuard(provider, collector) {
   const prior = priorProviderRun(provider);
   try {
@@ -2171,7 +2211,7 @@ async function main() {
     workClusters: buildWorkClusters(deduped.contentRecords),
     metricObservations: deduped.metricObservations,
     providerRuns: normalizedRuns,
-    acquisitionCheckpoints
+    acquisitionCheckpoints: sanitizePublicCheckpoints(acquisitionCheckpoints)
   };
   const changed = !existingCatalog || materialCatalogView(catalog) !== materialCatalogView(existingCatalog);
   if (!changed) {

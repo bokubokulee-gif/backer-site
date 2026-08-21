@@ -66,7 +66,7 @@ function control(attributes) {
   };
 }
 
-function makeHarness({ hash = '#trades', account = null, initial = {} } = {}) {
+function makeHarness({ hash = '#trades', account = null, initial = {}, model = sampleModel() } = {}) {
   const values = new Map();
   Object.entries(initial).forEach(([key, value]) => values.set(key, typeof value === 'string' ? value : JSON.stringify(value)));
   if (account) values.set('backer_trades_account_v1', JSON.stringify(account));
@@ -84,7 +84,7 @@ function makeHarness({ hash = '#trades', account = null, initial = {} } = {}) {
   };
   const windowObject = {
     BACKER: { fmt: String },
-    BackerTradeCatalog: { load: async () => sampleModel() },
+    BackerTradeCatalog: { load: async () => model },
     BackerMarketDraftStore: { list: () => [] },
     localStorage: storage,
     location: { hash, href: `https://backer.test/backerdemo.html${hash}`, pathname: '/backerdemo.html', search: '' },
@@ -131,6 +131,20 @@ test('Trades renders only retained catalog subjects with a complete priced contr
   assert.doesNotMatch(target.innerHTML, /Ada Maker|Marcus Stillwater|BACKER_MKT|Demo simulations/i);
 });
 
+test('Trades labels retained refresh-failure evidence as last-good on cards and the ticket', async () => {
+  const model = sampleModel();
+  const person = model.people[0];
+  person.metrics[0].freshness = { state: 'last_good', capturedAt: person.metrics[0].observedAt };
+  person.contract.baseline.freshness = { state: 'last_good', capturedAt: person.metrics[0].observedAt };
+  person.contract.metric.freshness = { state: 'last_good', capturedAt: person.metrics[0].observedAt };
+  const { target, listeners } = makeHarness({ model });
+  await settle();
+  assert.match(target.innerHTML, /Last good · observed/);
+  click(listeners, { 'data-mkt-trade': 'BACK', 'data-subject-kind': 'profile', 'data-subject-id': 'person-alice' });
+  assert.match(target.innerHTML, /Observed baseline/);
+  assert.match(target.innerHTML, /Last good · observed/);
+});
+
 test('Trades is people-first, personalized from device-local Discovery signals, and separate from legacy portfolio', () => {
   assert.match(market, /backer_market2_watch_v1/);
   assert.match(market, /backer_trades_work_watch_v1/);
@@ -144,7 +158,7 @@ test('Trades is people-first, personalized from device-local Discovery signals, 
   assert.match(market, /watchedPersonIds/);
   assert.match(market, /watchedContentIds/);
   assert.match(market, /market_work_watch_changed/);
-  assert.match(market, /Reset personalization/);
+  assert.match(market, /aria-label="Reset personalization"[^>]*>Reset feed/);
 });
 
 test('content Watch uses exact device-local work state and visibly personalizes that work', async () => {
@@ -185,14 +199,18 @@ test('reset personalization restores default ranking without deleting proposals,
   assert.equal(JSON.parse(values.get('backer_trades_account_v1')).cash, 9975);
   assert.equal(JSON.parse(values.get('backer_site_market_draft_v2:keep')).draftId, 'keep');
   assert.ok(Date.parse(values.get('backer_trades_personalization_reset_v1')) > 0);
-  assert.match(target.innerHTML, /Default catalog order restored/);
-  assert.match(target.innerHTML, /Saved proposals, receipts, positions, and paper cash were kept/);
+  assert.match(target.innerHTML, /Default order restored/);
+  assert.match(target.innerHTML, /All saved data remains/);
 });
 
 test('public Trades loader requests the real catalog model before the view and never loads fixture market data', () => {
   const catalogIndex = app.indexOf("loadTradesScript('js/trades-catalog-model.js");
   const viewIndex = app.indexOf("loadTradesScript('js/market.js");
   assert.ok(catalogIndex >= 0 && viewIndex > catalogIndex, 'the catalog projection must initialize before the Trades view');
+  assert.match(app, /css\/market\.css\?v=20260821-account-metrics-1/);
+  assert.match(app, /js\/trades-catalog-model\.js\?v=20260821-account-metrics-1/);
+  assert.match(app, /js\/market\.js\?v=20260821-account-metrics-1/);
+  assert.match(market, /js\/trades-catalog-model\.js\?v=20260821-account-metrics-1/);
   assert.doesNotMatch(app, /loadTradesScript\(['"]js\/market-data\.js/);
   assert.doesNotMatch(market, /BACKER_MKT|backer_portfolio_v1/);
 });
@@ -210,7 +228,7 @@ test('an ineligible Discovery deep link fails closed instead of showing another 
   const { target } = makeHarness({ hash: '#trades?view=profiles&subject=not-reviewed' });
   await settle();
   assert.match(target.innerHTML, /Not listed in Trades/);
-  assert.match(target.innerHTML, /no reviewed paper contract/);
+  assert.match(target.innerHTML, /no eligible paper contract/);
   assert.doesNotMatch(target.innerHTML, /data-mkt-trade=/);
   assert.doesNotMatch(target.innerHTML, /Alice Rivera/);
 });
@@ -260,7 +278,7 @@ test('Trades CSS uses Backer-native three-column hierarchy with readable respons
   assert.match(css, /\.mkt-catalog-grid\{[^}]*grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
   assert.match(css, /@media \(max-width:1160px\)[\s\S]*\.mkt-catalog-grid,[^}]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
   assert.match(css, /@media \(max-width:720px\)[\s\S]*\.mkt-catalog-grid,[^}]*grid-template-columns:1fr/);
-  assert.match(css, /\.mkt-contract h3\{[^}]*font-size:16px/);
+  assert.match(css, /\.mkt-contract h3\{[^}]*font-size:17px/);
   assert.match(css, /\.mkt-side-actions button\{[^}]*min-height:44px/);
   assert.match(css, /html\[data-theme="light"\]/);
   assert.match(css, /prefers-reduced-motion:reduce/);

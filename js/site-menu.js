@@ -6,7 +6,7 @@
     {
       key: 'product', label: 'Product', items: [
         { label: 'Discovery', description: 'Find source-linked creators and original work.', href: BASE + 'backerdemo.html#market2', icon: 'market' },
-        { label: 'Trades', description: 'Review people-growth proposals and demo simulations.', href: BASE + 'backerdemo.html#trades', icon: 'trades' },
+        { label: 'Trades', description: 'Back or fade source-backed creator accounts and work.', href: BASE + 'backerdemo.html#trades', icon: 'trades' },
         { label: 'AI Search', description: 'Discover people through retained public evidence.', href: BASE + 'backerdemo.html#search', icon: 'search' },
         { label: 'Portfolio', href: BASE + 'portfolio.html', icon: 'portfolio' }
       ]

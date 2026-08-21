@@ -313,8 +313,12 @@
   }
   function loadCatalog() {
     if (!loadPromise) {
-      loadPromise = root.fetch(CATALOG_URL, { cache: 'no-store', credentials: 'same-origin' })
-        .then(function (response) { if (!response.ok) throw new Error('Catalog request failed (' + response.status + ')'); return response.json(); })
+      var model = root.BackerTradeCatalog;
+      var source = model && typeof model.loadSourceJSON === 'function'
+        ? model.loadSourceJSON(CATALOG_URL, 'Search catalog')
+        : root.fetch(CATALOG_URL, { cache: 'no-store', credentials: 'same-origin' })
+          .then(function (response) { if (!response.ok) throw new Error('Catalog request failed (' + response.status + ')'); return response.json(); });
+      loadPromise = source
         .then(function (raw) { catalogRaw = raw; index = buildIndex(raw); return index; });
     }
     return loadPromise;
@@ -324,14 +328,7 @@
       tradeEligibilityPromise = loadCatalog().then(function () {
         var model = root.BackerTradeCatalog;
         if (!model || typeof model.load !== 'function') return emptyTradeEligibility();
-        return model.load({
-          fetch: function (url, options) {
-            if (String(url) === CATALOG_URL) {
-              return Promise.resolve({ ok: true, status: 200, json: function () { return Promise.resolve(catalogRaw); } });
-            }
-            return root.fetch(url, options);
-          }
-        }).then(buildTradeEligibility).catch(function () { return emptyTradeEligibility(); });
+        return model.load({ catalog: catalogRaw }).then(buildTradeEligibility).catch(function () { return emptyTradeEligibility(); });
       }).catch(function () { return emptyTradeEligibility(); }).then(function (eligibility) {
         tradeEligibility = eligibility;
         return tradeEligibility;
@@ -364,8 +361,11 @@
   }
   function metricHTML(metric) {
     if (!metric) return '<span class="sxr-evidence">Source link retained</span>';
+    var lastGood = metric.freshness && String(metric.freshness.state || '').toLowerCase() === 'last_good';
     return '<a class="sxr-metric" href="' + esc(safeURL(metric.sourceUrl)) + '" target="_blank" rel="noopener noreferrer" aria-label="Open metric source">'
-      + '<strong>' + esc(formatNumber(metric.value)) + '</strong> ' + esc(metricLabel(metric.metric).toLowerCase()) + '<span>' + esc(providerLabel(metric.provider)) + ' · ' + esc(formatDate(metric.observedAt)) + '</span></a>';
+      + '<strong>' + esc(formatNumber(metric.value)) + '</strong> ' + esc(metricLabel(metric.metric).toLowerCase()) + '<span>'
+      + esc(providerLabel(metric.provider)) + ' · ' + (lastGood ? 'Last good · observed ' : '')
+      + esc(formatDate(metric.observedAt)) + '</span></a>';
   }
   function mediaHTML(row) {
     var source = row.kind === 'profile' ? row.avatar : row.thumbnail;

@@ -26,7 +26,7 @@ const TERMINAL_VIEWPORTS = [
 const TERMINAL_PROPOSAL_ID = 'dock_proposal_123';
 const SEARCH_CATALOG = JSON.parse(fsSync.readFileSync(path.join(ROOT, 'data/discovery-catalog.json'), 'utf8'));
 const SEARCH_INDEX = SearchEngine.__test.buildIndex(SEARCH_CATALOG);
-const SEARCH_REVIEW_REGISTRY = JSON.parse(fsSync.readFileSync(path.join(ROOT, 'data/trades-reviewed-humans.json'), 'utf8'));
+const SEARCH_REVIEW_REGISTRY = JSON.parse(fsSync.readFileSync(path.join(ROOT, 'data/trades-eligible-accounts.json'), 'utf8'));
 const SEARCH_TRADE_MODEL = TradeCatalog.build(SEARCH_CATALOG, {
   reviewRegistry: SEARCH_REVIEW_REGISTRY,
   simulationBucket: '2026-08-21T00:00:00.000Z'
@@ -392,6 +392,94 @@ test('Search dock route opens the dedicated retained-catalog interface from Home
   }
 });
 
+test('Search honors light theme and keeps result metadata human-readable on mobile', async () => {
+  const instance = await context({ width: 320, height: 900 });
+  await instance.addInitScript(() => localStorage.setItem('backer_theme_v1', 'light'));
+  const page = await instance.newPage();
+  try {
+    const query = SEARCH_ELIGIBLE_PROFILE?.name || SEARCH_INDEX.profiles[0].name;
+    await page.goto(`${origin}/backerdemo.html#search?q=${encodeURIComponent(query)}`);
+    await page.waitForSelector('.sxr-card', { state: 'visible', timeout: 20000 });
+    const rendering = await page.evaluate(() => {
+      const rgb = (value) => (value.match(/[\d.]+/g) || []).slice(0, 3).map(Number);
+      const luminance = (value) => {
+        const [r, g, b] = rgb(value).map((channel) => {
+          const normalized = channel / 255;
+          return normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      };
+      const contrast = (a, b) => {
+        const high = Math.max(luminance(a), luminance(b));
+        const low = Math.min(luminance(a), luminance(b));
+        return (high + 0.05) / (low + 0.05);
+      };
+      const view = document.querySelector('.search-view.sx');
+      const card = document.querySelector('.sxr-card');
+      const metadata = ['.sxr-provider', '.sxr-date', '.sxr-metric>span'].map((selector) => {
+        const node = document.querySelector(selector);
+        return { selector, fontSize: Number.parseFloat(getComputedStyle(node).fontSize), color: getComputedStyle(node).color };
+      });
+      const viewStyle = getComputedStyle(view);
+      const cardStyle = getComputedStyle(card);
+      return {
+        theme: document.documentElement.dataset.theme,
+        viewBackground: viewStyle.backgroundColor,
+        viewColor: viewStyle.color,
+        cardBackground: cardStyle.backgroundColor,
+        cardColor: cardStyle.color,
+        viewContrast: contrast(viewStyle.color, viewStyle.backgroundColor),
+        inputFont: Number.parseFloat(getComputedStyle(document.querySelector('#sxInput')).fontSize),
+        ledeFont: Number.parseFloat(getComputedStyle(document.querySelector('.sx-lede')).fontSize),
+        metadata,
+        scrollWidth: document.documentElement.scrollWidth,
+        innerWidth
+      };
+    });
+    assert.equal(rendering.theme, 'light');
+    assert.notEqual(rendering.viewBackground, 'rgb(8, 8, 10)', 'light Search must not retain the dark canvas');
+    assert.ok(rendering.viewContrast >= 7, `Search light text contrast should be strong, got ${rendering.viewContrast}`);
+    assert.ok(rendering.inputFont >= 16, 'mobile natural-language input must stay readable and avoid browser zoom');
+    assert.ok(rendering.ledeFont >= 14, 'mobile Search support copy must stay at least 14px');
+    assert.ok(rendering.metadata.every((item) => item.fontSize >= 12), `result metadata must be at least 12px: ${JSON.stringify(rendering.metadata)}`);
+    assert.ok(rendering.scrollWidth <= rendering.innerWidth + 1, 'light mobile Search must not overflow horizontally');
+  } finally {
+    await instance.close();
+  }
+});
+
+test('Search, Discovery, and Trades share one retained catalog load per page session', async () => {
+  const instance = await context({ width: 1000, height: 820 });
+  const page = await instance.newPage();
+  const requests = { catalog: 0, eligibility: 0 };
+  page.on('request', (request) => {
+    const pathname = new URL(request.url()).pathname;
+    if (pathname.endsWith('/data/discovery-catalog.json')) requests.catalog += 1;
+    if (pathname.endsWith('/data/trades-eligible-accounts.json')) requests.eligibility += 1;
+  });
+  try {
+    await page.goto(`${origin}/backerdemo.html`);
+    await waitForDock(page);
+
+    await page.locator('.backer-dock-search').click();
+    await page.waitForSelector('#sxProviderFilters [data-plat]', { state: 'visible' });
+    await page.waitForFunction(() => window.BackerSearch && window.BackerTradeCatalog);
+
+    await page.locator('.backer-dock-discovery').click();
+    await page.waitForSelector('.market2-shell', { state: 'visible' });
+    await page.waitForFunction(() => document.querySelectorAll('.m2-profile-card').length > 0);
+
+    await page.locator('.backer-dock-trades').click();
+    await page.waitForSelector('.mkt-catalog-card', { state: 'visible' });
+    await page.waitForFunction(() => document.querySelector('.mkt-catalog-line') && /1,\d{3}/.test(document.querySelector('.mkt-catalog-line').textContent));
+
+    assert.deepEqual(requests, { catalog: 1, eligibility: 1 }, 'hash-route projections must reuse the same retained source promises');
+    assert.equal(await page.evaluate(() => Object.keys(window.__backerRetainedSourcePromises || {}).length), 2);
+  } finally {
+    await instance.close();
+  }
+});
+
 for (const viewport of VIEWPORTS) {
   test(`initial Search filter clears the expanded bottom dock with all motion stopped at ${viewport.width}px`, async () => {
     const instance = await context(viewport);
@@ -418,8 +506,8 @@ for (const viewport of VIEWPORTS) {
           icons: Array.from(document.querySelectorAll('.sx-app-icon'), (node) => getComputedStyle(node).animationName)
         };
       });
-      assert.equal(geometry.overlaps, false, 'retained-source filters must clear the expanded dock');
-      assert.ok(geometry.filterBottom <= geometry.dockTop - 12, 'Search should retain a readable gap above the bottom dock');
+      assert.equal(geometry.overlaps, false, `retained-source filters must clear the expanded dock: ${JSON.stringify(geometry)}`);
+      assert.ok(geometry.filterBottom <= geometry.dockTop - 12, `Search should retain a readable gap above the bottom dock: ${JSON.stringify(geometry)}`);
       assert.ok(geometry.scrollWidth <= geometry.innerWidth + 1, 'dock clearance must not create horizontal overflow');
       assert.deepEqual(geometry.rings, ['none', 'none', 'none']);
       assert.equal(geometry.icons.length, 15);
@@ -604,16 +692,201 @@ test('canonical and legacy marketplace hashes all render the public Trades inter
     for (const hash of ['#trades', '#market', '#market-archive']) {
       await page.goto(`${origin}/backerdemo.html${hash}`);
       await page.waitForSelector('.mkt-header h1', { state: 'visible' });
-      assert.equal(await page.locator('.mkt-header h1').innerText(), 'Trade future growth in people and work', `${hash} should render Trades`);
+      assert.equal(await page.locator('.mkt-header h1').innerText(), 'Trade future growth in creator accounts and work', `${hash} should render Trades`);
       assert.equal(await page.locator('.backer-dock-trades').getAttribute('aria-current'), 'page', `${hash} should mark Trades active`);
       assert.equal(await page.locator('.mkt-paper-status').count(), 1, `${hash} should show one compact paper-market status`);
       assert.equal((await page.locator('.mkt-paper-status').innerText()).trim(), 'Paper market · modeled quotes');
       assert.equal(await page.locator('.mkt-disclosure').count(), 0, `${hash} should not restore the abandoned full-width demo disclosure`);
-      assert.match(await page.locator('.mkt-catalog-line').innerText(), /\$10,000(?:\.00)?\s+paper cash[\s\S]*26\s+profiles[\s\S]*43\s+works/i);
+      const inventory = await page.locator('.mkt-catalog-line').innerText();
+      assert.match(inventory, /\$10,000(?:\.00)?\s+paper cash/i);
+      assert.match(inventory, new RegExp(`${SEARCH_TRADE_MODEL.people.length.toLocaleString('en-US')}\\s+creator-account markets`, 'i'));
+      assert.match(inventory, new RegExp(`${SEARCH_TRADE_MODEL.contents.length.toLocaleString('en-US')}\\s+work markets`, 'i'));
       assert.doesNotMatch(await page.locator('.mkt').innerText(), /Ada Maker|Marcus Stillwater|BACKER_MKT|Demo simulations/i);
     }
   } finally {
     await instance.close();
+  }
+});
+
+test('initial short-mobile Trades actions clear the expanded bottom dock', async () => {
+  const instance = await context({ width: 320, height: 780 });
+  await instance.addInitScript(() => {
+    localStorage.setItem('backer_shared_dock_v1', JSON.stringify({ edge: 'bottom', crossAxisRatio: 0.5, minimized: false }));
+  });
+  const page = await instance.newPage();
+  try {
+    await page.goto(`${origin}/backerdemo.html#trades?view=feed`);
+    await page.waitForSelector('.mkt-personalization-actions', { state: 'visible' });
+    await waitForDock(page);
+    const geometry = await page.evaluate(() => {
+      const dock = document.querySelector('.backer-float-dock').getBoundingClientRect();
+      const actions = document.querySelector('.mkt-personalization-actions').getBoundingClientRect();
+      const section = document.querySelector('.mkt-personalization').getBoundingClientRect();
+      const intro = document.querySelector('.mkt-personalization > div:first-child').getBoundingClientRect();
+      const button = document.querySelector('.mkt-personalization-actions button');
+      const link = document.querySelector('.mkt-personalization-actions a');
+      return {
+        dock,
+        section,
+        intro,
+        actions,
+        overlaps: dock.left < actions.right - 1 && dock.right > actions.left + 1
+          && dock.top < actions.bottom - 1 && dock.bottom > actions.top + 1,
+        buttonHeight: button.getBoundingClientRect().height,
+        buttonFont: Number.parseFloat(getComputedStyle(button).fontSize),
+        linkFont: Number.parseFloat(getComputedStyle(link).fontSize),
+        scrollY,
+        scrollWidth: document.documentElement.scrollWidth,
+        innerWidth
+      };
+    });
+    assert.equal(geometry.scrollY, 0, 'the clearance must hold on the untouched first view');
+    assert.equal(geometry.overlaps, false, `personalization actions must clear the dock: ${JSON.stringify(geometry)}`);
+    assert.ok(geometry.actions.bottom <= geometry.dock.top - 11, `actions should retain a 12px dock gap: ${JSON.stringify(geometry)}`);
+    assert.ok(geometry.buttonHeight >= 44, 'reset remains a full-size touch target');
+    assert.ok(geometry.buttonFont >= 14 && geometry.linkFont >= 14, 'compact labels must remain readable');
+    assert.ok(geometry.scrollWidth <= geometry.innerWidth + 1, 'short-mobile clearance must not create horizontal overflow');
+  } finally {
+    await instance.close();
+  }
+});
+
+test('mobile Trades reserves readable space around every floating-dock edge', async () => {
+  const instance = await context({ width: 390, height: 900 });
+  const page = await instance.newPage();
+  try {
+    for (const edge of ['bottom', 'left', 'right', 'top']) {
+      for (const minimized of [false, true]) {
+        await page.goto(`${origin}/backerdemo.html#trades`);
+        await page.evaluate(({ edge: nextEdge, minimized: nextMinimized }) => {
+          localStorage.setItem('backer_shared_dock_v1', JSON.stringify({
+            edge: nextEdge,
+            crossAxisRatio: 0.5,
+            minimized: nextMinimized
+          }));
+        }, { edge, minimized });
+        await page.reload();
+        await page.waitForSelector('.mkt-personalization', { state: 'visible', timeout: 20000 });
+        await page.waitForFunction(({ edge: nextEdge, minimized: nextMinimized }) => {
+          const dock = document.querySelector('.backer-float-dock');
+          return dock?.dataset.edge === nextEdge
+            && dock.classList.contains('is-minimized') === nextMinimized;
+        }, { edge, minimized });
+        const geometry = await page.evaluate(() => {
+          const rect = (selector) => {
+            const value = document.querySelector(selector).getBoundingClientRect();
+            return { left: value.left, right: value.right, top: value.top, bottom: value.bottom };
+          };
+          const dock = rect('.backer-float-dock');
+          const regions = ['.mkt-header', '.mkt-tabs', '.mkt-personalization', '.mkt-feed-section .mkt-section-head']
+            .map((selector) => ({ selector, rect: rect(selector) }));
+          const intersects = (a, b) => a.left < b.right - 1 && a.right > b.left + 1
+            && a.top < b.bottom - 1 && a.bottom > b.top + 1;
+          return {
+            overlaps: regions.filter((entry) => intersects(dock, entry.rect)).map((entry) => entry.selector),
+            dock,
+            regions,
+            clearanceTop: getComputedStyle(document.documentElement).getPropertyValue('--backer-dock-clearance-top'),
+            marketPaddingTop: getComputedStyle(document.querySelector('.mkt')).paddingTop,
+            marketRect: rect('.mkt'),
+            appRect: rect('#app'),
+            appPaddingTop: getComputedStyle(document.querySelector('#app')).paddingTop,
+            scrollWidth: document.documentElement.scrollWidth,
+            innerWidth
+          };
+        });
+        assert.deepEqual(
+          geometry.overlaps,
+          [],
+          `${edge}/${minimized ? 'minimized' : 'expanded'} dock must not obscure Trades hierarchy: ${JSON.stringify(geometry)}`
+        );
+        assert.ok(geometry.scrollWidth <= geometry.innerWidth + 1, `${edge} dock clearance must not create horizontal overflow`);
+      }
+    }
+  } finally {
+    await instance.close();
+  }
+});
+
+test('tablet Trades keeps the first market heading clear of the bottom dock', async () => {
+  const instance = await context({ width: 648, height: 900 });
+  const page = await instance.newPage();
+  try {
+    for (const minimized of [false, true]) {
+      await page.goto(`${origin}/backerdemo.html#trades`);
+      await page.evaluate((nextMinimized) => {
+        localStorage.setItem('backer_shared_dock_v1', JSON.stringify({
+          edge: 'bottom',
+          crossAxisRatio: 0.5,
+          minimized: nextMinimized
+        }));
+      }, minimized);
+      await page.reload();
+      await page.waitForSelector('.mkt-feed-section .mkt-section-head', { state: 'visible', timeout: 20000 });
+      await page.waitForFunction((nextMinimized) => {
+        const dock = document.querySelector('.backer-float-dock');
+        return dock?.dataset.edge === 'bottom'
+          && dock.classList.contains('is-minimized') === nextMinimized;
+      }, minimized);
+      const geometry = await page.evaluate(() => {
+        const dock = document.querySelector('.backer-float-dock').getBoundingClientRect();
+        const heading = document.querySelector('.mkt-feed-section .mkt-section-head').getBoundingClientRect();
+        return {
+          dock: { left: dock.left, right: dock.right, top: dock.top, bottom: dock.bottom },
+          heading: { left: heading.left, right: heading.right, top: heading.top, bottom: heading.bottom },
+          overlaps: dock.left < heading.right - 1 && dock.right > heading.left + 1
+            && dock.top < heading.bottom - 1 && dock.bottom > heading.top + 1,
+          scrollWidth: document.documentElement.scrollWidth,
+          innerWidth
+        };
+      });
+      assert.equal(geometry.overlaps, false, `648px bottom dock must clear the first market heading: ${JSON.stringify(geometry)}`);
+      assert.ok(geometry.heading.top >= geometry.dock.bottom + 11, `heading needs a readable dock gap: ${JSON.stringify(geometry)}`);
+      assert.ok(geometry.scrollWidth <= geometry.innerWidth + 1, 'tablet dock clearance must not create horizontal overflow');
+    }
+  } finally {
+    await instance.close();
+  }
+});
+
+test('right-edge dock leaves the complete Trades tab scrollport interactive', async () => {
+  for (const viewport of [{ width: 320, height: 900 }, { width: 390, height: 900 }, { width: 648, height: 900 }]) {
+    const instance = await context(viewport);
+    const page = await instance.newPage();
+    try {
+      for (const minimized of [false, true]) {
+        await page.goto(`${origin}/backerdemo.html#trades`);
+        await page.evaluate((nextMinimized) => {
+          localStorage.setItem('backer_shared_dock_v1', JSON.stringify({
+            edge: 'right',
+            crossAxisRatio: 0.5,
+            minimized: nextMinimized
+          }));
+        }, minimized);
+        await page.reload();
+        await page.waitForSelector('.mkt-tabs button', { state: 'visible', timeout: 20000 });
+        await page.waitForFunction((nextMinimized) => {
+          const dock = document.querySelector('.backer-float-dock');
+          return dock?.dataset.edge === 'right'
+            && dock.classList.contains('is-minimized') === nextMinimized;
+        }, minimized);
+        const geometry = await page.evaluate(() => {
+          const dock = document.querySelector('.backer-float-dock').getBoundingClientRect();
+          const rail = document.querySelector('.mkt-tabs').getBoundingClientRect();
+          return {
+            dock: { left: dock.left, right: dock.right, top: dock.top, bottom: dock.bottom },
+            rail: { left: rail.left, right: rail.right, top: rail.top, bottom: rail.bottom },
+            gap: dock.left - rail.right,
+            scrollWidth: document.documentElement.scrollWidth,
+            innerWidth
+          };
+        });
+        assert.ok(geometry.gap >= 11, `${viewport.width}px right-edge dock needs a 12px tab hit-area gap: ${JSON.stringify(geometry)}`);
+        assert.ok(geometry.scrollWidth <= geometry.innerWidth + 1, `${viewport.width}px right dock must not create horizontal overflow`);
+      }
+    } finally {
+      await instance.close();
+    }
   }
 });
 

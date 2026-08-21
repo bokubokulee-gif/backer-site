@@ -7,7 +7,7 @@ const root = path.resolve(__dirname, '..');
 const search = require('../js/search-engine.js');
 const trades = require('../js/trades-catalog-model.js');
 const catalog = JSON.parse(fs.readFileSync(path.join(root, 'data/discovery-catalog.json'), 'utf8'));
-const reviewRegistry = JSON.parse(fs.readFileSync(path.join(root, 'data/trades-reviewed-humans.json'), 'utf8'));
+const reviewRegistry = JSON.parse(fs.readFileSync(path.join(root, 'data/trades-eligible-accounts.json'), 'utf8'));
 const tradeModel = trades.build(catalog, {
   reviewRegistry,
   simulationBucket: '2026-08-21T00:00:00.000Z'
@@ -73,6 +73,11 @@ test('Search actions preserve exact retained IDs and gate Trades to the current 
   assert.ok(profileCard.includes(`href="backerdemo.html#market2?view=radar&amp;person=${eligibleProfile.creatorId}"`));
   assert.ok(profileCard.includes(`href="backerdemo.html#trades?view=profiles&amp;subject=${eligibleProfile.id}"`));
   assert.match(profileCard, /data-search-action="source"[^>]+target="_blank"/);
+  assert.match(search.__test.resultCard({
+    ...eligibleProfile,
+    metric: { ...eligibleProfile.metric, freshness: { state: 'last_good' } }
+  }, eligibility), /Last good · observed/,
+  'Search must disclose a retained refresh-failure metric instead of presenting it as current');
 
   const workCard = search.__test.resultCard(eligibleWork, eligibility);
   assert.ok(workCard.includes(`data-search-subject="${eligibleWork.id}"`));
@@ -90,6 +95,11 @@ test('homepage hero form and suggestions enter canonical Search rather than Disc
   assert.match(market2, /openSearchQuery\(input && input\.value \|\| 'creators gaining attention'\)/);
   assert.match(market2, /openSearchQuery\(item\.getAttribute\('data-q'\)\)/);
   assert.match(market2, /location\.hash = '#search'/);
+});
+
+test('Discovery evidence dimensions preserve the last-good freshness disclosure', () => {
+  const market2 = fs.readFileSync(path.join(root, 'js/market2.js'), 'utf8');
+  assert.match(market2, /metricFreshness === 'last_good' \? 'Last good'/);
 });
 
 test('missing Search engine fails closed without fixture or synthetic creator results', () => {
@@ -129,7 +139,7 @@ test('public page and shared dock restore the dedicated Backer AI route', () => 
   const dock = fs.readFileSync(path.join(root, 'js/backer-dock.js'), 'utf8');
   const engine = fs.readFileSync(path.join(root, 'js/search-engine.js'), 'utf8');
   const artifact = fs.readFileSync(path.join(root, 'scripts/build-pages-artifact.mjs'), 'utf8');
-  assert.match(html, /js\/search-engine\.js\?v=20260821-retained-1/);
+  assert.match(html, /js\/search-engine\.js\?v=20260821-account-metrics-1/);
   assert.match(html, /href="backerdemo\.html#search" data-view="search">AI Search/);
   assert.match(html, /01 · AI Search Agent[\s\S]*?<article class="surface reveal" data-view="search"|<article class="surface reveal" data-view="search">[\s\S]*?01 · AI Search Agent/);
   assert.match(dock, /linkHTML\('search', 'backerdemo\.html#search'/);
@@ -145,12 +155,15 @@ test('every changed public Search asset is allowlisted and uses its current cach
   const versions = {
     'css/styles.css': '20260821-2',
     'css/backer-dock.css': '20260821-2',
-    'css/search.css': '20260821-retained-1',
-    'js/app.js': '20260821-search-restore-1',
+    'css/market.css': '20260821-account-metrics-1',
+    'css/market2.css': '20260821-account-metrics-1',
+    'css/search.css': '20260821-account-metrics-1',
+    'js/app.js': '20260821-account-metrics-1',
     'js/backer-dock.js': '20260821-2',
-    'js/market2.js': '20260821-real-catalog-3',
-    'js/search-engine.js': '20260821-retained-1',
-    'js/site-menu.js': '20260821-search-1'
+    'js/market2.js': '20260821-account-metrics-1',
+    'js/search-engine.js': '20260821-account-metrics-1',
+    'js/trades-catalog-model.js': '20260821-account-metrics-1',
+    'js/site-menu.js': '20260821-trades-1'
   };
   const artifact = fs.readFileSync(path.join(root, 'scripts/build-pages-artifact.mjs'), 'utf8');
   const pages = fs.readdirSync(root).filter((file) => file.endsWith('.html'));

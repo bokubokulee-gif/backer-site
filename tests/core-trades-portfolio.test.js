@@ -52,7 +52,8 @@ function validPosition(overrides = {}) {
     modelFingerprint: 'profile:creator_real_1:model:63',
     side: 'BACK', supportPriceCents: 63, priceCents: 63, quantity: 39.68,
     quote: { side: 'BACK', supportPriceCents: 63, priceCents: 63, bucket: '2026-08-21T08:00:00.000Z' },
-    cost: 25, maxLoss: 25, status: 'OPEN_SIMULATION', isSimulation: true,
+    cost: 25, maxLoss: 25, estimatedPayout: 39.68, profitIfCorrect: 14.68,
+    status: 'OPEN_SIMULATION', isSimulation: true,
     createdAt: '2026-08-21T08:00:00.000Z',
     proposalHref: 'backercreate.html#draft?type=person-growth&person=creator_real_1',
     ...overrides
@@ -81,7 +82,7 @@ test('content positions retain exact person, work, evidence, quote, side, and re
     id: 'trade_content', subjectId: 'work_real_1', subjectKind: 'content', contentId: 'work_real_1', side: 'FADE',
     contractId: 'paper-growth:content:work_real_1:obs_real_1',
     contractSnapshot: { ...validPosition().contractSnapshot, id: 'paper-growth:content:work_real_1:obs_real_1' },
-    priceCents: 37, quantity: 67.5675675676,
+    priceCents: 37, quantity: 67.5675675676, estimatedPayout: 67.57, profitIfCorrect: 42.57,
     quote: { side: 'FADE', supportPriceCents: 63, priceCents: 37, bucket: '2026-08-21T08:00:00.000Z' },
     subjectSnapshot: {
       name: 'Real Person', title: 'Exact source-linked work', avatar: 'https://images.example/person.jpg',
@@ -95,6 +96,8 @@ test('content positions retain exact person, work, evidence, quote, side, and re
   assert.deepEqual(sanitized.observationIds, ['obs_real_1']);
   assert.equal(sanitized.side, 'FADE');
   assert.equal(sanitized.priceCents, 37);
+  assert.equal(sanitized.estimatedPayout, 67.57);
+  assert.equal(sanitized.profitIfCorrect, 42.57);
   assert.equal(sanitized.receiptId, 'SIM-ONE');
   assert.equal(sanitized.contractId, 'paper-growth:content:work_real_1:obs_real_1');
   assert.equal(sanitized.contractObservationId, 'obs_real_1');
@@ -118,21 +121,25 @@ test('Portfolio defaults to the real Trades ledger and keeps fixture examples be
   assert.match(html, /id="mTrades"[^>]*>Your trades</);
   assert.match(html, /id="mInvestor"[^>]*>Legacy examples</);
   assert.match(html, /id="investorMode" class="hidden"/);
-  assert.match(html, /js\/trades-position-store\.js/);
-  assert.match(html, /js\/trades-catalog-model\.js/);
-  assert.match(html, /js\/trades-portfolio\.js/);
+  assert.match(html, /css\/trades-portfolio\.css\?v=20260821-scale-1/);
+  assert.match(html, /js\/trades-position-store\.js\?v=20260821-scale-1/);
+  assert.match(html, /js\/trades-catalog-model\.js\?v=20260821-account-metrics-1/);
+  assert.match(html, /js\/trades-portfolio\.js\?v=20260821-scale-1/);
   assert.match(portfolio, /backerdemo\.html#market2\?/);
   assert.match(portfolio, /backerdemo\.html#trades\?view=positions/);
   assert.match(portfolio, /Profiles and work come from the Discovery catalog/);
   assert.match(portfolio, /Available paper cash/);
   assert.match(portfolio, /Paper equity/);
   assert.match(portfolio, /Resolution source/);
+  assert.match(portfolio, /Estimated payout if correct/);
+  assert.match(portfolio, /Profit if correct/);
+  assert.match(portfolio, /source-backed creator account/);
   assert.match(portfolio, /contract\.question/);
   assert.doesNotMatch(portfolio, /backer_portfolio_v1/);
 });
 
 test('Pages artifact includes every Portfolio integration dependency', () => {
-  for (const file of ['css/trades-portfolio.css', 'js/trades-catalog-model.js', 'js/trades-portfolio.js', 'js/trades-position-store.js', 'data/trades-reviewed-humans.json']) {
+  for (const file of ['css/trades-portfolio.css', 'js/trades-catalog-model.js', 'js/trades-portfolio.js', 'js/trades-position-store.js', 'data/trades-eligible-accounts.json']) {
     assert.ok(artifact.includes(`'${file}'`), `${file} must ship in the allowlisted Pages artifact`);
   }
 });

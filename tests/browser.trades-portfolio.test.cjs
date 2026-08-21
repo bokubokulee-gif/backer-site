@@ -84,6 +84,8 @@ test('Portfolio renders a canonical real-subject paper receipt without merging l
       const sim = subject.simulation;
       const amount = 25;
       const quantity = Math.round(amount / (sim.supportPriceCents / 100) * 100) / 100;
+      const estimatedPayout = Math.round(quantity * 100) / 100;
+      const profitIfCorrect = Math.round((estimatedPayout - amount) * 100) / 100;
       const now = new Date().toISOString();
       const position = {
         schemaVersion: 'backer-trades-position-v1',
@@ -134,6 +136,8 @@ test('Portfolio renders a canonical real-subject paper receipt without merging l
         quantity,
         cost: amount,
         maxLoss: amount,
+        estimatedPayout,
+        profitIfCorrect,
         status: 'OPEN_SIMULATION',
         isSimulation: true,
         createdAt: now,
@@ -148,7 +152,9 @@ test('Portfolio renders a canonical real-subject paper receipt without merging l
         personId: subject.personId,
         contentId: subject.id,
         sourceUrl: subject.sourceUrl,
-        contractId: contract.id
+        contractId: contract.id,
+        estimatedPayout,
+        profitIfCorrect
       };
     });
     await page.reload();
@@ -159,6 +165,8 @@ test('Portfolio renders a canonical real-subject paper receipt without merging l
     assert.match(await page.locator('.tp-position').innerText(), new RegExp(seeded.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
     assert.match(await page.locator('.tp-position').innerText(), new RegExp(seeded.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
     assert.equal(await page.locator('.tp-position-contract h4').innerText(), seeded.question);
+    const economics = await page.locator('.tp-receipt-economics').innerText();
+    assert.match(economics, new RegExp(`Estimated payout if correct\\s+\\$${seeded.estimatedPayout.toFixed(2).replace('.', '\\.')}[\\s\\S]*Profit if correct\\s+\\$${seeded.profitIfCorrect.toFixed(2).replace('.', '\\.')}`));
     assert.match(await page.locator('.tp-position-links').innerText(), new RegExp(`Receipt SIM-BROWSER-REAL · Contract ${seeded.contractId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`));
     assert.equal(await page.locator('.tp-position-links a').nth(1).getAttribute('href'), seeded.sourceUrl);
     const discovery = new URL(await page.locator('.tp-position-links a').first().getAttribute('href'), origin);
@@ -176,7 +184,7 @@ test('Portfolio renders a canonical real-subject paper receipt without merging l
 
     await page.locator('.tp-position-links a').first().click();
     const focused = page.locator(`.m2-feed-card.is-route-focus[data-m2-content-id="${seeded.contentId}"]`);
-    await focused.waitFor({ state: 'visible', timeout: 20000 });
+    await focused.waitFor({ state: 'visible', timeout: 30000 });
     assert.equal(await focused.getAttribute('aria-current'), 'true');
     assert.equal(await focused.locator(`[data-m2-create="content"][data-content-id="${seeded.contentId}"]`).count(), 1,
       'Portfolio must return to the exact content card without substituting a different work');

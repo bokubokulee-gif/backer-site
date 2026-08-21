@@ -831,12 +831,13 @@
     var evidence = evidenceFor(person);
     function metricDimension(id, label, metric, useDelta) {
       var value = metric ? number(useDelta ? metric.delta : metric.value) : null;
+      var metricFreshness = metric && metric.freshness && metric.freshness.state;
       return {
         id: id, label: label,
         value: value === null ? 'Unavailable' : (useDelta && value > 0 ? '+' : '') + formatCompact(value) + (useDelta && metric.deltaKind === 'percent' ? '%' : ''),
         detail: metric ? (metric.label || metricLabel(metric.key)) + ' · ' + (PLATFORM_LABELS[metric.provider] || metric.provider) : 'No retained native observation',
         sourceUrl: metric && metric.sourceUrl || '', asOf: metric && metric.observedAt || null,
-        state: metric ? humanState(metric.availability) : 'Unavailable'
+        state: metric ? (metricFreshness === 'last_good' ? 'Last good' : humanState(metric.availability)) : 'Unavailable'
       };
     }
     return [
@@ -1181,9 +1182,15 @@
 
   async function staticDiscovery() {
     if (!retainedCatalogPromise) retainedCatalogPromise = (async function () {
-      var response = await fetch('data/discovery-catalog.json', { credentials: 'same-origin', headers: { Accept: 'application/json' }, cache: 'no-store' });
-      if (!response.ok) throw new Error('Retained discovery catalog returned ' + response.status);
-      var payload = await response.json();
+      var model = window.BackerTradeCatalog;
+      var payload;
+      if (model && typeof model.loadSourceJSON === 'function') {
+        payload = await model.loadSourceJSON('data/discovery-catalog.json', 'Retained discovery catalog');
+      } else {
+        var response = await fetch('data/discovery-catalog.json', { credentials: 'same-origin', headers: { Accept: 'application/json' }, cache: 'no-store' });
+        if (!response.ok) throw new Error('Retained discovery catalog returned ' + response.status);
+        payload = await response.json();
+      }
       if (!validDiscoveryPayload(payload)) throw new Error('Retained discovery catalog is invalid');
       return payload;
     })().catch(function (error) {
@@ -1198,11 +1205,15 @@
       if (!window.BackerTradeCatalog || typeof window.BackerTradeCatalog.build !== 'function') {
         throw new Error('Trades eligibility model is unavailable');
       }
-      var response = await fetch('data/trades-reviewed-humans.json', {
-        credentials: 'same-origin', headers: { Accept: 'application/json' }, cache: 'no-store'
-      });
-      if (!response.ok) throw new Error('Reviewed Trades registry returned ' + response.status);
-      var registry = await response.json();
+      var registry = typeof window.BackerTradeCatalog.loadSourceJSON === 'function'
+        ? await window.BackerTradeCatalog.loadSourceJSON('data/trades-eligible-accounts.json', 'Trades account-eligibility registry')
+        : await (async function () {
+          var response = await fetch('data/trades-eligible-accounts.json', {
+            credentials: 'same-origin', headers: { Accept: 'application/json' }, cache: 'no-store'
+          });
+          if (!response.ok) throw new Error('Trades account-eligibility registry returned ' + response.status);
+          return response.json();
+        })();
       var catalog = window.BackerTradeCatalog.build(payload, {
         reviewRegistry: registry,
         signals: {},
@@ -2274,6 +2285,31 @@
     }
   }
 
+  /* The landing preview is useful on Home, but normalizing the complete
+     retained catalog for a hidden section blocked cold Search and Trades
+     routes for several seconds. Start it only while Home is the active
+     surface. A later in-app return to Home triggers the same one-shot preview,
+     and staticDiscoveryDataset still shares its retained source promises. */
+  var landingPreviewScheduled = false;
+  function landingRouteActive() {
+    var detailView = '';
+    try { detailView = new URLSearchParams(window.location.search).get('view') || ''; }
+    catch (_error) {}
+    if (detailView) return detailView === 'home';
+    var hash = String(window.location.hash || '');
+    return !hash || hash === '#' || /^#home(?:\?|$)/.test(hash);
+  }
+  function scheduleLandingCatalogPreview() {
+    if (landingPreviewScheduled || !landingRouteActive()) return;
+    landingPreviewScheduled = true;
+    var start = function () {
+      landingPreviewScheduled = false;
+      if (landingRouteActive()) bindLandingCatalogPreview();
+    };
+    if (typeof window.requestIdleCallback === 'function') window.requestIdleCallback(start, { timeout: 1200 });
+    else window.setTimeout(start, 0);
+  }
+
   function render(app) {
     root = app;
     document.title = 'Creator discovery | Backer';
@@ -2304,7 +2340,13 @@
     track('market_home_viewed', { source: 'market2' });
   }
 
-  if (typeof document !== 'undefined') { bindLandingDiscovery(); bindLandingCatalogPreview(); }
+  if (typeof document !== 'undefined') {
+    bindLandingDiscovery();
+    scheduleLandingCatalogPreview();
+    document.addEventListener('backer:routechange', function (event) {
+      if (event && event.detail && event.detail.view === 'home') scheduleLandingCatalogPreview();
+    });
+  }
   window.BackerMarket2 = {
     render: render, stateURL: stateURL, normalize: normalizeDataset,
     normalizeDiscovery: normalizeDiscoveryPayload, merge: mergeDatasets,
