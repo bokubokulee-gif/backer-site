@@ -1,168 +1,151 @@
-# Backer Discovery + Trades — Product Contract
+# Backer Trades — Real Subjects, Paper Markets
 
 Status: implementation contract
-Public host: GitHub Pages
-Execution: simulation only
+
+Host: GitHub Pages
 
 ## 1. Product decision
 
-Backer has two connected surfaces with different jobs:
+Discovery and Trades are two interfaces over the **same retained public catalog**.
 
-| Surface | Route | Job | Data |
-| --- | --- | --- | --- |
-| Discovery | `backerdemo.html#market2` | Find real profiles and original work worth backing | Retained, source-linked public records |
-| Trades | `backerdemo.html#trades` | Review simulated markets and locally drafted growth bets | Approved demo fixtures plus the user's local proposals |
+| Surface | Route | Job |
+| --- | --- | --- |
+| Discovery | `backerdemo.html#market2` | Research real people and original work |
+| Trades | `backerdemo.html#trades` | Express and track a simulated financial view on their future growth |
 
-Discovery never shows quotes, odds, positions, or an approved-market state. Trades never converts a public profile into a tradable market without a separate approval process.
+Public Trades contains **zero fixture people and zero fixture content**. `js/market-data.js` may remain only for archive compatibility and automated tests; `#trades` must not load, render, rank, or link to it. Trades may derive paper-market state from catalog IDs, but it is not a second subject database.
 
-## 2. Navigation
+The person, work, source, and observed metrics are real. Quotes, movement, volume, orders, and positions are deterministic simulations. The main surface uses one compact `Paper market · modeled activity` status; the full no-external-money boundary appears in the ticket confirmation and receipt, not as repetitive copy on the page or cards.
 
-One shared floating dock appears on every public Backer page.
+## 2. Public information architecture
 
-Expanded destinations:
+Trades reuses the prior market-board density and hierarchy with real retained subjects:
 
-1. Search — opens Discovery with search focused.
-2. Discovery — opens the profiles-and-content feed.
-3. Home — the Backer orb.
-4. Trades — opens the simulated market board.
-5. Portfolio — opens the user's local simulated positions.
+1. **For you** — an explainable device-ranked mix of eligible profiles and work.
+2. **Profiles** — confirmed human creators with source-backed current evidence.
+3. **Contents** — exact source-linked work owned by those creators.
+4. **Your trades** — saved paper positions with entry, current modeled mark, P/L, contract, and receipt IDs.
+5. **Proposals** — device-local custom bet drafts, kept separate from modeled paper markets.
 
-Dock behavior:
+`#trades` opens For you. Canonical states:
 
-- drag from the dock background, not from a destination button;
-- clamp to the visible viewport and respect safe-area insets;
-- snap to the nearest edge after release;
-- minimize to the Backer orb and restore with one click;
-- persist edge, normalized position, and minimized state on this device;
-- keep click, keyboard focus, escape, resize, and reduced-motion behavior reliable;
-- never cover the focused control or prevent page scrolling.
+- `#trades`
+- `#trades?view=profiles`
+- `#trades?view=contents`
+- `#trades?view=positions`
+- `#trades?view=proposals&proposal=<draftId>`
 
-The dock keeps Backer's existing dark glass and orb language. It does not copy an iOS, Kalshi, or Polymarket layout.
+There is no separate trade-history panel in this static release: current paper positions retain their receipt identifiers, while settlement and closed-position history require the later settlement service.
 
-## 3. Core flows
+The shared floating dock remains consistent on all public pages.
 
-### Discover a subject
+## 3. One catalog and identity graph
 
-1. User opens a real creator or work card in Discovery.
-2. Card preserves `Watch` and `Open source` as separate actions.
-3. `Draft a bet` opens the composer with the exact creator/content IDs.
-4. If the exact subject is no longer retained, the composer stops with `Subject no longer in the retained catalog`; it never substitutes another person.
+Source of truth: `data/discovery-catalog.json`, accessed through `js/discovery-catalog-client.js`.
 
-### Draft a growth bet
+Trades preserves exact creator, identity, content, metric-observation, canonical/source URL, and timestamp fields. A derived paper market is keyed by `subjectType + subjectId + metricObservationId + modelVersion`; it never copies or renames a subject.
 
-The composer is subject-first, not event-first. The selected portrait or work remains visible through five short steps:
+A profile enters Trades only when the same catalog record has:
 
-1. Subject — exact person or work.
-2. Future claim — provider-native metric, direction, and target.
-3. When — measurement cutoff, distinct from later review/resolution time.
-4. Resolution — retained source, rule, and edge cases.
-5. Review — plain-language claim and all proposal limits before save.
+- reviewed `entityKind: human` and `identityReview: confirmed`;
+- display name, source-proven portrait, and at least one source identity;
+- a numeric provider-native observation with value, unit, source URL, and observation time.
 
-The composer supports a milestone or head-to-head proposal using:
+Organizations, brands, bots, anonymous handles, uncertain matches, and fallback-logo portraits remain discoverable but do not enter Trades.
 
-- exact creator/content identity;
-- a retained provider-native metric and observation;
-- target, cutoff, and resolution rule;
-- source URL and observation time.
+A work enters Trades only with an exact content ID, eligible owner, provider/type, title, canonical URL, time, real thumbnail, and numeric source observation. Ownership must resolve through `creatorId` and `platformIdentityId`. Missing-thumbnail work may remain searchable in Discovery but cannot occupy the initial Trades grid.
 
-Manual metrics may be saved only as an unverified idea. They are not resolution-ready.
+## 4. Agent Reach acquisition
 
-Kalshi and Polymarket inform only the clarity of claim, outcome, timeline, rules, and final review. Backer does not adopt their event taxonomy, probability display, order book, wallet flow, or page structure. Backer outcomes use people-growth language such as `Reaches target / Does not reach target`.
+Agent Reach is the acquisition router; Backer does not invent platform scrapers.
 
-Saving creates a local proposal, not a market:
+- Run `agent-reach doctor --json` before each multi-platform job and use the documented active backend.
+- Follow each platform reference retry chain and require substantive profile/content output, not a zero-error exit.
+- Instagram uses OpenCLI with the user’s existing Chrome session: user search → profile → recent posts. Static GitHub Pages never accesses that session.
+- Use prescribed upstream tools for YouTube, Bilibili, GitHub, LinkedIn, RSS/web, and supported social platforms. For an uncovered source, inspect `opencli list`; publish nothing until a real read adapter succeeds.
+- Keep credentials/raw output in `~/.agent-reach/` and `/tmp/`; publish normalized public fields and provenance only.
+- Record backend, method, time, result count, and truthful failure reason in `providerRuns`. Provider failures remain internal; public feeds omit ineligible records.
 
-- `status: local_draft`;
-- `approvalStatus: discovery_proposal`;
-- `executionMode: simulation`;
-- lifecycle `DRAFT` or `OPENING_SOON`;
-- quote, fee, stake, max loss, and payout are null.
+“Supported” means a target returned non-empty data in that run. Doctor configuration alone is not proof. No fabricated subject, metric, portrait, thumbnail, or success state is allowed.
 
-### Review in Trades
+## 5. Paper-market model
 
-Trades has three tabs:
+For each eligible profile/work, generate a reproducible standard growth contract from its exact retained observation:
 
-1. Open simulations — approved deterministic demo contracts.
-2. Your proposals — local drafts from Discovery.
-3. Resolved — resolved demo simulations.
+- baseline: retained numeric value and time;
+- target/cutoff: deterministic scenario rule with named `modelVersion`;
+- outcomes: `Back` (target reached) and `Fade` (target not reached);
+- quote: 5–95¢ deterministic paper price using the subject/observation/model key, current time bucket, and retained native delta when present;
+- movement: current paper quote minus the previous time bucket;
+- volume: deterministic paper liquidity/activity, never represented as human or cash activity;
+- resolution: the same provider-native metric after cutoff; missing/corrected/deleted source follows explicit void rules.
 
-Proposal actions are `Review proposal`, `Edit`, and `Delete`. Only approved demo fixtures may expose `Open simulated position`.
+The engine must replay identically for the same inputs and UTC bucket. It may not claim predictive accuracy. A catalog refresh may update evidence; it may not rewrite an executed paper receipt.
 
-## 4. Personalized ordering
+## 6. Card and ticket contract
 
-Personalization is device-local and explainable. It uses only:
+Profile card: real portrait, name/handle/provider, full growth claim, Back/Fade quote, movement, paper volume, current native metric/time, Watch, Research, and Back/Fade actions.
 
-- watched creators;
-- saved proposals;
-- simulated positions;
-- recently opened creators, works, and categories.
+Content card: real thumbnail, exact title/creator/provider/type, full claim, quote/movement/paper volume, source metric/time, Watch, Research, and Back/Fade actions.
 
-Ordering priority:
+Clicking a side opens a ticket with subject, outcome, quote, paper cash, quantity, estimated cost, max loss, simulated payout, cutoff, resolution source/rules, and confirm. Confirm writes only a device-local paper order/position and receipt.
 
-1. exact watched/drafted subjects;
-2. matching provider/category interests;
-3. fixture evidence recency for simulations, while proposals keep their retained observation time;
-4. deterministic default rank.
+Typography keeps Backer’s visual language but follows the already accepted Kalshi/Polymarket legibility standard for size, weight, contrast, line height, and numeric alignment. Grids are three/two/one columns without truncating claims, units, dates, or actions.
 
-The UI labels this `For you · on this device`. No hidden profile, ad targeting, or server-side identity is implied.
+## 7. Custom bet flow
 
-## 5. Data and storage
+`Build a custom bet` opens the existing composer with the exact subject locked:
 
-Discovery source of truth: `data/discovery-catalog.json`.
-Approved demo source of truth: `js/market-data.js`.
-The two datasets never merge.
+1. subject;
+2. provider-native metric and retained baseline;
+3. target and cutoff;
+4. source/correction/deletion/void rules;
+5. review and start paper market.
 
-Local proposal storage:
+The composer re-reads the catalog and fails closed on any ID, ownership, or observation mismatch. A saved item remains `local_draft / discovery_proposal / simulation`; starting it creates only a device-local paper contract and optional position. Approval, real quote, fee, stake, custody, and execution stay null.
 
-- keys: `backer_site_market_draft_v2:<id>` and `backer_site_market_draft_index_v2`;
-- schema validation on every read/write;
-- maximum 50 proposals, maximum item size, 90-day expiry, oldest-first pruning;
-- localStorage first, sessionStorage fallback with `Saved for this tab only` disclosure;
-- no cookies, auth tokens, or personal contact data;
-- legacy draft read fallback only; new writes use v2.
+## 8. Discovery ↔ Trades linking
 
-Provider health is acquisition diagnostics, not trade evidence. General Discovery and Trades tickers do not announce unavailable providers. Filters contain retained sources; a connection action may appear separately when setup is required.
+- Discovery cards deep-link to the exact Trades subject; Trades links back through `Research this subject`.
+- Watch, recent-open, proposal, and position state use shared device keys.
+- A work link preserves both `creatorId` and `contentId`.
+- Missing IDs never fall back to another record.
+- A paper trade never changes the catalog record or its `tradable=false` public status.
 
-## 6. Routes
+## 9. Personalization
 
-- `backerdemo.html#market2` — Discovery.
-- `backerdemo.html#trades` — Trades.
-- `backerdemo.html#trades?view=proposals&proposal=<id>` — local proposal inbox/detail state.
-- `backercreate.html#draft?scope=person&person=<id>&source=discovery` — person proposal.
-- `backercreate.html#draft?scope=content&person=<id>&content=<id>&source=discovery` — content proposal.
-- `backermarket.html?draft=<id>&source=trades` — sanitized proposal preview.
-- `backermarket.html?market=<fixture-id>&source=trades` — approved simulated terminal.
+Ranking uses explicit device-local actions only: watches, paper positions, proposals, recent opens, provider filters, categories, and content types. Priority: exact subject → same creator/work → provider/type/category affinity → evidence freshness → deterministic source rank/ID.
 
-`#market-archive` and legacy `#market` canonicalize to `#trades`. Full proposal JSON never enters a URL.
+The feed says `For you · on this device` and gives a short reason (`Because you watched this creator`). Reset restores deterministic catalog order. No server identity, inferred demographics, hidden score, or cross-device claim.
 
-## 7. Trust rules
+## 10. Build sequence
 
-- Public Discovery records remain `public_discovery` and `tradable=false` after a draft is created.
-- Client input cannot approve a proposal or insert it into the fixture contract catalog.
-- Drafting never writes `backer_portfolio_v1`.
-- A retained observation is resolution-ready only when its entity, provider, metric, numeric value, source URL, and observation time all match the selected subject.
-- PoA or composite scores never settle a bet.
-- GitHub Pages stores proposals only on the user's device; it has no approval or settlement service.
-- Every Trades page visibly says `Demo simulations · no real money`.
+1. Remove fixture loading/rendering from public `#trades`; retain archive/test access only.
+2. Add reviewed-human and Trades-eligibility fields to the existing catalog schema/validator.
+3. Run Agent Reach ingestion; normalize, deduplicate, and attach source/asset/metric provenance.
+4. Extend the catalog client with exact eligible profile/content/observation selectors.
+5. Build the deterministic paper quote, movement, volume, contract, and replay engine.
+6. Replace Trades routes/tabs with For you, Profiles, Contents, Your trades, and Proposals.
+7. Build real profile and content market cards with three/two/one responsive grids.
+8. Build Back/Fade ticket, paper balance, position, receipt, and portfolio state.
+9. Reuse the composer/store for exact-subject custom paper markets.
+10. Wire bidirectional Discovery links and shared watch/recent state.
+11. Rank both feeds from device signals with reasons and reset.
+12. Pass unit, browser, accessibility, responsive, live-byte, and rollback gates before Pages release.
 
-## 8. Acceptance gates
+## 11. Release acceptance
 
-1. Discovery and Trades are distinct routes and distinct datasets.
-2. Every public page gets the same dock; active destination is correct.
-3. Dock drag, snap, minimize, restore, persistence, resize, keyboard, and safe-area tests pass at 320, 390, 608, 900, and 1440 px.
-4. A person and an arbitrary work open the composer with exact IDs; missing IDs fail closed.
-5. Save, reload, edit, delete, and expiry behavior pass without changing the portfolio key.
-6. A proposal appears only under `Your proposals`, with no price, odds, volume, backers, payout, or position control.
-7. Approved demo fixtures still support the existing simulated-position flow.
-8. Personalized ordering is deterministic and explains its device-local inputs.
-9. Discovery contains no fixture profiles; Trades labels all fixtures and proposals honestly.
-10. Public Pages artifact contains every required module and no local-only archive renderer.
-11. Source, unit, integration, browser, accessibility, responsive, and rendered taste gates pass.
-12. Live GitHub Pages routes, bytes, dock behavior, proposal flow, and rollback are verified after publish.
+1. Network/DOM audit proves `#trades` does not request `market-data.js` and contains no fixture ID, person, work, portrait, claim, or activity value.
+2. Sampled profile/content cards are exact catalog records; identity, owner, image, metric, source, and time match retained data.
+3. The same paper-market inputs replay the same quote/volume/movement; changing the documented time bucket changes only derived simulation fields.
+4. The compact page status, ticket confirmation, and receipt disclose simulation; cards remain concise.
+5. Discovery → Trades → ticket/composer → Your trades preserves exact IDs across reload, edit, close, and history.
+6. Confirming an order changes only paper balance/position storage, makes no financial/network request, and cannot exceed paper cash or configured loss.
+7. Agent Reach run evidence is complete; a blocked channel publishes no new records.
+8. Personalization is deterministic, explainable, resettable, and device-local.
+9. Full names, claims, units, dates, quotes, and actions remain readable at 320, 390, 608, 900, and 1440 px in dark/light themes.
+10. Automated tests, rendered visual review, GitHub Pages parity, live routes, and rollback verification pass.
 
-## 9. Non-goals
+## 12. Out of scope
 
-- real-money trading, settlement, custody, or payment;
-- client-side market approval;
-- fabricated provider records, metrics, prices, or odds;
-- copying another product's information architecture;
-- server-side personalization or cross-device sync in this release.
+Real money, custody, deposits, withdrawals, wallets, order books, settlement service, client-side market approval, server personalization, cross-device sync, and invented provider coverage.

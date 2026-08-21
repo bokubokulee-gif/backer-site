@@ -17,7 +17,7 @@
     return new Promise((resolve, reject) => {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
-      link.href = 'css/market.css?v=20260821-trades-1';
+      link.href = 'css/market.css?v=20260821-trades-2';
       link.dataset.backerTrades = 'true';
       link.onload = resolve;
       link.onerror = () => reject(new Error('Trades stylesheet unavailable'));
@@ -26,7 +26,7 @@
   }
 
   function loadTradesScript(src, key) {
-    if (key === 'data' && window.BACKER_MKT) return Promise.resolve();
+    if (key === 'catalog' && window.BackerTradeCatalog) return Promise.resolve();
     if (key === 'store' && window.BackerMarketDraftStore) return Promise.resolve();
     if (key === 'view' && window.BackerMarket) return Promise.resolve();
     return new Promise((resolve, reject) => {
@@ -42,9 +42,9 @@
   function ensureTradesAssets() {
     if (!tradesAssets) {
       tradesAssets = loadTradesStyle()
-        .then(() => loadTradesScript('js/market-data.js?v=4', 'data'))
         .then(() => loadTradesScript('js/market-draft-store.js?v=20260821-1', 'store'))
-        .then(() => loadTradesScript('js/market.js?v=20260821-trades-1', 'view'));
+        .then(() => loadTradesScript('js/trades-catalog-model.js?v=20260821-real-catalog-2', 'catalog'))
+        .then(() => loadTradesScript('js/market.js?v=20260821-real-catalog-2', 'view'));
     }
     return tradesAssets;
   }

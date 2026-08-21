@@ -1751,6 +1751,15 @@ async function collectYouTubeViaInstalledRouter(priorRun) {
       handle: row.channelHandle, profileUrl: row.channelUrl,
       verified: row.verified, observedAt: generatedAt
     });
+    if (owner && row.subscriberCount != null) {
+      addMetric({
+        entityType: 'identity', entityId: owner.identity.id, provider: 'youtube', metric: 'subscribers',
+        value: row.subscriberCount, observedAt: generatedAt, sourceUrl: owner.identity.profileUrl,
+        access: 'public_page', methodologyVersion: 'youtube-public-channel-page-v1',
+        freshness: { state: 'fresh', capturedAt: generatedAt, expiresAt },
+        confidence: { level: 'high', basis: 'direct_public_channel_field' }
+      });
+    }
     const record = addContent(owner, {
       provider: 'youtube', nativeId: row.videoId, contentType: 'video', title: row.title,
       excerpt: stripMarkup(row.description), canonicalUrl: row.videoUrl,

@@ -4,12 +4,23 @@ const { test, before, after } = require('node:test');
 const assert = require('node:assert/strict');
 const http = require('node:http');
 const fs = require('node:fs/promises');
+const fsSync = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const { chromium } = require('playwright');
+const TradeCatalog = require('../js/trades-catalog-model');
 
 const ROOT = path.resolve(__dirname, '..');
 const SNAPSHOT = path.join(ROOT, 'data', 'market2-people.json');
+const TRADE_MODEL = TradeCatalog.build(
+  JSON.parse(fsSync.readFileSync(path.join(ROOT, 'data', 'discovery-catalog.json'), 'utf8')),
+  {
+    reviewRegistry: JSON.parse(fsSync.readFileSync(path.join(ROOT, 'data', 'trades-reviewed-humans.json'), 'utf8')),
+    simulationBucket: '2026-08-21T08:00:00.000Z'
+  }
+);
+const TRADE_PROFILE_IDS = new Set(TRADE_MODEL.people.map((row) => row.id));
+const TRADE_CONTENT_IDS = new Set(TRADE_MODEL.contents.map((row) => row.id));
 let browser;
 let server;
 let origin;
@@ -308,8 +319,10 @@ test('Market2 loads trending discovery, keeps research controls safe, and pagina
     assert.doesNotMatch(await tab.locator('.market2-shell').innerText(), /Jeff Delaney|ThePrimeagen|Theo Browne|Wes Bos/);
     assert.equal(await tab.locator('[data-m2-create="person"]').count(), 9);
     assert.equal(await tab.locator('[data-m2-create="content"]').count(), 12);
-    assert.equal(await tab.locator('[data-m2-create]').filter({ hasText: 'Draft a bet' }).count(), 21,
-      'every first-glance profile and content card opens the five-step proposal composer');
+    assert.equal(await tab.locator('[data-m2-create]').filter({ hasText: 'Draft custom' }).count(), 21,
+      'every first-glance profile and content card can still open the five-step custom proposal composer');
+    assert.equal(await tab.locator('[data-m2-trade]').count(), 0,
+      'connected test-only subjects must not gain a Trade growth link without an exact reviewed catalog contract');
     assert.ok(await tab.locator('[data-m2-create="person"]').first().getAttribute('href').then((href) => /^backercreate\.html#draft\?scope=person&person=/.test(href)));
     assert.ok(await tab.locator('[data-m2-create="content"]').first().getAttribute('href').then((href) => /^backercreate\.html#draft\?scope=content&person=.+&content=/.test(href)));
     assert.equal(await tab.locator('.m2-ticket, .m2-research-boundary').count(), 0);
@@ -365,6 +378,84 @@ test('Marketplace command navigation exits to Home and public research pages', a
     assert.equal(new URL(second.tab.url()).pathname, '/research.html');
   } finally {
     await second.context.close();
+  }
+});
+
+test('Discovery Trade growth links fail closed to exact reviewed Trades subjects and preserve exact deep links', async () => {
+  discoveryMode = 'static-catalog';
+  requests = [];
+  const { context, tab } = await page();
+  try {
+    await tab.goto(`${origin}/backerdemo.html#market2`);
+    await tab.waitForSelector('.m2-profile-card');
+    await tab.waitForSelector('.m2-feed-card');
+    await tab.waitForFunction(() => document.querySelectorAll('.m2-profile-card').length >= 6 && document.querySelectorAll('.m2-feed-card').length >= 6);
+    const rendered = await tab.evaluate(() => ({
+      profiles: Array.from(document.querySelectorAll('.m2-profile-card')).map((card) => ({
+        id: card.querySelector('[data-m2-create="person"]')?.getAttribute('data-creator-id') || '',
+        tradeHref: card.querySelector('[data-m2-trade="person"]')?.getAttribute('href') || '',
+        cardHref: card.getAttribute('data-m2-trade-card') || ''
+      })),
+      contents: Array.from(document.querySelectorAll('.m2-feed-card')).map((card) => ({
+        id: card.querySelector('[data-m2-create="content"]')?.getAttribute('data-content-id') || '',
+        tradeHref: card.querySelector('[data-m2-trade="content"]')?.getAttribute('href') || '',
+        cardHref: card.getAttribute('data-m2-trade-card') || ''
+      }))
+    }));
+
+    assert.ok(rendered.profiles.some((row) => !TRADE_PROFILE_IDS.has(row.id)), 'the first Discovery profile set should exercise an ineligible research profile');
+    assert.ok(rendered.contents.some((row) => !TRADE_CONTENT_IDS.has(row.id)), 'the first Discovery content set should exercise an ineligible work');
+
+    for (const row of rendered.profiles) {
+      const eligible = TRADE_PROFILE_IDS.has(row.id);
+      assert.equal(Boolean(row.tradeHref), eligible, `${row.id} profile Trade growth CTA must match exact reviewed eligibility`);
+      assert.equal(Boolean(row.cardHref), eligible, `${row.id} profile card navigation must fail closed with the CTA`);
+      if (eligible) assert.equal(row.tradeHref, `backerdemo.html#trades?view=profiles&subject=${encodeURIComponent(row.id)}`);
+    }
+    for (const row of rendered.contents) {
+      const eligible = TRADE_CONTENT_IDS.has(row.id);
+      assert.equal(Boolean(row.tradeHref), eligible, `${row.id} content Trade growth CTA must match exact reviewed eligibility`);
+      assert.equal(Boolean(row.cardHref), eligible, `${row.id} content card navigation must fail closed with the CTA`);
+      if (eligible) assert.equal(row.tradeHref, `backerdemo.html#trades?view=contents&subject=${encodeURIComponent(row.id)}`);
+    }
+
+    const reviewedProfile = TRADE_MODEL.people.find((row) => row.name === 'Dian Huang') || TRADE_MODEL.people[0];
+    await tab.fill('#m2Search', reviewedProfile.name);
+    const reviewedProfileCard = tab.locator('.m2-profile-card').filter({ has: tab.locator(`[data-m2-create="person"][data-creator-id="${reviewedProfile.id}"]`) });
+    await reviewedProfileCard.waitFor({ state: 'visible', timeout: 20000 });
+    const eligibleProfile = {
+      id: reviewedProfile.id,
+      tradeHref: await reviewedProfileCard.locator('[data-m2-trade="person"]').getAttribute('href')
+    };
+    assert.equal(eligibleProfile.tradeHref, `backerdemo.html#trades?view=profiles&subject=${encodeURIComponent(eligibleProfile.id)}`);
+    const profileTab = await context.newPage();
+    await profileTab.goto(new URL(eligibleProfile.tradeHref, `${origin}/`).href);
+    const profileCard = profileTab.locator(`.mkt-catalog-card[data-mkt-subject-kind="profile"][data-mkt-subject-id="${eligibleProfile.id}"]`);
+    await profileCard.waitFor({ state: 'visible', timeout: 20000 });
+    assert.equal(await profileCard.evaluate((node) => node.classList.contains('is-route-focus')), true);
+    assert.equal((await profileCard.locator('.mkt-contract h3').innerText()).trim(), TRADE_MODEL.people.find((row) => row.id === eligibleProfile.id).contract.question);
+    await profileTab.close();
+
+    const reviewedContent = TRADE_MODEL.contents.find((row) => row.personId === reviewedProfile.id) || TRADE_MODEL.contents[0];
+    await tab.goto(`${origin}/backerdemo.html#market2`);
+    await tab.waitForSelector('.m2-profile-card');
+    await tab.fill('#m2Search', reviewedContent.title);
+    const reviewedContentCard = tab.locator('.m2-feed-card').filter({ has: tab.locator(`[data-m2-create="content"][data-content-id="${reviewedContent.id}"]`) });
+    await reviewedContentCard.waitFor({ state: 'visible', timeout: 20000 });
+    const eligibleContent = {
+      id: reviewedContent.id,
+      tradeHref: await reviewedContentCard.locator('[data-m2-trade="content"]').getAttribute('href')
+    };
+    assert.equal(eligibleContent.tradeHref, `backerdemo.html#trades?view=contents&subject=${encodeURIComponent(eligibleContent.id)}`);
+    const contentTab = await context.newPage();
+    await contentTab.goto(new URL(eligibleContent.tradeHref, `${origin}/`).href);
+    const contentCard = contentTab.locator(`.mkt-catalog-card[data-mkt-subject-kind="content"][data-mkt-subject-id="${eligibleContent.id}"]`);
+    await contentCard.waitFor({ state: 'visible', timeout: 20000 });
+    assert.equal(await contentCard.evaluate((node) => node.classList.contains('is-route-focus')), true);
+    assert.equal((await contentCard.locator('.mkt-contract h3').innerText()).trim(), TRADE_MODEL.contents.find((row) => row.id === eligibleContent.id).contract.question);
+    await contentTab.close();
+  } finally {
+    await context.close();
   }
 });
 
@@ -921,7 +1012,7 @@ test('homepage globe preserves exact figures and disables illustrative motion fo
   }
 });
 
-test('Trades owns the public market route and every legacy market alias renders Trades instead of a local archive', async () => {
+test('Trades owns the public market route and every legacy market alias renders the real-catalog paper board', async () => {
   discoveryMode = 'static-catalog';
   for (const route of ['#trades', '#market', '#market-archive', '?view=market']) {
     const { context, tab } = await page();
@@ -929,7 +1020,11 @@ test('Trades owns the public market route and every legacy market alias renders 
       await tab.goto(`${origin}/backerdemo.html${route}`);
       await tab.waitForSelector('.mkt');
       assert.equal(await tab.locator('.market2-shell, .m2-local-archive').count(), 0);
-      assert.match(await tab.locator('.mkt-header').innerText(), /Backer Trades[\s\S]*People-growth simulations[\s\S]*Demo simulations · no real money/i);
+      assert.match(await tab.locator('.mkt-header').innerText(), /Backer Trades[\s\S]*Trade future growth in people and work[\s\S]*Real profiles and original content from Discovery/i);
+      assert.equal(await tab.locator('.mkt-paper-status').count(), 1);
+      assert.equal((await tab.locator('.mkt-paper-status').innerText()).trim(), 'Paper market · modeled quotes');
+      assert.match(await tab.locator('.mkt-catalog-line').innerText(), /\$10,000(?:\.00)?\s+paper cash[\s\S]*26\s+profiles[\s\S]*43\s+works/i);
+      assert.doesNotMatch(await tab.locator('.mkt').innerText(), /Ada Maker|Marcus Stillwater|BACKER_MKT|Demo simulations/i);
     } finally {
       await context.close();
     }

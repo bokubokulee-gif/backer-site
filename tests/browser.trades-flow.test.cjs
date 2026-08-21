@@ -4,12 +4,20 @@ const { test, before, after } = require('node:test');
 const assert = require('node:assert/strict');
 const http = require('node:http');
 const fs = require('node:fs/promises');
+const fsSync = require('node:fs');
 const path = require('node:path');
 const { chromium } = require('playwright');
+const TradeCatalog = require('../js/trades-catalog-model');
 
 const ROOT = path.resolve(__dirname, '..');
 const CHROME = process.env.PLAYWRIGHT_EXECUTABLE_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const PORTFOLIO_SENTINEL = '[{"id":"existing-position-must-survive"}]';
+const TRADE_CATALOG = JSON.parse(fsSync.readFileSync(path.join(ROOT, 'data', 'discovery-catalog.json'), 'utf8'));
+const TRADE_REVIEW = JSON.parse(fsSync.readFileSync(path.join(ROOT, 'data', 'trades-reviewed-humans.json'), 'utf8'));
+const TRADE_MODEL = TradeCatalog.build(TRADE_CATALOG, {
+  reviewRegistry: TRADE_REVIEW,
+  simulationBucket: '2026-08-21T08:00:00.000Z'
+});
 
 let browser;
 let server;
@@ -120,11 +128,310 @@ before(async () => {
   browser = await chromium.launch({ headless: true, executablePath: CHROME });
 });
 
-after(() => {
-  if (browser) void browser.close().catch(() => {});
+after(async () => {
+  if (browser) await browser.close();
   if (server && server.listening) {
-    server.close();
-    if (typeof server.closeAllConnections === 'function') server.closeAllConnections();
+    await new Promise((resolve, reject) => {
+      server.close((error) => error ? reject(error) : resolve());
+      if (typeof server.closeAllConnections === 'function') server.closeAllConnections();
+    });
+  }
+});
+
+test('real-catalog Trades deep link, paper account, Back/Fade ticket, receipt, position, and personalized feed stay coherent', async () => {
+  assert.equal(TRADE_MODEL.people.length, 26);
+  assert.equal(TRADE_MODEL.contents.length, 43);
+  const subject = TRADE_MODEL.people.at(-1);
+  assert.ok(subject && subject.id && subject.contract && subject.simulation, 'the reviewed model needs a complete profile contract');
+  const context = await newContext({ width: 390, height: 900 });
+  const page = await context.newPage();
+  const requestedPaths = [];
+  page.on('request', (request) => {
+    try { requestedPaths.push(new URL(request.url()).pathname); } catch (_error) {}
+  });
+  try {
+    await page.goto(`${origin}/backerdemo.html`);
+    await page.evaluate(() => {
+      localStorage.setItem('backer_trades_account_v1', JSON.stringify({
+        schemaVersion: 'backer-trades-account-v1', startingCash: 10000, cash: 20,
+        updatedAt: '2026-08-21T08:00:00.000Z'
+      }));
+    });
+    await page.goto(`${origin}/backerdemo.html#trades?view=profiles&subject=${encodeURIComponent(subject.id)}`);
+    const card = page.locator(`.mkt-catalog-card[data-mkt-subject-kind="profile"][data-mkt-subject-id="${subject.id}"]`);
+    await card.waitFor({ state: 'visible', timeout: 20000 });
+    await page.waitForFunction((id) => document.querySelector(`[data-mkt-subject-id="${id}"]`)?.classList.contains('is-route-focus'), subject.id);
+
+    assert.equal(requestedPaths.filter((pathname) => pathname.endsWith('/js/market-data.js')).length, 0,
+      '#trades must never request the legacy fixture data module');
+    assert.equal(await page.locator('.mkt-paper-status').count(), 1, 'the board uses one compact paper-model status');
+    assert.equal((await page.locator('.mkt-paper-status').innerText()).trim(), 'Paper market · modeled quotes');
+    assert.match(await page.locator('.mkt-catalog-line').innerText(), /\$20(?:\.00)?\s+paper cash[\s\S]*26\s+profiles[\s\S]*43\s+works/i);
+    assert.equal(await page.locator('.mkt-disclosure').count(), 0);
+    assert.doesNotMatch(await page.locator('.mkt').innerText(), /Ada Maker|Marcus Stillwater|BACKER_MKT|Demo simulations/i);
+    assert.equal((await card.locator('.mkt-contract h3').innerText()).trim(), subject.contract.question);
+    assert.match(await card.locator('.mkt-contract-facts').innerText(), new RegExp(subject.contract.baseline.label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    assert.match(await card.locator('.mkt-contract-facts').innerText(), new RegExp(subject.contract.target.label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    assert.match(await card.locator('.mkt-sim-market').innerText(), /\d+¢[\s\S]*[+-]\d+(?:\.\d)? pts[\s\S]*\$[\d.]+[KM]?\s+paper vol[\s\S]*Back[\s\S]*Fade/i);
+    assert.match(await card.locator('[data-mkt-source-open]').first().getAttribute('href'), /^https?:\/\//);
+
+    await card.locator('[data-mkt-trade="BACK"]').click();
+    await page.waitForFunction(() => document.activeElement?.matches('.mkt-ticket'));
+    assert.equal(await page.locator('.mkt-ticket').getAttribute('tabindex'), '-1');
+    assert.equal(await page.locator('.mkt-ticket-layer').evaluate((layer) => [...layer.parentElement.children]
+      .filter((child) => child !== layer).every((child) => child.inert && child.getAttribute('aria-hidden') === 'true')), true,
+    'the modal must isolate all background trade controls');
+    await page.locator('[data-ticket-ack]').check();
+    assert.equal(await page.locator('[data-ticket-confirm]').isDisabled(), true, 'paper cash below the amount blocks the fill');
+    assert.match(await page.locator('[data-ticket-error]').innerText(), /Amount exceeds available paper cash/i);
+    assert.equal((await page.locator('.mkt-ticket-contract h3').innerText()).trim(), subject.contract.question);
+    assert.match(await page.locator('.mkt-ticket').innerText(), /Resolution rule[\s\S]*Resolve BACK if[\s\S]*Resolution source[\s\S]*Estimated payout if correct[\s\S]*Profit if correct/i);
+    await page.keyboard.press('Escape');
+    await page.waitForFunction((id) => document.activeElement?.matches(`[data-mkt-trade="BACK"][data-subject-id="${id}"]`), subject.id);
+
+    await page.evaluate(() => {
+      localStorage.setItem('backer_trades_account_v1', JSON.stringify({
+        schemaVersion: 'backer-trades-account-v1', startingCash: 10000, cash: 10000,
+        updatedAt: '2026-08-21T08:00:00.000Z'
+      }));
+    });
+    await page.reload();
+    await card.waitFor({ state: 'visible', timeout: 20000 });
+    await card.locator('[data-mkt-trade="FADE"]').click();
+    await page.waitForFunction(() => document.activeElement?.matches('.mkt-ticket'));
+    assert.match(await page.locator('.mkt-ticket').innerText(), /Available paper cash[\s\S]*\$10,000(?:\.00)?[\s\S]*Native metric[\s\S]*Observed baseline[\s\S]*Resolution rule[\s\S]*Resolve BACK if[\s\S]*Estimated payout if correct[\s\S]*Profit if correct/i);
+    const ticketClose = page.locator('.mkt-ticket [data-ticket-close]').first();
+    await ticketClose.focus();
+    await page.keyboard.press('Shift+Tab');
+    assert.equal(await page.evaluate(() => document.activeElement?.matches('.mkt-ticket a[data-mkt-draft]')), true,
+      'Shift+Tab from the first ticket control must wrap to the last enabled control');
+    await page.locator('[data-ticket-amount]').fill('25');
+    await page.locator('[data-ticket-ack]').check();
+    assert.equal(await page.locator('[data-ticket-confirm]').isEnabled(), true);
+    await page.locator('[data-ticket-confirm]').focus();
+    await page.keyboard.press('Tab');
+    assert.equal(await page.evaluate(() => document.activeElement?.matches('.mkt-ticket [data-ticket-close]')), true,
+      'Tab from the last ticket control must wrap to the close control');
+    await page.locator('[data-ticket-confirm]').focus();
+    await page.locator('[data-ticket-confirm]').click();
+    await page.locator('.mkt-ticket.is-receipt').waitFor({ state: 'visible' });
+    await page.waitForFunction(() => document.activeElement?.matches('.mkt-ticket.is-receipt'));
+    assert.match(await page.locator('.mkt-ticket.is-receipt').innerText(), /Paper trade receipt[\s\S]*Estimated payout if correct[\s\S]*Profit if correct[\s\S]*Resolution rule[\s\S]*Resolution source[\s\S]*Paper cash left[\s\S]*\$9,975(?:\.00)?[\s\S]*Contract[\s\S]*Evidence observation[\s\S]*Receipt/i);
+
+    const stored = await page.evaluate(() => ({
+      positions: JSON.parse(localStorage.getItem('backer_trades_positions_v1') || '[]'),
+      account: JSON.parse(localStorage.getItem('backer_trades_account_v1') || 'null'),
+      legacy: localStorage.getItem('backer_portfolio_v1')
+    }));
+    assert.equal(stored.positions.length, 1);
+    assert.equal(stored.positions[0].schemaVersion, 'backer-trades-position-v1');
+    assert.equal(stored.positions[0].subjectId, subject.id);
+    assert.equal(stored.positions[0].contractId, subject.contract.id);
+    assert.equal(stored.positions[0].contractObservationId, subject.contract.metric.observationId);
+    assert.equal(stored.positions[0].contractSnapshot.question, subject.contract.question);
+    assert.equal(stored.positions[0].side, 'FADE');
+    assert.equal(stored.positions[0].cost, 25);
+    assert.ok(stored.positions[0].estimatedPayout > 25);
+    assert.equal(stored.positions[0].profitIfCorrect, Math.round((stored.positions[0].estimatedPayout - 25) * 100) / 100);
+    assert.equal(stored.account.cash, 9975);
+    assert.equal(stored.legacy, PORTFOLIO_SENTINEL, 'real Trades must never merge into the legacy fixture portfolio');
+
+    await page.keyboard.press('Escape');
+    await page.waitForFunction((id) => document.activeElement?.matches(`[data-mkt-trade="FADE"][data-subject-id="${id}"]`), subject.id);
+    await page.getByRole('tab', { name: /Your trades/ }).click();
+    await page.locator('.mkt-position-card').waitFor({ state: 'visible' });
+    assert.match(await page.locator('.mkt-account-summary').innerText(), /Paper cash[\s\S]*\$9,975(?:\.00)?[\s\S]*Position cost[\s\S]*\$25(?:\.00)?[\s\S]*Current mark[\s\S]*Paper P&L/i);
+    assert.equal((await page.locator('.mkt-position-contract h4').innerText()).trim(), subject.contract.question);
+
+    await page.getByRole('tab', { name: /For you/ }).click();
+    assert.match(await page.locator('.mkt-personalization').innerText(), /1 simulated trade[\s\S]*Preferences stay on this device/i);
+    assert.equal(await page.locator('.mkt-feed-section').first().locator('.mkt-catalog-card').first().getAttribute('data-mkt-subject-id'), subject.id,
+      'the exact traded profile should lead the device-personalized profile feed');
+    await page.getByRole('button', { name: 'Reset personalization' }).click();
+    await page.waitForFunction(() => document.querySelector('.mkt-personalization')?.textContent.includes('Default catalog order restored'));
+    const resetState = await page.evaluate(() => ({
+      watches: localStorage.getItem('backer_market2_watch_v1'),
+      actions: localStorage.getItem('backer_discovery_interest_v1'),
+      positions: JSON.parse(localStorage.getItem('backer_trades_positions_v1') || '[]'),
+      account: JSON.parse(localStorage.getItem('backer_trades_account_v1') || 'null')
+    }));
+    assert.equal(resetState.watches, null);
+    assert.equal(resetState.actions, null);
+    assert.equal(resetState.positions.length, 1, 'reset must keep paper receipts and positions');
+    assert.equal(resetState.account.cash, 9975, 'reset must keep paper cash');
+    const dimensions = await page.evaluate(() => ({ innerWidth, scrollWidth: document.documentElement.scrollWidth }));
+    assert.ok(dimensions.scrollWidth <= dimensions.innerWidth + 1, 'mobile Trades must not overflow horizontally');
+  } finally {
+    await context.close();
+  }
+});
+
+test('Trades profile and content cards return their exact retained subjects to Discovery', async () => {
+  const profile = TRADE_MODEL.people.find((row) => row.researchHref && row.contract && row.simulation);
+  const content = TRADE_MODEL.contents.find((row) => row.researchHref && row.contract && row.simulation);
+  assert.ok(profile && content, 'the reviewed catalog needs exact Discovery return routes');
+  const context = await newContext();
+  const page = await context.newPage();
+  try {
+    await page.goto(`${origin}/backerdemo.html#trades?view=profiles&subject=${encodeURIComponent(profile.id)}`);
+    const profileCard = page.locator(`.mkt-catalog-card[data-mkt-subject-kind="profile"][data-mkt-subject-id="${profile.id}"]`);
+    await profileCard.waitFor({ state: 'visible', timeout: 20000 });
+    const profileResearch = profileCard.locator('[data-mkt-research]');
+    assert.equal((await profileResearch.innerText()).trim(), 'Research in Discovery');
+    const profileRoute = routeFields(await profileResearch.getAttribute('href'));
+    assert.equal(profileRoute.anchor, '#market2');
+    assert.equal(profileRoute.params.get('person'), profile.id);
+    assert.equal(profileRoute.params.has('work'), false);
+    assert.equal(await profileCard.locator('a a').count(), 0, 'profile links must never be nested');
+
+    await page.goto(`${origin}/backerdemo.html#trades?view=contents&subject=${encodeURIComponent(content.id)}`);
+    const contentCard = page.locator(`.mkt-catalog-card[data-mkt-subject-kind="content"][data-mkt-subject-id="${content.id}"]`);
+    await contentCard.waitFor({ state: 'visible', timeout: 20000 });
+    const contentResearch = contentCard.locator('[data-mkt-research]');
+    assert.equal((await contentResearch.innerText()).trim(), 'Research in Discovery');
+    const contentRoute = routeFields(await contentResearch.getAttribute('href'));
+    assert.equal(contentRoute.anchor, '#market2');
+    assert.equal(contentRoute.params.get('person'), content.personId);
+    assert.equal(contentRoute.params.get('work'), content.id);
+    assert.equal(await contentCard.locator('a a').count(), 0, 'content links must never be nested');
+
+    await contentResearch.click();
+    const focused = page.locator(`.m2-feed-card.is-route-focus[data-m2-content-id="${content.id}"]`);
+    await focused.waitFor({ state: 'visible', timeout: 20000 });
+    assert.equal(await focused.getAttribute('aria-current'), 'true');
+    assert.equal(await focused.locator(`[data-m2-create="content"][data-content-id="${content.id}"]`).count(), 1,
+      'Discovery must focus the exact work instead of another record');
+    assert.equal(routeFields(page.url()).params.get('work'), content.id);
+
+    await page.goto(`${origin}/backerdemo.html#market2?view=radar&person=${encodeURIComponent(content.personId)}&content=${encodeURIComponent(content.id)}`);
+    const aliasFocused = page.locator(`.m2-feed-card.is-route-focus[data-m2-content-id="${content.id}"]`);
+    await aliasFocused.waitFor({ state: 'visible', timeout: 20000 });
+    assert.equal(await aliasFocused.locator(`[data-m2-create="content"][data-content-id="${content.id}"]`).count(), 1,
+      'the content= compatibility route must retain the same exact work ID');
+
+    await page.goto(`${origin}/backerdemo.html?route-check=ineligible#trades?view=contents&subject=${encodeURIComponent('not-a-reviewed-work')}`);
+    await page.locator('.mkt-empty.is-route-missing').waitFor({ state: 'visible', timeout: 20000 });
+    assert.equal(await page.locator('.mkt-catalog-card.is-route-focus').count(), 0,
+      'an ineligible subject must fail closed without substituting another card');
+  } finally {
+    await context.close();
+  }
+});
+
+test('watching an exact work reorders personalized content and reset restores defaults without deleting ledgers', async () => {
+  const context = await newContext();
+  const page = await context.newPage();
+  try {
+    await page.goto(`${origin}/backerdemo.html`);
+    await page.evaluate((profileId) => {
+      localStorage.setItem('backer_market2_watch_v1', JSON.stringify([profileId]));
+      localStorage.setItem('backer_discovery_interest_v1', JSON.stringify([{
+        personId: profileId, action: 'opened', at: new Date(Date.now() - 2000).toISOString()
+      }]));
+      localStorage.setItem('backer_trades_positions_v1', JSON.stringify([{
+        schemaVersion: 'backer-trades-position-v1', id: 'preserved-position', subjectId: 'preserved-subject',
+        subjectKind: 'profile', side: 'BACK', cost: 25, receiptId: 'KEEP-RECEIPT',
+        createdAt: new Date(Date.now() - 1000).toISOString()
+      }]));
+      localStorage.setItem('backer_trades_account_v1', JSON.stringify({
+        schemaVersion: 'backer-trades-account-v1', startingCash: 10000, cash: 9975,
+        updatedAt: new Date(Date.now() - 1000).toISOString()
+      }));
+    }, TRADE_MODEL.people[0].id);
+
+    await page.goto(`${origin}/backerdemo.html#trades?view=contents`);
+    await page.waitForFunction(() => Boolean(window.BackerMarketDraftStore));
+    await page.evaluate((profileId) => {
+      const now = new Date().toISOString();
+      const saved = window.BackerMarketDraftStore.save({
+        schemaVersion: 2, draftId: 'keep001', executionMode: 'simulation', status: 'local_draft',
+        approvalStatus: 'discovery_proposal', instrument: 'milestone', createdAt: now, updatedAt: now,
+        subject: {
+          type: 'person-growth', person: {
+            id: profileId, name: 'Preserved creator', identityKind: 'public_discovery', tradable: false, platforms: []
+          }, content: null
+        },
+        outcome: {
+          question: 'Will this preserved creator reach the retained growth target?', type: 'binary',
+          outcomes: [{ id: 'GROWS_TO_TARGET', label: 'Grows to target' }, { id: 'DOES_NOT_REACH_TARGET', label: 'Does not reach target' }],
+          selectedSide: null
+        },
+        resolution: {
+          platform: 'youtube', metricKey: 'views', metricLabel: 'Views', unit: 'count',
+          baseline: { value: 100, observedAt: now, sourceUrl: 'https://example.com/source', provenance: 'user_entered_unverified' },
+          target: { value: 120, direction: 'at_least' }, deadline: '2099-12-31T00:00:00.000Z',
+          sourceUrl: 'https://example.com/source', readiness: 'unverified_idea', observation: null
+        },
+        rules: {
+          graceHours: 24, disputeHours: 24, deletionRule: 'pause_then_void',
+          correctionRule: 'latest_valid_before_cutoff', voidRule: 'refund_original_cost'
+        },
+        market: {
+          lifecycle: 'DRAFT', approvalStatus: 'discovery_proposal', quote: null, feeRate: null,
+          stake: null, maxLoss: null, payout: null
+        },
+        validation: { executable: false }
+      });
+      if (!saved.ok) throw new Error(`proposal fixture failed: ${saved.code}`);
+    }, TRADE_MODEL.people[0].id);
+    const cards = page.locator('.mkt-catalog-card.is-content');
+    await cards.first().waitFor({ state: 'visible', timeout: 20000 });
+    assert.ok(await cards.count() >= 6, 'the content catalog needs a non-leading exact work to exercise ranking');
+    const defaultFirst = TRADE_MODEL.contents[0].id;
+    const targetId = await cards.nth(5).getAttribute('data-mkt-subject-id');
+    assert.notEqual(targetId, defaultFirst);
+    await page.evaluate(() => {
+      window.__backerWorkWatchEvents = [];
+      window.BackerAnalytics = {
+        track(event, props) { window.__backerWorkWatchEvents.push({ event, props }); }
+      };
+    });
+
+    const target = page.locator(`.mkt-catalog-card.is-content[data-mkt-subject-id="${targetId}"]`);
+    await target.locator(`[data-mkt-watch-work="${targetId}"]`).click();
+    await page.waitForFunction((id) => document.querySelector('.mkt-catalog-card.is-content')?.getAttribute('data-mkt-subject-id') === id, targetId);
+    const watchedTarget = page.locator(`.mkt-catalog-card.is-content[data-mkt-subject-id="${targetId}"]`).first();
+    assert.equal(await watchedTarget.locator('[data-mkt-watch-work]').getAttribute('aria-pressed'), 'true');
+    assert.equal((await watchedTarget.locator('[data-mkt-watch-work]').innerText()).trim(), 'Watching');
+    assert.match(await watchedTarget.locator('.mkt-why').innerText(), /Watched work/i);
+
+    const watchedState = await page.evaluate(() => ({
+      work: JSON.parse(localStorage.getItem('backer_trades_work_watch_v1') || '[]'),
+      people: JSON.parse(localStorage.getItem('backer_market2_watch_v1') || '[]'),
+      events: window.__backerWorkWatchEvents
+    }));
+    assert.deepEqual(watchedState.work, [targetId]);
+    assert.equal(watchedState.people.includes(targetId), false, 'the exact work ID must not be written into profile watches');
+    assert.equal(watchedState.events.at(-1).event, 'market_work_watch_changed');
+    assert.equal(watchedState.events.at(-1).props.content_id, targetId);
+    assert.equal(watchedState.events.at(-1).props.watched, true);
+
+    await page.getByRole('tab', { name: /For you/ }).click();
+    const personalizedContent = page.locator('.mkt-feed-section').nth(1);
+    assert.equal(await personalizedContent.locator('.mkt-catalog-card.is-content').first().getAttribute('data-mkt-subject-id'), targetId);
+    assert.match(await page.locator('.mkt-personalization').innerText(), /1 watched work/i);
+
+    await page.getByRole('button', { name: 'Reset personalization' }).click();
+    await page.waitForFunction(() => document.querySelector('.mkt-personalization')?.textContent.includes('Default catalog order restored'));
+    await page.waitForFunction((id) => document.querySelectorAll('.mkt-feed-section')[1]?.querySelector('.mkt-catalog-card.is-content')?.getAttribute('data-mkt-subject-id') === id, defaultFirst);
+    const reset = await page.evaluate(() => ({
+      work: localStorage.getItem('backer_trades_work_watch_v1'),
+      people: localStorage.getItem('backer_market2_watch_v1'),
+      interests: localStorage.getItem('backer_discovery_interest_v1'),
+      positions: JSON.parse(localStorage.getItem('backer_trades_positions_v1') || '[]'),
+      account: JSON.parse(localStorage.getItem('backer_trades_account_v1') || 'null'),
+      proposal: window.BackerMarketDraftStore.read('keep001')
+    }));
+    assert.equal(reset.work, null);
+    assert.equal(reset.people, null);
+    assert.equal(reset.interests, null);
+    assert.equal(reset.positions[0].receiptId, 'KEEP-RECEIPT');
+    assert.equal(reset.account.cash, 9975);
+    assert.equal(reset.proposal.ok, true);
+    assert.equal(reset.proposal.draft.draftId, 'keep001');
+    assert.equal(await personalizedContent.locator('.mkt-catalog-card.is-content').first().getAttribute('data-mkt-subject-id'), defaultFirst);
+  } finally {
+    await context.close();
   }
 });
 

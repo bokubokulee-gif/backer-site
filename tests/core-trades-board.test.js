@@ -7,149 +7,261 @@ const vm = require('node:vm');
 const ROOT = path.resolve(__dirname, '..');
 const market = fs.readFileSync(path.join(ROOT, 'js/market.js'), 'utf8');
 const css = fs.readFileSync(path.join(ROOT, 'css/market.css'), 'utf8');
+const app = fs.readFileSync(path.join(ROOT, 'js/app.js'), 'utf8');
 
-function body(name, nextName) {
-  const start = market.indexOf(`function ${name}(`);
-  const end = market.indexOf(`function ${nextName}(`, start + 1);
-  assert.notEqual(start, -1, `${name} must exist`);
-  assert.notEqual(end, -1, `${nextName} must follow ${name}`);
-  return market.slice(start, end);
+function sampleModel() {
+  const metric = {
+    id: 'obs-youtube-alice-views', entityType: 'content', entityId: 'work-alice-1',
+    provider: 'youtube', metric: 'views', label: 'Views', unit: 'count', value: 125000,
+    observedAt: '2026-08-20T08:00:00.000Z', sourceUrl: 'https://www.youtube.com/watch?v=alice'
+  };
+  const contract = {
+    id: 'paper-growth:profile:person-alice:obs-youtube-alice-views', marketKey: 'paper-growth:profile:person-alice:obs-youtube-alice-views',
+    modelVersion: 'backer-growth-contract-v1', isSimulation: true, subjectKind: 'profile', subjectId: 'person-alice',
+    question: 'Will Alice Rivera’s “Building in public” reach 150,000 views on YouTube by 2026-10-19?',
+    claim: 'Alice Rivera reaches 150,000 views.', baseline: { value: 125000, label: '125,000', observedAt: metric.observedAt },
+    target: { value: 150000, label: '150,000' }, cutoff: '2026-10-19T08:00:00.000Z', horizonDays: 60,
+    metric: { key: 'views', label: 'Views', unit: 'count', provider: 'youtube', sourceUrl: metric.sourceUrl, observationId: metric.id, entityType: metric.entityType, entityId: metric.entityId },
+    resolutionRule: 'Resolve BACK from the first retained YouTube observation at or after cutoff.'
+  };
+  const simulation = {
+    isSimulation: true, contractId: contract.id, modelVersion: 'backer-paper-market-v1', methodology: 'deterministic_subject_evidence_utc_hour_v1',
+    bucket: '2026-08-21T03:00:00.000Z', bucketEndsAt: '2026-08-21T04:00:00.000Z', supportPriceCents: 63,
+    move24hPoints: 2.4, simulatedVolume: 24840, sparkline: [45, 48, 51, 49, 55, 59, 63]
+  };
+  const person = {
+    id: 'person-alice', personId: 'person-alice', kind: 'profile', name: 'Alice Rivera', handle: '@alicebuilds',
+    bio: 'Independent product builder.', avatar: 'https://images.example.com/alice.jpg', avatarSourceUrl: 'https://youtube.com/@alicebuilds',
+    profileUrl: 'https://youtube.com/@alicebuilds', provider: 'youtube',
+    accounts: [{ provider: 'youtube', handle: 'alicebuilds', url: 'https://youtube.com/@alicebuilds', metrics: [metric] }],
+    metrics: [metric], relatedMetrics: [], contract, simulation, evidenceState: 'retained_native_observations',
+    proposalHref: 'backercreate.html#draft?type=person-growth&person=person-alice&source=trades'
+  };
+  const contentContract = {
+    ...contract,
+    id: 'paper-growth:content:work-alice-1:obs-youtube-alice-views', marketKey: 'paper-growth:content:work-alice-1:obs-youtube-alice-views',
+    subjectKind: 'content', subjectId: 'work-alice-1',
+    question: 'Will “Building in public” reach 150,000 views on YouTube by 2026-10-19?'
+  };
+  const content = {
+    id: 'work-alice-1', contentId: 'work-alice-1', kind: 'content', title: 'Building in public', excerpt: 'A real retained original video.',
+    provider: 'youtube', url: metric.sourceUrl, thumbnail: 'https://images.example.com/alice-video.jpg', thumbnailSourceUrl: metric.sourceUrl,
+    publishedAt: '2026-08-20T08:00:00.000Z', observedAt: metric.observedAt, person, personId: person.id, metrics: [metric],
+    contract: contentContract, simulation: { ...simulation, contractId: contentContract.id }, evidenceState: 'retained_native_observations',
+    proposalHref: 'backercreate.html#draft?type=content-growth&person=person-alice&content=work-alice-1&source=trades'
+  };
+  return {
+    generatedAt: '2026-08-20T08:00:00.000Z', people: [person], contents: [content],
+    counts: { people: 1, contents: 1 }, simulationBucket: { id: simulation.bucket, endsAt: simulation.bucketEndsAt, intervalMs: 3600000, modelVersion: simulation.modelVersion }
+  };
 }
 
-test('Trades has the required public route, tabs, disclosure, and terminal source', () => {
-  assert.match(market, /#trades/);
-  assert.match(market, /Open simulations/);
-  assert.match(market, /Your proposals/);
-  assert.match(market, /Resolved/);
-  assert.match(market, /Demo simulations · no real money/);
-  assert.match(market, /backermarket\.html\?market=.*source=trades/);
-  assert.match(market, /backermarket\.html\?draft=.*source=trades/);
-  assert.doesNotMatch(market, /source=market-archive/);
-});
+function control(attributes) {
+  return {
+    checked: false, value: '',
+    closest() { return this; },
+    getAttribute(name) { return attributes[name] ?? null; },
+    hasAttribute(name) { return Object.prototype.hasOwnProperty.call(attributes, name); },
+    matches() { return false; }
+  };
+}
 
-test('Trades omits legacy marketplace and provider-health messaging', () => {
-  for (const forbidden of ['Share', 'Creator Radar', 'Backer AI Pulse', 'provider-delayed', 'unavailable']) {
-    assert.equal(market.toLowerCase().includes(forbidden.toLowerCase()), false, `${forbidden} must not appear in Trades`);
-  }
-});
-
-test('local proposals remain a separate, unpriced inbox', () => {
-  assert.match(market, /BackerMarketDraftStore/);
-  assert.match(market, /Review proposal/);
-  assert.match(market, /data-proposal-edit/);
-  assert.match(market, /data-proposal-delete/);
-  assert.match(market, /store\.remove\(id\)/);
-  assert.match(market, /No proposals on this device/);
-  assert.match(market, /Find a profile in Discovery/);
-  const proposal = body('proposalCard', 'categories');
-  assert.doesNotMatch(proposal, /Open simulated position|simulated activity|participants|fixed demo term/i);
-  assert.match(proposal, /Not approved or priced/);
-});
-
-test('only an open approved fixture exposes the simulated-position action', () => {
-  const fixture = body('fixtureCard', 'proposalReviewState');
-  assert.match(fixture, /isOpen \? .*Open simulated position/s);
-  assert.match(market, /contract\.isFixture/);
-  assert.match(market, /contract\.mkt\.state !== 'OPEN'/);
-});
-
-test('personalization is device-local, deterministic, and explained', () => {
-  assert.match(market, /For you · on this device/);
-  assert.match(market, /Nothing leaves this device/);
-  assert.match(market, /backer_watchlist_v1/);
-  assert.match(market, /backer_discovery_interest_v1/);
-  assert.match(market, /backer_portfolio_v1/);
-  assert.match(market, /saved proposal/);
-  assert.match(market, /recent Discovery action/);
-  assert.match(market, /contentTitle/);
-  assert.match(market, /discoveryWatches\.has/);
-  assert.match(market, /freshMin/);
-  assert.match(market, /a\.index - b\.index/);
-});
-
-test('recent Discovery provider interest deterministically changes fixture order', () => {
-  const values = new Map([
-    ['backer_discovery_interest_v1', JSON.stringify([{ personId: 'real-one', contentTitle: 'A creator launch', provider: 'youtube', category: 'knowledge', action: 'opened' }])]
-  ]);
+function makeHarness({ hash = '#trades', account = null, initial = {} } = {}) {
+  const values = new Map();
+  Object.entries(initial).forEach(([key, value]) => values.set(key, typeof value === 'string' ? value : JSON.stringify(value)));
+  if (account) values.set('backer_trades_account_v1', JSON.stringify(account));
+  values.set('backer_portfolio_v1', JSON.stringify([{ id: 'legacy-sentinel' }]));
   const storage = {
     getItem(key) { return values.has(key) ? values.get(key) : null; },
-    setItem(key, value) { values.set(key, String(value)); }
+    setItem(key, value) { values.set(key, String(value)); },
+    removeItem(key) { values.delete(key); }
   };
-  const contract = (id, name, platform, freshMin) => ({
-    id, name, hue: 32, isFixture: true,
-    mkt: { state: 'OPEN', cat: 'knowledge', profiles: [{ plat: platform }] },
-    contract: { title: `${name} reaches target`, curLabel: '10K', tgtLabel: '20K', closeLabel: 'Nov 30, 2026', deadlineLabel: 'Dec 31, 2026', progressPct: 50, source: `${platform} public metric`, freshMin, mult: 1.2, simVol: 100, backers: 3 }
-  });
+  const listeners = {};
+  const target = {
+    dataset: {}, innerHTML: '',
+    addEventListener(name, handler) { listeners[name] = handler; },
+    querySelector() { return null; }, querySelectorAll() { return []; }
+  };
   const windowObject = {
-    BACKER: { fmt: String, money: (value) => `$${value}` },
-    BACKER_MKT: { DEFAULT_WINDOW: '7d', CONTRACTS: [contract('first', 'First Fixture', 'github', 1), contract('second', 'YouTube Fixture', 'youtube', 100)], catById: () => ({ name: 'Knowledge' }), platById: (id) => ({ name: id }) },
+    BACKER: { fmt: String },
+    BackerTradeCatalog: { load: async () => sampleModel() },
     BackerMarketDraftStore: { list: () => [] },
     localStorage: storage,
-    location: { hash: '#trades', href: 'https://backer.test/backerdemo.html#trades', pathname: '/backerdemo.html', search: '' },
-    history: { replaceState() {} },
-    setTimeout() {}, requestAnimationFrame(callback) { callback(); }
+    location: { hash, href: `https://backer.test/backerdemo.html${hash}`, pathname: '/backerdemo.html', search: '' },
+    history: { replaceState(_state, _title, next) { windowObject.lastURL = next; } },
+    setTimeout() { return 1; }, clearTimeout() {}, requestAnimationFrame(callback) { callback(); }
   };
-  const context = vm.createContext({ window: windowObject, document: { getElementById() { return null; } }, URL, URLSearchParams, Intl, Set, Map, Number, String, Math, Date, isFinite, encodeURIComponent });
-  vm.runInContext(market, context);
-  const target = { dataset: {}, innerHTML: '', addEventListener() {} };
-  windowObject.BackerMarket.render(target);
-  assert.ok(target.innerHTML.indexOf('YouTube Fixture') < target.innerHTML.indexOf('First Fixture'));
-  assert.match(target.innerHTML, /1 recent Discovery action/);
-});
-
-test('Trades CSS preserves readable type, two-column desktop cards, and responsive access', () => {
-  assert.match(css, /\.mkt-contract-grid,\.mkt-proposal-grid\{[\s\S]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
-  assert.match(css, /@media \(max-width:980px\)[\s\S]*grid-template-columns:1fr/);
-  assert.match(css, /\.mkt-subject-copy h3\{[\s\S]*font-size:20px/);
-  assert.match(css, /\.mkt-button\{[\s\S]*min-height:44px/);
-  assert.match(css, /:focus-visible/);
-  assert.match(css, /prefers-reduced-motion:reduce/);
-  assert.match(css, /html\[data-theme="light"\]/);
-});
-
-test('Trades renders fixture simulations and local proposals without merging their terms', () => {
-  const values = new Map();
-  const storage = {
-    getItem(key) { return values.has(key) ? values.get(key) : null; },
-    setItem(key, value) { values.set(key, String(value)); }
-  };
-  const fixture = {
-    id: 'fixture-person', name: 'Ada Maker', hue: 32, isFixture: true,
-    mkt: { state: 'OPEN', cat: 'knowledge', profiles: [{ plat: 'youtube' }] },
-    contract: {
-      title: 'Reach 100K subscribers by Dec 31, 2026', curLabel: '72K', tgtLabel: '100K',
-      closeLabel: 'Nov 30, 2026', deadlineLabel: 'Dec 31, 2026', progressPct: 72,
-      source: 'YouTube public metrics - independent resolution source', mult: 1.4,
-      simVol: 12000, backers: 42
-    }
-  };
-  const proposal = {
-    draftId: 'proposal_123456', subject: { type: 'person-growth', person: { id: 'real-person', name: 'Real Person', avatar: '' }, content: null },
-    outcome: { question: 'Will Real Person reach 2,000 followers by the cutoff?' },
-    resolution: { platform: 'github', metricLabel: 'Followers', readiness: 'retained_observation', baseline: { value: 1000 }, target: { value: 2000 }, deadline: '2026-12-31T23:59:59.000Z', sourceUrl: 'https://github.com/real-person' },
-    rules: { correctionRule: 'latest_valid_before_cutoff', deletionRule: 'pause_then_void', disputeHours: 48, voidRule: 'refund_original_cost' }
-  };
-  const windowObject = {
-    BACKER: { fmt: String, money: (value) => `$${value}` },
-    BACKER_MKT: { DEFAULT_WINDOW: '7d', CONTRACTS: [fixture], catById: () => ({ name: 'Knowledge' }), platById: () => ({ name: 'YouTube' }) },
-    BackerMarketDraftStore: { list: () => [{ ok: true, draft: proposal, storage: 'local', durable: true }], remove: () => ({ ok: true }) },
-    localStorage: storage,
-    location: { hash: '#trades', href: 'https://backer.test/backerdemo.html#trades', pathname: '/backerdemo.html', search: '' },
-    history: { replaceState() {} },
-    setTimeout() {}, requestAnimationFrame(callback) { callback(); }
-  };
-  const documentObject = { getElementById() { return null; } };
+  const documentObject = { getElementById() { return null; }, querySelector() { return null; }, head: { appendChild() {} } };
   const context = vm.createContext({ window: windowObject, document: documentObject, URL, URLSearchParams, Intl, Set, Map, Number, String, Math, Date, isFinite, encodeURIComponent });
   vm.runInContext(market, context);
-  const target = { dataset: {}, innerHTML: '', addEventListener() {} };
   windowObject.BackerMarket.render(target);
-  assert.match(target.innerHTML, /Ada Maker/);
-  assert.match(target.innerHTML, /Open simulated position/);
-  assert.doesNotMatch(target.innerHTML, /Real Person/);
+  return { windowObject, target, listeners, values };
+}
 
-  windowObject.location.hash = '#trades?view=proposals';
-  windowObject.BackerMarket.render(target);
-  assert.match(target.innerHTML, /Real Person/);
-  assert.match(target.innerHTML, /Not approved or priced/);
-  assert.doesNotMatch(target.innerHTML, /Open simulated position|simulated activity|participants/);
+async function settle() {
+  await new Promise((resolve) => setImmediate(resolve));
+  await new Promise((resolve) => setImmediate(resolve));
+}
+
+function click(listeners, attributes) {
+  listeners.click({ target: control(attributes), preventDefault() {} });
+}
+
+function acknowledge(listeners) {
+  const input = control({});
+  input.checked = true;
+  input.matches = (selector) => selector === '[data-ticket-ack]';
+  listeners.change({ target: input });
+}
+
+test('Trades renders only retained catalog subjects with a complete priced contract', async () => {
+  const { target } = makeHarness();
+  await settle();
+  assert.match(target.innerHTML, /Alice Rivera/);
+  assert.match(target.innerHTML, /Building in public/);
+  assert.match(target.innerHTML, /Will Alice Rivera/);
+  assert.match(target.innerHTML, /125,000/);
+  assert.match(target.innerHTML, /150,000/);
+  assert.match(target.innerHTML, /63¢/);
+  assert.match(target.innerHTML, /\+2\.4 pts/);
+  assert.match(target.innerHTML, /\$24\.8K/);
+  assert.match(target.innerHTML, />Back</);
+  assert.match(target.innerHTML, />Fade</);
+  assert.match(target.innerHTML, /Paper market · modeled quotes/);
+  assert.doesNotMatch(target.innerHTML, /Ada Maker|Marcus Stillwater|BACKER_MKT|Demo simulations/i);
+});
+
+test('Trades is people-first, personalized from device-local Discovery signals, and separate from legacy portfolio', () => {
+  assert.match(market, /backer_market2_watch_v1/);
+  assert.match(market, /backer_trades_work_watch_v1/);
+  assert.match(market, /backer_discovery_interest_v1/);
+  assert.match(market, /backer_trades_positions_v1/);
+  assert.match(market, /backer_trades_account_v1/);
+  assert.doesNotMatch(market, /BACKER_MKT|backer_portfolio_v1/);
+  assert.match(market, /For you · on this device/);
+  assert.match(market, /positionSubjectIds/);
+  assert.match(market, /proposedContentIds/);
+  assert.match(market, /watchedPersonIds/);
+  assert.match(market, /watchedContentIds/);
+  assert.match(market, /market_work_watch_changed/);
+  assert.match(market, /Reset personalization/);
+});
+
+test('content Watch uses exact device-local work state and visibly personalizes that work', async () => {
+  const { target, listeners, values } = makeHarness();
+  await settle();
+  assert.match(target.innerHTML, /data-mkt-watch-work="work-alice-1" aria-pressed="false">Watch</);
+  click(listeners, { 'data-mkt-watch-work': 'work-alice-1' });
+  await settle();
+  assert.deepEqual(JSON.parse(values.get('backer_trades_work_watch_v1')), ['work-alice-1']);
+  assert.equal(values.has('backer_market2_watch_v1'), false, 'a work watch must not overload profile watch IDs');
+  assert.match(target.innerHTML, /data-mkt-watch-work="work-alice-1" aria-pressed="true">Watching</);
+  assert.match(target.innerHTML, /Watched work/);
+  assert.equal(JSON.parse(values.get('backer_discovery_interest_v1'))[0].contentId, 'work-alice-1');
+});
+
+test('reset personalization restores default ranking without deleting proposals, positions, or account data', async () => {
+  const oldPosition = {
+    schemaVersion: 'backer-trades-position-v1', id: 'trade-old', subjectId: 'person-alice',
+    side: 'BACK', cost: 25, createdAt: '2026-08-20T00:00:00.000Z', receiptId: 'KEEP-RECEIPT'
+  };
+  const { target, listeners, values } = makeHarness({
+    initial: {
+      backer_market2_watch_v1: ['person-alice'],
+      backer_trades_work_watch_v1: ['work-alice-1'],
+      backer_discovery_interest_v1: [{ personId: 'person-alice', action: 'opened', at: '2026-08-20T00:00:00.000Z' }],
+      backer_trades_positions_v1: [oldPosition],
+      backer_trades_account_v1: { schemaVersion: 'backer-trades-account-v1', startingCash: 10000, cash: 9975 },
+      'backer_site_market_draft_v2:keep': { draftId: 'keep' }
+    }
+  });
+  await settle();
+  click(listeners, { 'data-reset-personalization': '' });
+  await settle();
+  assert.equal(values.has('backer_market2_watch_v1'), false);
+  assert.equal(values.has('backer_trades_work_watch_v1'), false);
+  assert.equal(values.has('backer_discovery_interest_v1'), false);
+  assert.equal(JSON.parse(values.get('backer_trades_positions_v1'))[0].receiptId, 'KEEP-RECEIPT');
+  assert.equal(JSON.parse(values.get('backer_trades_account_v1')).cash, 9975);
+  assert.equal(JSON.parse(values.get('backer_site_market_draft_v2:keep')).draftId, 'keep');
+  assert.ok(Date.parse(values.get('backer_trades_personalization_reset_v1')) > 0);
+  assert.match(target.innerHTML, /Default catalog order restored/);
+  assert.match(target.innerHTML, /Saved proposals, receipts, positions, and paper cash were kept/);
+});
+
+test('public Trades loader requests the real catalog model before the view and never loads fixture market data', () => {
+  const catalogIndex = app.indexOf("loadTradesScript('js/trades-catalog-model.js");
+  const viewIndex = app.indexOf("loadTradesScript('js/market.js");
+  assert.ok(catalogIndex >= 0 && viewIndex > catalogIndex, 'the catalog projection must initialize before the Trades view');
+  assert.doesNotMatch(app, /loadTradesScript\(['"]js\/market-data\.js/);
+  assert.doesNotMatch(market, /BACKER_MKT|backer_portfolio_v1/);
+});
+
+test('deep links reveal exact profile/content contracts and can open a requested side', async () => {
+  const { target, windowObject } = makeHarness({ hash: '#trades?view=profiles&subject=person-alice&side=back' });
+  await settle();
+  assert.match(target.innerHTML, /Review paper trade/);
+  assert.match(target.innerHTML, /BACK · Alice Rivera/);
+  assert.match(target.innerHTML, /Will Alice Rivera/);
+  assert.equal(windowObject.BackerTradesRoutes.subjectURL('content', 'work-alice-1', 'fade'), 'backerdemo.html#trades?view=contents&subject=work-alice-1&side=fade');
+});
+
+test('an ineligible Discovery deep link fails closed instead of showing another subject', async () => {
+  const { target } = makeHarness({ hash: '#trades?view=profiles&subject=not-reviewed' });
+  await settle();
+  assert.match(target.innerHTML, /Not listed in Trades/);
+  assert.match(target.innerHTML, /no reviewed paper contract/);
+  assert.doesNotMatch(target.innerHTML, /data-mkt-trade=/);
+  assert.doesNotMatch(target.innerHTML, /Alice Rivera/);
+});
+
+test('paper cash blocks overspend and never mutates the legacy portfolio store', async () => {
+  const account = { schemaVersion: 'backer-trades-account-v1', startingCash: 10000, cash: 20, updatedAt: '2026-08-21T00:00:00.000Z' };
+  const { target, listeners, values } = makeHarness({ account });
+  await settle();
+  click(listeners, { 'data-mkt-trade': 'BACK', 'data-subject-kind': 'profile', 'data-subject-id': 'person-alice' });
+  acknowledge(listeners);
+  click(listeners, { 'data-ticket-confirm': '' });
+  assert.equal(values.has('backer_trades_positions_v1'), false);
+  assert.deepEqual(JSON.parse(values.get('backer_portfolio_v1')), [{ id: 'legacy-sentinel' }]);
+  assert.match(target.innerHTML, /Amount exceeds available paper cash/);
+  assert.match(target.innerHTML, /Estimated payout if correct/);
+  assert.match(target.innerHTML, /Profit if correct/);
+  assert.match(target.innerHTML, /Resolution rule/);
+  assert.match(target.innerHTML, /Resolve BACK/);
+});
+
+test('an affordable paper fill debits cash and persists the immutable contract receipt', async () => {
+  const { target, listeners, values } = makeHarness();
+  await settle();
+  click(listeners, { 'data-mkt-trade': 'FADE', 'data-subject-kind': 'profile', 'data-subject-id': 'person-alice' });
+  acknowledge(listeners);
+  click(listeners, { 'data-ticket-confirm': '' });
+  const positions = JSON.parse(values.get('backer_trades_positions_v1'));
+  const account = JSON.parse(values.get('backer_trades_account_v1'));
+  assert.equal(positions.length, 1);
+  assert.equal(positions[0].contractId, 'paper-growth:profile:person-alice:obs-youtube-alice-views');
+  assert.equal(positions[0].contractObservationId, 'obs-youtube-alice-views');
+  assert.match(positions[0].contractSnapshot.question, /Will Alice Rivera/);
+  assert.equal(positions[0].quote.side, 'FADE');
+  assert.ok(positions[0].estimatedPayout > positions[0].cost);
+  assert.equal(positions[0].profitIfCorrect, Math.round((positions[0].estimatedPayout - positions[0].cost) * 100) / 100);
+  assert.equal(positions[0].modelBucket, '2026-08-21T03:00:00.000Z');
+  assert.equal(account.cash, 9975);
+  assert.deepEqual(JSON.parse(values.get('backer_portfolio_v1')), [{ id: 'legacy-sentinel' }]);
+  assert.match(target.innerHTML, /Paper trade receipt/);
+  assert.match(target.innerHTML, /Estimated payout if correct/);
+  assert.match(target.innerHTML, /Profit if correct/);
+  assert.match(target.innerHTML, /Resolution source/);
+  assert.match(target.innerHTML, /Open Portfolio/);
+});
+
+test('Trades CSS uses Backer-native three-column hierarchy with readable responsive type', () => {
+  assert.match(css, /\.mkt-catalog-grid\{[^}]*grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+  assert.match(css, /@media \(max-width:1160px\)[\s\S]*\.mkt-catalog-grid,[^}]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+  assert.match(css, /@media \(max-width:720px\)[\s\S]*\.mkt-catalog-grid,[^}]*grid-template-columns:1fr/);
+  assert.match(css, /\.mkt-contract h3\{[^}]*font-size:16px/);
+  assert.match(css, /\.mkt-side-actions button\{[^}]*min-height:44px/);
+  assert.match(css, /html\[data-theme="light"\]/);
+  assert.match(css, /prefers-reduced-motion:reduce/);
 });

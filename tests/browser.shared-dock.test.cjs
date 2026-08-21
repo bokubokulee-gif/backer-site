@@ -300,7 +300,7 @@ async function assertViewportContract(page, label) {
       return style.display !== 'none' && style.visibility !== 'hidden' && Number(style.opacity) > 0 && rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < innerHeight;
     };
     const intersects = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
-    const actions = Array.from(document.querySelectorAll('.mkt-tabs button, .mkt-toolbar input, .mkt-toolbar select, [data-fixture-position], [data-fixture-review], header a, header button'))
+    const actions = Array.from(document.querySelectorAll('.mkt-tabs button, .mkt-toolbar input, .mkt-toolbar select, [data-mkt-trade], [data-ticket-confirm], [data-proposal-review], header a, header button'))
       .filter(visible)
       .map((node) => ({
         text: (node.getAttribute('aria-label') || node.textContent || node.tagName).trim().replace(/\s+/g, ' ').slice(0, 90),
@@ -333,11 +333,11 @@ before(async () => {
   browser = await chromium.launch({ headless: true, executablePath: CHROME });
 });
 
-after(() => {
-  if (browser) void browser.close().catch(() => {});
+after(async () => {
+  if (browser) await browser.close().catch(() => {});
   if (server && server.listening) {
-    server.close();
     if (typeof server.closeAllConnections === 'function') server.closeAllConnections();
+    await new Promise((resolve) => server.close(resolve));
   }
 });
 
@@ -348,9 +348,13 @@ test('canonical and legacy marketplace hashes all render the public Trades inter
     for (const hash of ['#trades', '#market', '#market-archive']) {
       await page.goto(`${origin}/backerdemo.html${hash}`);
       await page.waitForSelector('.mkt-header h1', { state: 'visible' });
-      assert.equal(await page.locator('.mkt-header h1').innerText(), 'People-growth simulations', `${hash} should render Trades`);
+      assert.equal(await page.locator('.mkt-header h1').innerText(), 'Trade future growth in people and work', `${hash} should render Trades`);
       assert.equal(await page.locator('.backer-dock-trades').getAttribute('aria-current'), 'page', `${hash} should mark Trades active`);
-      assert.match(await page.locator('.mkt-disclosure').innerText(), /Demo simulations\s*·\s*no real money/);
+      assert.equal(await page.locator('.mkt-paper-status').count(), 1, `${hash} should show one compact paper-market status`);
+      assert.equal((await page.locator('.mkt-paper-status').innerText()).trim(), 'Paper market · modeled quotes');
+      assert.equal(await page.locator('.mkt-disclosure').count(), 0, `${hash} should not restore the abandoned full-width demo disclosure`);
+      assert.match(await page.locator('.mkt-catalog-line').innerText(), /\$10,000(?:\.00)?\s+paper cash[\s\S]*26\s+profiles[\s\S]*43\s+works/i);
+      assert.doesNotMatch(await page.locator('.mkt').innerText(), /Ada Maker|Marcus Stillwater|BACKER_MKT|Demo simulations/i);
     }
   } finally {
     await instance.close();

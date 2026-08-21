@@ -67,7 +67,9 @@ export function parseYtDlpChannelJson(value) {
     ? String(avatar.url) : '';
   return {
     channelId: String(row && (row.channel_id || row.id) || ''),
-    avatarUrl
+    avatarUrl,
+    subscriberCount: Number.isFinite(Number(row && row.channel_follower_count))
+      ? Number(row.channel_follower_count) : null
   };
 }
 
@@ -143,12 +145,19 @@ export async function discoverYouTubeWithInstalledRouter(options = {}) {
       });
       return parseYtDlpChannelJson(response.stdout);
     } catch (_error) {
-      return { channelId, avatarUrl: '' };
+      return { channelId, avatarUrl: '', subscriberCount: null };
     }
   });
-  const avatarByChannelId = new Map(channels.map((row) => [row.channelId, row.avatarUrl]));
+  const channelById = new Map(channels.map((row) => [row.channelId, row]));
   return {
-    rows: rows.map((row) => ({ ...row, channelAvatarUrl: avatarByChannelId.get(row.channelId) || '' })),
+    rows: rows.map((row) => {
+      const channel = channelById.get(row.channelId) || {};
+      return {
+        ...row,
+        channelAvatarUrl: channel.avatarUrl || '',
+        subscriberCount: Number.isFinite(channel.subscriberCount) ? channel.subscriberCount : null
+      };
+    }),
     pagesRead: queries.length + channelIds.length,
     backend: 'yt-dlp'
   };

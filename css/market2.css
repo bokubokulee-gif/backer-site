@@ -7414,6 +7414,11 @@ body.mkt2-full .m2-profile-card.is-selected {
   border-color: color-mix(in srgb, var(--m2-accent) 62%, var(--m2-line));
 }
 
+body.mkt2-full .m2-feed-card.is-route-focus {
+  border-color: color-mix(in srgb, var(--m2-accent) 78%, var(--m2-line));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--m2-accent) 18%, transparent), 0 18px 42px rgba(0, 0, 0, 0.22);
+}
+
 body.mkt2-full .m2-profile-media,
 body.mkt2-full .m2-feed-media {
   position: relative;
@@ -8094,11 +8099,11 @@ body.mkt2-full .m2-feed-actions {
   border-top: 1px solid var(--m2-line);
 }
 
-body.mkt2-full :is(.m2-profile-card, .m2-feed-card)[data-m2-draft-card] {
+body.mkt2-full :is(.m2-profile-card, .m2-feed-card)[data-m2-trade-card] {
   cursor: pointer;
 }
 
-body.mkt2-full :is(.m2-profile-card, .m2-feed-card)[data-m2-draft-card]:focus-visible {
+body.mkt2-full :is(.m2-profile-card, .m2-feed-card)[data-m2-trade-card]:focus-visible {
   outline: 2px solid var(--m2-gold);
   outline-offset: 4px;
 }
@@ -8111,7 +8116,9 @@ body.mkt2-full .m2-feed-actions .m2-feed-person {
   border: 0;
 }
 
-body.mkt2-full .m2-draft-button {
+body.mkt2-full .m2-draft-button,
+body.mkt2-full .m2-custom-bet,
+body.mkt2-full .m2-trade-button {
   display: inline-flex;
   min-height: 44px;
   align-items: center;
@@ -8127,22 +8134,35 @@ body.mkt2-full .m2-draft-button {
   text-decoration: none;
 }
 
-body.mkt2-full .m2-feed-actions .m2-draft-button {
+body.mkt2-full .m2-custom-bet {
+  border-color: var(--m2-line-strong);
+  background: var(--m2-surface-soft);
+  color: var(--m2-muted);
+}
+
+body.mkt2-full .m2-trade-button {
+  border-color: var(--m2-accent);
+  background: var(--m2-accent);
+  color: var(--m2-bg);
+}
+
+body.mkt2-full .m2-feed-actions :is(.m2-draft-button, .m2-custom-bet, .m2-trade-button) {
   flex: none;
 }
 
 body.mkt2-full .m2-filter-group :where(input, select, button, a):focus-visible,
 body.mkt2-full .m2-section-actions :where(button, a):focus-visible,
-body.mkt2-full .m2-draft-button:focus-visible {
+body.mkt2-full :is(.m2-draft-button, .m2-custom-bet, .m2-trade-button):focus-visible {
   outline: 2px solid var(--m2-accent);
   outline-offset: 3px;
 }
 
 @media (hover: hover) {
-  body.mkt2-full .m2-draft-button:hover,
+  body.mkt2-full :is(.m2-draft-button, .m2-custom-bet, .m2-trade-button):hover,
   body.mkt2-full .m2-section-actions .m2-filter-button:hover {
     border-color: var(--m2-accent);
     background: color-mix(in srgb, var(--m2-accent) 20%, var(--m2-surface));
+    color: var(--m2-ink);
   }
 }
 
@@ -8178,8 +8198,8 @@ body.mkt2-full .m2-draft-button:focus-visible {
     text-align: center;
   }
 
-  body.mkt2-full .m2-profile-card-actions .m2-draft-button,
-  body.mkt2-full .m2-feed-actions .m2-draft-button {
+  body.mkt2-full .m2-profile-card-actions :is(.m2-draft-button, .m2-custom-bet, .m2-trade-button),
+  body.mkt2-full .m2-feed-actions :is(.m2-draft-button, .m2-custom-bet, .m2-trade-button) {
     width: 100%;
   }
 }
