@@ -5,15 +5,23 @@
 (function () {
   'use strict';
 
-  /* Retire the old synthetic-search deep link before the legacy app router boots. */
+  /* Preserve old Search bookmarks while canonicalizing to the restored Search route. */
   try {
     var legacyURL = new URL(window.location.href);
     if (legacyURL.searchParams.get('view') === 'search') {
       var legacyQuery = legacyURL.searchParams.get('q') || '';
       legacyURL.searchParams.delete('view');
       legacyURL.searchParams.delete('q');
-      var legacyHash = '#market2?view=radar&sort=viral' + (legacyQuery ? '&q=' + encodeURIComponent(legacyQuery) : '');
+      var legacyHash = '#search' + (legacyQuery ? '?q=' + encodeURIComponent(legacyQuery) : '');
       window.history.replaceState(null, '', legacyURL.pathname + legacyURL.search + legacyHash);
+    } else if (/^#market2(?:\?|$)/.test(legacyURL.hash)) {
+      var legacyFocusIndex = legacyURL.hash.indexOf('?');
+      var legacyFocusParams = new URLSearchParams(legacyFocusIndex >= 0 ? legacyURL.hash.slice(legacyFocusIndex + 1) : '');
+      if (legacyFocusParams.get('focus') === 'search') {
+        var legacyFocusQuery = legacyFocusParams.get('q') || '';
+        var canonicalSearchHash = '#search' + (legacyFocusQuery ? '?q=' + encodeURIComponent(legacyFocusQuery) : '');
+        window.history.replaceState(null, '', legacyURL.pathname + legacyURL.search + canonicalSearchHash);
+      }
     }
   } catch (legacyRouteError) {}
 
@@ -2198,13 +2206,19 @@
     if (state.loadedOnce) scheduleDiscovery(40);
   }
 
+  function openSearchQuery(query) {
+    var value = String(query || '').trim().slice(0, 240);
+    if (typeof window.__backerGo === 'function') window.__backerGo('search', value);
+    else location.hash = '#search' + (value ? '?q=' + encodeURIComponent(value) : '');
+  }
+
   function bindLandingDiscovery() {
     var form = document.getElementById('market2HeroSearch');
     var input = document.getElementById('heroSearchInput');
     if (form && !form.dataset.market2Bound) {
       form.addEventListener('submit', function (event) {
         event.preventDefault();
-        openDiscoveryQuery(input && input.value || 'creators gaining attention');
+        openSearchQuery(input && input.value || 'creators gaining attention');
       });
       form.dataset.market2Bound = 'true';
     }
@@ -2214,7 +2228,7 @@
       pills.addEventListener('click', function (event) {
         var item = event.target.closest('[data-q]');
         if (!item || !pills.contains(item)) return;
-        openDiscoveryQuery(item.getAttribute('data-q'));
+        openSearchQuery(item.getAttribute('data-q'));
       });
       pills.dataset.market2Bound = 'true';
     }

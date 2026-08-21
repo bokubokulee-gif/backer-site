@@ -197,7 +197,8 @@ body :is(a[href], button, input, select, textarea, [role="button"], [tabindex]):
 }
 .backer-float-dock[data-orientation="vertical"] .backer-dock-minimize { width: 44px; height: 20px; }
 .backer-dock-minimize svg { width: 16px; height: 16px; }
-.backer-dock-restore { display: none; width: 56px; height: 56px; }
+.backer-dock-restore { display: none; width: 56px; height: 56px; cursor: grab; touch-action: none; }
+.backer-dock-restore:active { cursor: grabbing; }
 
 .backer-float-dock.is-minimized { width: 64px; height: 64px; padding: 4px; border-radius: 50%; }
 .backer-float-dock.is-minimized .backer-dock-expanded { display: none; }

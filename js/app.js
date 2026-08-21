@@ -544,86 +544,22 @@
   }
 
   /* ---------- AI SEARCH ---------- */
-  const SYN = {
-    ai: ['ai', 'researcher', 'paper', 'ml', 'machine learning', 'llm'], tech: ['tech', 'education', 'teach', 'learn', 'course', 'code', 'engineer', 'software', 'developer'],
-    music: ['music', 'song', 'artist', 'spotify', 'rapper', 'producer', 'soundcloud', 'pop'], indie: ['indie', 'hacker', 'build', 'saas', 'founder', 'ship', 'startup'],
-    art: ['art', 'artist', 'illustrat', 'draw', 'design', 'visual'], gaming: ['gaming', 'game', 'stream', 'twitch', 'esports'],
-    cooking: ['cook', 'recipe', 'food', 'chef', 'eat', 'kitchen'], writing: ['writ', 'essay', 'substack', 'newsletter', 'blog', 'author'],
-    video: ['film', 'video', 'documentary', 'cinema', 'director'], lifestyle: ['lifestyle', 'fitness', 'gym', 'workout', 'wellness']
-  };
-  function rankCreators(q) {
-    q = q.toLowerCase();
-    const wantSmall = /under|small|<|less than|tiny|early|day zero|nano|micro/.test(q);
-    const wantRetention = /retention|loyal|sticky|return|completion|engaged/.test(q);
-    const wantStudent = /student|college|university|campus/.test(q);
-    return B.creators.map(c => {
-      let score = 0;
-      for (const [cat, words] of Object.entries(SYN)) if (c.cat === cat) words.forEach(w => { if (q.includes(w)) score += 3; });
-      if (q.includes(c.name.toLowerCase()) || q.includes(c.handle.replace('@', ''))) score += 5;
-      if (wantSmall && c.followers < 50000) score += 2;
-      if (wantRetention) score += c.retention.idx / 40;
-      if (wantStudent && (c.cat === 'tech' || c.cat === 'ai')) score += 1;
-      score += c.auth / 100;
-      return { c, score };
-    }).sort((x, y) => y.score - x.score);
-  }
   function renderSearch(query) {
-    // Multi-platform PRD engine (js/search-engine.js) owns this view when present
-    if (window.BackerSearch) { window.BackerSearch.render(app, query); return; }
+    // The retained-catalog engine is the only Search data path. Missing assets
+    // fail closed instead of falling back to the fixture creator bundle.
+    if (window.BackerSearch && typeof window.BackerSearch.render === 'function') {
+      window.BackerSearch.render(app, query);
+      return;
+    }
     app.innerHTML = `
-      <div class="search-view">
-        <div class="search-hero"><h1>AI Search Agent</h1><p>Describe the kind of creator you want to back. The agent traverses public data across platforms and ranks by authenticity and trajectory.</p></div>
-        <form class="big-search" id="searchForm">
-          <svg viewBox="0 0 24 24" class="ic" style="width:20px;height:20px"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-          <input id="searchInput" placeholder="e.g. fitness creators under 5K, posting 3× a week, retention-heavy, ideally students" value="${(query || '').replace(/"/g, '&quot;')}"/>
-          <button class="send" type="submit" aria-label="Search"><svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-        </form>
-        <div class="pills-shell search-ex-shell">
-          <div class="pills search-ex" role="group" aria-label="Suggested creator searches">
-            <div class="pills-track search-ex-track">
-              <div class="pills-group">
-                <button type="button" class="chip" data-ex="AI researchers under 10K with very loyal audiences">AI researchers · loyal</button>
-                <button type="button" class="chip" data-ex="indie hackers shipping weekly with paying audiences">indie hackers · paying</button>
-                <button type="button" class="chip" data-ex="undiscovered music artists about to break out">music · pre-breakout</button>
-                <button type="button" class="chip" data-ex="show me a creator with fake followers">expose a fake</button>
-              </div>
-              <div class="pills-group" aria-hidden="true">
-                <span class="chip" data-ex="AI researchers under 10K with very loyal audiences">AI researchers · loyal</span>
-                <span class="chip" data-ex="indie hackers shipping weekly with paying audiences">indie hackers · paying</span>
-                <span class="chip" data-ex="undiscovered music artists about to break out">music · pre-breakout</span>
-                <span class="chip" data-ex="show me a creator with fake followers">expose a fake</span>
-              </div>
-            </div>
+      <div class="search-view sx" data-search-state="asset-error">
+        <div id="sxOut">
+          <div class="sx-notice sx-notice-block" role="alert">
+            <b>Backer AI Search could not load.</b>
+            The retained Discovery search asset is unavailable. Refresh to retry. No fallback profiles, works, or metrics were substituted.
           </div>
-          <button class="pills-toggle search-ex-toggle" type="button" aria-pressed="false" aria-label="Pause scrolling suggestions"><span aria-hidden="true">Ⅱ</span></button>
         </div>
-        <div id="searchOut"></div>
       </div>`;
-    const form = $('#searchForm'), input = $('#searchInput');
-    form.addEventListener('submit', e => { e.preventDefault(); runAgent(input.value.trim()); });
-    bindPromptMarquee(app, input, runAgent);
-    if (query) runAgent(query);
-  }
-  function runAgent(q) {
-    if (!q) return;
-    const out = $('#searchOut');
-    const steps = [
-      'Parsing intent and constraints…',
-      'Traversing public data across YouTube, TikTok, Spotify, Substack…',
-      'Running Proof of Attention — authenticity, retention, velocity…',
-      'Ranking candidates by adjusted trajectory…'
-    ];
-    out.innerHTML = `<div class="agent-log">${steps.map((s, i) => `<div class="agent-step" style="animation-delay:${i * 0.5}s"><span class="${i < steps.length - 1 ? 'spin' : 'ic-check'}"></span>${s}</div>`).join('')}</div>`;
-    const stepEls = $$('.agent-step', out);
-    stepEls.forEach((el, i) => setTimeout(() => {
-      const sp = el.querySelector('.spin, .ic-check');
-      if (sp) sp.outerHTML = '<svg viewBox="0 0 24 24" class="ic" style="width:16px;height:16px;color:var(--pos)"><path d="M20 6 9 17l-5-5"/></svg>';
-    }, (i + 1) * 500));
-    setTimeout(() => {
-      const ranked = rankCreators(q).slice(0, 6).map(r => r.c);
-      out.insertAdjacentHTML('beforeend', `<div class="results-head"><svg viewBox="0 0 24 24" class="ic" style="width:15px;height:15px;color:var(--accent)"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4-6.3-4.6L5.7 21 8 14 2 9.4h7.6z"/></svg> ${ranked.length} candidates ranked by authenticity & trajectory</div><div class="creator-grid">${ranked.map(card).join('')}</div>`);
-      mountCovers(out);
-    }, steps.length * 500 + 350);
   }
 
   /* ---------------- modal + toast ---------------- */
@@ -756,7 +692,24 @@
     var dl = new URLSearchParams(location.search).get('view');
     if (dl === 'market' || dl === 'trades') { go('trades'); return true; }
     if (dl === 'market2') { go('market2'); return true; }
-    if (dl === 'search') { go('search'); return true; }
+    if (dl === 'search') { go('search', new URLSearchParams(location.search).get('q') || ''); return true; }
+    if (/^#search(?:\?|$)/.test(location.hash)) {
+      var searchQueryIndex = location.hash.indexOf('?');
+      var searchParams = new URLSearchParams(searchQueryIndex >= 0 ? location.hash.slice(searchQueryIndex + 1) : '');
+      go('search', searchParams.get('q') || '');
+      return true;
+    }
+    // The first shared dock shipped this exact Search bookmark under the
+    // Discovery hash. Resolve it here, before the generic Market2 route, so a
+    // cold load and an in-page hashchange both reach the restored Search UI.
+    if (/^#market2(?:\?|$)/.test(location.hash)) {
+      var legacyMarketSearchIndex = location.hash.indexOf('?');
+      var legacyMarketSearchParams = new URLSearchParams(legacyMarketSearchIndex >= 0 ? location.hash.slice(legacyMarketSearchIndex + 1) : '');
+      if (legacyMarketSearchParams.get('focus') === 'search') {
+        go('search', legacyMarketSearchParams.get('q') || '');
+        return true;
+      }
+    }
     if (/^#trades(?:\?|$)/.test(location.hash)) { go('trades'); return true; }
     if (/^#market2(?:\?|$)/.test(location.hash)) { go('market2'); return true; }
     if (/^#market-archive(?:\?|$)/.test(location.hash)) { go('trades'); return true; }
