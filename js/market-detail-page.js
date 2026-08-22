@@ -137,14 +137,15 @@
   function configureReturn(source) {
     var fromPortfolio = source === 'portfolio' || source === 'portfolio_creator';
     var fromDiscovery = source === 'market2' || source === 'discovery' || source === 'builder';
-    var fromTrades = source === 'trades' || source === 'market' || source === 'market-archive';
-    routeBackHref = source === 'portfolio_creator' ? 'portfolio.html?mode=creator' : source === 'portfolio' ? 'portfolio.html' : fromDiscovery ? 'backerdemo.html#market2' : 'backerdemo.html#trades';
-    document.body.dataset.returnSource = fromPortfolio ? 'portfolio' : fromDiscovery ? 'discovery' : 'trades';
+    var fromArchive = source === 'market-archive';
+    var fromTrades = source === 'trades' || source === 'market';
+    routeBackHref = source === 'portfolio_creator' ? 'portfolio.html?mode=creator' : source === 'portfolio' ? 'portfolio.html' : fromDiscovery ? 'backerdemo.html#market2' : fromArchive ? 'backerdemo.html#market-archive' : 'backerdemo.html#trades';
+    document.body.dataset.returnSource = fromPortfolio ? 'portfolio' : fromDiscovery ? 'discovery' : fromArchive ? 'archive' : 'trades';
     var back = document.querySelector('.mdp-back');
     if (back) {
       back.href = routeBackHref;
       var label = back.querySelector('span:last-child');
-      if (label) label.textContent = fromPortfolio ? 'Back to portfolio' : fromDiscovery ? 'Back to Discovery' : fromTrades ? 'Back to Trades' : 'Back to Trades';
+      if (label) label.textContent = fromPortfolio ? 'Back to portfolio' : fromDiscovery ? 'Back to Discovery' : fromArchive ? 'Back to archived market' : fromTrades ? 'Back to Trades' : 'Back to Trades';
     }
   }
 
@@ -400,7 +401,7 @@
       terminal.removeAttribute('aria-modal');
     }
     var close = root.querySelector('.pt-x[data-close]');
-    if (close) close.setAttribute('aria-label', document.body.dataset.returnSource === 'portfolio' ? 'Back to portfolio' : document.body.dataset.returnSource === 'discovery' ? 'Back to Discovery' : 'Back to Trades');
+    if (close) close.setAttribute('aria-label', document.body.dataset.returnSource === 'portfolio' ? 'Back to portfolio' : document.body.dataset.returnSource === 'discovery' ? 'Back to Discovery' : document.body.dataset.returnSource === 'archive' ? 'Back to archived market' : 'Back to Trades');
     if ((!activeDraftContext || !activeDraftContext.discovery) && window.BackerMarketCommunity && typeof window.BackerMarketCommunity.mount === 'function') {
       window.BackerMarketCommunity.mount(root);
     }

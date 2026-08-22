@@ -46,9 +46,11 @@
     var hash = String(location.hash || '').toLowerCase();
     var query = new URLSearchParams(location.search || '');
     if (/portfolio\.html$/.test(path)) return 'portfolio';
+    if (/backermarket\.html$/.test(path) && query.get('source') === 'market-archive') return '';
     if (/backermarket\.html$/.test(path)) return 'trades';
     if (/backercreate\.html$/.test(path)) return 'discovery';
-    if (/^#trades(?:\?|$)/.test(hash) || /^#market(?:-archive)?(?:\?|$)/.test(hash)) return 'trades';
+    if (/^#market-archive(?:\?|$)/.test(hash)) return '';
+    if (/^#trades(?:\?|$)/.test(hash) || /^#market(?:\?|$)/.test(hash)) return 'trades';
     if (/^#search(?:\?|$)/.test(hash)) return 'search';
     if (/^#market2(?:\?|$)/.test(hash)) return 'discovery';
     if (query.get('view') === 'search') return 'search';

@@ -10,9 +10,13 @@
   const app = $('#app');
   let tradesAssets = null;
   let tradesAssetError = null;
+  let legacyArchiveAssets = null;
+  let legacyArchiveError = null;
   let legacyDataAsset = null;
   let legacyMarketingReady = false;
-  window.__backerLegacyArchiveAllowed = false;
+  let navigationEpoch = 0;
+  let committedRouteView = 'home';
+  window.__backerLegacyArchiveAllowed = true;
 
   function ensureLegacyData() {
     if (B || window.BACKER) {
@@ -51,8 +55,37 @@
       link.rel = 'stylesheet';
       link.href = 'css/market.css?v=20260821-account-metrics-1';
       link.dataset.backerTrades = 'true';
-      link.onload = resolve;
+      link.media = 'print';
+      link.onload = () => {
+        link.dataset.backerStyleReady = 'true';
+        link.media = 'all';
+        link.disabled = committedRouteView !== 'trades';
+        resolve();
+      };
       link.onerror = () => reject(new Error('Trades stylesheet unavailable'));
+      document.head.appendChild(link);
+    });
+  }
+
+  function loadLegacyArchiveStyle() {
+    if (document.querySelector('link[data-backer-legacy-market]')) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'css/market-archive.css?v=20260822-1';
+      link.dataset.backerLegacyMarket = 'true';
+      // A route can change while this lazy stylesheet is in flight. Keep it
+      // non-applicable until load completes, then enable it only for the route
+      // that is still current. This prevents archived .mkt rules from leaking
+      // into a newer Trades/Discovery render.
+      link.media = 'print';
+      link.onload = () => {
+        link.dataset.backerStyleReady = 'true';
+        link.media = 'all';
+        link.disabled = committedRouteView !== 'market-archive';
+        resolve();
+      };
+      link.onerror = () => reject(new Error('Legacy market archive stylesheet unavailable'));
       document.head.appendChild(link);
     });
   }
@@ -71,14 +104,44 @@
     });
   }
 
+  function loadLegacyArchiveScript(src, key) {
+    if (key === 'data' && window.BACKER_MKT) return Promise.resolve();
+    if (key === 'view' && window.BackerLegacyMarket) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.dataset.backerLegacyMarket = key;
+      script.onload = resolve;
+      script.onerror = () => reject(new Error('Legacy market archive script unavailable: ' + src));
+      document.head.appendChild(script);
+    });
+  }
+
   function ensureTradesAssets() {
     if (!tradesAssets) {
       tradesAssets = loadTradesStyle()
         .then(() => loadTradesScript('js/market-draft-store.js?v=20260821-1', 'store'))
         .then(() => loadTradesScript('js/trades-catalog-model.js?v=20260821-account-metrics-1', 'catalog'))
-        .then(() => loadTradesScript('js/market.js?v=20260821-account-metrics-1', 'view'));
+        .then(() => loadTradesScript('js/market.js?v=20260822-archive-1', 'view'));
     }
     return tradesAssets;
+  }
+
+  function ensureLegacyArchiveAssets() {
+    if (!legacyArchiveAssets) {
+      legacyArchiveAssets = ensureLegacyData()
+        .then(() => loadLegacyArchiveStyle())
+        .then(() => loadLegacyArchiveScript('js/market-data.js?v=3', 'data'))
+        .then(() => loadLegacyArchiveScript('js/market-archive.js?v=20260822-1', 'view'));
+    }
+    return legacyArchiveAssets;
+  }
+
+  function setMarketStyles(view) {
+    var tradesStyle = document.querySelector('link[data-backer-trades]');
+    var archiveStyle = document.querySelector('link[data-backer-legacy-market]');
+    if (tradesStyle && tradesStyle.dataset.backerStyleReady === 'true') tradesStyle.disabled = view !== 'trades';
+    if (archiveStyle && archiveStyle.dataset.backerStyleReady === 'true') archiveStyle.disabled = view !== 'market-archive';
   }
 
   function analyticsView(view, arg) {
@@ -255,7 +318,8 @@
   }
 
   async function go(view, arg) {
-    if (view === 'market' || view === 'market-archive') view = 'trades';
+    if (view === 'market') view = 'trades';
+    const routeEpoch = ++navigationEpoch;
     if (view === 'trades') {
       try {
         await ensureTradesAssets();
@@ -263,9 +327,23 @@
         tradesAssetError = error;
       }
     }
+    if (view === 'market-archive') {
+      try {
+        await ensureLegacyArchiveAssets();
+      } catch (error) {
+        legacyArchiveError = error;
+      }
+    }
+    if (routeEpoch !== navigationEpoch) return;
+    // Keep the outgoing DOM fully styled while incoming assets load. New route
+    // styles stay disabled until this commit, then style swap + render happen
+    // synchronously so no mixed or unstyled market frame can paint.
+    committedRouteView = view;
+    setMarketStyles(view);
     if (view === 'portfolio') { window.location.href = 'portfolio.html'; return; }
     if (view === 'home') {
       try { await ensureLegacyMarketing(); } catch (error) { console.error(error); }
+      if (routeEpoch !== navigationEpoch) return;
       document.body.classList.remove('body-app', 'mkt-full', 'mkt2-full');
       app.classList.add('hidden'); app.setAttribute('aria-hidden', 'true');
       if (dock) {
@@ -280,7 +358,7 @@
       return;
     }
     document.body.classList.add('body-app');
-    document.body.classList.toggle('mkt-full', view === 'trades' || view === 'market2'); // market views escape the 1180px app cap
+    document.body.classList.toggle('mkt-full', view === 'trades' || view === 'market-archive' || view === 'market2'); // market views escape the 1180px app cap
     document.body.classList.toggle('mkt2-full', view === 'market2');
     app.classList.remove('hidden'); app.setAttribute('aria-hidden', 'false');
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -290,13 +368,15 @@
         app.innerHTML = '<div class="mkt-fatal" role="alert"><b>This profile could not load.</b><span>Refresh to retry the legacy profile data.</span></div>';
         return;
       }
+      if (routeEpoch !== navigationEpoch) return;
     }
     if (view === 'market2') { renderMarket2(); setDock('market2'); }
     else if (view === 'trades') { renderMarket(); setDock('trades'); }
+    else if (view === 'market-archive') { renderLegacyMarket(); setDock('trades'); }
     else if (view === 'creator') { renderCreator(arg); setDock('market2'); }
     else if (view === 'portfolio') { renderPortfolio('investor'); setDock('portfolio'); }
     else if (view === 'search') { renderSearch(arg || ''); setDock('search'); }
-    analyticsView(view, arg);
+    analyticsView(view === 'market-archive' ? 'market' : view, arg);
   }
   window.__backerGo = go;
 
@@ -321,6 +401,16 @@
     // Trades (js/market.js) owns this view when present.
     if (window.BackerMarket) { window.BackerMarket.render(app); return; }
     app.innerHTML = '<div class="mkt-fatal" role="alert"><b>Trades could not load.</b><span>' + (tradesAssetError ? 'Refresh to retry the retained catalog, paper quotes, and your device-local proposals.' : 'The Trades module did not initialize.') + '</span><a href="backerdemo.html#market2">Return to Discovery</a></div>';
+  }
+
+  function renderLegacyMarket() {
+    if (window.BackerLegacyMarket && typeof window.BackerLegacyMarket.render === 'function') {
+      window.BackerLegacyMarket.render(app);
+      var archiveRoot = app.querySelector('.mkt');
+      if (archiveRoot) archiveRoot.dataset.marketSurface = 'archive';
+      return;
+    }
+    app.innerHTML = '<div class="mkt-fatal" role="alert"><b>The archived demo market could not load.</b><span>' + (legacyArchiveError ? 'Refresh to retry the preserved fixture board.' : 'The preserved market module did not initialize.') + '</span><a href="backerdemo.html#trades">Open Trades</a></div>';
   }
 
   /* ---------- CREATOR DETAIL ---------- */
@@ -731,6 +821,7 @@
   function routeFromLocation() {
     var dl = new URLSearchParams(location.search).get('view');
     if (dl === 'market' || dl === 'trades') { go('trades'); return true; }
+    if (dl === 'market-archive') { go('market-archive'); return true; }
     if (dl === 'market2') { go('market2'); return true; }
     if (dl === 'search') { go('search', new URLSearchParams(location.search).get('q') || ''); return true; }
     if (/^#search(?:\?|$)/.test(location.hash)) {
@@ -752,7 +843,7 @@
     }
     if (/^#trades(?:\?|$)/.test(location.hash)) { go('trades'); return true; }
     if (/^#market2(?:\?|$)/.test(location.hash)) { go('market2'); return true; }
-    if (/^#market-archive(?:\?|$)/.test(location.hash)) { go('trades'); return true; }
+    if (/^#market-archive(?:\?|$)/.test(location.hash)) { go('market-archive'); return true; }
     if (/^#market(?:\?|$)/.test(location.hash)) { go('trades'); return true; }
     return false;
   }
@@ -764,8 +855,8 @@
     initTyped();
     var oldDockHome = $('.dock-home');
     if (oldDockHome) oldDockHome.classList.add('active');
-    // Discovery and Trades are separate public product surfaces. Historical
-    // market hashes canonicalize to Trades.
+    // Discovery and Trades are separate public product surfaces. #market
+    // canonicalizes to Trades; #market-archive preserves the pre-Trades demo.
     try {
       if (!routeFromLocation()) ensureLegacyMarketing().catch(error => console.error(error));
     } catch (e) {}
