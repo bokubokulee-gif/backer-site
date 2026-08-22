@@ -23,6 +23,10 @@ const TERMINAL_VIEWPORTS = [
   { width: 648, height: 900 },
   { width: 1440, height: 1000 }
 ];
+const SEARCH_SEAM_VIEWPORTS = [
+  { width: 408, height: 688 },
+  { width: 1440, height: 1000 }
+];
 const TERMINAL_PROPOSAL_ID = 'dock_proposal_123';
 const SEARCH_CATALOG = JSON.parse(fsSync.readFileSync(path.join(ROOT, 'data/discovery-catalog.json'), 'utf8'));
 const SEARCH_INDEX = SearchEngine.__test.buildIndex(SEARCH_CATALOG);
@@ -73,8 +77,8 @@ async function handler(req, res) {
   }
 }
 
-async function context(viewport = { width: 1000, height: 800 }) {
-  const instance = await browser.newContext({ viewport, reducedMotion: 'reduce' });
+async function context(viewport = { width: 1000, height: 800 }, reducedMotion = 'reduce') {
+  const instance = await browser.newContext({ viewport, reducedMotion });
   await instance.route('https://fonts.googleapis.com/**', (route) => route.abort());
   await instance.route('https://fonts.gstatic.com/**', (route) => route.abort());
   await instance.route(/https:\/\/(?!127\.0\.0\.1).*/, (route) => {
@@ -367,10 +371,14 @@ test('Search dock route opens the dedicated retained-catalog interface from Home
       assert.equal(await page.locator('.sx-orbit-ring').count(), 3, 'restored social orbit should render');
       const reducedAnimations = await page.evaluate(() => ({
         rings: Array.from(document.querySelectorAll('.sx-orbit-ring'), (node) => getComputedStyle(node).animationName),
-        icons: Array.from(document.querySelectorAll('.sx-app-icon'), (node) => getComputedStyle(node).animationName)
+        icons: Array.from(document.querySelectorAll('.sx-app-icon'), (node) => getComputedStyle(node).animationName),
+        platforms: Array.from(document.querySelectorAll('.sx-orbit-node'), (node) => node.dataset.platform),
+        ringCounts: Array.from(document.querySelectorAll('.sx-orbit-ring'), (node) => node.querySelectorAll('.sx-orbit-node').length)
       }));
       assert.deepEqual(reducedAnimations.rings, ['none', 'none', 'none'], 'reduced motion must stop every orbit ring');
-      assert.equal(reducedAnimations.icons.length, 15);
+      assert.equal(reducedAnimations.icons.length, 5);
+      assert.deepEqual(reducedAnimations.ringCounts, [2, 2, 1], 'five nodes should be balanced across three orbit depths');
+      assert.equal(new Set(reducedAnimations.platforms).size, 5, 'each social platform should appear once, not once per ring');
       assert.ok(reducedAnimations.icons.every((name) => name === 'none'), 'reduced motion must stop every counter-orbit icon');
       assert.equal(await page.locator('#sxInput').count(), 1, 'natural-language input should render');
       assert.equal(await page.locator('.sxr-card').count(), 0, 'Search should not dump the full catalog before the user asks');
@@ -391,6 +399,100 @@ test('Search dock route opens the dedicated retained-catalog interface from Home
     await instance.close();
   }
 });
+
+test('Search orbit runs normally while reduced-motion contexts stop every ring and icon', async () => {
+  const instance = await context({ width: 1000, height: 820 }, 'no-preference');
+  const page = await instance.newPage();
+  try {
+    await page.goto(`${origin}/backerdemo.html#search`);
+    await page.waitForSelector('.sx-orbit-node', { state: 'visible' });
+    const motion = await page.evaluate(() => ({
+      rings: Array.from(document.querySelectorAll('.sx-orbit-ring'), (node) => ({
+        name: getComputedStyle(node).animationName,
+        state: getComputedStyle(node).animationPlayState
+      })),
+      icons: Array.from(document.querySelectorAll('.sx-app-icon'), (node) => ({
+        name: getComputedStyle(node).animationName,
+        state: getComputedStyle(node).animationPlayState
+      }))
+    }));
+    assert.equal(motion.rings.length, 3);
+    assert.equal(motion.icons.length, 5);
+    assert.ok(motion.rings.every((item) => item.name !== 'none' && item.state === 'running'), `rings must be active: ${JSON.stringify(motion.rings)}`);
+    assert.ok(motion.icons.every((item) => item.name !== 'none' && item.state === 'running'), `icons must counter-orbit: ${JSON.stringify(motion.icons)}`);
+  } finally {
+    await instance.close();
+  }
+});
+
+for (const viewport of SEARCH_SEAM_VIEWPORTS) {
+  test(`Search orbit shares the page canvas without a rectangular panel at ${viewport.width}x${viewport.height}`, async () => {
+    const instance = await context(viewport);
+    await instance.addInitScript(() => {
+      localStorage.setItem('backer_shared_dock_v1', JSON.stringify({ edge: 'bottom', crossAxisRatio: 0.5, minimized: false }));
+    });
+    const page = await instance.newPage();
+    try {
+      await page.goto(`${origin}/backerdemo.html#search`);
+      await page.waitForSelector('#sxProviderFilters [data-plat]', { state: 'visible' });
+      await waitForDock(page);
+      const layout = await page.evaluate(() => {
+        const rect = (node) => {
+          const value = node.getBoundingClientRect();
+          return { left: value.left, right: value.right, top: value.top, bottom: value.bottom, width: value.width, height: value.height };
+        };
+        const app = document.querySelector('#app');
+        const view = document.querySelector('.search-view.sx');
+        const stage = document.querySelector('.sx-hero-stage');
+        const rail = document.querySelector('.sx-plat-filter');
+        const dock = document.querySelector('.backer-float-dock');
+        const appStyle = getComputedStyle(app);
+        const viewStyle = getComputedStyle(view);
+        const bgStyle = getComputedStyle(document.querySelector('#bg'));
+        const railStyle = getComputedStyle(rail);
+        const railRect = rect(rail);
+        const dockRect = rect(dock);
+        return {
+          bodyClass: document.body.classList.contains('search-full'),
+          appBackground: appStyle.backgroundColor,
+          appMaxWidth: appStyle.maxWidth,
+          viewBackground: viewStyle.backgroundColor,
+          bgDisplay: bgStyle.display,
+          app: rect(app),
+          view: rect(view),
+          stage: rect(stage),
+          railOverflow: railStyle.overflowX,
+          railWrap: railStyle.flexWrap,
+          railScrollable: rail.scrollWidth > rail.clientWidth + 1,
+          railDockOverlap: railRect.left < dockRect.right - 1 && railRect.right > dockRect.left + 1
+            && railRect.top < dockRect.bottom - 1 && railRect.bottom > dockRect.top + 1,
+          railBottom: railRect.bottom,
+          dockTop: dockRect.top,
+          scrollWidth: document.documentElement.scrollWidth,
+          innerWidth
+        };
+      });
+      assert.equal(layout.bodyClass, true, 'Search must own the body-level full-canvas state');
+      assert.equal(layout.appBackground, 'rgba(0, 0, 0, 0)', 'the app shell must not paint an inset panel');
+      assert.equal(layout.appMaxWidth, 'none', 'Search must escape the standard capped app shell');
+      assert.equal(layout.viewBackground, 'rgba(0, 0, 0, 0)', 'the route surface must reveal the common dotted background');
+      assert.notEqual(layout.bgDisplay, 'none', 'the shared background texture must stay rendered');
+      assert.ok(layout.app.width >= layout.innerWidth - 1, `app must span the viewport: ${JSON.stringify(layout)}`);
+      assert.ok(layout.view.left >= -1 && layout.view.right <= layout.innerWidth + 1, `view must align to the viewport: ${JSON.stringify(layout)}`);
+      assert.ok(layout.stage.left >= -1 && layout.stage.right <= layout.innerWidth + 1, `orbit stage must align to the viewport: ${JSON.stringify(layout)}`);
+      assert.equal(layout.railDockOverlap, false, `short Search controls must clear the expanded dock: ${JSON.stringify(layout)}`);
+      assert.ok(layout.railBottom <= layout.dockTop - 11, `Search needs a readable dock gap: ${JSON.stringify(layout)}`);
+      assert.ok(layout.scrollWidth <= layout.innerWidth + 1, `Search must not overflow horizontally: ${JSON.stringify(layout)}`);
+      if (viewport.width <= 560) {
+        assert.equal(layout.railOverflow, 'auto', 'mobile sources must be directly horizontally scrollable');
+        assert.equal(layout.railWrap, 'nowrap');
+        assert.equal(layout.railScrollable, true, 'the mobile source rail should expose additional retained providers');
+      }
+    } finally {
+      await instance.close();
+    }
+  });
+}
 
 test('Search honors light theme and keeps result metadata human-readable on mobile', async () => {
   const instance = await context({ width: 320, height: 900 });
@@ -415,6 +517,9 @@ test('Search honors light theme and keeps result metadata human-readable on mobi
         return (high + 0.05) / (low + 0.05);
       };
       const view = document.querySelector('.search-view.sx');
+      const bodyStyle = getComputedStyle(document.body);
+      const appStyle = getComputedStyle(document.querySelector('#app'));
+      const bgStyle = getComputedStyle(document.querySelector('#bg'));
       const card = document.querySelector('.sxr-card');
       const metadata = ['.sxr-provider', '.sxr-date', '.sxr-metric>span'].map((selector) => {
         const node = document.querySelector(selector);
@@ -424,11 +529,19 @@ test('Search honors light theme and keeps result metadata human-readable on mobi
       const cardStyle = getComputedStyle(card);
       return {
         theme: document.documentElement.dataset.theme,
+        searchBody: document.body.classList.contains('search-full'),
+        bodyBackground: bodyStyle.backgroundColor,
+        bodyColor: bodyStyle.color,
+        bodyContrast: contrast(bodyStyle.color, bodyStyle.backgroundColor),
+        appBackground: appStyle.backgroundColor,
         viewBackground: viewStyle.backgroundColor,
         viewColor: viewStyle.color,
         cardBackground: cardStyle.backgroundColor,
         cardColor: cardStyle.color,
-        viewContrast: contrast(viewStyle.color, viewStyle.backgroundColor),
+        bgDisplay: bgStyle.display,
+        bgOpacity: Number.parseFloat(bgStyle.opacity),
+        bgFilter: bgStyle.filter,
+        bgBlend: bgStyle.mixBlendMode,
         inputFont: Number.parseFloat(getComputedStyle(document.querySelector('#sxInput')).fontSize),
         ledeFont: Number.parseFloat(getComputedStyle(document.querySelector('.sx-lede')).fontSize),
         metadata,
@@ -437,12 +550,35 @@ test('Search honors light theme and keeps result metadata human-readable on mobi
       };
     });
     assert.equal(rendering.theme, 'light');
-    assert.notEqual(rendering.viewBackground, 'rgb(8, 8, 10)', 'light Search must not retain the dark canvas');
-    assert.ok(rendering.viewContrast >= 7, `Search light text contrast should be strong, got ${rendering.viewContrast}`);
+    assert.equal(rendering.searchBody, true, 'light Search theme must be owned by the route body');
+    assert.equal(rendering.bodyBackground, 'rgb(243, 239, 229)', 'light Search must paint its warm page canvas on the body');
+    assert.ok(rendering.bodyContrast >= 7, `Search light text contrast should be strong, got ${rendering.bodyContrast}`);
+    assert.equal(rendering.appBackground, 'rgba(0, 0, 0, 0)');
+    assert.equal(rendering.viewBackground, 'rgba(0, 0, 0, 0)', 'Search must not place another canvas over the shared background');
+    assert.notEqual(rendering.bgDisplay, 'none', 'light Search must retain the page texture');
+    assert.ok(rendering.bgOpacity > 0, 'light Search texture must remain perceptible');
+    assert.match(rendering.bgFilter, /invert\(1\)/, 'light Search should invert the common background shader');
+    assert.equal(rendering.bgBlend, 'multiply', 'light Search texture should integrate with the body canvas');
     assert.ok(rendering.inputFont >= 16, 'mobile natural-language input must stay readable and avoid browser zoom');
     assert.ok(rendering.ledeFont >= 14, 'mobile Search support copy must stay at least 14px');
     assert.ok(rendering.metadata.every((item) => item.fontSize >= 12), `result metadata must be at least 12px: ${JSON.stringify(rendering.metadata)}`);
     assert.ok(rendering.scrollWidth <= rendering.innerWidth + 1, 'light mobile Search must not overflow horizontally');
+    await page.evaluate(() => {
+      document.documentElement.style.scrollBehavior = 'auto';
+      window.scrollTo(0, 360);
+    });
+    await page.waitForFunction(() => {
+      const node = document.querySelector('.nav');
+      return node?.classList.contains('scrolled') && getComputedStyle(node).backgroundColor.startsWith('rgba(243, 239, 229');
+    });
+    const scrolledHeader = await page.evaluate(() => {
+      const node = document.querySelector('.nav');
+      const nav = getComputedStyle(node);
+      const brand = getComputedStyle(document.querySelector('.brand-word'));
+      return { className: node.className, scrollY, background: nav.backgroundColor, brandColor: brand.color };
+    });
+    assert.match(scrolledHeader.background, /rgba?\(243, 239, 229/, `light Search scrolled header must stay warm: ${JSON.stringify(scrolledHeader)}`);
+    assert.equal(scrolledHeader.brandColor, 'rgb(29, 26, 22)', 'light Search brand text must remain dark and readable after scroll');
   } finally {
     await instance.close();
   }
@@ -510,7 +646,7 @@ for (const viewport of VIEWPORTS) {
       assert.ok(geometry.filterBottom <= geometry.dockTop - 12, `Search should retain a readable gap above the bottom dock: ${JSON.stringify(geometry)}`);
       assert.ok(geometry.scrollWidth <= geometry.innerWidth + 1, 'dock clearance must not create horizontal overflow');
       assert.deepEqual(geometry.rings, ['none', 'none', 'none']);
-      assert.equal(geometry.icons.length, 15);
+      assert.equal(geometry.icons.length, 5);
       assert.ok(geometry.icons.every((name) => name === 'none'));
     } finally {
       await instance.close();

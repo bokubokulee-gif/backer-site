@@ -344,7 +344,7 @@
     if (view === 'home') {
       try { await ensureLegacyMarketing(); } catch (error) { console.error(error); }
       if (routeEpoch !== navigationEpoch) return;
-      document.body.classList.remove('body-app', 'mkt-full', 'mkt2-full');
+      document.body.classList.remove('body-app', 'mkt-full', 'mkt2-full', 'search-full');
       app.classList.add('hidden'); app.setAttribute('aria-hidden', 'true');
       if (dock) {
         $$('.dock-btn', dock).forEach(b => b.classList.remove('active'));
@@ -360,6 +360,7 @@
     document.body.classList.add('body-app');
     document.body.classList.toggle('mkt-full', view === 'trades' || view === 'market-archive' || view === 'market2'); // market views escape the 1180px app cap
     document.body.classList.toggle('mkt2-full', view === 'market2');
+    document.body.classList.toggle('search-full', view === 'search');
     app.classList.remove('hidden'); app.setAttribute('aria-hidden', 'false');
     window.scrollTo({ top: 0, behavior: 'auto' });
     if (view === 'creator') {

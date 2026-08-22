@@ -59,7 +59,7 @@ test('the public router keeps Trades canonical and preserves the pre-Trades demo
   assert.match(app, /css\/market-archive\.css/, 'the archived view must use an independent stylesheet');
   assert.match(artifact, /'js\/market-archive\.js'/, 'the archived script must ship in the Pages artifact');
   assert.match(artifact, /'css\/market-archive\.css'/, 'the archived stylesheet must ship in the Pages artifact');
-  assert.match(demoPage, /js\/app\.js\?v=20260822-archive-1/, 'the changed public router must carry a new cache key');
+  assert.match(demoPage, /js\/app\.js\?v=20260822-search-seam-1/, 'the changed public router must carry a new cache key');
   assert.match(detailPage, /js\/market-detail-page\.js\?v=20260822-archive-1/, 'the archive return route must carry a new cache key');
   assert.match(dock, /linkHTML\('trades',\s*'backerdemo\.html#trades'/, 'the shared dock must link directly to canonical Trades');
   assert.match(dock, /\^#market-archive[\s\S]*return ''/, 'the archive must not claim the active Trades menu item');

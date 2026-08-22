@@ -1094,7 +1094,7 @@ test('a Discovery filter drawer does not reopen after a Trades round trip', asyn
 
 test('restored Search stays source-backed while legacy synthetic creators remain absent', async () => {
   const html = await fs.readFile(path.join(ROOT, 'backerdemo.html'), 'utf8');
-  assert.match(html, /js\/search-engine\.js\?v=20260821-account-metrics-1/);
+  assert.match(html, /js\/search-engine\.js\?v=20260822-search-seam-1/);
   assert.equal((html.match(/data-view="search"/g) || []).length, 2);
   assert.doesNotMatch(html, /Jeff Delaney|ThePrimeagen|Theo Browne|Wes Bos/);
   assert.match(html, /id="market2HeroSearch"/);

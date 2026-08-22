@@ -127,10 +127,30 @@ test('minimized dock orb shares drag handling and suppresses restore after a rea
 test('Search motion and initial controls honor shared dock layout state', () => {
   const css = fs.readFileSync(path.join(root, 'css/search.css'), 'utf8');
   const shell = fs.readFileSync(path.join(root, 'css/styles.css'), 'utf8');
+  const app = fs.readFileSync(path.join(root, 'js/app.js'), 'utf8');
+  const engine = fs.readFileSync(path.join(root, 'js/search-engine.js'), 'utf8');
   assert.match(css, /\.sx-orbit-ring\.is-reverse,[\s\S]*?\.sx-orbit-ring\.is-reverse \.sx-app-icon\{animation-name:none!important;animation-duration:0s!important\}/);
   assert.match(css, /var\(--backer-dock-clearance-bottom,0px\)/);
   assert.match(css, /var\(--backer-dock-clearance-left,0px\)/);
   assert.match(css, /var\(--backer-dock-clearance-right,0px\)/);
+  assert.match(css, /body\.search-full \.app\{[^}]*max-width:none[^}]*background:transparent/,
+    'Search must remove the capped app panel instead of drawing a second canvas');
+  assert.match(css, /\.search-view\.sx\{[^}]*background:transparent/,
+    'the Search route must reveal the shared page texture beneath its orbit');
+  assert.match(css, /html\[data-theme="light"\] body\.search-full #bg\{[^}]*display:block[^}]*filter:invert\(1\)[^}]*mix-blend-mode:multiply/,
+    'light Search must keep the shared texture visible with a theme-owned treatment');
+  assert.match(css, /html\[data-theme="light"\] body\.search-full \.nav-cta \.btn-primary\{color:#fffdf8\}/,
+    'the light Search header CTA must retain readable text on its dark primary surface');
+  assert.match(css, /html\[data-theme="light"\] body\.search-full \.nav\.scrolled\{[^}]*background:rgba\(243,239,229,\.9\)/,
+    'the light Search header must keep a warm readable surface after scrolling');
+  assert.match(css, /@media \(max-width:560px\)[\s\S]*?\.sx-hero-content \.sx-plat-filter\{[^}]*flex-wrap:nowrap[^}]*overflow-x:auto/,
+    'mobile retained sources must use one horizontal rail');
+  assert.match(app, /classList\.toggle\('search-full', view === 'search'\)/,
+    'the router must let the Search route own its body-level canvas');
+  assert.match(app, /classList\.remove\('body-app', 'mkt-full', 'mkt2-full', 'search-full'\)/,
+    'leaving Search for Home must remove the full-canvas route class');
+  assert.match(engine, /orbitRing\(1360,[^\n]+ORBIT_PROVIDERS\.slice\(0, 2\)\)[\s\S]*orbitRing\(920,[^\n]+ORBIT_PROVIDERS\.slice\(2, 4\)\)[\s\S]*orbitRing\(570,[^\n]+ORBIT_PROVIDERS\.slice\(4\)\)/,
+    'five unique platform nodes must be distributed across the three rings');
   assert.match(shell, /--bd-top-clearance:95px/);
 });
 
@@ -139,7 +159,7 @@ test('public page and shared dock restore the dedicated Backer AI route', () => 
   const dock = fs.readFileSync(path.join(root, 'js/backer-dock.js'), 'utf8');
   const engine = fs.readFileSync(path.join(root, 'js/search-engine.js'), 'utf8');
   const artifact = fs.readFileSync(path.join(root, 'scripts/build-pages-artifact.mjs'), 'utf8');
-  assert.match(html, /js\/search-engine\.js\?v=20260821-account-metrics-1/);
+  assert.match(html, /js\/search-engine\.js\?v=20260822-search-seam-1/);
   assert.match(html, /href="backerdemo\.html#search" data-view="search">AI Search/);
   assert.match(html, /01 · AI Search Agent[\s\S]*?<article class="surface reveal" data-view="search"|<article class="surface reveal" data-view="search">[\s\S]*?01 · AI Search Agent/);
   assert.match(dock, /linkHTML\('search', 'backerdemo\.html#search'/);
@@ -157,11 +177,11 @@ test('every changed public Search asset is allowlisted and uses its current cach
     'css/backer-dock.css': '20260821-2',
     'css/market.css': '20260821-account-metrics-1',
     'css/market2.css': '20260821-account-metrics-1',
-    'css/search.css': '20260821-account-metrics-1',
-    'js/app.js': '20260822-archive-1',
+    'css/search.css': '20260822-search-seam-1',
+    'js/app.js': '20260822-search-seam-1',
     'js/backer-dock.js': '20260822-archive-1',
     'js/market2.js': '20260821-account-metrics-1',
-    'js/search-engine.js': '20260821-account-metrics-1',
+    'js/search-engine.js': '20260822-search-seam-1',
     'js/trades-catalog-model.js': '20260821-account-metrics-1',
     'js/site-menu.js': '20260821-trades-1'
   };

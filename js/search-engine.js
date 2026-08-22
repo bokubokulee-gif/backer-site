@@ -272,10 +272,11 @@
     };
   }
 
-  function orbitRing(size, duration, reverse, offset) {
+  function orbitRing(size, duration, reverse, offset, providers) {
     var tier = size > 1000 ? ' is-outer' : size > 700 ? ' is-middle' : ' is-inner';
-    var nodes = ORBIT_PROVIDERS.map(function (provider, position) {
-      var angle = offset + Math.PI * 2 * position / ORBIT_PROVIDERS.length;
+    var ringProviders = array(providers);
+    var nodes = ringProviders.map(function (provider, position) {
+      var angle = offset + Math.PI * 2 * position / ringProviders.length;
       var x = (Math.cos(angle) * 46).toFixed(3);
       var y = (Math.sin(angle) * 46).toFixed(3);
       return '<span class="sx-orbit-node" data-platform="' + provider + '" style="--sx-node-x:' + x + '%;--sx-node-y:' + y + '%"><span class="sx-app-icon">' + icon(provider) + '</span></span>';
@@ -285,7 +286,9 @@
   function heroHTML(query) {
     return '<div class="search-view sx">'
       + '<div class="sx-hero-stage"><div class="sx-orbit-scene" aria-hidden="true"><div class="sx-orbit-plane">'
-      + orbitRing(1360, 92, false, -0.42) + orbitRing(920, 74, true, 0.2) + orbitRing(570, 58, false, -0.08)
+      + orbitRing(1360, 92, false, -0.42, ORBIT_PROVIDERS.slice(0, 2))
+      + orbitRing(920, 74, true, 0.2, ORBIT_PROVIDERS.slice(2, 4))
+      + orbitRing(570, 58, false, -0.08, ORBIT_PROVIDERS.slice(4))
       + '</div></div><div class="sx-hero-shade" aria-hidden="true"></div><div class="sx-hero-content">'
       + '<div class="search-hero"><h1 aria-label="Backer AI Creator Discovery Agent"><span class="sx-hero-title-main">Backer AI</span><em class="sx-hero-title-sub">Creator Discovery Agent</em></h1>'
       + '<p class="sx-lede">Describe who or what you want to discover in natural language.</p></div>'
