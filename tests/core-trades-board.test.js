@@ -209,8 +209,9 @@ test('public Trades loader requests the real catalog model before the view and n
   assert.ok(catalogIndex >= 0 && viewIndex > catalogIndex, 'the catalog projection must initialize before the Trades view');
   assert.match(app, /css\/market\.css\?v=20260821-account-metrics-1/);
   assert.match(app, /js\/trades-catalog-model\.js\?v=20260821-account-metrics-1/);
-  assert.match(app, /js\/market\.js\?v=20260821-account-metrics-1/);
+  assert.match(app, /js\/market\.js\?v=20260822-archive-1/);
   assert.match(market, /js\/trades-catalog-model\.js\?v=20260821-account-metrics-1/);
+  assert.match(market, /href="backerdemo\.html#market-archive">Archived demo market/);
   assert.doesNotMatch(app, /loadTradesScript\(['"]js\/market-data\.js/);
   assert.doesNotMatch(market, /BACKER_MKT|backer_portfolio_v1/);
 });

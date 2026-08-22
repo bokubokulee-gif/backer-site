@@ -45,15 +45,25 @@ test('every public Backer HTML page mounts exactly one shared dock and no legacy
   }
 });
 
-test('the public router keeps Trades canonical and supports both legacy market hashes', () => {
+test('the public router keeps Trades canonical and preserves the pre-Trades demo archive', () => {
   const app = fs.readFileSync(path.join(ROOT, 'js', 'app.js'), 'utf8');
   const dock = fs.readFileSync(path.join(ROOT, 'js', 'backer-dock.js'), 'utf8');
+  const artifact = fs.readFileSync(path.join(ROOT, 'scripts', 'build-pages-artifact.mjs'), 'utf8');
+  const demoPage = fs.readFileSync(path.join(ROOT, 'backerdemo.html'), 'utf8');
+  const detailPage = fs.readFileSync(path.join(ROOT, 'backermarket.html'), 'utf8');
 
   assert.match(app, /\^#trades\(\?:\\\?\|\$\)/, 'the public router must recognize #trades');
-  assert.match(app, /\^#market-archive\(\?:\\\?\|\$\)[\s\S]*go\('trades'\)/, '#market-archive must render Trades');
+  assert.match(app, /\^#market-archive\(\?:\\\?\|\$\)[\s\S]*go\('market-archive'\)/, '#market-archive must render the preserved demo board');
   assert.match(app, /\^#market\(\?:\\\?\|\$\)[\s\S]*go\('trades'\)/, '#market must render Trades');
+  assert.match(app, /js\/market-archive\.js/, 'the archived view must use an independent script');
+  assert.match(app, /css\/market-archive\.css/, 'the archived view must use an independent stylesheet');
+  assert.match(artifact, /'js\/market-archive\.js'/, 'the archived script must ship in the Pages artifact');
+  assert.match(artifact, /'css\/market-archive\.css'/, 'the archived stylesheet must ship in the Pages artifact');
+  assert.match(demoPage, /js\/app\.js\?v=20260822-archive-1/, 'the changed public router must carry a new cache key');
+  assert.match(detailPage, /js\/market-detail-page\.js\?v=20260822-archive-1/, 'the archive return route must carry a new cache key');
   assert.match(dock, /linkHTML\('trades',\s*'backerdemo\.html#trades'/, 'the shared dock must link directly to canonical Trades');
-  assert.match(dock, /\^#market\(\?:-archive\)\?/, 'the dock active-route resolver must treat both legacy hashes as Trades');
+  assert.match(dock, /\^#market-archive[\s\S]*return ''/, 'the archive must not claim the active Trades menu item');
+  assert.match(dock, /\^#market\(\?:\\\?\|\$\)[\s\S]*return 'trades'/, 'the #market alias must still identify canonical Trades');
 });
 
 test('the shared dock yields to exclusive dialogs without disabling navigation globally', () => {

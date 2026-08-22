@@ -19,6 +19,8 @@ Trades is people-centric: a profile or an exact work is always the subject; the 
 
 Public Trades must never load or substitute fixtures from `js/market-data.js`. One compact `Paper market · modeled quotes` status is enough on the main surface; ticket and receipt carry the complete simulation boundary.
 
+The pre-Trades fixture marketplace remains available at `backerdemo.html#market-archive` as an isolated historical demo. It loads independent archive assets and never contributes subjects, quotes, positions, search results, or portfolio records to Trades.
+
 ## 2. Public information architecture
 
 1. **For you** — device-ranked profiles and work with a short reason.
@@ -143,6 +145,7 @@ Ranking uses device-local watches, work watches, positions, proposals, recent op
 12. Agent Reach run evidence is complete; blocked/empty channels add zero rows.
 13. Scale/core/browser/accessibility suites and rendered visual review pass against the exact Pages artifact.
 14. Remote `main`, `gh-pages`, public file hashes, live routes, and rollback SHA are verified before release is called live.
+15. `#market-archive` still renders the pre-Trades fixture board through isolated assets, while `#market` and `#trades` render the source-backed Trades board.
 
 ## 12. Out of scope
 

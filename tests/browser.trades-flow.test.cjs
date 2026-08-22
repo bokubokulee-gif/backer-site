@@ -155,6 +155,10 @@ test('direct Trades loads the complete scaled inventory without loading Discover
       'a direct #trades route must not request the heavy Discovery data bundle');
     assert.equal(requestedPaths.some((pathname) => pathname.endsWith('/js/market-data.js')), false,
       'a direct #trades route must not request legacy market fixtures');
+    assert.equal(requestedPaths.some((pathname) => pathname.endsWith('/js/market-archive.js')), false,
+      'a direct #trades route must not request the archived fixture interface');
+    assert.equal(requestedPaths.some((pathname) => pathname.endsWith('/css/market-archive.css')), false,
+      'a direct #trades route must not request archived fixture styles');
     const inventory = await page.locator('.mkt-catalog-line').innerText();
     assert.match(inventory, new RegExp(`${TRADE_MODEL.people.length.toLocaleString('en-US')}\\s+creator-account markets`, 'i'));
     assert.match(inventory, new RegExp(`${TRADE_MODEL.contents.length.toLocaleString('en-US')}\\s+work markets`, 'i'));

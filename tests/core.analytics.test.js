@@ -93,8 +93,8 @@ test('virtual routes sanitize public IDs and never place free-form search text i
   });
   assert.equal(Core.initialRoute('https://backer.example/backerdemo.html#trades').path, '/trades');
   assert.equal(Core.initialRoute('https://backer.example/backerdemo.html#market').path, '/trades');
-  assert.equal(Core.initialRoute('https://backer.example/backerdemo.html#market-archive').path, '/trades');
-  assert.equal(Core.initialRoute('http://127.0.0.1:8766/backerdemo.html#market-archive').path, '/trades');
+  assert.equal(Core.initialRoute('https://backer.example/backerdemo.html#market-archive').path, '/market');
+  assert.equal(Core.initialRoute('http://127.0.0.1:8766/backerdemo.html#market-archive').path, '/market');
   assert.equal(
     Core.initialRoute('https://backer.example/onboarding.html?role=creator&answer=private').path,
     '/onboarding'

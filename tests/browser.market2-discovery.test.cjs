@@ -1051,9 +1051,9 @@ test('homepage globe preserves exact figures and disables illustrative motion fo
   }
 });
 
-test('Trades owns the public market route and every legacy market alias renders the real-catalog paper board', async () => {
+test('Trades owns its canonical route, the #market alias, and the legacy market query alias', async () => {
   discoveryMode = 'static-catalog';
-  for (const route of ['#trades', '#market', '#market-archive', '?view=market']) {
+  for (const route of ['#trades', '#market', '?view=market']) {
     const { context, tab } = await page();
     try {
       await tab.goto(`${origin}/backerdemo.html${route}`);

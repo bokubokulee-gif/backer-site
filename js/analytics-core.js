@@ -161,8 +161,9 @@
     if (file === 'backerdemo.html' || file === '' || file === 'index.html') {
       var requested = url.searchParams.get('view');
       if (requested === 'market2' || /^#market2(?:\?|$)/.test(url.hash)) view = 'market2';
+      else if (requested === 'market-archive' || /^#market-archive(?:\?|$)/.test(url.hash)) view = 'market';
       else if (requested === 'trades' || /^#trades(?:\?|$)/.test(url.hash)) view = 'trades';
-      else if (requested === 'market' || /^#market(?:\?|$)/.test(url.hash) || /^#market-archive(?:\?|$)/.test(url.hash)) view = 'trades';
+      else if (requested === 'market' || /^#market(?:\?|$)/.test(url.hash)) view = 'trades';
       else if (requested === 'search') view = 'search';
       else view = 'home';
     } else if (file === 'backermarket.html') {

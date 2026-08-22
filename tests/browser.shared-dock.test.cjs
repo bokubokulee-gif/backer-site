@@ -685,11 +685,11 @@ test('historical Market2 Search bookmark migrates on cold load and hashchange wi
   }
 });
 
-test('canonical and legacy marketplace hashes all render the public Trades interface', async () => {
+test('canonical Trades and the #market alias render the public source-backed Trades interface', async () => {
   const instance = await context();
   const page = await instance.newPage();
   try {
-    for (const hash of ['#trades', '#market', '#market-archive']) {
+    for (const hash of ['#trades', '#market']) {
       await page.goto(`${origin}/backerdemo.html${hash}`);
       await page.waitForSelector('.mkt-header h1', { state: 'visible' });
       assert.equal(await page.locator('.mkt-header h1').innerText(), 'Trade future growth in creator accounts and work', `${hash} should render Trades`);
@@ -707,6 +707,220 @@ test('canonical and legacy marketplace hashes all render the public Trades inter
     await instance.close();
   }
 });
+
+test('the pre-Trades demo market remains independently available at #market-archive', async () => {
+  const instance = await context();
+  const page = await instance.newPage();
+  const requestedPaths = [];
+  page.on('request', (request) => {
+    try { requestedPaths.push(new URL(request.url()).pathname); } catch (_error) {}
+  });
+  try {
+    await page.goto(`${origin}/backerdemo.html#market-archive`);
+    await page.waitForSelector('.mkt[data-market-surface="archive"]', { state: 'visible' });
+    assert.equal((await page.locator('.mkt-framing h1').innerText()).trim(), 'Live Markets');
+    assert.equal(await page.locator('link[data-backer-legacy-market]').count(), 1);
+    assert.equal(await page.locator('script[data-backer-legacy-market="view"]').count(), 1);
+    assert.equal(requestedPaths.some((pathname) => pathname.endsWith('/js/market.js')), false, 'the archive must not load the source-backed Trades view');
+    assert.equal(requestedPaths.some((pathname) => pathname.endsWith('/data/discovery-catalog.json')), false, 'the archive must not fetch the retained Discovery catalog');
+    assert.equal(requestedPaths.some((pathname) => pathname.endsWith('/data/trades-eligible-accounts.json')), false, 'the archive must not fetch the Trades eligibility registry');
+    assert.equal(requestedPaths.some((pathname) => pathname.endsWith('/css/market.css')), false, 'the archive must not load Trades styles');
+    assert.equal(await page.locator('.mkt-paper-status').count(), 0, 'the archive must not masquerade as Trades');
+    assert.match(await page.locator('.mkt-foot').innerText(), /Simulated markets · no real money moves[\s\S]*fixture catalog/i);
+    assert.equal(await page.locator('.backer-dock-trades').getAttribute('aria-current'), null, 'the historical archive must not claim to be Trades');
+    const archivedMarket = page.locator('[data-market-open]').first();
+    assert.equal(await archivedMarket.count(), 1, 'the preserved board must retain its market entry flow');
+    await archivedMarket.click();
+    await page.waitForURL(/backermarket\.html\?.*source=market-archive/);
+    await page.waitForFunction(() => document.body.dataset.returnSource === 'archive');
+    assert.equal(await page.locator('.mdp-back').getAttribute('href'), 'backerdemo.html#market-archive');
+    assert.match(await page.locator('.mdp-back').innerText(), /Back to archived market/i);
+    assert.equal(await page.locator('.backer-dock-trades').getAttribute('aria-current'), null, 'an archived fixture detail must not claim to be Trades');
+    await page.waitForSelector('.pt-x[data-close]', { state: 'visible' });
+    assert.equal(await page.locator('.pt-x[data-close]').getAttribute('aria-label'), 'Back to archived market');
+  } finally {
+    await instance.close();
+  }
+});
+
+test('archived fixture styles and source-backed Trades styles stay isolated across route changes', async () => {
+  const instance = await context();
+  const page = await instance.newPage();
+  const pageErrors = [];
+  page.on('pageerror', (error) => pageErrors.push(error.message));
+  try {
+    await page.goto(`${origin}/backerdemo.html#market-archive`);
+    await page.waitForSelector('.mkt[data-market-surface="archive"]', { state: 'visible' });
+    await page.evaluate(() => { location.hash = '#trades'; });
+    await page.waitForSelector('.mkt-header h1', { state: 'visible' });
+    assert.equal((await page.locator('.mkt-header h1').innerText()).trim(), 'Trade future growth in creator accounts and work');
+    assert.deepEqual(await page.evaluate(() => ({
+      archiveDisabled: document.querySelector('link[data-backer-legacy-market]').disabled,
+      tradesDisabled: document.querySelector('link[data-backer-trades]').disabled
+    })), { archiveDisabled: true, tradesDisabled: false });
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(50);
+    assert.deepEqual(pageErrors, [], 'archive-level key handlers must stay dormant on Trades');
+    await page.evaluate(() => { location.hash = '#market-archive'; });
+    await page.waitForSelector('.mkt[data-market-surface="archive"]', { state: 'visible' });
+    assert.deepEqual(await page.evaluate(() => ({
+      archiveDisabled: document.querySelector('link[data-backer-legacy-market]').disabled,
+      tradesDisabled: document.querySelector('link[data-backer-trades]').disabled
+    })), { archiveDisabled: false, tradesDisabled: true });
+    await page.evaluate(() => {
+      window.__backerGo('market-archive');
+      window.__backerGo('trades');
+    });
+    await page.waitForSelector('.mkt-header h1', { state: 'visible' });
+    await page.waitForTimeout(100);
+    assert.equal(await page.locator('.mkt[data-market-surface="archive"]').count(), 0, 'an earlier archive load must not overwrite the latest Trades route');
+    assert.deepEqual(await page.evaluate(() => ({
+      archiveDisabled: document.querySelector('link[data-backer-legacy-market]').disabled,
+      tradesDisabled: document.querySelector('link[data-backer-trades]').disabled
+    })), { archiveDisabled: true, tradesDisabled: false });
+  } finally {
+    await instance.close();
+  }
+});
+
+test('a canceled cold archive load cannot append active styles over Discovery', async () => {
+  const instance = await context();
+  let releaseData;
+  let markDataRequested;
+  const dataRequested = new Promise((resolve) => { markDataRequested = resolve; });
+  const dataReleased = new Promise((resolve) => { releaseData = resolve; });
+  await instance.route('**/js/data.js*', async (route) => {
+    markDataRequested();
+    await dataReleased;
+    await route.continue();
+  });
+  const page = await instance.newPage();
+  try {
+    const navigation = page.goto(`${origin}/backerdemo.html#market-archive`, { waitUntil: 'domcontentloaded' });
+    await dataRequested;
+    await page.evaluate(() => { location.hash = '#market2'; });
+    await page.waitForSelector('.m2-profile-catalog', { state: 'visible' });
+    releaseData();
+    await navigation;
+    await page.waitForSelector('link[data-backer-legacy-market][data-backer-style-ready="true"]', { state: 'attached' });
+    await page.waitForTimeout(50);
+    assert.equal(await page.locator('.mkt[data-market-surface="archive"]').count(), 0, 'the canceled archive render must stay canceled');
+    assert.equal(await page.locator('link[data-backer-legacy-market]').evaluate((link) => link.disabled), true, 'late archive CSS must remain disabled');
+    assert.equal(await page.locator('.m2-profile-catalog').count(), 1, 'Discovery must remain the committed route');
+  } finally {
+    releaseData();
+    await instance.close();
+  }
+});
+
+test('a pending archive transition preserves committed Trades styles until atomic route commit', async () => {
+  const instance = await context();
+  let releaseArchiveData;
+  let markArchiveDataRequested;
+  const archiveDataRequested = new Promise((resolve) => { markArchiveDataRequested = resolve; });
+  const archiveDataReleased = new Promise((resolve) => { releaseArchiveData = resolve; });
+  await instance.route('**/js/market-data.js*', async (route) => {
+    markArchiveDataRequested();
+    await archiveDataReleased;
+    await route.continue();
+  });
+  const page = await instance.newPage();
+  try {
+    await page.goto(`${origin}/backerdemo.html#trades`);
+    await page.waitForSelector('.mkt-header h1', { state: 'visible' });
+    const before = await page.locator('.mkt-header h1').evaluate((node) => {
+      const style = getComputedStyle(node);
+      return { fontSize: style.fontSize, fontWeight: style.fontWeight, paddingTop: getComputedStyle(node.closest('.mkt-header')).paddingTop };
+    });
+    await page.evaluate(() => { location.hash = '#market-archive'; });
+    await archiveDataRequested;
+    const pending = await page.evaluate(() => {
+      const trades = document.querySelector('link[data-backer-trades]');
+      const archive = document.querySelector('link[data-backer-legacy-market]');
+      const heading = document.querySelector('.mkt-header h1');
+      const style = getComputedStyle(heading);
+      return {
+        tradesDisabled: trades.disabled,
+        archiveDisabled: archive.disabled,
+        archiveReady: archive.dataset.backerStyleReady,
+        fontSize: style.fontSize,
+        fontWeight: style.fontWeight,
+        paddingTop: getComputedStyle(heading.closest('.mkt-header')).paddingTop
+      };
+    });
+    assert.equal(pending.archiveReady, 'true', 'the test must hold after incoming archive CSS has loaded');
+    assert.equal(pending.tradesDisabled, false, 'the outgoing committed Trades stylesheet must remain active');
+    assert.equal(pending.archiveDisabled, true, 'incoming archive CSS must stay non-applicable until commit');
+    assert.deepEqual({ fontSize: pending.fontSize, fontWeight: pending.fontWeight, paddingTop: pending.paddingTop }, before, 'the visible Trades frame must not restyle while archive scripts are pending');
+    releaseArchiveData();
+    await page.waitForSelector('.mkt[data-market-surface="archive"]', { state: 'visible' });
+    assert.deepEqual(await page.evaluate(() => ({
+      archiveDisabled: document.querySelector('link[data-backer-legacy-market]').disabled,
+      tradesDisabled: document.querySelector('link[data-backer-trades]').disabled
+    })), { archiveDisabled: false, tradesDisabled: true });
+  } finally {
+    releaseArchiveData();
+    await instance.close();
+  }
+});
+
+test('archive query alias and saved archive tab state cold-load the preserved interface', async () => {
+  const instance = await context();
+  const page = await instance.newPage();
+  try {
+    await page.goto(`${origin}/backerdemo.html?view=market-archive`);
+    await page.waitForSelector('.mkt[data-market-surface="archive"]', { state: 'visible' });
+    assert.equal((await page.locator('.mkt-framing h1').innerText()).trim(), 'Live Markets');
+    await page.goto(`${origin}/backerdemo.html#market-archive?view=radar`);
+    await page.waitForSelector('.mkt[data-market-surface="archive"]', { state: 'visible' });
+    assert.equal(await page.locator('.mkt-tabs [data-tab="radar"]').getAttribute('aria-selected'), 'true');
+    assert.match(await page.locator('.mkt-canvas').innerText(), /Creators worth monitoring before a contract opens/i);
+    await page.evaluate(() => { location.hash = '#trades'; });
+    await page.waitForSelector('.mkt-header h1', { state: 'visible' });
+    await page.evaluate(() => { location.hash = '#market-archive?view=resolved'; });
+    await page.waitForSelector('.mkt[data-market-surface="archive"]', { state: 'visible' });
+    assert.equal(await page.locator('.mkt-tabs [data-tab="resolved"]').getAttribute('aria-selected'), 'true', 'a remount must rehydrate the current archive hash');
+    assert.match(await page.locator('.mkt-canvas').innerText(), /Resolved milestone contracts/i);
+    await page.evaluate(() => { location.hash = '#market-archive?browse=bogus&sort=bogus&genre=bogus&platform=bogus&scale=bogus&poa=bogus&multiple=bogus&evidence=bogus&risk=bogus'; });
+    await page.waitForFunction(() => document.querySelector('.mkt-tabs [data-tab="markets"]')?.getAttribute('aria-selected') === 'true');
+    assert.equal(await page.locator('.mkt-tabs [data-tab="markets"]').getAttribute('aria-selected'), 'true', 'invalid deep-link values must fall back to archive defaults');
+    assert.match(await page.locator('.mkt-grid-h').first().innerText(), /sorted by Attention Pulse/i);
+  } finally {
+    await instance.close();
+  }
+});
+
+for (const archiveWidth of [320, 390, 648]) {
+  test(`the preserved archive stays inside a ${archiveWidth}px viewport`, async () => {
+    const instance = await context({ width: archiveWidth, height: 900 });
+    const page = await instance.newPage();
+    try {
+      await page.goto(`${origin}/backerdemo.html#market-archive`);
+      await page.waitForSelector('.mkt[data-market-surface="archive"]', { state: 'visible' });
+      const geometry = await page.evaluate(() => {
+        const box = (selector) => {
+          const node = document.querySelector(selector);
+          if (!node) return null;
+          const rect = node.getBoundingClientRect();
+          return { left: rect.left, right: rect.right, width: rect.width };
+        };
+        return {
+          innerWidth,
+          scrollWidth: document.documentElement.scrollWidth,
+          root: box('.mkt[data-market-surface="archive"]'),
+          featured: box('.mkt-feat'),
+          controls: box('.mkt-controls')
+        };
+      });
+      assert.ok(geometry.scrollWidth <= geometry.innerWidth + 1, `archive document must not overflow: ${JSON.stringify(geometry)}`);
+      for (const [name, rect] of Object.entries({ root: geometry.root, featured: geometry.featured, controls: geometry.controls })) {
+        assert.ok(rect && rect.left >= -0.5 && rect.right <= geometry.innerWidth + 0.5, `${name} must remain within the viewport: ${JSON.stringify(geometry)}`);
+      }
+    } finally {
+      await instance.close();
+    }
+  });
+}
 
 test('initial short-mobile Trades actions clear the expanded bottom dock', async () => {
   const instance = await context({ width: 320, height: 780 });
