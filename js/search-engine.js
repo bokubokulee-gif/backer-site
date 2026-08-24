@@ -320,8 +320,8 @@
       + '<button class="send" type="submit" aria-label="Search"><svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>'
       + '<div class="pills-shell search-ex-shell"><div class="pills search-ex" role="group" aria-label="Suggested searches"><div class="pills-track search-ex-track">'
       + suggestedSearchGroup(false) + suggestedSearchGroup(true)
-      + '</div></div></div><div class="sx-plat-filter" id="sxProviderFilters" role="group" aria-label="Retained sources">'
-      + '<span class="sx-plat-filter-label">Loading retained sources…</span></div></div></div>'
+      + '</div></div></div><div class="sx-plat-filter" id="sxProviderFilters" role="group" aria-label="Sources">'
+      + '<span class="sx-plat-filter-label">Loading sources…</span></div></div></div>'
       + '<div id="sxOut"><div class="sx-notice" role="status"><span class="sx-spinner" aria-hidden="true"></span> Loading the retained Discovery catalog…</div></div>'
       + '<div class="sx-announce" aria-live="polite"></div></div>';
   }
@@ -362,9 +362,9 @@
   function renderProviderFilters() {
     var host = rootElement && rootElement.querySelector('#sxProviderFilters');
     if (!host || !index) return;
-    host.innerHTML = '<span class="sx-plat-filter-label">Search retained sources</span>' + index.providers.map(function (provider) {
+    host.innerHTML = '<span class="sx-plat-filter-label">Sources</span>' + index.providers.map(function (provider) {
       return '<button type="button" class="sx-plat-toggle" data-plat="' + esc(provider) + '" aria-pressed="' + activeProviders.has(provider) + '">' + icon(provider)
-        + '<span>' + esc(providerLabel(provider)) + '</span><small>' + index.providerCounts[provider].toLocaleString('en-US') + '</small></button>';
+        + '<span>' + esc(providerLabel(provider)) + '</span></button>';
     }).join('');
     host.querySelectorAll('[data-plat]').forEach(function (button) {
       button.addEventListener('click', function () {
