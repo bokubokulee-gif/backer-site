@@ -63,9 +63,19 @@ test('Search presents profile-first language, retained rotating prompts, and bou
     'short Contents results must not render a dead More control');
 
   const engine = fs.readFileSync(path.join(root, 'js/search-engine.js'), 'utf8');
+  const css = fs.readFileSync(path.join(root, 'css/search.css'), 'utf8');
   assert.match(engine, /Backer AI Profile Discovery Agent/);
   assert.match(engine, /<em class="sx-hero-title-sub">Profile Discovery Agent<\/em>/);
   assert.doesNotMatch(engine, /Creator Discovery Agent/);
+  assert.match(engine, /id="sxProviderFilters" role="group" aria-label="Sources"/);
+  assert.match(engine, /class="sx-plat-filter-label">Sources<\/span>/);
+  assert.doesNotMatch(engine, /Search retained sources/);
+  assert.doesNotMatch(engine, /index\.providerCounts\[provider\]\.toLocaleString/,
+    'platform inventory counts must not appear after source names');
+  assert.match(css, /\.sx-plat-toggle:focus-visible\{outline:2px solid var\(--accent\);outline-offset:3px\}/,
+    'source filters need the shared accent keyboard focus treatment');
+  assert.doesNotMatch(css, /backer-dock-clearance-bottom,0px\) - 44px/,
+    'the 320px source rail must not retain obsolete multi-row compensation');
   assert.match(engine, /suggestedSearchGroup\(false\) \+ suggestedSearchGroup\(true\)/,
     'the rotating rail needs a duplicate visual group for a gapless loop');
   assert.match(engine, /if \(isDuplicate\) return '<span class="chip"/,
@@ -197,7 +207,7 @@ test('public page and shared dock restore the dedicated Backer AI route', () => 
   const dock = fs.readFileSync(path.join(root, 'js/backer-dock.js'), 'utf8');
   const engine = fs.readFileSync(path.join(root, 'js/search-engine.js'), 'utf8');
   const artifact = fs.readFileSync(path.join(root, 'scripts/build-pages-artifact.mjs'), 'utf8');
-  assert.match(html, /js\/search-engine\.js\?v=20260824-search-expand-1/);
+  assert.match(html, /js\/search-engine\.js\?v=20260824-sources-clean-1/);
   assert.match(html, /href="backerdemo\.html#search" data-view="search">AI Search/);
   assert.match(html, /01 · AI Search Agent[\s\S]*?<article class="surface reveal" data-view="search"|<article class="surface reveal" data-view="search">[\s\S]*?01 · AI Search Agent/);
   assert.match(dock, /linkHTML\('search', 'backerdemo\.html#search'/);
@@ -215,11 +225,11 @@ test('every changed public Search asset is allowlisted and uses its current cach
     'css/backer-dock.css': '20260821-2',
     'css/market.css': '20260821-account-metrics-1',
     'css/market2.css': '20260821-account-metrics-1',
-    'css/search.css': '20260824-search-expand-1',
+    'css/search.css': '20260824-sources-clean-1',
     'js/app.js': '20260822-search-seam-1',
     'js/backer-dock.js': '20260822-archive-1',
     'js/market2.js': '20260821-account-metrics-1',
-    'js/search-engine.js': '20260824-search-expand-1',
+    'js/search-engine.js': '20260824-sources-clean-1',
     'js/trades-catalog-model.js': '20260821-account-metrics-1',
     'js/site-menu.js': '20260821-trades-1'
   };

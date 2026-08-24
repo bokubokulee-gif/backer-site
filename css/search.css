@@ -157,6 +157,7 @@ body.search-full .sx-hero-stage{min-height:100svh}
 .sx-plat-toggle[aria-pressed="true"] .ic{color:var(--accent)}
 .sx-plat-toggle[aria-pressed="false"]{opacity:.4}
 .sx-plat-toggle:hover{opacity:1;background:var(--card-hi)}
+.sx-plat-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
 .sx-notice{margin:18px 0;padding:14px 16px;border:1px solid var(--line);border-radius:var(--r-sm);
   background:var(--card);color:var(--muted);font-size:13.5px;line-height:1.6}
@@ -433,10 +434,10 @@ html[data-theme="light"] .search-view.sx .sxr-card{box-shadow:0 18px 40px rgba(6
 }
 
 @media (max-width:350px){
-  /* Readable source controls wrap to an extra row at 320px. Keep the full row
-     above the expanded floating dock instead of shrinking labels or targets. */
+  /* Source controls remain a single horizontal rail at 320px. Keep the compact
+     mobile lift without the obsolete extra-row compensation. */
   .sx-hero-content{
-    transform:translateY(calc(clamp(-90px,-9svh,-60px) - var(--backer-dock-clearance-bottom,0px) - 44px));
+    transform:translateY(calc(clamp(-90px,-9svh,-60px) - var(--backer-dock-clearance-bottom,0px)));
   }
   .sx-orbit-ring.is-outer{--sx-orbit-size:520px !important}
   .sx-orbit-ring.is-middle{--sx-orbit-size:390px !important}

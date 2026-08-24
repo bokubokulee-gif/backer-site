@@ -536,6 +536,48 @@ test('Search rotates a broad prompt rail and expands Profiles and Contents indep
   }
 });
 
+test('Search source filters use names only at 319x688', async () => {
+  const instance = await context({ width: 319, height: 688 });
+  const page = await instance.newPage();
+  try {
+    await page.goto(`${origin}/backerdemo.html#search`);
+    await page.waitForSelector('#sxProviderFilters [data-plat]', { state: 'visible' });
+    await waitForDock(page);
+    const initial = await page.evaluate(() => {
+      const group = document.querySelector('#sxProviderFilters');
+      const buttons = Array.from(group.querySelectorAll('[data-plat]'));
+      const groupRect = group.getBoundingClientRect();
+      const dockRect = document.querySelector('.backer-float-dock').getBoundingClientRect();
+      return {
+        ariaLabel: group.getAttribute('aria-label'),
+        visibleLabel: group.querySelector('.sx-plat-filter-label')?.textContent.trim(),
+        countNodes: group.querySelectorAll('small').length,
+        buttonLabels: buttons.map((button) => button.innerText.trim()),
+        providerIds: buttons.map((button) => button.dataset.plat),
+        sourceToDockGap: dockRect.top - groupRect.bottom,
+        scrollWidth: document.documentElement.scrollWidth,
+        innerWidth
+      };
+    });
+    assert.equal(initial.ariaLabel, 'Sources');
+    assert.equal(initial.visibleLabel, 'Sources');
+    assert.equal(initial.countNodes, 0, 'source chips must not render inventory counts');
+    assert.ok(initial.buttonLabels.length >= 10);
+    assert.ok(initial.buttonLabels.every((label) => label && !/\d/.test(label)),
+      `source chips should contain platform names only: ${JSON.stringify(initial.buttonLabels)}`);
+    assert.ok(initial.sourceToDockGap < 190, `the compact source rail should not retain the old multi-row gap: ${initial.sourceToDockGap}`);
+    assert.ok(initial.scrollWidth <= initial.innerWidth + 1, 'the compact source rail must not widen the page');
+
+    const provider = initial.providerIds[0];
+    await page.locator(`[data-plat="${provider}"]`).click();
+    await page.waitForFunction((id) => document.querySelector(`[data-plat="${id}"]`)?.getAttribute('aria-pressed') === 'false', provider);
+    assert.equal(await page.locator(`[data-plat="${provider}"]`).innerText(), initial.buttonLabels[0],
+      'removing counts must not change source-filter interaction');
+  } finally {
+    await instance.close();
+  }
+});
+
 for (const viewport of SEARCH_SEAM_VIEWPORTS) {
   test(`Search orbit shares the page canvas without a rectangular panel at ${viewport.width}x${viewport.height}`, async () => {
     const instance = await context(viewport);
