@@ -12,6 +12,22 @@
 
   var CATALOG_URL = 'data/discovery-catalog.json';
   var RESULT_LIMIT = 12;
+  var SUGGESTED_SEARCHES = [
+    { label: 'AI educators', query: 'AI educators publishing explainers' },
+    { label: 'GitHub developers', query: 'independent developers on GitHub' },
+    { label: 'Bilibili music', query: 'music creators on Bilibili' },
+    { label: 'Videos with views', query: 'original videos with retained views' },
+    { label: 'Open-source maintainers', query: 'open source maintainers' },
+    { label: 'Science explainers', query: 'science explainers' },
+    { label: 'Design researchers', query: 'design researchers' },
+    { label: 'Newsletter writers', query: 'newsletter writers' },
+    { label: 'Podcast hosts', query: 'podcast hosts' },
+    { label: 'Indie game creators', query: 'indie game creators' },
+    { label: 'Robotics builders', query: 'robotics builders' },
+    { label: 'Digital artists', query: 'digital artists' },
+    { label: 'Software tutorials', query: 'software tutorials' },
+    { label: 'Creative coding', query: 'creative coding' }
+  ];
   /* Decorative historical orbit only. Search coverage is declared separately
      by the retained-catalog source controls below the input. */
   var ORBIT_PROVIDERS = ['youtube', 'tiktok', 'instagram', 'x', 'twitch'];
@@ -283,6 +299,13 @@
     }).join('');
     return '<div class="sx-orbit-ring' + tier + (reverse ? ' is-reverse' : '') + '" style="--sx-orbit-size:' + size + 'px;--sx-orbit-duration:' + duration + 's">' + nodes + '</div>';
   }
+  function suggestedSearchGroup(isDuplicate) {
+    return '<div class="pills-group"' + (isDuplicate ? ' aria-hidden="true"' : '') + '>'
+      + SUGGESTED_SEARCHES.map(function (suggestion) {
+        if (isDuplicate) return '<span class="chip" data-ex="' + esc(suggestion.query) + '">' + esc(suggestion.label) + '</span>';
+        return '<button type="button" class="chip" data-ex="' + esc(suggestion.query) + '">' + esc(suggestion.label) + '</button>';
+      }).join('') + '</div>';
+  }
   function heroHTML(query) {
     return '<div class="search-view sx">'
       + '<div class="sx-hero-stage"><div class="sx-orbit-scene" aria-hidden="true"><div class="sx-orbit-plane">'
@@ -290,17 +313,14 @@
       + orbitRing(920, 74, true, 0.2, ORBIT_PROVIDERS.slice(2, 4))
       + orbitRing(570, 58, false, -0.08, ORBIT_PROVIDERS.slice(4))
       + '</div></div><div class="sx-hero-shade" aria-hidden="true"></div><div class="sx-hero-content">'
-      + '<div class="search-hero"><h1 aria-label="Backer AI Creator Discovery Agent"><span class="sx-hero-title-main">Backer AI</span><em class="sx-hero-title-sub">Creator Discovery Agent</em></h1>'
+      + '<div class="search-hero"><h1 aria-label="Backer AI Profile Discovery Agent"><span class="sx-hero-title-main">Backer AI</span><em class="sx-hero-title-sub">Profile Discovery Agent</em></h1>'
       + '<p class="sx-lede">Describe who or what you want to discover in natural language.</p></div>'
       + '<form class="big-search" id="sxForm"><svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>'
       + '<input id="sxInput" autocomplete="off" aria-label="Search retained creators and original work" placeholder="e.g. AI educators publishing explainers on YouTube" value="' + esc(query) + '"/>'
       + '<button class="send" type="submit" aria-label="Search"><svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>'
-      + '<div class="pills-shell search-ex-shell"><div class="pills search-ex" role="group" aria-label="Suggested searches"><div class="pills-track search-ex-track"><div class="pills-group">'
-      + '<button type="button" class="chip" data-ex="AI educators publishing explainers">AI educators</button>'
-      + '<button type="button" class="chip" data-ex="independent developers on GitHub">GitHub developers</button>'
-      + '<button type="button" class="chip" data-ex="music creators on Bilibili">Bilibili music</button>'
-      + '<button type="button" class="chip" data-ex="original videos with retained views">Videos with views</button>'
-      + '</div></div></div></div><div class="sx-plat-filter" id="sxProviderFilters" role="group" aria-label="Retained sources">'
+      + '<div class="pills-shell search-ex-shell"><div class="pills search-ex" role="group" aria-label="Suggested searches"><div class="pills-track search-ex-track">'
+      + suggestedSearchGroup(false) + suggestedSearchGroup(true)
+      + '</div></div></div><div class="sx-plat-filter" id="sxProviderFilters" role="group" aria-label="Retained sources">'
       + '<span class="sx-plat-filter-label">Loading retained sources…</span></div></div></div>'
       + '<div id="sxOut"><div class="sx-notice" role="status"><span class="sx-spinner" aria-hidden="true"></span> Loading the retained Discovery catalog…</div></div>'
       + '<div class="sx-announce" aria-live="polite"></div></div>';
@@ -394,11 +414,60 @@
       + '<a data-search-action="source" data-subject-id="' + esc(row.id) + '" href="' + esc(row.sourceUrl) + '" target="_blank" rel="noopener noreferrer">Original source ↗</a></div>'
       + '</div></article>';
   }
+  function resultKindLabel(kind) {
+    return kind === 'profiles' ? 'profiles' : 'contents';
+  }
   function resultsSection(kind, title, rows) {
     if (!rows.length) return '';
-    return '<section class="sxr-section" aria-labelledby="sxr-' + kind + '"><div class="sxr-section-head"><div><span class="sxr-kicker">Source-backed ' + esc(kind) + '</span><h2 id="sxr-' + kind + '">' + esc(title) + '</h2></div>'
-      + '<p><strong>' + rows.length.toLocaleString('en-US') + '</strong> catalog matches · showing ' + Math.min(rows.length, RESULT_LIMIT) + '</p></div>'
-      + '<div class="sxr-grid">' + rows.slice(0, RESULT_LIMIT).map(function (row) { return resultCard(row, tradeEligibility); }).join('') + '</div></section>';
+    var shown = Math.min(rows.length, RESULT_LIMIT);
+    var label = resultKindLabel(kind);
+    var more = rows.length > shown
+      ? '<div class="sxr-more-row"><button type="button" class="sxr-more" data-sxr-more="' + kind + '" data-sxr-visible="' + shown + '" aria-controls="sxr-grid-' + kind + '" aria-label="Show ' + Math.min(RESULT_LIMIT, rows.length - shown) + ' more ' + label + '">'
+        + '<span data-sxr-more-label>More ' + label + '</span><small data-sxr-more-count>' + shown.toLocaleString('en-US') + ' of ' + rows.length.toLocaleString('en-US') + ' shown</small>'
+        + '<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></button></div>'
+      : '';
+    return '<section class="sxr-section" aria-labelledby="sxr-' + kind + '"><div class="sxr-section-head"><div><span class="sxr-kicker">Source-backed ' + label + '</span><h2 id="sxr-' + kind + '">' + esc(title) + '</h2></div>'
+      + '<p><strong>' + rows.length.toLocaleString('en-US') + '</strong> catalog matches · <span data-sxr-progress="' + kind + '">showing ' + shown.toLocaleString('en-US') + '</span></p></div>'
+      + '<div class="sxr-grid" id="sxr-grid-' + kind + '">' + rows.slice(0, shown).map(function (row) { return resultCard(row, tradeEligibility); }).join('') + '</div>' + more + '</section>';
+  }
+  function bindResultExpansion(result) {
+    if (!rootElement) return;
+    rootElement.querySelectorAll('[data-sxr-more]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        if (button.disabled) return;
+        var kind = button.dataset.sxrMore;
+        var rows = kind === 'profiles' ? result.profiles : result.works;
+        var label = resultKindLabel(kind);
+        var previous = Math.max(0, Number(button.dataset.sxrVisible) || RESULT_LIMIT);
+        var next = Math.min(rows.length, previous + RESULT_LIMIT);
+        var grid = rootElement.querySelector('#sxr-grid-' + kind);
+        if (!grid || next <= previous) return;
+        grid.insertAdjacentHTML('beforeend', rows.slice(previous, next).map(function (row) {
+          return resultCard(row, tradeEligibility);
+        }).join(''));
+        var firstNewCard = grid.children[previous];
+        button.dataset.sxrVisible = String(next);
+        var progress = rootElement.querySelector('[data-sxr-progress="' + kind + '"]');
+        if (progress) progress.textContent = 'showing ' + next.toLocaleString('en-US');
+        var buttonLabel = button.querySelector('[data-sxr-more-label]');
+        var count = button.querySelector('[data-sxr-more-count]');
+        if (count) count.textContent = next.toLocaleString('en-US') + ' of ' + rows.length.toLocaleString('en-US') + ' shown';
+        if (next >= rows.length) {
+          button.disabled = true;
+          button.classList.add('is-complete');
+          button.removeAttribute('aria-label');
+          if (buttonLabel) buttonLabel.textContent = 'All ' + label + ' shown';
+        } else {
+          button.setAttribute('aria-label', 'Show ' + Math.min(RESULT_LIMIT, rows.length - next) + ' more ' + label);
+        }
+        announce((next - previous) + ' more ' + label + ' shown. ' + next + ' of ' + rows.length + ' now visible.');
+        if (firstNewCard) {
+          firstNewCard.setAttribute('tabindex', '-1');
+          firstNewCard.focus();
+          firstNewCard.addEventListener('blur', function () { firstNewCard.removeAttribute('tabindex'); }, { once: true });
+        }
+      });
+    });
   }
   function renderResults(query) {
     if (!rootElement || !index) return;
@@ -410,10 +479,11 @@
     rootElement.querySelector('.search-view.sx').classList.add('has-results');
     out.innerHTML = '<div class="sxr-summary"><div><span>Backer AI search</span><h2>' + total.toLocaleString('en-US') + ' matches for ' + esc(queryLabel) + '</h2></div>'
       + '<p>Names, handles, bios, titles, excerpts, providers, and exact retained metrics only. Backer does not invent missing facts or infer private traits.</p></div>'
-      + (total ? resultsSection('profiles', 'Profiles', result.profiles) + resultsSection('works', 'Original work', result.works)
+      + (total ? resultsSection('profiles', 'Profiles', result.profiles) + resultsSection('works', 'Contents', result.works)
         : '<div class="sx-notice sx-notice-block" role="status"><b>No retained record matches those words and selected sources.</b> Try a name, handle, topic, platform, or original-work title. Nothing was generated to fill the gap.</div>')
-      + '<div class="sxr-provenance">Catalog snapshot ' + esc(formatDate(index.generatedAt)) + ' · '
-      + index.profiles.length.toLocaleString('en-US') + ' source-linked profiles · ' + index.works.length.toLocaleString('en-US') + ' original works</div>';
+      + '<div class="sxr-provenance">' + index.profiles.length.toLocaleString('en-US') + ' source-linked profiles · '
+      + index.works.length.toLocaleString('en-US') + ' original works up to date</div>';
+    bindResultExpansion(result);
     canonicalURL(currentQuery);
     announce(total + ' retained catalog matches.');
   }
@@ -458,11 +528,14 @@
     search: function (query) { return loadCatalog().then(function () { return searchIndex(index, query, new Set(index.providers)); }); },
     __test: {
       CATALOG_URL: CATALOG_URL,
+      RESULT_LIMIT: RESULT_LIMIT,
+      SUGGESTED_SEARCHES: SUGGESTED_SEARCHES.slice(),
       buildIndex: buildIndex,
       buildTradeEligibility: buildTradeEligibility,
       queryTokens: queryTokens,
       queryMode: queryMode,
       resultCard: resultCard,
+      resultsSection: resultsSection,
       searchIndex: searchIndex,
       tradeHref: tradeHref
     }

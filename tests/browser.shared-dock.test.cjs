@@ -380,6 +380,18 @@ test('Search dock route opens the dedicated retained-catalog interface from Home
       assert.deepEqual(reducedAnimations.ringCounts, [2, 2, 1], 'five nodes should be balanced across three orbit depths');
       assert.equal(new Set(reducedAnimations.platforms).size, 5, 'each social platform should appear once, not once per ring');
       assert.ok(reducedAnimations.icons.every((name) => name === 'none'), 'reduced motion must stop every counter-orbit icon');
+      if (route === '') {
+        const reducedPrompts = await page.evaluate(() => ({
+          animation: getComputedStyle(document.querySelector('.search-ex-track')).animationName,
+          overflow: getComputedStyle(document.querySelector('.search-ex')).overflowX,
+          duplicateDisplay: getComputedStyle(document.querySelector('.search-ex-track .pills-group[aria-hidden="true"]')).display,
+          primaryTags: document.querySelectorAll('.search-ex-track .pills-group:not([aria-hidden]) [data-ex]').length
+        }));
+        assert.equal(reducedPrompts.animation, 'none', 'reduced motion must stop the rotating prompt rail');
+        assert.equal(reducedPrompts.overflow, 'auto', 'reduced motion must leave prompts directly scrollable');
+        assert.equal(reducedPrompts.duplicateDisplay, 'none', 'reduced motion should hide the visual duplicate group');
+        assert.ok(reducedPrompts.primaryTags >= 12);
+      }
       assert.equal(await page.locator('#sxInput').count(), 1, 'natural-language input should render');
       assert.equal(await page.locator('.sxr-card').count(), 0, 'Search should not dump the full catalog before the user asks');
       assert.equal(await page.locator('.market2-shell').count(), 0, 'Search must not fall through to Discovery');
@@ -420,6 +432,105 @@ test('Search orbit runs normally while reduced-motion contexts stop every ring a
     assert.equal(motion.icons.length, 5);
     assert.ok(motion.rings.every((item) => item.name !== 'none' && item.state === 'running'), `rings must be active: ${JSON.stringify(motion.rings)}`);
     assert.ok(motion.icons.every((item) => item.name !== 'none' && item.state === 'running'), `icons must counter-orbit: ${JSON.stringify(motion.icons)}`);
+  } finally {
+    await instance.close();
+  }
+});
+
+test('Search rotates a broad prompt rail and expands Profiles and Contents independently at 489x688', async () => {
+  const instance = await context({ width: 489, height: 688 }, 'no-preference');
+  const page = await instance.newPage();
+  try {
+    await page.goto(`${origin}/backerdemo.html#search`);
+    await page.waitForSelector('.search-ex-track .pills-group:not([aria-hidden]) [data-ex]', { state: 'visible' });
+    const firstPrompt = page.locator('.search-ex-track .pills-group:not([aria-hidden]) [data-ex]').first();
+    const promptQuery = await firstPrompt.getAttribute('data-ex');
+    await page.locator('.search-ex').hover();
+    await firstPrompt.click();
+    await page.waitForSelector('.sxr-card', { state: 'visible', timeout: 20000 });
+    assert.equal(await page.locator('#sxInput').inputValue(), promptQuery, 'rotating prompts must remain working Search actions');
+    assert.equal(await page.evaluate(() => new URLSearchParams(location.hash.split('?')[1] || '').get('q')), promptQuery);
+
+    await page.locator('#sxInput').fill('show me all');
+    await page.locator('#sxInput').press('Enter');
+    await page.waitForSelector('[data-sxr-more="profiles"]', { state: 'visible', timeout: 20000 });
+    await page.waitForSelector('[data-sxr-more="works"]', { state: 'visible', timeout: 20000 });
+
+    const initial = await page.evaluate(() => {
+      const track = document.querySelector('.search-ex-track');
+      const primary = document.querySelector('.search-ex-track .pills-group:not([aria-hidden])');
+      const duplicate = document.querySelector('.search-ex-track .pills-group[aria-hidden="true"]');
+      const profileMore = document.querySelector('[data-sxr-more="profiles"]');
+      const workMore = document.querySelector('[data-sxr-more="works"]');
+      return {
+        title: document.querySelector('.sx-hero-title-sub').textContent.trim(),
+        ariaTitle: document.querySelector('.search-hero h1').getAttribute('aria-label'),
+        groups: document.querySelectorAll('.search-ex-track .pills-group').length,
+        primaryTags: primary ? primary.querySelectorAll('[data-ex]').length : 0,
+        duplicateTags: duplicate ? duplicate.querySelectorAll('[data-ex]').length : 0,
+        promptLabels: primary ? Array.from(primary.querySelectorAll('[data-ex]'), (node) => node.textContent.trim()) : [],
+        groupWidths: primary && duplicate ? [primary.getBoundingClientRect().width, duplicate.getBoundingClientRect().width] : [],
+        trackAnimation: track ? getComputedStyle(track).animationName : 'none',
+        profileCards: document.querySelectorAll('[data-search-kind="profile"]').length,
+        workCards: document.querySelectorAll('[data-search-kind="work"]').length,
+        profileControls: profileMore ? profileMore.getAttribute('aria-controls') : '',
+        workControls: workMore ? workMore.getAttribute('aria-controls') : '',
+        profileHeight: profileMore ? profileMore.getBoundingClientRect().height : 0,
+        workHeight: workMore ? workMore.getBoundingClientRect().height : 0,
+        scrollWidth: document.documentElement.scrollWidth,
+        innerWidth
+      };
+    });
+    assert.equal(initial.title, 'Profile Discovery Agent');
+    assert.equal(initial.ariaTitle, 'Backer AI Profile Discovery Agent');
+    assert.equal(initial.groups, 2, 'the prompt rail needs a primary and duplicate group for a continuous loop');
+    assert.ok(initial.primaryTags >= 12, `expected a broad prompt set: ${JSON.stringify(initial)}`);
+    assert.equal(initial.duplicateTags, initial.primaryTags);
+    assert.equal(new Set(initial.promptLabels).size, initial.primaryTags, 'visible prompt labels must be unique');
+    assert.ok(Math.abs(initial.groupWidths[0] - initial.groupWidths[1]) < 1, `marquee halves must match: ${JSON.stringify(initial.groupWidths)}`);
+    assert.notEqual(initial.trackAnimation, 'none', 'the prompt rail should rotate when motion is allowed');
+    assert.equal(initial.profileCards, SearchEngine.__test.RESULT_LIMIT);
+    assert.equal(initial.workCards, SearchEngine.__test.RESULT_LIMIT);
+    assert.equal(initial.profileControls, 'sxr-grid-profiles');
+    assert.equal(initial.workControls, 'sxr-grid-works');
+    assert.ok(initial.profileHeight >= 44 && initial.workHeight >= 44, 'More controls need mobile touch height');
+    assert.ok(initial.scrollWidth <= initial.innerWidth + 1, 'the larger prompt set must not widen the page');
+    assert.match(await page.locator('.sxr-provenance').innerText(), /^\d[\d,]* source-linked profiles · \d[\d,]* original works up to date$/);
+    assert.doesNotMatch(await page.locator('.sxr-provenance').innerText(), /snapshot|Aug \d/i);
+
+    const broadResult = SearchEngine.__test.searchIndex(SEARCH_INDEX, 'show me all', new Set(SEARCH_INDEX.providers));
+    const expectedProfiles = broadResult.profiles.slice(0, SearchEngine.__test.RESULT_LIMIT * 2).map((row) => row.id);
+    const expectedWorks = broadResult.works.slice(0, SearchEngine.__test.RESULT_LIMIT * 2).map((row) => row.id);
+    const broadHash = await page.evaluate(() => location.hash);
+    await page.locator('[data-sxr-more="profiles"]').click();
+    await page.waitForFunction((limit) => document.querySelectorAll('[data-search-kind="profile"]').length === limit * 2, SearchEngine.__test.RESULT_LIMIT);
+    assert.equal(await page.locator('[data-search-kind="work"]').count(), SearchEngine.__test.RESULT_LIMIT,
+      'expanding Profiles must not expand Contents');
+    assert.match(await page.locator('[data-sxr-progress="profiles"]').innerText(), /showing 24/);
+    assert.equal(await page.evaluate(() => location.hash), broadHash, 'More must not mutate the canonical query');
+    assert.equal(await page.evaluate(() => document.activeElement?.dataset?.searchSubject), expectedProfiles[SearchEngine.__test.RESULT_LIMIT],
+      'keyboard focus must move to the first newly revealed Profile');
+    assert.match(await page.locator('.sx-announce').innerText(), /12 more profiles shown\. 24 of/);
+
+    await page.locator('[data-sxr-more="works"]').click();
+    await page.waitForFunction((limit) => document.querySelectorAll('[data-search-kind="work"]').length === limit * 2, SearchEngine.__test.RESULT_LIMIT);
+    assert.equal(await page.locator('[data-search-kind="profile"]').count(), SearchEngine.__test.RESULT_LIMIT * 2,
+      'expanding Contents must preserve the expanded Profiles section');
+    assert.match(await page.locator('[data-sxr-progress="works"]').innerText(), /showing 24/);
+    const expandedIds = await page.evaluate(() => ({
+      profiles: Array.from(document.querySelectorAll('[data-search-kind="profile"]'), (node) => node.dataset.searchSubject),
+      works: Array.from(document.querySelectorAll('[data-search-kind="work"]'), (node) => node.dataset.searchSubject)
+    }));
+    assert.deepEqual(expandedIds.profiles, expectedProfiles, 'expanded Profiles must preserve exact ranked order without duplicates');
+    assert.deepEqual(expandedIds.works, expectedWorks, 'expanded Contents must preserve exact ranked order without duplicates');
+    assert.equal(new Set(expandedIds.profiles).size, expandedIds.profiles.length);
+    assert.equal(new Set(expandedIds.works).size, expandedIds.works.length);
+
+    await page.locator('#sxInput').press('Enter');
+    await page.waitForFunction((limit) => document.querySelectorAll('[data-search-kind="profile"]').length === limit
+      && document.querySelectorAll('[data-search-kind="work"]').length === limit, SearchEngine.__test.RESULT_LIMIT);
+    assert.equal(await page.locator('[data-sxr-more="profiles"]').getAttribute('data-sxr-visible'), String(SearchEngine.__test.RESULT_LIMIT));
+    assert.equal(await page.locator('[data-sxr-more="works"]').getAttribute('data-sxr-visible'), String(SearchEngine.__test.RESULT_LIMIT));
   } finally {
     await instance.close();
   }

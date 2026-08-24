@@ -36,6 +36,44 @@ test('natural-language search returns exact retained names and titles without fi
   assert.equal(impossible.profiles.length + impossible.works.length, 0);
 });
 
+test('Search presents profile-first language, retained rotating prompts, and bounded More controls', () => {
+  const index = search.__test.buildIndex(catalog);
+  const suggestions = search.__test.SUGGESTED_SEARCHES;
+  assert.ok(suggestions.length >= 12, 'the rotating prompt rail should expose a broad set of searches');
+  assert.equal(new Set(suggestions.map((item) => item.label)).size, suggestions.length, 'prompt labels must be unique');
+  assert.equal(new Set(suggestions.map((item) => item.query)).size, suggestions.length, 'prompt queries must be unique');
+  for (const suggestion of suggestions) {
+    const result = search.__test.searchIndex(index, suggestion.query, new Set(index.providers));
+    assert.ok(result.profiles.length + result.works.length > 0, `suggested search must resolve to retained records: ${suggestion.query}`);
+  }
+
+  const profileRows = index.profiles.slice(0, search.__test.RESULT_LIMIT + 2);
+  const workRows = index.works.slice(0, search.__test.RESULT_LIMIT + 2);
+  const profileSection = search.__test.resultsSection('profiles', 'Profiles', profileRows);
+  const workSection = search.__test.resultsSection('works', 'Contents', workRows);
+  assert.match(profileSection, /data-sxr-more="profiles"/);
+  assert.match(profileSection, />More profiles</);
+  assert.match(workSection, /data-sxr-more="works"/);
+  assert.match(workSection, />More contents</);
+  assert.equal((profileSection.match(/data-search-kind="profile"/g) || []).length, search.__test.RESULT_LIMIT);
+  assert.equal((workSection.match(/data-search-kind="work"/g) || []).length, search.__test.RESULT_LIMIT);
+  assert.doesNotMatch(search.__test.resultsSection('profiles', 'Profiles', profileRows.slice(0, search.__test.RESULT_LIMIT)), /data-sxr-more=/,
+    'a complete first batch must not render a dead More control');
+  assert.doesNotMatch(search.__test.resultsSection('works', 'Contents', workRows.slice(0, 4)), /data-sxr-more=/,
+    'short Contents results must not render a dead More control');
+
+  const engine = fs.readFileSync(path.join(root, 'js/search-engine.js'), 'utf8');
+  assert.match(engine, /Backer AI Profile Discovery Agent/);
+  assert.match(engine, /<em class="sx-hero-title-sub">Profile Discovery Agent<\/em>/);
+  assert.doesNotMatch(engine, /Creator Discovery Agent/);
+  assert.match(engine, /suggestedSearchGroup\(false\) \+ suggestedSearchGroup\(true\)/,
+    'the rotating rail needs a duplicate visual group for a gapless loop');
+  assert.match(engine, /if \(isDuplicate\) return '<span class="chip"/,
+    'the aria-hidden visual loop must not duplicate focusable buttons');
+  assert.match(engine, /source-linked profiles · '[\s\S]*?' original works up to date/);
+  assert.doesNotMatch(engine, /Catalog snapshot/);
+});
+
 test('provider controls scope both profile and work results to retained sources', () => {
   const index = search.__test.buildIndex(catalog);
   const github = search.__test.searchIndex(index, '', new Set(['github']));
@@ -159,7 +197,7 @@ test('public page and shared dock restore the dedicated Backer AI route', () => 
   const dock = fs.readFileSync(path.join(root, 'js/backer-dock.js'), 'utf8');
   const engine = fs.readFileSync(path.join(root, 'js/search-engine.js'), 'utf8');
   const artifact = fs.readFileSync(path.join(root, 'scripts/build-pages-artifact.mjs'), 'utf8');
-  assert.match(html, /js\/search-engine\.js\?v=20260822-search-seam-1/);
+  assert.match(html, /js\/search-engine\.js\?v=20260824-search-expand-1/);
   assert.match(html, /href="backerdemo\.html#search" data-view="search">AI Search/);
   assert.match(html, /01 · AI Search Agent[\s\S]*?<article class="surface reveal" data-view="search"|<article class="surface reveal" data-view="search">[\s\S]*?01 · AI Search Agent/);
   assert.match(dock, /linkHTML\('search', 'backerdemo\.html#search'/);
@@ -177,11 +215,11 @@ test('every changed public Search asset is allowlisted and uses its current cach
     'css/backer-dock.css': '20260821-2',
     'css/market.css': '20260821-account-metrics-1',
     'css/market2.css': '20260821-account-metrics-1',
-    'css/search.css': '20260822-search-seam-1',
+    'css/search.css': '20260824-search-expand-1',
     'js/app.js': '20260822-search-seam-1',
     'js/backer-dock.js': '20260822-archive-1',
     'js/market2.js': '20260821-account-metrics-1',
-    'js/search-engine.js': '20260822-search-seam-1',
+    'js/search-engine.js': '20260824-search-expand-1',
     'js/trades-catalog-model.js': '20260821-account-metrics-1',
     'js/site-menu.js': '20260821-trades-1'
   };
