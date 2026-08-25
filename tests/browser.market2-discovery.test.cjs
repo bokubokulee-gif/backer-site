@@ -957,9 +957,30 @@ test('homepage globe shows complete sourced figures and globe-synchronized outwa
           viewportWidth: document.documentElement.clientWidth
         };
       }),
+      connectors: Array.from(section.querySelectorAll('.val-branch-line')).map((path, index) => {
+        const card = section.querySelectorAll('.val-branch-stat')[index];
+        const figure = card.querySelector('.val-branch-figure');
+        const cardRect = card.getBoundingClientRect();
+        const figureRect = figure.getBoundingClientRect();
+        const point = path.getPointAtLength(path.getTotalLength());
+        const svgPoint = path.ownerSVGElement.createSVGPoint();
+        svgPoint.x = point.x;
+        svgPoint.y = point.y;
+        const end = svgPoint.matrixTransform(path.getScreenCTM());
+        return {
+          endX: end.x,
+          endY: end.y,
+          cardLeft: cardRect.left,
+          cardRight: cardRect.right,
+          figureCenterY: (figureRect.top + figureRect.bottom) / 2
+        };
+      }),
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth
     }));
     assert.equal(geometry.cards.some((row) => row.left < 0 || row.right > row.viewportWidth || row.height + 1 < row.scrollHeight), false, JSON.stringify(geometry.cards));
+    assert.ok(geometry.connectors[0].endX >= geometry.connectors[0].cardRight + 12, JSON.stringify(geometry.connectors[0]));
+    assert.ok(geometry.connectors.slice(1).every((row) => row.endX <= row.cardLeft - 12), JSON.stringify(geometry.connectors));
+    assert.ok(geometry.connectors.every((row) => Math.abs(row.endY - row.figureCenterY) <= 8), JSON.stringify(geometry.connectors));
     assert.ok(geometry.overflow <= 1, `homepage globe overflowed by ${geometry.overflow}px`);
   } finally {
     await context.close();
