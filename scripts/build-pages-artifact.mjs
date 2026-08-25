@@ -87,6 +87,7 @@ const PUBLIC_FILES = Object.freeze([
   'js/waitlist.js',
   'js/vendor/cobe.mjs',
   'data/discovery-catalog.json',
+  'data/landing-preview.json',
   'data/market2-people.json',
   'data/trades-eligible-accounts.json',
   'img/backer-mark.png',

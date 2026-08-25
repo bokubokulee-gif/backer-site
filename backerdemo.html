@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;650;700&amp;family=Geist+Mono:wght@400;500;600&amp;family=Inter:wght@400;500;600;700&amp;family=Instrument+Serif:ital@0;1&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/styles.css?v=20260821-2" />
+<link rel="stylesheet" href="css/styles.css?v=20260826-perf-1" />
 <link rel="stylesheet" href="css/search.css?v=20260824-sources-clean-1" />
 <link rel="stylesheet" href="css/market2.css?v=20260821-account-metrics-1" />
 <link rel="stylesheet" href="css/liquid-glass.css?v=20260731-2" />
@@ -199,6 +199,37 @@
         <figure class="val-globe-shell" data-globe-live aria-label="Illustrative global creator source map">
           <div class="val-globe-bezel" aria-hidden="true">
             <div class="val-globe-stage">
+              <svg class="val-globe-poster" viewBox="0 0 340 340" aria-hidden="true" focusable="false">
+                <defs>
+                  <radialGradient id="valPosterSphere" cx="34%" cy="27%" r="76%">
+                    <stop offset="0" stop-color="#202024"/>
+                    <stop offset=".64" stop-color="#121215"/>
+                    <stop offset="1" stop-color="#070709"/>
+                  </radialGradient>
+                  <radialGradient id="valPosterRim" cx="50%" cy="50%" r="50%">
+                    <stop offset=".93" stop-color="#fff" stop-opacity="0"/>
+                    <stop offset=".982" stop-color="#fff" stop-opacity=".28"/>
+                    <stop offset="1" stop-color="#fff" stop-opacity=".82"/>
+                  </radialGradient>
+                  <pattern id="valPosterDots" width="3.25" height="3.25" patternUnits="userSpaceOnUse">
+                    <circle cx=".8" cy=".8" r=".58" fill="#f7f5f0"/>
+                  </pattern>
+                  <clipPath id="valPosterClip"><circle cx="170" cy="170" r="148"/></clipPath>
+                </defs>
+                <circle cx="170" cy="170" r="150" fill="url(#valPosterSphere)"/>
+                <g clip-path="url(#valPosterClip)" fill="url(#valPosterDots)" opacity=".9">
+                  <path d="M49 92l18-17 28-11 31-2 28 9 20 15 7 17-13 10-16-5-13 12-17 4-8 17-14 7-9-12-15-5-9-13-12-4-8-11z"/>
+                  <path d="M102 133l14 5 10 12 15 3 11 12-9 9-15-8-12-10-11-2z"/>
+                  <path d="M138 158l21-2 21 11 16 20 5 22-9 26-12 27-16 22-10-9-1-23 3-19-10-20-11-23z"/>
+                  <path d="M77 71l14-12 21-4 13 6-12 8-20 6z"/>
+                  <path d="M176 77l13-9 13 4 2 10-14 6z"/>
+                  <path d="M213 87l12-6 9 4-7 8z"/>
+                  <path d="M134 147l8-2 6 3-7 3z"/>
+                  <path d="M154 153l5-2 5 3-4 4z"/>
+                </g>
+                <circle cx="170" cy="170" r="150" fill="url(#valPosterRim)"/>
+                <circle cx="170" cy="170" r="149" fill="none" stroke="#fff" stroke-opacity=".42" stroke-width=".8"/>
+              </svg>
               <canvas class="val-globe-canvas" data-globe-canvas></canvas>
               <div class="val-globe-labels" data-globe-labels></div>
             </div>
@@ -368,19 +399,19 @@
 <!-- TOAST -->
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-<script src="js/shader.js"></script>
+<script src="js/shader.js?v=20260826-perf-1"></script>
 <script src="js/liquid-glass.js"></script>
-<script src="js/trades-catalog-model.js?v=20260821-account-metrics-1"></script>
-<script src="js/market2.js?v=20260821-account-metrics-1"></script>
+<script src="js/trades-catalog-model.js?v=20260826-perf-1"></script>
+<script src="js/market2.js?v=20260826-perf-1"></script>
 <script src="js/analytics-core.js?v=20260822-archive-1"></script>
-<script src="js/analytics.js?v=20260820-3"></script>
-<script src="js/search-engine.js?v=20260824-sources-clean-1"></script>
-<script src="js/app.js?v=20260822-search-seam-1"></script>
+<script src="js/analytics.js?v=20260826-perf-1"></script>
+<script src="js/search-engine.js?v=20260826-perf-1"></script>
+<script src="js/app.js?v=20260826-perf-1"></script>
 <script src="js/sections.js?v=2"></script>
-<script type="module" src="js/globe-live.mjs?v=20260821-1"></script>
+<script type="module" src="js/globe-live.mjs?v=20260826-perf-1"></script>
 <script src="js/poa-terminal.js?v=20260819-1"></script>
 <script src="js/flickering-footer.js?v=20260731-2"></script>
 <div data-backer-dock></div>
-<script src="js/backer-dock.js?v=20260822-archive-1"></script>
+<script src="js/backer-dock.js?v=20260826-perf-1"></script>
 </body>
 </html>

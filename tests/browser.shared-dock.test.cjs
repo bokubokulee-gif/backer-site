@@ -357,6 +357,31 @@ after(async () => {
   }
 });
 
+test('reduced-motion background shader redraws after a viewport resize', async () => {
+  const instance = await context({ width: 1200, height: 800 }, 'reduce');
+  await instance.addInitScript(() => {
+    const original = WebGLRenderingContext.prototype.drawArrays;
+    WebGLRenderingContext.prototype.drawArrays = function (...args) {
+      if (this.canvas && this.canvas.id === 'bg') window.__backerShaderDraws = (window.__backerShaderDraws || 0) + 1;
+      return original.apply(this, args);
+    };
+  });
+  const page = await instance.newPage();
+  try {
+    await page.goto(`${origin}/backerdemo.html`);
+    await page.waitForSelector('#bg', { state: 'visible' });
+    await page.waitForFunction(() => (window.__backerShaderDraws || 0) > 0);
+    const before = await page.evaluate(() => window.__backerShaderDraws || 0);
+    assert.ok(before > 0, 'the reduced-motion shader must paint its initial frame');
+    await page.setViewportSize({ width: 1000, height: 700 });
+    await page.waitForTimeout(250);
+    const afterResize = await page.evaluate(() => window.__backerShaderDraws || 0);
+    assert.ok(afterResize > before, 'resizing must redraw the reduced-motion shader after reallocating its framebuffer');
+  } finally {
+    await instance.close();
+  }
+});
+
 test('Search dock route opens the dedicated retained-catalog interface from Home, Discovery, and Trades', async () => {
   const instance = await context({ width: 1000, height: 820 });
   const page = await instance.newPage();
@@ -763,7 +788,11 @@ test('Search, Discovery, and Trades share one retained catalog load per page ses
     await page.waitForFunction(() => document.querySelector('.mkt-catalog-line') && /1,\d{3}/.test(document.querySelector('.mkt-catalog-line').textContent));
 
     assert.deepEqual(requests, { catalog: 1, eligibility: 1 }, 'hash-route projections must reuse the same retained source promises');
-    assert.equal(await page.evaluate(() => Object.keys(window.__backerRetainedSourcePromises || {}).length), 2);
+    assert.deepEqual(await page.evaluate(() => Object.keys(window.__backerRetainedSourcePromises || {}).map((url) => new URL(url, location.href).pathname).sort()), [
+      '/data/discovery-catalog.json',
+      '/data/landing-preview.json',
+      '/data/trades-eligible-accounts.json'
+    ]);
   } finally {
     await instance.close();
   }

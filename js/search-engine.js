@@ -147,6 +147,13 @@
   }
 
   function buildTradeEligibility(model) {
+    if (model && Array.isArray(model.personIds) && Array.isArray(model.workIds)) {
+      return {
+        profiles: new Set(model.personIds.map(clean).filter(Boolean)),
+        works: new Set(model.workIds.map(clean).filter(Boolean)),
+        available: true
+      };
+    }
     if (!model || !Array.isArray(model.people) || !Array.isArray(model.contents)) return emptyTradeEligibility();
     return {
       profiles: new Set(model.people.map(function (person) { return clean(person && person.id); }).filter(Boolean)),
@@ -339,7 +346,7 @@
       var model = root.BackerTradeCatalog;
       var source = model && typeof model.loadSourceJSON === 'function'
         ? model.loadSourceJSON(CATALOG_URL, 'Search catalog')
-        : root.fetch(CATALOG_URL, { cache: 'no-store', credentials: 'same-origin' })
+        : root.fetch(CATALOG_URL, { cache: 'no-cache', credentials: 'same-origin' })
           .then(function (response) { if (!response.ok) throw new Error('Catalog request failed (' + response.status + ')'); return response.json(); });
       loadPromise = source
         .then(function (raw) { catalogRaw = raw; index = buildIndex(raw); return index; });
@@ -348,11 +355,21 @@
   }
   function loadTradeEligibility() {
     if (!tradeEligibilityPromise) {
-      tradeEligibilityPromise = loadCatalog().then(function () {
-        var model = root.BackerTradeCatalog;
-        if (!model || typeof model.load !== 'function') return emptyTradeEligibility();
-        return model.load({ catalog: catalogRaw }).then(buildTradeEligibility).catch(function () { return emptyTradeEligibility(); });
-      }).catch(function () { return emptyTradeEligibility(); }).then(function (eligibility) {
+      var model = root.BackerTradeCatalog;
+      var registry = model && typeof model.loadSourceJSON === 'function'
+        ? model.loadSourceJSON(model.ELIGIBILITY_URL || 'data/trades-eligible-accounts.json', 'Search Trades eligibility registry')
+        : null;
+      var modelPromise = registry
+        ? Promise.all([loadCatalog(), registry]).then(function (rows) {
+          if (model && typeof model.eligibility === 'function') return model.eligibility(catalogRaw, rows[1]);
+          if (!model || typeof model.load !== 'function') return emptyTradeEligibility();
+          return model.load({ catalog: catalogRaw, eligibilityRegistry: rows[1] });
+        })
+        : loadCatalog().then(function () {
+          if (!model || typeof model.load !== 'function') return emptyTradeEligibility();
+          return model.load({ catalog: catalogRaw });
+        });
+      tradeEligibilityPromise = modelPromise.then(buildTradeEligibility).catch(function () { return emptyTradeEligibility(); }).then(function (eligibility) {
         tradeEligibility = eligibility;
         return tradeEligibility;
       });
@@ -487,12 +504,33 @@
     canonicalURL(currentQuery);
     announce(total + ' retained catalog matches.');
   }
+  function refreshTradeActions() {
+    if (!rootElement || !index || !tradeEligibility.available) return;
+    rootElement.querySelectorAll('.sxr-card').forEach(function (card) {
+      if (card.querySelector('[data-search-action="trade"]')) return;
+      var kind = card.getAttribute('data-search-kind');
+      var id = card.getAttribute('data-search-subject');
+      var rows = kind === 'profile' ? index.profiles : index.works;
+      var row = rows.filter(function (candidate) { return candidate.id === id; })[0];
+      var href = tradeHref(row, tradeEligibility);
+      var actions = card.querySelector('.sxr-actions');
+      if (!href || !actions) return;
+      var link = document.createElement('a');
+      link.setAttribute('data-search-action', 'trade');
+      link.setAttribute('data-subject-id', id);
+      link.href = href;
+      link.textContent = 'Trade growth';
+      var source = actions.querySelector('[data-search-action="source"]');
+      actions.insertBefore(link, source || null);
+    });
+  }
   function submit(query) {
     currentQuery = clean(query);
     var revision = ++renderRevision;
     var out = rootElement && rootElement.querySelector('#sxOut');
     if (out) out.innerHTML = '<div class="sx-notice" role="status"><span class="sx-spinner" aria-hidden="true"></span> Searching retained public records…</div>';
-    return Promise.all([loadCatalog(), loadTradeEligibility()]).then(function () {
+    var eligibility = loadTradeEligibility();
+    return loadCatalog().then(function () {
       if (revision !== renderRevision || !rootElement) return;
       if (!activeProviders.size) index.providers.forEach(function (provider) { activeProviders.add(provider); });
       renderProviderFilters();
@@ -502,6 +540,10 @@
         canonicalURL('');
         announce('Retained catalog ready. Enter a search in natural language.');
       }
+      return eligibility.then(function () {
+        if (revision !== renderRevision || !rootElement) return;
+        refreshTradeActions();
+      });
     }).catch(function (error) {
       if (revision !== renderRevision || !out) return;
       out.innerHTML = '<div class="sx-notice sx-notice-block" role="alert"><b>Search catalog could not load.</b> Refresh to retry. No fallback or generated profiles were substituted.</div>';

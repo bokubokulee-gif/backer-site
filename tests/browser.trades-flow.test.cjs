@@ -54,8 +54,8 @@ async function handler(req, res) {
   }
 }
 
-async function newContext(viewport = { width: 1440, height: 1000 }) {
-  const context = await browser.newContext({ viewport, reducedMotion: 'reduce' });
+async function newContext(viewport = { width: 1440, height: 1000 }, reducedMotion = 'reduce') {
+  const context = await browser.newContext({ viewport, reducedMotion });
   await context.addInitScript((portfolio) => {
     localStorage.setItem('backer_portfolio_v1', portfolio);
   }, PORTFOLIO_SENTINEL);
@@ -92,6 +92,17 @@ async function waitForDiscovery(page) {
 
 async function assertPortfolioUnchanged(page) {
   assert.equal(await page.evaluate(() => localStorage.getItem('backer_portfolio_v1')), PORTFOLIO_SENTINEL);
+}
+
+async function assertRouteFocusInViewport(locator, label) {
+  const placement = await locator.evaluate((node) => {
+    const rect = node.getBoundingClientRect();
+    return { top: rect.top, bottom: rect.bottom, center: rect.top + rect.height / 2, viewport: innerHeight };
+  });
+  assert.ok(placement.top < placement.viewport && placement.bottom > 0,
+    `${label} must be on screen immediately: ${JSON.stringify(placement)}`);
+  assert.ok(placement.center > 0 && placement.center < placement.viewport,
+    `${label} center must remain inside the viewport: ${JSON.stringify(placement)}`);
 }
 
 async function assertSanitizedTerminal(page, draftId, expectedQuestion) {
@@ -228,6 +239,58 @@ test('direct Trades loads the complete scaled inventory without loading Discover
       assert.ok(layout.cardWidth > 0 && layout.actionHeight >= 44 && layout.supportFont >= 15);
       assert.ok(layout.scrollWidth <= layout.innerWidth + 1, `${width}px Trades must not overflow horizontally`);
     }
+  } finally {
+    await context.close();
+  }
+});
+
+test('deep-linked Trades and Discovery cards beat global smooth scrolling on mobile and survive a same-route remount', async () => {
+  const content = TRADE_MODEL.contents.find((row) => row.researchHref && row.contract && row.simulation);
+  const profile = [...TRADE_MODEL.people].reverse().find((row) => row.researchHref && row.contract && row.simulation);
+  assert.ok(content, 'the eligible catalog needs a routed content market');
+  assert.ok(profile, 'the eligible catalog needs a routed profile market');
+  const context = await newContext({ width: 390, height: 844 }, 'no-preference');
+  const page = await context.newPage();
+  try {
+    await page.goto(`${origin}/backerdemo.html#trades?view=contents&subject=${encodeURIComponent(content.id)}`);
+    const tradeCard = page.locator(`.mkt-catalog-card.is-route-focus[data-mkt-subject-id="${content.id}"]`);
+    await tradeCard.waitFor({ state: 'visible', timeout: 30000 });
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    await assertRouteFocusInViewport(tradeCard, 'Trades route focus');
+
+    const watch = tradeCard.locator('[data-mkt-watch-work]');
+    await watch.scrollIntoViewIfNeeded();
+    const watchBefore = await watch.getAttribute('aria-pressed');
+    const scrollBeforeWatch = await page.evaluate(() => scrollY);
+    await watch.click();
+    await page.waitForFunction(({ id, previous }) => document.querySelector(`[data-mkt-subject-id="${id}"] [data-mkt-watch-work]`)?.getAttribute('aria-pressed') !== previous,
+      { id: content.id, previous: watchBefore });
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    assert.ok(Math.abs(await page.evaluate(() => scrollY) - scrollBeforeWatch) <= 1,
+      'an internal Watch redraw must not recenter an already handled deep link');
+    assert.equal(await page.locator(`.mkt-catalog-card.is-route-focus[data-mkt-subject-id="${content.id}"]`).count(), 1,
+      'an internal redraw must preserve the exact route-focus treatment');
+
+    await page.goto(`${origin}/backerdemo.html#market2?view=radar&person=${encodeURIComponent(content.personId)}&work=${encodeURIComponent(content.id)}`);
+    const discoveryCard = page.locator(`.m2-feed-card.is-route-focus[data-m2-content-id="${content.id}"]`);
+    await discoveryCard.waitFor({ state: 'visible', timeout: 30000 });
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    await assertRouteFocusInViewport(discoveryCard, 'Discovery route focus');
+
+    await page.evaluate(() => window.BackerMarket2.render(document.getElementById('app')));
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    await assertRouteFocusInViewport(discoveryCard, 'same-route Discovery remount focus');
+
+    await page.goto(`${origin}/backerdemo.html#trades?view=profiles&subject=${encodeURIComponent(profile.id)}`);
+    const profileTradeCard = page.locator(`.mkt-catalog-card[data-mkt-subject-id="${profile.id}"]`);
+    await profileTradeCard.waitFor({ state: 'visible', timeout: 30000 });
+    await profileTradeCard.locator('[data-mkt-research]').click();
+    const profileDiscoveryCard = page.locator('.m2-profile-card.is-selected');
+    await profileDiscoveryCard.waitFor({ state: 'visible', timeout: 30000 });
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    await assertRouteFocusInViewport(profileDiscoveryCard, 'profile return to Discovery');
+    assert.equal(await profileDiscoveryCard.locator(`[data-creator-id="${profile.id}"]`).count() > 0, true,
+      'Discovery must reveal the exact retained profile instead of substituting another person');
   } finally {
     await context.close();
   }

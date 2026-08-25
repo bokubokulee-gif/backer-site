@@ -35,6 +35,10 @@
         };
         script.onerror = () => reject(new Error('Legacy homepage data unavailable'));
         document.head.appendChild(script);
+      }).catch((error) => {
+        document.querySelectorAll('script[data-backer-legacy-data]').forEach((node) => node.remove());
+        legacyDataAsset = null;
+        throw error;
       });
     }
     return legacyDataAsset;
@@ -49,7 +53,9 @@
   }
 
   function loadTradesStyle() {
-    if (document.querySelector('link[data-backer-trades]')) return Promise.resolve();
+    const existing = document.querySelector('link[data-backer-trades]');
+    if (existing && existing.dataset.backerStyleReady === 'true') return Promise.resolve();
+    if (existing) existing.remove();
     return new Promise((resolve, reject) => {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
@@ -68,7 +74,9 @@
   }
 
   function loadLegacyArchiveStyle() {
-    if (document.querySelector('link[data-backer-legacy-market]')) return Promise.resolve();
+    const existing = document.querySelector('link[data-backer-legacy-market]');
+    if (existing && existing.dataset.backerStyleReady === 'true') return Promise.resolve();
+    if (existing) existing.remove();
     return new Promise((resolve, reject) => {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
@@ -119,10 +127,19 @@
 
   function ensureTradesAssets() {
     if (!tradesAssets) {
-      tradesAssets = loadTradesStyle()
-        .then(() => loadTradesScript('js/market-draft-store.js?v=20260821-1', 'store'))
-        .then(() => loadTradesScript('js/trades-catalog-model.js?v=20260821-account-metrics-1', 'catalog'))
-        .then(() => loadTradesScript('js/market.js?v=20260822-archive-1', 'view'));
+      const dependencies = Promise.all([
+        loadTradesScript('js/market-draft-store.js?v=20260821-1', 'store'),
+        loadTradesScript('js/trades-catalog-model.js?v=20260826-perf-1', 'catalog')
+      ]);
+      tradesAssets = Promise.all([loadTradesStyle(), dependencies])
+        .then(() => loadTradesScript('js/market.js?v=20260826-perf-1', 'view'))
+        .then(() => { tradesAssetError = null; })
+        .catch((error) => {
+          document.querySelectorAll('link[data-backer-trades]:not([data-backer-style-ready="true"])').forEach((node) => node.remove());
+          document.querySelectorAll('script[data-backer-trades]').forEach((node) => node.remove());
+          tradesAssets = null;
+          throw error;
+        });
     }
     return tradesAssets;
   }
@@ -132,7 +149,14 @@
       legacyArchiveAssets = ensureLegacyData()
         .then(() => loadLegacyArchiveStyle())
         .then(() => loadLegacyArchiveScript('js/market-data.js?v=3', 'data'))
-        .then(() => loadLegacyArchiveScript('js/market-archive.js?v=20260822-1', 'view'));
+        .then(() => loadLegacyArchiveScript('js/market-archive.js?v=20260822-1', 'view'))
+        .then(() => { legacyArchiveError = null; })
+        .catch((error) => {
+          document.querySelectorAll('link[data-backer-legacy-market]:not([data-backer-style-ready="true"])').forEach((node) => node.remove());
+          document.querySelectorAll('script[data-backer-legacy-market]').forEach((node) => node.remove());
+          legacyArchiveAssets = null;
+          throw error;
+        });
     }
     return legacyArchiveAssets;
   }
@@ -320,6 +344,7 @@
   async function go(view, arg) {
     if (view === 'market') view = 'trades';
     const routeEpoch = ++navigationEpoch;
+    let legacyMarketingError = null;
     if (view === 'trades') {
       try {
         await ensureTradesAssets();
@@ -334,7 +359,15 @@
         legacyArchiveError = error;
       }
     }
+    if (view === 'home' || view === 'creator') {
+      try {
+        await ensureLegacyMarketing();
+      } catch (error) {
+        legacyMarketingError = error;
+      }
+    }
     if (routeEpoch !== navigationEpoch) return;
+    document.dispatchEvent(new CustomEvent('backer:routewillchange', { detail: { view: view } }));
     // Keep the outgoing DOM fully styled while incoming assets load. New route
     // styles stay disabled until this commit, then style swap + render happen
     // synchronously so no mixed or unstyled market frame can paint.
@@ -342,8 +375,7 @@
     setMarketStyles(view);
     if (view === 'portfolio') { window.location.href = 'portfolio.html'; return; }
     if (view === 'home') {
-      try { await ensureLegacyMarketing(); } catch (error) { console.error(error); }
-      if (routeEpoch !== navigationEpoch) return;
+      if (legacyMarketingError) console.error(legacyMarketingError);
       document.body.classList.remove('body-app', 'mkt-full', 'mkt2-full', 'search-full');
       app.classList.add('hidden'); app.setAttribute('aria-hidden', 'true');
       if (dock) {
@@ -352,7 +384,7 @@
         if (oldHome) oldHome.classList.add('active');
       }
       try { history.replaceState(null, '', location.pathname); } catch (e) {}
-      window.scrollTo({ top: 0, behavior: 'auto' });
+      window.scrollTo({ top: 0, behavior: 'instant' });
       analyticsView('home');
       setDock('home');
       return;
@@ -362,14 +394,12 @@
     document.body.classList.toggle('mkt2-full', view === 'market2');
     document.body.classList.toggle('search-full', view === 'search');
     app.classList.remove('hidden'); app.setAttribute('aria-hidden', 'false');
-    window.scrollTo({ top: 0, behavior: 'auto' });
+    window.scrollTo({ top: 0, behavior: 'instant' });
     if (view === 'creator') {
-      try { await ensureLegacyMarketing(); }
-      catch (error) {
+      if (legacyMarketingError) {
         app.innerHTML = '<div class="mkt-fatal" role="alert"><b>This profile could not load.</b><span>Refresh to retry the legacy profile data.</span></div>';
         return;
       }
-      if (routeEpoch !== navigationEpoch) return;
     }
     if (view === 'market2') { renderMarket2(); setDock('market2'); }
     else if (view === 'trades') { renderMarket(); setDock('trades'); }

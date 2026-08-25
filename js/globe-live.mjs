@@ -32,6 +32,8 @@ if (root && canvas) {
   let pointerStart = null;
   let inView = false;
   let destroyed = false;
+  let labelSize = 0;
+  let rendererUnavailable = false;
 
   if (labelHost) {
     markers.slice(0, 3).forEach((marker) => {
@@ -82,7 +84,9 @@ if (root && canvas) {
 
   function updateMarkerLabels() {
     if (!labelHost || !markerLabels.length) return;
-    const size = labelHost.clientWidth;
+    const size = labelSize || labelHost.clientWidth;
+    if (!size) return;
+    labelSize = size;
     markerLabels.forEach(({ label, marker }) => {
       const position = projectMarker(marker.location);
       label.style.setProperty('--marker-x', `${position.x * size}px`);
@@ -128,13 +132,33 @@ if (root && canvas) {
     if (network) network.classList.remove('is-globe-spinning');
   }
 
+  function renderedFrameVisible() {
+    try {
+      const context = canvas.getContext('webgl2') || canvas.getContext('webgl');
+      if (!context || !canvas.width || !canvas.height) return false;
+      const pixel = new Uint8Array(4);
+      context.readPixels(Math.floor(canvas.width / 2), Math.floor(canvas.height / 2), 1, 1, context.RGBA, context.UNSIGNED_BYTE, pixel);
+      return pixel[3] > 0 && pixel[0] + pixel[1] + pixel[2] > 8;
+    } catch (_error) {
+      return false;
+    }
+  }
+
+  function showFallback(message) {
+    stopRendering();
+    root.classList.remove('is-ready');
+    root.classList.add('is-fallback');
+    if (message) console.warn(message);
+  }
+
   function initGlobe() {
-    if (globe || destroyed) return;
+    if (globe || destroyed || rendererUnavailable) return;
     const size = Math.round(canvas.clientWidth);
     if (!size) return;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
     try {
+      root.classList.remove('is-ready', 'is-fallback');
       globe = createGlobe(canvas, {
         devicePixelRatio: dpr,
         width: size,
@@ -152,7 +176,6 @@ if (root && canvas) {
         glowColor: [0.96, 0.95, 0.92],
         markerElevation,
         markers: markers.map((marker) => ({
-          id: marker.id,
           location: marker.location,
           size: 0.024,
           color: [1, 0.985, 0.96]
@@ -163,16 +186,27 @@ if (root && canvas) {
         arcHeight: 0.18,
         opacity: 0.98
       });
+      updateGlobe();
+      if (!renderedFrameVisible()) {
+        try { globe.destroy(); } catch (_error) {}
+        globe = null;
+        rendererUnavailable = true;
+        showFallback('Backer globe renderer did not produce a WebGL frame; retaining the visual poster.');
+        return;
+      }
       root.classList.add('is-ready');
       startRendering();
-    } catch (_error) {
-      root.classList.add('is-fallback');
+    } catch (error) {
+      globe = null;
+      rendererUnavailable = true;
+      showFallback('Backer globe renderer could not initialize; retaining the visual poster.');
     }
   }
 
   function resizeGlobe() {
     const size = Math.round(canvas.clientWidth);
     if (!size) return;
+    labelSize = labelHost ? Math.round(labelHost.clientWidth) : size;
     if (!globe) {
       initGlobe();
       return;
@@ -208,6 +242,19 @@ if (root && canvas) {
   });
   canvas.addEventListener('pointerup', endPointer);
   canvas.addEventListener('pointercancel', endPointer);
+  canvas.addEventListener('webglcontextlost', (event) => {
+    event.preventDefault();
+    stopRendering();
+    try { if (globe) globe.destroy(); } catch (_error) {}
+    globe = null;
+    rendererUnavailable = true;
+    showFallback('Backer globe WebGL context was lost; retaining the visual poster until recovery.');
+  });
+  canvas.addEventListener('webglcontextrestored', () => {
+    rendererUnavailable = false;
+    root.classList.remove('is-ready', 'is-fallback');
+    initGlobe();
+  });
 
   const resizeObserver = new ResizeObserver(resizeGlobe);
   resizeObserver.observe(canvas);

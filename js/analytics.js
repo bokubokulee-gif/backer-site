@@ -104,6 +104,11 @@
     };
   }
 
+  function runtimeEndpointSupported() {
+    if (String(window.location.protocol || '').toLowerCase() === 'file:') return false;
+    return !/(?:^|\.)github\.io$/i.test(String(window.location.hostname || ''));
+  }
+
   function applyRuntimeConfig(config) {
     config = config || fallbackRuntimeConfig();
     hideUnavailableAnalyticsUI = configuredUnavailableAnalyticsUIFlag();
@@ -137,7 +142,7 @@
   function loadRuntimeConfig() {
     if (runtimeConfigPromise) return runtimeConfigPromise;
     var fallback = fallbackRuntimeConfig();
-    if (!window.fetch) {
+    if (!window.fetch || !runtimeEndpointSupported()) {
       runtimeConfigPromise = Promise.resolve(applyRuntimeConfig(fallback));
       return runtimeConfigPromise;
     }
@@ -419,7 +424,7 @@
   }
 
   function setConsent(next) {
-    if (next === 'accepted' && !runtimePolicyMatches) return false;
+    if (next === 'accepted' && (!analyticsCollectionEnabled || !runtimePolicyMatches)) return false;
     var wasAccepted = accepted();
     storedConsent = Core.writeConsent(local, next, Date.now());
     decision = next;
@@ -435,6 +440,9 @@
   }
 
   function consentCopy(settingsMode) {
+    if (!analyticsCollectionEnabled) {
+      return 'Optional analytics collection is currently off. Collection remains off, and no analytics requests are sent.';
+    }
     if (!runtimePolicyMatches) {
       return runtimeConfigAvailable
         ? 'Analytics is temporarily unavailable while Backer synchronizes its privacy policy configuration. Collection remains off.'
@@ -473,7 +481,7 @@
       '<div class="backer-consent-actions">' +
         '<button type="button" class="backer-consent-reject" data-backer-consent="rejected">Reject</button>' +
         '<button type="button" class="backer-consent-accept" data-backer-consent="accepted"' +
-          (runtimePolicyMatches ? '' : ' disabled aria-disabled="true" title="Analytics configuration unavailable"') +
+          (analyticsCollectionEnabled && runtimePolicyMatches ? '' : ' disabled aria-disabled="true" title="Analytics configuration unavailable"') +
         '>Accept analytics</button>' +
         (settingsMode ? '<button type="button" class="backer-consent-close" aria-label="Close privacy settings" data-backer-consent-close>×</button>' : '') +
       '</div>';
@@ -571,8 +579,9 @@
   function mountPrivacySettings() {
     document.querySelectorAll('[data-backer-privacy-settings]').forEach(function (trigger) {
       var enabled = analyticsUIEnabled();
-      trigger.hidden = !enabled;
-      trigger.classList.toggle('backer-privacy-settings', enabled);
+      var alwaysVisible = trigger.hasAttribute('data-backer-privacy-always');
+      trigger.hidden = !(enabled || alwaysVisible);
+      trigger.classList.toggle('backer-privacy-settings', enabled || alwaysVisible);
     });
   }
 
@@ -619,7 +628,6 @@
         if (!storedConsent || !runtimePolicyMatches) showConsentPanel(false);
       }
       bindSearchEvents();
-      bindPrivacySettings();
       if (accepted()) {
         enableGA();
         recordRoute(currentRoute);
@@ -633,7 +641,6 @@
     virtualPageView: virtualPageView,
     openPrivacySettings: function () {
       return runtimeReady.then(function () {
-        if (!analyticsUIEnabled()) return false;
         showConsentPanel(true);
         return true;
       });
@@ -645,6 +652,7 @@
 
   bindBackerEventBridge();
   bindConsentStorage();
+  bindPrivacySettings();
   window.addEventListener('pageshow', refreshPublicCount);
   document.addEventListener('visibilitychange', function () {
     if (!document.hidden) {

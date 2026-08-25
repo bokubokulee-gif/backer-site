@@ -16,7 +16,7 @@
   var POSITION_SCHEMA = 'backer-trades-position-v1';
   var ACCOUNT_SCHEMA = 'backer-trades-account-v1';
   var STARTING_CASH = 10000;
-  var MODEL_SRC = 'js/trades-catalog-model.js?v=20260821-account-metrics-1';
+  var MODEL_SRC = 'js/trades-catalog-model.js?v=20260826-perf-1';
   var PAGE_SIZE = 15;
   var mountedRoot = null;
   var modelPromise = null;
@@ -26,7 +26,7 @@
   var state = {
     view: 'feed', query: '', provider: 'all', metric: 'all', sort: 'personalized', page: 1,
     proposalId: '', pendingDeleteId: '', loading: true, loadError: '', catalog: null,
-    ticket: null, receipt: null, routeSubjectId: '', routeSide: '', routeHandled: '', routeMissing: false
+    ticket: null, receipt: null, routeSubjectId: '', routeSide: '', routeHandled: '', routeFocusHandled: '', routeMissing: false
   };
 
   function clean(value) { return String(value == null ? '' : value).trim(); }
@@ -47,6 +47,10 @@
       var url = new URL(raw, root.location && root.location.href ? root.location.href : 'https://backer.invalid/');
       return (url.protocol === 'https:' || url.protocol === 'http:') && !url.username && !url.password ? url.href : '';
     } catch (error) { return ''; }
+  }
+  function scrollIntoViewInstantly(element, block) {
+    if (!element || typeof element.scrollIntoView !== 'function') return;
+    element.scrollIntoView({ behavior: 'instant', block: block });
   }
   function usableMedia(value) {
     var url = safeURL(value);
@@ -747,11 +751,22 @@
       });
       root.requestAnimationFrame(function () { var dialog = mountedRoot.querySelector('.mkt-ticket'); if (dialog) dialog.focus && dialog.focus(); });
     }
-    if (state.proposalId && !state.loading) root.requestAnimationFrame(function () { var selected = document.getElementById('proposal-' + state.proposalId); if (selected) selected.scrollIntoView({ block: 'nearest' }); });
+    if (state.proposalId && !state.loading) root.requestAnimationFrame(function () { var selected = document.getElementById('proposal-' + state.proposalId); if (selected) scrollIntoViewInstantly(selected, 'nearest'); });
+    var routeFocusHandle = [state.view, state.routeSubjectId].join(':');
     if (state.routeSubjectId && !state.loading) root.requestAnimationFrame(function () {
       var cards = mountedRoot.querySelectorAll('[data-mkt-subject-id]'), selected = null;
       Array.prototype.some.call(cards, function (card) { if (card.getAttribute('data-mkt-subject-id') === state.routeSubjectId) { selected = card; return true; } return false; });
-      if (selected) { selected.classList.add('is-route-focus'); if (!state.ticket) selected.scrollIntoView({ block: 'center' }); }
+      if (selected) {
+        selected.classList.add('is-route-focus');
+        if (state.routeFocusHandled === routeFocusHandle) return;
+        state.routeFocusHandled = routeFocusHandle;
+        if (!state.ticket) {
+          scrollIntoViewInstantly(selected, 'center');
+          root.requestAnimationFrame(function () {
+            if (selected.isConnected && !state.ticket) scrollIntoViewInstantly(selected, 'center');
+          });
+        }
+      }
     });
   }
 
@@ -924,13 +939,14 @@
   }
   function switchView(view) {
     if (VIEW_VALUES.indexOf(view) < 0) return;
-    state.view = view; state.proposalId = ''; state.pendingDeleteId = ''; state.query = ''; state.provider = 'all'; state.metric = 'all'; state.sort = 'personalized'; state.page = 1; state.ticket = null; state.receipt = null; state.routeSubjectId = ''; state.routeSide = ''; state.routeHandled = ''; state.routeMissing = false;
+    state.view = view; state.proposalId = ''; state.pendingDeleteId = ''; state.query = ''; state.provider = 'all'; state.metric = 'all'; state.sort = 'personalized'; state.page = 1; state.ticket = null; state.receipt = null; state.routeSubjectId = ''; state.routeSide = ''; state.routeHandled = ''; state.routeFocusHandled = ''; state.routeMissing = false;
     writeURL(); renderContent();
   }
   function clearRouteSubject() {
     state.routeSubjectId = '';
     state.routeSide = '';
     state.routeHandled = '';
+    state.routeFocusHandled = '';
     state.routeMissing = false;
   }
   function openDraft(kind, id) {
@@ -1046,6 +1062,7 @@
     timing.renderRequestedAt = performanceNow();
     performanceMark('backer-trades:render-requested');
     readURL();
+    state.routeFocusHandled = '';
     if (!mountedRoot.dataset.tradesBound) {
       mountedRoot.dataset.tradesBound = 'true';
       mountedRoot.addEventListener('click', onClick);

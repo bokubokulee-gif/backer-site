@@ -241,7 +241,7 @@
       childList: true,
       subtree: true,
       attributes: true,
-      attributeFilter: ['open', 'aria-modal', 'aria-hidden', 'class', 'style']
+      attributeFilter: ['open', 'aria-modal', 'aria-hidden', 'hidden']
     });
 
     function beginDrag(control, event) {

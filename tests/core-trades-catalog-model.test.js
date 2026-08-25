@@ -319,6 +319,20 @@ test('eligibility mismatches fail closed and a missing registry cannot publish',
   assert.throws(() => model.build(catalog, { simulationBucket: BUCKET }), /account-eligibility registry/i);
 });
 
+test('lightweight eligibility index is exact and fails closed like the full Trades projection', () => {
+  const index = model.eligibility(catalog, eligibilityRegistry);
+  assert.deepEqual(index.personIds, baseline.people.map((row) => row.id).slice().sort());
+  assert.deepEqual(index.workIds, baseline.contents.map((row) => row.id).slice().sort());
+
+  const mismatched = JSON.parse(JSON.stringify(eligibilityRegistry));
+  mismatched.entries[0].nativeId = 'wrong-native-id';
+  mismatched.workEntries[0].referenceObservationId = mismatched.entries[0].referenceObservationId;
+  const rejected = model.eligibility(catalog, mismatched);
+  assert.equal(rejected.personIds.includes(mismatched.entries[0].creatorId), false);
+  assert.equal(rejected.workIds.includes(mismatched.workEntries[0].contentId), false);
+  assert.throws(() => model.eligibility(catalog, null), /account-eligibility registry/i);
+});
+
 test('browser loader fetches the retained catalog and account-eligibility registry', async () => {
   const seen = [];
   const result = await model.load({
@@ -329,7 +343,7 @@ test('browser loader fetches the retained catalog and account-eligibility regist
     }
   });
   assert.deepEqual(seen.map((row) => row.url), [model.CATALOG_URL, model.ELIGIBILITY_URL]);
-  assert.ok(seen.every((row) => row.options.cache === 'no-store' && row.options.credentials === 'same-origin'));
+  assert.ok(seen.every((row) => row.options.cache === 'no-cache' && row.options.credentials === 'same-origin'));
   assert.equal(result.people.length, eligibilityRegistry.counts.eligibleProfiles);
   assert.equal(result.contents.length, eligibilityRegistry.counts.eligibleWorks);
 });

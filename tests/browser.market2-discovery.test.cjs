@@ -12,6 +12,7 @@ const TradeCatalog = require('../js/trades-catalog-model');
 
 const ROOT = path.resolve(__dirname, '..');
 const SNAPSHOT = path.join(ROOT, 'data', 'market2-people.json');
+const LANDING_PREVIEW = JSON.parse(fsSync.readFileSync(path.join(ROOT, 'data', 'landing-preview.json'), 'utf8'));
 const TRADE_MODEL = TradeCatalog.build(
   JSON.parse(fsSync.readFileSync(path.join(ROOT, 'data', 'discovery-catalog.json'), 'utf8')),
   {
@@ -838,7 +839,10 @@ test('landing discovery preview is populated from the real retained catalog', as
     assert.doesNotMatch(preview, /Loading creator catalog|unavailable/i);
     assert.equal(await tab.locator('#backerLandingCreatorFeed .mini-work').count(), 3);
     assert.ok(await tab.locator('#backerLandingCreatorFeed .mini-signal').count() >= 1, 'landing cards surface retained native counts when available');
-    assert.deepEqual(await tab.locator('#backerLandingCreatorFeed .mini-auth').allTextContents(), ['YouTube', 'Bilibili', 'Twitch']);
+    assert.deepEqual(
+      await tab.locator('#backerLandingCreatorFeed .mini-auth').allTextContents(),
+      LANDING_PREVIEW.profiles.map((row) => ({ dev: 'DEV', github: 'GitHub' })[row.provider] || row.provider)
+    );
     await tab.locator('#backerLandingCreatorFeed [data-m2-landing-person]').first().click();
     await tab.waitForFunction(() => location.hash.startsWith('#market2?') && location.hash.includes('q='));
     assert.equal(await tab.locator('.market2-shell').count(), 1);
@@ -987,6 +991,41 @@ test('homepage globe shows complete sourced figures and globe-synchronized outwa
   }
 });
 
+test('homepage globe retains its dotted visual poster when WebGL is unavailable', async () => {
+  const { context, tab } = await page({ width: 1440, height: 1000 });
+  const fallbackWarnings = [];
+  tab.on('console', (message) => {
+    if (/Backer globe renderer/.test(message.text())) fallbackWarnings.push(message.text());
+  });
+  await context.addInitScript(() => {
+    const original = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function (kind, ...args) {
+      if (/^webgl/i.test(String(kind))) return null;
+      return original.call(this, kind, ...args);
+    };
+  });
+  try {
+    await tab.goto(`${origin}/backerdemo.html#validation`);
+    await tab.locator('.val-asset').scrollIntoViewIfNeeded();
+    await tab.waitForSelector('.val-globe-shell.is-fallback', { timeout: 10000 });
+    const result = await tab.locator('.val-globe-shell').evaluate((globe) => ({
+      posterOpacity: Number(getComputedStyle(globe.querySelector('.val-globe-poster')).opacity),
+      canvasOpacity: Number(getComputedStyle(globe.querySelector('.val-globe-canvas')).opacity),
+      posterPaths: globe.querySelectorAll('.val-globe-poster path').length,
+      spinning: globe.closest('.val-asset-network').classList.contains('is-globe-spinning')
+    }));
+    assert.ok(result.posterOpacity > 0.99);
+    assert.equal(result.canvasOpacity, 0);
+    assert.ok(result.posterPaths >= 8);
+    assert.equal(result.spinning, false);
+    assert.deepEqual(await tab.locator('.val-branch-figure').allTextContents(), ['$60B', '$250B → $480B', '~207M']);
+    await tab.waitForTimeout(250);
+    assert.equal(fallbackWarnings.length, 1, 'a known WebGL failure must not be retried on every resize');
+  } finally {
+    await context.close();
+  }
+});
+
 test('homepage globe keeps every figure, sentence, and source readable across responsive widths', async () => {
   const expectedCopy = [
     'Citi estimated the creator economy generated about $60B in 2022 across ad-funded video, subscriptions, donations, purchases, and sponsorships.',
@@ -1115,7 +1154,7 @@ test('a Discovery filter drawer does not reopen after a Trades round trip', asyn
 
 test('restored Search stays source-backed while legacy synthetic creators remain absent', async () => {
   const html = await fs.readFile(path.join(ROOT, 'backerdemo.html'), 'utf8');
-  assert.match(html, /js\/search-engine\.js\?v=20260824-sources-clean-1/);
+  assert.match(html, /js\/search-engine\.js\?v=20260826-perf-1/);
   assert.equal((html.match(/data-view="search"/g) || []).length, 2);
   assert.doesNotMatch(html, /Jeff Delaney|ThePrimeagen|Theo Browne|Wes Bos/);
   assert.match(html, /id="market2HeroSearch"/);

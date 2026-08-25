@@ -207,7 +207,7 @@ test('public page and shared dock restore the dedicated Backer AI route', () => 
   const dock = fs.readFileSync(path.join(root, 'js/backer-dock.js'), 'utf8');
   const engine = fs.readFileSync(path.join(root, 'js/search-engine.js'), 'utf8');
   const artifact = fs.readFileSync(path.join(root, 'scripts/build-pages-artifact.mjs'), 'utf8');
-  assert.match(html, /js\/search-engine\.js\?v=20260824-sources-clean-1/);
+  assert.match(html, /js\/search-engine\.js\?v=20260826-perf-1/);
   assert.match(html, /href="backerdemo\.html#search" data-view="search">AI Search/);
   assert.match(html, /01 · AI Search Agent[\s\S]*?<article class="surface reveal" data-view="search"|<article class="surface reveal" data-view="search">[\s\S]*?01 · AI Search Agent/);
   assert.match(dock, /linkHTML\('search', 'backerdemo\.html#search'/);
@@ -221,16 +221,16 @@ test('public page and shared dock restore the dedicated Backer AI route', () => 
 
 test('every changed public Search asset is allowlisted and uses its current cache key', () => {
   const versions = {
-    'css/styles.css': '20260821-2',
+    'css/styles.css': '20260826-perf-1',
     'css/backer-dock.css': '20260821-2',
     'css/market.css': '20260821-account-metrics-1',
     'css/market2.css': '20260821-account-metrics-1',
     'css/search.css': '20260824-sources-clean-1',
-    'js/app.js': '20260822-search-seam-1',
-    'js/backer-dock.js': '20260822-archive-1',
-    'js/market2.js': '20260821-account-metrics-1',
-    'js/search-engine.js': '20260824-sources-clean-1',
-    'js/trades-catalog-model.js': '20260821-account-metrics-1',
+    'js/app.js': '20260826-perf-1',
+    'js/backer-dock.js': '20260826-perf-1',
+    'js/market2.js': '20260826-perf-1',
+    'js/search-engine.js': '20260826-perf-1',
+    'js/trades-catalog-model.js': '20260826-perf-1',
     'js/site-menu.js': '20260821-trades-1'
   };
   const artifact = fs.readFileSync(path.join(root, 'scripts/build-pages-artifact.mjs'), 'utf8');

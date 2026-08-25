@@ -123,7 +123,7 @@ test('Portfolio defaults to the real Trades ledger and keeps fixture examples be
   assert.match(html, /id="investorMode" class="hidden"/);
   assert.match(html, /css\/trades-portfolio\.css\?v=20260821-scale-1/);
   assert.match(html, /js\/trades-position-store\.js\?v=20260821-scale-1/);
-  assert.match(html, /js\/trades-catalog-model\.js\?v=20260821-account-metrics-1/);
+  assert.match(html, /js\/trades-catalog-model\.js\?v=20260826-perf-1/);
   assert.match(html, /js\/trades-portfolio\.js\?v=20260821-scale-1/);
   assert.match(portfolio, /backerdemo\.html#market2\?/);
   assert.match(portfolio, /backerdemo\.html#trades\?view=positions/);

@@ -14,6 +14,7 @@ const state = {
   collectorFailure: false,
   adminAuthenticated: false,
   configAvailable: true,
+  configDelayMs: 0,
   analyticsCollectionEnabled: true,
   consentPolicyVersion: '2026-08-20',
   publicViewCountsEnabled: true,
@@ -51,6 +52,7 @@ async function handler(req, res) {
   const url = new URL(req.url, 'http://127.0.0.1');
 
   if (url.pathname === '/api/config') {
+    if (state.configDelayMs) await new Promise((resolve) => setTimeout(resolve, state.configDelayMs));
     if (!state.configAvailable) {
       json(res, 404, { error: 'Not found' });
       return;
@@ -320,6 +322,36 @@ test('a configured site with no collection backend exposes no inoperative consen
     assert.equal(state.views.length, 0);
   } finally {
     state.analyticsCollectionEnabled = true;
+    await context.close();
+  }
+});
+
+test('the Privacy page control still explains the off state when collection is unavailable', async () => {
+  state.views.length = 0;
+  state.analyticsCollectionEnabled = false;
+  const { context, page } = await newPage();
+  try {
+    await page.goto(`${origin}/privacy.html`, { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('[data-backer-privacy-always]:not([hidden])');
+    await page.click('[data-backer-privacy-always]');
+    await page.waitForSelector('.backer-consent-panel.is-settings');
+    assert.equal(await page.locator('.backer-consent-accept').isDisabled(), true);
+    assert.match(await page.locator('.backer-consent-panel').innerText(), /Collection remains off/i);
+  } finally {
+    state.analyticsCollectionEnabled = true;
+    await context.close();
+  }
+});
+
+test('the Privacy settings control queues an immediate click while runtime config is still loading', async () => {
+  state.configDelayMs = 600;
+  const { context, page } = await newPage();
+  try {
+    await page.goto(`${origin}/privacy.html`, { waitUntil: 'domcontentloaded' });
+    await page.click('[data-backer-privacy-always]');
+    await page.waitForSelector('.backer-consent-panel.is-settings', { timeout: 3000 });
+  } finally {
+    state.configDelayMs = 0;
     await context.close();
   }
 });
