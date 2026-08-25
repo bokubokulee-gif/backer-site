@@ -71,20 +71,37 @@
   var DISCOVERY_DATA = null;
   var requestSequence = 0;
   var discoverySequence = 0;
+  var mountEpoch = 0;
+  var mounted = false;
+  var discoveryController = null;
   var requestTimer = null;
   var discoveryTimer = null;
   var searchTimer = null;
   var mediaRedrawTimer = null;
   var failedMediaURLs = Object.create(null);
+  var failedMediaRevision = 0;
+  var workMetricCache = typeof WeakMap === 'function' ? new WeakMap() : null;
+  var nativeEngagementCache = typeof WeakMap === 'function' ? new WeakMap() : null;
+  var personIndexCache = typeof WeakMap === 'function' ? new WeakMap() : null;
+  var contextStatsCache = typeof WeakMap === 'function' ? new WeakMap() : null;
+  var filteredPeopleCacheData = null;
+  var filteredPeopleCacheKey = '';
+  var filteredPeopleCacheRows = null;
+  var catalogWorksCacheData = null;
+  var catalogWorksCacheList = null;
+  var catalogWorksCacheKey = '';
+  var catalogWorksCacheRows = null;
   var retainedCatalogPromise = null;
   var retainedDatasetPromise = null;
+  var landingPreviewPromise = null;
+  var tradesEligibilityRegistryPromise = null;
   var tradesEligibilityPromise = null;
   var tradeEligiblePeople = Object.create(null);
   var tradeEligibleWorks = Object.create(null);
   var booted = false;
   var state = {
     view: 'radar', browse: 'trending', categoryRail: 'all', range: '7d',
-    platforms: [], quick: [], sort: 'viral', selectedId: '', instrument: 'milestones',
+    platforms: [], quick: [], sort: 'viral', selectedId: '', focusPersonId: '', focusPersonHandled: '', instrument: 'milestones',
     query: '', drawer: false, drawerScope: 'profiles', drawerInitialRange: '7d', drawerInitialSort: 'viral', drawerSnapshot: null, mobileRoster: false, mobileTicket: false,
     categories: [], confidence: 'all', audienceBand: 'all', engagementBand: 'all', peerId: '', watched: [],
     contentPlatforms: [], contentRange: 'all', contentSort: 'native', contentTypes: [], contentCategories: [], contentMedia: 'all', contentEngagement: 'all',
@@ -101,6 +118,39 @@
     return String(value == null ? '' : value)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function activeMount(epoch) {
+    return mounted && (epoch == null || epoch === mountEpoch);
+  }
+
+  function scrollIntoViewInstantly(element, block) {
+    if (!element || typeof element.scrollIntoView !== 'function') return;
+    element.scrollIntoView({ behavior: 'instant', block: block });
+  }
+
+  function deactivateMarket2() {
+    if (!mounted) return;
+    mounted = false;
+    mountEpoch += 1;
+    requestSequence += 1;
+    discoverySequence += 1;
+    window.clearTimeout(requestTimer);
+    window.clearTimeout(discoveryTimer);
+    window.clearTimeout(searchTimer);
+    window.clearTimeout(mediaRedrawTimer);
+    requestTimer = discoveryTimer = searchTimer = mediaRedrawTimer = null;
+    if (discoveryController) {
+      try { discoveryController.abort(); } catch (_error) {}
+      discoveryController = null;
+    }
+    state.drawer = false;
+    state.mobileRoster = false;
+    state.mobileTicket = false;
+    state.discoveryLoading = false;
+    state.focusContentHandled = '';
+    state.focusPersonHandled = '';
+    if (/^(?:loading|searching)/.test(state.discoveryStatus)) state.discoveryStatus = 'not-requested';
   }
 
   function text(value, fallback) {
@@ -691,12 +741,35 @@
       var workId = contentId(item);
       return identityOwner[identityId] || contentOwner[workId] || '';
     }
+    var identitiesByPerson = {};
+    identities.forEach(function (identity) {
+      var personId = ownerId(identity);
+      if (personId) (identitiesByPerson[personId] = identitiesByPerson[personId] || []).push(identity);
+    });
+    var observationsByContent = {};
+    var observationsByPerson = {};
+    observations.forEach(function (observation) {
+      var workId = contentId(observation);
+      if (workId) {
+        (observationsByContent[workId] = observationsByContent[workId] || []).push(observation);
+        return;
+      }
+      var personId = ownerId(observation);
+      if (personId) (observationsByPerson[personId] = observationsByPerson[personId] || []).push(observation);
+    });
+    var rankingByPerson = {};
+    rankings.forEach(function (row) {
+      var ownerPersonId = ownerId(row);
+      var directPersonId = text(first(row.id, row.personId, row.person_id), '');
+      if (ownerPersonId && !rankingByPerson[ownerPersonId]) rankingByPerson[ownerPersonId] = row;
+      if (directPersonId && !rankingByPerson[directPersonId]) rankingByPerson[directPersonId] = row;
+    });
     var workByPerson = {};
     workSource.forEach(function (work) {
       var personId = ownerId(work);
       if (!personId) return;
       var workId = text(first(work.id, work.contentId, work.content_id), '');
-      var metrics = observations.filter(function (observation) { return contentId(observation) && contentId(observation) === workId; });
+      var metrics = observationsByContent[workId] || [];
       (workByPerson[personId] = workByPerson[personId] || []).push(Object.assign({}, work, {
         publicCounts: array(first(work.publicCounts, work.nativeMetrics, work.metrics, [])).concat(metrics)
       }));
@@ -714,9 +787,9 @@
       providerStatus: providers,
       people: peopleSource.map(function (person) {
         var id = text(first(person.id, person.personId, person.person_id), '');
-        var ranking = rankings.filter(function (row) { return ownerId(row) === id || text(first(row.id, row.personId, row.person_id), '') === id; })[0] || person.ranking || null;
-        var sourceAccounts = array(first(person.sourceAccounts, person.source_accounts, person.accounts, person.platforms, [])).concat(identities.filter(function (identity) { return ownerId(identity) === id; }));
-        var metrics = array(first(person.metrics, person.observations, [])).concat(observations.filter(function (observation) { return ownerId(observation) === id && !contentId(observation); }));
+        var ranking = rankingByPerson[id] || person.ranking || null;
+        var sourceAccounts = array(first(person.sourceAccounts, person.source_accounts, person.accounts, person.platforms, [])).concat(identitiesByPerson[id] || []);
+        var metrics = array(first(person.metrics, person.observations, [])).concat(observationsByPerson[id] || []);
         return Object.assign({}, person, { ranking: ranking, sourceAccounts: sourceAccounts, metrics: metrics, content: array(person.content).concat(workByPerson[id] || []) });
       })
     });
@@ -740,7 +813,16 @@
   }
 
   function people() { return DATA && Array.isArray(DATA.people) ? DATA.people : []; }
-  function personById(id) { return people().filter(function (person) { return person.id === id; })[0] || null; }
+  function personById(id) {
+    if (!DATA || !personIndexCache) return people().filter(function (person) { return person.id === id; })[0] || null;
+    var index = personIndexCache.get(DATA);
+    if (!index) {
+      index = Object.create(null);
+      people().forEach(function (person) { if (person && person.id) index[person.id] = person; });
+      personIndexCache.set(DATA, index);
+    }
+    return index[id] || null;
+  }
   function selectedPerson() { return personById(state.selectedId) || people()[0] || null; }
   function evidenceFor(person) { return person && person.evidence && (person.evidence[state.range] || person.evidence['7d']) || {}; }
   function platformIds(person) { return unique((person && person.accounts || []).map(function (account) { return account.id; })); }
@@ -793,15 +875,21 @@
   function researchOnly(person) { return !person || person.identityKind === 'public_discovery' || !person.tradable; }
 
   function workMetricRows(work) {
-    return array(work && work.publicCounts).map(function (row) { return normalizeMetric(row, { provider: work && work.platform, observedAt: work && work.observedAt, sourceUrl: work && (work.sourceUrl || work.url) }); });
+    if (work && workMetricCache && workMetricCache.has(work)) return workMetricCache.get(work);
+    var rows = array(work && work.publicCounts).map(function (row) { return normalizeMetric(row, { provider: work && work.platform, observedAt: work && work.observedAt, sourceUrl: work && (work.sourceUrl || work.url) }); });
+    if (work && workMetricCache) workMetricCache.set(work, rows);
+    return rows;
   }
 
   function nativeEngagementValue(target) {
+    if (target && nativeEngagementCache && nativeEngagementCache.has(target)) return nativeEngagementCache.get(target);
     var rows = target && target.content ? target.metrics.concat(target.content.reduce(function (all, work) { return all.concat(workMetricRows(work)); }, [])) : workMetricRows(target);
     var preferred = rows.filter(function (metric) {
       return /(engagement|interaction|likes?|comments?|reposts?|shares?)/i.test([metric.key, metric.label].join(' ')) && usableMetric(metric);
     }).map(function (metric) { return number(metric.value); });
-    return preferred.length ? Math.max.apply(Math, preferred) : -1;
+    var value = preferred.length ? Math.max.apply(Math, preferred) : -1;
+    if (target && nativeEngagementCache) nativeEngagementCache.set(target, value);
+    return value;
   }
 
   function bestMetric(person, pattern, requireDelta) {
@@ -1029,7 +1117,10 @@
     if (params.get('quick')) state.quick = params.get('quick').split(',').filter(Boolean);
     if (params.get('sort')) state.sort = params.get('sort');
     if (params.get('q')) state.query = params.get('q').slice(0, 240);
-    if (params.get('person')) state.selectedId = params.get('person');
+    var focusPersonId = params.get('person') || '';
+    if (focusPersonId !== state.focusPersonId) state.focusPersonHandled = '';
+    state.focusPersonId = focusPersonId;
+    if (focusPersonId) state.selectedId = focusPersonId;
     var focusContentId = params.get('content') || params.get('work') || '';
     if (focusContentId !== state.focusContentId) state.focusContentHandled = '';
     state.focusContentId = focusContentId;
@@ -1102,6 +1193,14 @@
 
   function filteredPeople() {
     if (state.dataMode === 'empty') return [];
+    var cacheKey = JSON.stringify([
+      state.dataMode, state.query, state.platforms, state.categoryRail, state.categories,
+      state.confidence, state.audienceBand, state.engagementBand, state.quick,
+      state.browse, state.sort, state.range, state.watched
+    ]);
+    if (filteredPeopleCacheData === DATA && filteredPeopleCacheKey === cacheKey && filteredPeopleCacheRows) {
+      return filteredPeopleCacheRows;
+    }
     var query = state.query.toLowerCase().trim();
     var generated = Date.parse(DATA && DATA.generatedAt || 0);
     var list = people().filter(function (person) {
@@ -1128,7 +1227,7 @@
       }
       return true;
     });
-    return list.map(function (person, index) { return { person: person, index: index }; }).sort(function (a, b) {
+    var rows = list.map(function (person, index) { return { person: person, index: index }; }).sort(function (a, b) {
       if (state.sort === 'watched') return Number(isWatched(b.person.id)) - Number(isWatched(a.person.id));
       if (state.sort === 'evidence' || state.browse === 'evidence-rich') return confidenceRank(b.person) - confidenceRank(a.person);
       if (state.sort === 'newest' || state.browse === 'new') return Date.parse(b.person.recentWork.publishedAt || 0) - Date.parse(a.person.recentWork.publishedAt || 0);
@@ -1152,6 +1251,10 @@
       }
       return nativeRank(a.person, a.index) - nativeRank(b.person, b.index);
     }).map(function (entry) { return entry.person; });
+    filteredPeopleCacheData = DATA;
+    filteredPeopleCacheKey = cacheKey;
+    filteredPeopleCacheRows = rows;
+    return rows;
   }
 
   function discoverySource(value) {
@@ -1164,11 +1267,17 @@
     return source && Array.isArray(source.people || source.creators) && Array.isArray(source.work || source.content || source.contentRecords || []);
   }
 
-  async function postDiscovery(body) {
+  function connectedDiscoverySupported() {
+    var location = window.location || {};
+    if (String(location.protocol || '').toLowerCase() === 'file:') return false;
+    return !/(?:^|\.)github\.io$/i.test(String(location.hostname || ''));
+  }
+
+  async function postDiscovery(body, signal) {
     var response = await fetch('/api/discovery/search', {
       method: 'POST', credentials: 'same-origin', cache: 'no-store',
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body), signal: signal
     });
     if (!response.ok) {
       var error = new Error('Connected discovery returned ' + response.status);
@@ -1187,7 +1296,7 @@
       if (model && typeof model.loadSourceJSON === 'function') {
         payload = await model.loadSourceJSON('data/discovery-catalog.json', 'Retained discovery catalog');
       } else {
-        var response = await fetch('data/discovery-catalog.json', { credentials: 'same-origin', headers: { Accept: 'application/json' }, cache: 'no-store' });
+        var response = await fetch('data/discovery-catalog.json', { credentials: 'same-origin', headers: { Accept: 'application/json' }, cache: 'no-cache' });
         if (!response.ok) throw new Error('Retained discovery catalog returned ' + response.status);
         payload = await response.json();
       }
@@ -1200,31 +1309,36 @@
     return retainedCatalogPromise;
   }
 
-  async function hydrateTradesEligibility(payload) {
+  async function staticTradesEligibilityRegistry() {
+    if (!tradesEligibilityRegistryPromise) tradesEligibilityRegistryPromise = (async function () {
+      if (window.BackerTradeCatalog && typeof window.BackerTradeCatalog.loadSourceJSON === 'function') {
+        return window.BackerTradeCatalog.loadSourceJSON('data/trades-eligible-accounts.json', 'Trades account-eligibility registry');
+      }
+      var response = await fetch('data/trades-eligible-accounts.json', {
+        credentials: 'same-origin', headers: { Accept: 'application/json' }, cache: 'no-cache'
+      });
+      if (!response.ok) throw new Error('Trades account-eligibility registry returned ' + response.status);
+      return response.json();
+    })().catch(function (error) {
+      tradesEligibilityRegistryPromise = null;
+      throw error;
+    });
+    return tradesEligibilityRegistryPromise;
+  }
+
+  async function hydrateTradesEligibility(payload, registryInput) {
     if (!tradesEligibilityPromise) tradesEligibilityPromise = (async function () {
-      if (!window.BackerTradeCatalog || typeof window.BackerTradeCatalog.build !== 'function') {
+      var inputs = await Promise.all([Promise.resolve(payload), registryInput ? Promise.resolve(registryInput) : staticTradesEligibilityRegistry()]);
+      if (!window.BackerTradeCatalog || typeof window.BackerTradeCatalog.eligibility !== 'function') {
         throw new Error('Trades eligibility model is unavailable');
       }
-      var registry = typeof window.BackerTradeCatalog.loadSourceJSON === 'function'
-        ? await window.BackerTradeCatalog.loadSourceJSON('data/trades-eligible-accounts.json', 'Trades account-eligibility registry')
-        : await (async function () {
-          var response = await fetch('data/trades-eligible-accounts.json', {
-            credentials: 'same-origin', headers: { Accept: 'application/json' }, cache: 'no-store'
-          });
-          if (!response.ok) throw new Error('Trades account-eligibility registry returned ' + response.status);
-          return response.json();
-        })();
-      var catalog = window.BackerTradeCatalog.build(payload, {
-        reviewRegistry: registry,
-        signals: {},
-        simulationBucket: payload && (payload.generatedAt || payload.generated_at) || undefined
-      });
+      var catalog = window.BackerTradeCatalog.eligibility(inputs[0], inputs[1]);
       var people = Object.create(null), works = Object.create(null);
-      array(catalog && catalog.people).forEach(function (person) {
-        if (person && person.id) people[person.id] = true;
+      array(catalog && catalog.personIds).forEach(function (personId) {
+        if (personId) people[personId] = true;
       });
-      array(catalog && catalog.contents).forEach(function (work) {
-        if (work && work.id) works[work.id] = true;
+      array(catalog && catalog.workIds).forEach(function (workId) {
+        if (workId) works[workId] = true;
       });
       tradeEligiblePeople = people;
       tradeEligibleWorks = works;
@@ -1243,13 +1357,17 @@
   }
 
   async function staticDiscoveryDataset() {
-    if (!retainedDatasetPromise) retainedDatasetPromise = staticDiscovery().then(async function (payload) {
-      await hydrateTradesEligibility(payload);
-      return normalizeDiscoveryPayload(payload, 'static');
-    }).catch(function (error) {
-      retainedDatasetPromise = null;
-      throw error;
-    });
+    if (!retainedDatasetPromise) {
+      var payloadPromise = staticDiscovery();
+      var eligibilityPromise = hydrateTradesEligibility(payloadPromise, staticTradesEligibilityRegistry());
+      retainedDatasetPromise = payloadPromise.then(async function (payload) {
+        await eligibilityPromise;
+        return normalizeDiscoveryPayload(payload, 'static');
+      }).catch(function (error) {
+        retainedDatasetPromise = null;
+        throw error;
+      });
+    }
     return retainedDatasetPromise;
   }
 
@@ -1265,20 +1383,27 @@
     };
     if (!body.cursor) delete body.cursor;
     try {
-      return await postDiscovery(body);
+      return await postDiscovery(body, options.signal);
     } catch (error) {
       /* Compatibility with the bounded v3 endpoint while the trending mode rolls out. */
       if (error.status !== 400) throw error;
       delete body.mode;
       body.query = query || 'trending creators';
-      return postDiscovery(body);
+      return postDiscovery(body, options.signal);
     }
   }
 
   async function loadDiscovery(options) {
     options = options || {};
+    if (!activeMount()) return;
+    var epoch = mountEpoch;
     var append = Boolean(options.append);
     var sequence = ++discoverySequence;
+    if (discoveryController) {
+      try { discoveryController.abort(); } catch (_error) {}
+    }
+    discoveryController = typeof AbortController === 'function' ? new AbortController() : null;
+    var signal = discoveryController ? discoveryController.signal : undefined;
     var query = state.query.trim();
     var requestedPlatforms = unique(state.platforms.concat(state.contentPlatforms));
     var scopes = requestedPlatforms.length ? requestedPlatforms.filter(function (id) { return DISCOVERY_SCOPES.indexOf(id) >= 0; }) : DISCOVERY_SCOPES.slice();
@@ -1291,8 +1416,8 @@
     state.focusSearchOnRender = false;
     draw(focusSearch);
     try {
-      var payload = await requestDiscovery({ query: query, providerScopes: scopes, cursor: cursor, sequence: sequence });
-      if (sequence !== discoverySequence) return;
+      var payload = await requestDiscovery({ query: query, providerScopes: scopes, cursor: cursor, sequence: sequence, signal: signal });
+      if (!activeMount(epoch) || sequence !== discoverySequence) return;
       var source = payload && payload.data && Array.isArray(payload.data.people) ? payload.data : payload;
       var incoming = normalizeDiscoveryPayload(payload);
       DISCOVERY_DATA = append && DISCOVERY_DATA ? mergeDatasets(DISCOVERY_DATA, incoming) : incoming;
@@ -1307,15 +1432,17 @@
       state.sourceState = source.status || state.sourceState;
       if (append) state.visibleCount += 20;
     } catch (error) {
-      if (sequence !== discoverySequence) return;
+      if (!activeMount(epoch) || sequence !== discoverySequence) return;
+      if (error && error.name === 'AbortError') return;
       try {
         if (append) throw error;
         var fallbackPayload = await staticDiscovery();
-        if (sequence !== discoverySequence) return;
+        if (!activeMount(epoch) || sequence !== discoverySequence) return;
         var fallbackSource = discoverySource(fallbackPayload);
         DISCOVERY_DATA = await staticDiscoveryDataset();
-        if (sequence !== discoverySequence) return;
-        DATA = mergeDatasets(BASE_DATA || DATA, DISCOVERY_DATA);
+        if (!activeMount(epoch) || sequence !== discoverySequence) return;
+        var fallbackBase = BASE_DATA || DATA;
+        DATA = fallbackBase === DISCOVERY_DATA ? fallbackBase : mergeDatasets(fallbackBase, DISCOVERY_DATA);
         state.discoveryStatus = 'last-good';
         state.discoveryNextCursor = null;
         state.discoveryQuery = query;
@@ -1336,6 +1463,8 @@
         }
       }
     }
+    if (!activeMount(epoch) || sequence !== discoverySequence) return;
+    discoveryController = null;
     state.discoveryLoading = false;
     sanitizeUnavailablePlatforms(true);
     ensureSelection(filteredPeople());
@@ -1344,37 +1473,43 @@
 
   function scheduleDiscovery(delay) {
     window.clearTimeout(discoveryTimer);
+    if (!activeMount() || !connectedDiscoverySupported()) return;
     discoveryTimer = window.setTimeout(function () { loadDiscovery({ append: false }); }, delay == null ? 320 : delay);
   }
 
   async function loadData() {
+    if (!activeMount()) return;
+    var epoch = mountEpoch;
     var sequence = ++requestSequence;
     state.loading = true; state.loadError = '';
     draw(false);
     if (state.dataMode === 'loading') await new Promise(function (resolve) { window.setTimeout(resolve, 850); });
+    if (!activeMount(epoch) || sequence !== requestSequence) return;
     try {
       if (state.dataMode === 'error') throw new Error('Catalog refresh unavailable');
       var retained = await staticDiscoveryDataset();
-      if (sequence !== requestSequence) return;
+      if (!activeMount(epoch) || sequence !== requestSequence) return;
       DATA = retained;
       state.source = 'catalog'; state.sourceLabel = 'Retained public-source catalog'; state.sourceState = DATA.status || 'stale_snapshot';
     } catch (catalogError) {
-      if (sequence !== requestSequence) return;
+      if (!activeMount(epoch) || sequence !== requestSequence) return;
       DATA = normalizeDataset({ people: [], status: 'unavailable', generatedAt: new Date(0).toISOString() }, 'empty');
       state.source = 'none'; state.sourceLabel = 'No retained public-source catalog'; state.sourceState = 'unavailable';
       state.loadError = catalogError.message;
     }
+    if (!activeMount(epoch) || sequence !== requestSequence) return;
     BASE_DATA = DATA;
     DISCOVERY_DATA = null;
     state.loading = false; state.loadedOnce = true;
     sanitizeUnavailablePlatforms(true);
     ensureSelection(filteredPeople());
     draw(false);
-    loadDiscovery({ append: false });
+    if (connectedDiscoverySupported()) loadDiscovery({ append: false });
   }
 
   function scheduleDataLoad() {
     window.clearTimeout(requestTimer);
+    if (!activeMount()) return;
     requestTimer = window.setTimeout(loadData, 90);
   }
 
@@ -1429,7 +1564,9 @@
       '</div></section>';
   }
 
-  function contextStats() {
+  function contextStats(matchCount) {
+    var cached = DATA && contextStatsCache ? contextStatsCache.get(DATA) : null;
+    if (cached) return Object.assign({ matches: typeof matchCount === 'number' ? matchCount : filteredPeople().length }, cached);
     var creatorKeys = {};
     var identityKeys = {};
     var clusterKeys = {};
@@ -1461,18 +1598,19 @@
         retainObservation(person.id, metric);
       });
     });
-    return {
+    var counts = {
       creatorEntities: Object.keys(creatorKeys).length,
       linkedIdentities: Object.keys(identityKeys).length,
       uniqueWorks: Object.keys(clusterKeys).length,
       sourceRecords: Object.keys(sourceRecordKeys).length,
-      evidenceObservations: Object.keys(observationKeys).length,
-      matches: filteredPeople().length
+      evidenceObservations: Object.keys(observationKeys).length
     };
+    if (DATA && contextStatsCache) contextStatsCache.set(DATA, counts);
+    return Object.assign({ matches: typeof matchCount === 'number' ? matchCount : filteredPeople().length }, counts);
   }
 
-  function contextHTML() {
-    var stats = contextStats();
+  function contextHTML(matchCount) {
+    var stats = contextStats(matchCount);
     var content = '<span><b>' + stats.creatorEntities + '</b> profiles</span><i aria-hidden="true"></i><span><b>' + stats.uniqueWorks + '</b> source-linked works</span><i aria-hidden="true"></i><span><b>' + stats.evidenceObservations + '</b> observations</span><i aria-hidden="true"></i><span>Updated <b>' + esc(formatDate(DATA && DATA.generatedAt, false)) + '</b></span><i aria-hidden="true"></i>';
     return '<div class="m2-context-strip" role="status" aria-live="polite" tabindex="0"><div class="m2-context-track">' + content + '</div><div class="m2-context-track" aria-hidden="true">' + content + '</div></div>';
   }
@@ -1599,6 +1737,10 @@
   function peopleHTML(list) {
     if (!list.length) return '<section class="m2-people m2-profile-catalog"><div class="m2-pane-head"><div><span class="m2-kicker">Profiles</span><h2>No matching profiles</h2></div><div class="m2-section-actions">' + filterButtonHTML('profiles') + '</div></div><div class="m2-empty"><h3>No profile matches these filters.</h3><p>Choose another retained source, category, or evidence range.</p><button class="m2-primary-button" type="button" data-m2-clear-profile-filters>Clear profile filters</button></div></section>';
     var visibleOrder = sourceDiverseWithMedia(list, function (person) { return person.accounts[0] && person.accounts[0].id; }, profileMediaURL);
+    if (state.focusPersonId) {
+      var focusIndex = visibleOrder.findIndex(function (person) { return person.id === state.focusPersonId; });
+      if (focusIndex > 0) visibleOrder = [visibleOrder[focusIndex]].concat(visibleOrder.filter(function (_person, index) { return index !== focusIndex; }));
+    }
     var shown = visibleOrder.slice(0, state.visibleCount);
     var moreLoaded = shown.length < list.length;
     var moreConnected = Boolean(state.discoveryNextCursor);
@@ -1610,6 +1752,14 @@
   }
 
   function catalogWorks(list) {
+    var cacheKey = JSON.stringify([
+      state.query, state.contentPlatforms, state.contentCategories, state.contentTypes,
+      state.contentMedia, state.contentEngagement, state.contentRange, state.contentSort,
+      state.focusContentId, failedMediaRevision, array(list).length
+    ]);
+    if (catalogWorksCacheData === DATA && catalogWorksCacheList === list && catalogWorksCacheKey === cacheKey && catalogWorksCacheRows) {
+      return catalogWorksCacheRows;
+    }
     var rows = [];
     var seen = {};
     var query = state.query.toLowerCase().trim();
@@ -1646,6 +1796,10 @@
       var focusIndex = rows.findIndex(function (entry) { return text(entry.work && entry.work.id) === state.focusContentId; });
       if (focusIndex >= 0) rows = [rows[focusIndex]].concat(rows.filter(function (_entry, index) { return index !== focusIndex; }));
     }
+    catalogWorksCacheData = DATA;
+    catalogWorksCacheList = list;
+    catalogWorksCacheKey = cacheKey;
+    catalogWorksCacheRows = rows;
     return rows;
   }
 
@@ -1979,6 +2133,7 @@
         var failedURL = safeURL(image.getAttribute('src') || image.currentSrc);
         if (!failedURL || failedMediaURLs[failedURL]) return;
         failedMediaURLs[failedURL] = true;
+        failedMediaRevision += 1;
         window.clearTimeout(mediaRedrawTimer);
         mediaRedrawTimer = window.setTimeout(function () {
           mediaRedrawTimer = null;
@@ -1992,15 +2147,24 @@
   }
 
   function draw(focusSearch) {
-    if (!root || !DATA) return;
+    if (!activeMount() || !root || !DATA) return;
     var list = filteredPeople();
     ensureSelection(list);
     var person = list.length ? (list.filter(function (candidate) { return candidate.id === state.selectedId; })[0] || list[0]) : null;
     document.body.classList.toggle('mkt2-drawer-open', state.drawer || state.mobileRoster || state.mobileTicket);
     var workspace = state.loading && !state.loadedOnce ? loadingHTML() : '<div class="m2-workspace">' + peopleHTML(list) + '</div>';
-    root.innerHTML = '<div class="market2-shell">' + commandHTML() + '<div class="m2-underlayer">' + browseHTML() + contextHTML() + '</div>' + dataBannerHTML() + workspace + catalogFeedHTML(people()) + drawerHTML() + rosterSheetHTML(list.length ? list : people()) + '</div>';
+    root.innerHTML = '<div class="market2-shell">' + commandHTML() + '<div class="m2-underlayer">' + browseHTML() + contextHTML(list.length) + '</div>' + dataBannerHTML() + workspace + catalogFeedHTML(people()) + drawerHTML() + rosterSheetHTML(list.length ? list : people()) + '</div>';
     root.classList.remove('hidden'); root.setAttribute('aria-hidden', 'false');
     bindImageFallbacks(); if (!state.drawer) syncHash();
+    if (state.focusPersonId && !state.focusContentId && state.focusPersonHandled !== state.focusPersonId) {
+      window.requestAnimationFrame(function () {
+        var focusedPerson = root.querySelector('.m2-profile-card.is-selected');
+        if (!focusedPerson) return;
+        focusedPerson.setAttribute('aria-current', 'true');
+        state.focusPersonHandled = state.focusPersonId;
+        scrollIntoViewInstantly(focusedPerson, 'center');
+      });
+    }
     if (state.focusContentId && state.focusContentHandled !== state.focusContentId) {
       window.requestAnimationFrame(function () {
         var cards = root.querySelectorAll('.m2-feed-card[data-m2-content-id]');
@@ -2010,7 +2174,7 @@
         if (!focused) return;
         focused.classList.add('is-route-focus');
         focused.setAttribute('aria-current', 'true');
-        focused.scrollIntoView({ block: 'center' });
+        scrollIntoViewInstantly(focused, 'center');
         state.focusContentHandled = state.focusContentId;
       });
     }
@@ -2057,6 +2221,7 @@
   }
 
   function clickHandler(event) {
+    if (!activeMount()) return;
     var target = event.target;
     if (!target || !target.closest) return;
     var el;
@@ -2148,6 +2313,7 @@
   }
 
   function inputHandler(event) {
+    if (!activeMount()) return;
     if (event.target.id !== 'm2Search') return;
     window.clearTimeout(searchTimer); state.query = event.target.value;
     state.visibleCount = INITIAL_CREATOR_COUNT; state.feedVisibleCount = INITIAL_CONTENT_COUNT;
@@ -2155,6 +2321,7 @@
   }
 
   function changeHandler(event) {
+    if (!activeMount()) return;
     var target = event.target;
     if (target.matches('[data-m2-sort]')) { state.sort = target.value; draw(false); scheduleDataLoad(); track('market_sort_changed', { sort: state.sort }); return; }
     if (target.matches('[data-m2-audience]')) { state.audienceBand = target.value; state.visibleCount = INITIAL_CREATOR_COUNT; state.feedVisibleCount = INITIAL_CONTENT_COUNT; draw(false); track('market_filter_changed', { filter: 'audience', value: target.value }); return; }
@@ -2192,6 +2359,7 @@
   }
 
   function keyHandler(event) {
+    if (!activeMount()) return;
     var tradeCard = event.target && event.target.closest && event.target.closest('[data-m2-trade-card]');
     if (tradeCard && event.target === tradeCard && (event.key === 'Enter' || event.key === ' ')) {
       event.preventDefault();
@@ -2259,25 +2427,27 @@
     if (!feed || feed.dataset.market2CatalogBound) return;
     feed.dataset.market2CatalogBound = 'true';
     try {
-      var catalog = await staticDiscoveryDataset();
-      var candidates = catalog.people.filter(function (person) {
-        return person.accounts.length && person.content.some(function (work) { return work.url || work.sourceUrl; });
-      }).sort(function (a, b) {
-        return Date.parse(b.recentWork.publishedAt || b.recentWork.observedAt || 0) - Date.parse(a.recentWork.publishedAt || a.recentWork.observedAt || 0);
-      });
-      var preview = sourceDiverse(candidates, function (person) { return person.accounts[0] && person.accounts[0].id; }).slice(0, 3);
+      if (!landingPreviewPromise) {
+        var model = window.BackerTradeCatalog;
+        landingPreviewPromise = model && typeof model.loadSourceJSON === 'function'
+          ? model.loadSourceJSON('data/landing-preview.json', 'Landing catalog preview')
+          : fetch('data/landing-preview.json', { credentials: 'same-origin', cache: 'no-cache' }).then(function (response) {
+            if (!response.ok) throw new Error('Landing catalog preview returned ' + response.status);
+            return response.json();
+          });
+      }
+      var catalog = await landingPreviewPromise;
+      var preview = array(catalog && catalog.profiles).slice(0, 3);
       if (!preview.length) throw new Error('No source-linked preview records');
       feed.innerHTML = preview.map(function (person) {
-        var account = person.accounts[0] || {};
-        var work = person.content[0] || person.recentWork || {};
-        var provider = PLATFORM_LABELS[account.id] || account.id || 'Public source';
-        var nativeCounts = array(work.publicCounts).length ? '<span class="mini-signal">' + workCountsHTML(work) + '</span>' : '';
-        return '<button type="button" class="mini-card" data-m2-landing-person="' + esc(person.id) + '"><span class="mini-auth">' + esc(provider) + '</span><span class="mini-name">' + esc(person.name) + '</span><span class="mini-work">' + esc(work.title) + '</span>' + nativeCounts + '</button>';
+        var provider = PLATFORM_LABELS[person.provider] || person.provider || 'Public source';
+        var nativeCounts = person.metricLabel ? '<span class="mini-signal">' + esc(person.metricLabel) + '</span>' : '';
+        return '<button type="button" class="mini-card" data-m2-landing-person="' + esc(person.id) + '"><span class="mini-auth">' + esc(provider) + '</span><span class="mini-name">' + esc(person.name) + '</span><span class="mini-work">' + esc(person.workTitle) + '</span>' + nativeCounts + '</button>';
       }).join('');
       feed.addEventListener('click', function (event) {
         var card = event.target.closest('[data-m2-landing-person]');
         if (!card) return;
-        var person = catalog.people.filter(function (candidate) { return candidate.id === card.getAttribute('data-m2-landing-person'); })[0];
+        var person = preview.filter(function (candidate) { return candidate.id === card.getAttribute('data-m2-landing-person'); })[0];
         openDiscoveryQuery(person && person.name || 'creators gaining attention');
       });
     } catch (error) {
@@ -2285,11 +2455,9 @@
     }
   }
 
-  /* The landing preview is useful on Home, but normalizing the complete
-     retained catalog for a hidden section blocked cold Search and Trades
-     routes for several seconds. Start it only while Home is the active
-     surface. A later in-app return to Home triggers the same one-shot preview,
-     and staticDiscoveryDataset still shares its retained source promises. */
+  /* The landing preview is a compact build-time projection of the retained
+     catalog. Start it only while Home is active so other routes do not pay for
+     a below-the-fold surface they never display. */
   var landingPreviewScheduled = false;
   function landingRouteActive() {
     var detailView = '';
@@ -2311,6 +2479,9 @@
   }
 
   function render(app) {
+    if (mounted) deactivateMarket2();
+    mounted = true;
+    mountEpoch += 1;
     root = app;
     document.title = 'Creator discovery | Backer';
     // Route transitions must never resurrect an old modal or mobile sheet.
@@ -2337,14 +2508,19 @@
     }
     draw(false);
     if (!state.loadedOnce) loadData();
+    else if (connectedDiscoverySupported() && state.discoveryStatus === 'not-requested') scheduleDiscovery(0);
     track('market_home_viewed', { source: 'market2' });
   }
 
   if (typeof document !== 'undefined') {
     bindLandingDiscovery();
     scheduleLandingCatalogPreview();
+    document.addEventListener('backer:routewillchange', function (event) {
+      if (!event || !event.detail || event.detail.view !== 'market2') deactivateMarket2();
+    });
     document.addEventListener('backer:routechange', function (event) {
       if (event && event.detail && event.detail.view === 'home') scheduleLandingCatalogPreview();
+      if (event && event.detail && event.detail.view !== 'market2') deactivateMarket2();
     });
   }
   window.BackerMarket2 = {

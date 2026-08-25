@@ -46,14 +46,15 @@
   /* Search, Discovery, Trades, and Portfolio are separate projections of the
      same retained files. Keep one promise per absolute source URL for the
      lifetime of the page so hash-route changes do not repeatedly transfer and
-     parse the multi-megabyte catalog. A reload starts a new cache and performs
-     a fresh no-store request. Custom fetchers used by tests remain isolated. */
+     parse the multi-megabyte catalog. Reloads revalidate retained files so a
+     current 304 response can reuse bytes without serving stale catalog data.
+     Custom fetchers used by tests remain isolated. */
   function loadSourceJSON(url, labelText, options) {
     options = options || {};
     var fetcher = options.fetch || (browserRoot && browserRoot.fetch ? browserRoot.fetch.bind(browserRoot) : (typeof fetch === 'function' ? fetch : null));
     if (!fetcher) return Promise.reject(new Error('Fetch is unavailable'));
     var request = function () {
-      return fetcher(url, { cache: 'no-store', credentials: 'same-origin' }).then(function (response) {
+      return fetcher(url, { cache: 'no-cache', credentials: 'same-origin' }).then(function (response) {
         if (!response || !response.ok) throw new Error(labelText + ' HTTP ' + (response && response.status));
         return response.json();
       });
@@ -616,6 +617,36 @@
       rejectedWorks: rejectedWorks
     };
   }
+  function buildEligibilityIndex(raw, registry) {
+    if (!raw || typeof raw !== 'object') throw new Error('Invalid retained Discovery catalog');
+    var creatorsById = Object.create(null);
+    var identityById = Object.create(null);
+    var contentById = Object.create(null);
+    var exactObservationsById = Object.create(null);
+    array(raw.creators).forEach(function (row) {
+      var id = clean(row && row.id);
+      if (id && !creatorsById[id]) creatorsById[id] = row;
+    });
+    array(raw.platformIdentities || raw.platform_identities).forEach(function (row) {
+      var id = clean(row && row.id);
+      if (id && !identityById[id]) identityById[id] = row;
+    });
+    array(raw.contentRecords || raw.content_records).forEach(function (row) {
+      var id = clean(row && row.id);
+      if (id && !contentById[id]) contentById[id] = row;
+    });
+    array(raw.metricObservations || raw.metric_observations).forEach(function (row) {
+      var observation = exactObservation(row);
+      if (observation && !exactObservationsById[observation.id]) exactObservationsById[observation.id] = observation;
+    });
+    var normalized = normalizeReviewRegistry(registry, creatorsById, identityById, contentById, exactObservationsById);
+    return {
+      schemaVersion: normalized.schemaVersion,
+      generatedAt: normalized.generatedAt,
+      personIds: normalized.approved.map(function (row) { return row.creatorId; }),
+      workIds: normalized.approvedWorks.map(function (row) { return row.contentId; })
+    };
+  }
   function build(raw, options) {
     options = options || {};
     performanceMark('backer-trades:model-build-start');
@@ -926,6 +957,7 @@
     REVIEW_SCHEMA_VERSION: REVIEW_SCHEMA_VERSION,
     SIMULATION_MODEL_VERSION: SIMULATION_MODEL_VERSION,
     build: build,
+    eligibility: buildEligibilityIndex,
     load: load,
     loadSourceJSON: loadSourceJSON,
     normalizeSignals: normalizeSignals,

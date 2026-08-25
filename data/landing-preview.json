@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "backer-landing-preview-v1",
+  "sourceCatalogGeneratedAt": "2026-08-21T15:23:44.864Z",
+  "profiles": [
+    {
+      "id": "creator_48b5bd8f089ee7c998bd",
+      "name": "Nazar Boyko",
+      "provider": "dev",
+      "workId": "content_d12fc0064c3beca13b7b",
+      "workTitle": "Slopsquatting: The Supply Chain Attack That Weaponizes AI Hallucinations",
+      "metricLabel": "136 reactions"
+    },
+    {
+      "id": "creator_31b035f64c495d72dd11",
+      "name": "guillaumemeyer",
+      "provider": "github",
+      "workId": "content_e0055d10581176157f2d",
+      "workTitle": "guillaumemeyer/watermarks-remover",
+      "metricLabel": "16,412 stars"
+    },
+    {
+      "id": "creator_b6ca46eaf3d6c003ef1f",
+      "name": "FareedKhan-dev",
+      "provider": "github",
+      "workId": "content_bfdef4c92d39714f1464",
+      "workTitle": "FareedKhan-dev/kimi-k3-in-c",
+      "metricLabel": "6,201 stars"
+    }
+  ]
+}

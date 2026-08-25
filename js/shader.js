@@ -119,20 +119,38 @@
       gl.uniform2f(uRes, w, h);
     }
     resize();
-    let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(resize, 150); });
 
-    let time = 1.0, raf, running = true;
-    function frame() {
+    const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const saveData = navigator.connection && navigator.connection.saveData;
+    const frameInterval = reduceMotion ? Infinity : (saveData ? 100 : 1000 / 30);
+    let time = 1.0, raf, running = true, lastPaint = 0;
+    function frame(now) {
       if (!running) return;
-      time += 0.05;                 // matches the original animate() increment
-      gl.uniform1f(uTime, time);
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-      raf = requestAnimationFrame(frame);
+      const timestamp = Number(now) || performance.now();
+      const elapsed = lastPaint ? timestamp - lastPaint : 16.667;
+      if (!lastPaint || elapsed >= frameInterval) {
+        time += Math.max(0.05, Math.min(0.3, elapsed * 0.003));
+        gl.uniform1f(uTime, time);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        lastPaint = timestamp;
+      }
+      if (!reduceMotion) raf = requestAnimationFrame(frame);
     }
-    frame();
+    let rt;
+    window.addEventListener('resize', () => {
+      clearTimeout(rt);
+      rt = setTimeout(() => {
+        resize();
+        if (reduceMotion && running) {
+          lastPaint = 0;
+          frame(performance.now());
+        }
+      }, 150);
+    });
+    frame(performance.now());
     document.addEventListener('visibilitychange', () => {
       running = !document.hidden;
-      if (running) { cancelAnimationFrame(raf); frame(); }
+      if (running) { cancelAnimationFrame(raf); lastPaint = 0; frame(performance.now()); }
     });
   }
 

@@ -247,7 +247,7 @@
     var fetcher = options.fetch || (typeof fetch === 'function' ? fetch : null);
     var url = options.url || CATALOG_URL;
     if (!fetcher) return Promise.reject(new Error('Fetch is unavailable'));
-    return fetcher(url, { cache: 'no-store', credentials: 'same-origin' }).then(function (response) {
+    return fetcher(url, { cache: 'no-cache', credentials: 'same-origin' }).then(function (response) {
       if (!response || !response.ok) throw new Error('Discovery catalog HTTP ' + (response && response.status));
       return response.json();
     }).then(normalize);
