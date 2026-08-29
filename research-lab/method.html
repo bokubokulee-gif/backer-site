@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Backer Research experiment workbench for constructing and testing attention models."
+    />
+    <title>Experiment Method | Backer Research Lab</title>
+    <script type="module" crossorigin src="./assets/method-BjPk41m1.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/styles-Chs1Ivit.js">
+    <link rel="stylesheet" crossorigin href="./assets/styles-3D9YtQHu.css">
+    <link rel="stylesheet" crossorigin href="./assets/content-BSsGHEOQ.css">
+  </head>
+  <body class="content-page method-body">
+    <a class="skip-link content-skip" href="#method-main">Skip to experiment controls</a>
+
+    <header class="topbar content-topbar">
+      <a class="brand" href="./" aria-label="Backer Research Lab home">
+        <span class="content-brand-mark" aria-hidden="true"><i></i></span>
+        <span class="content-brand-copy">
+          <strong>Backer</strong>
+          <small>Research Lab</small>
+        </span>
+      </a>
+
+      <nav class="topnav" aria-label="Research Lab pages">
+        <a href="./">Attention field</a>
+        <a href="./method.html" aria-current="page">Method</a>
+        <a href="./thesis.html">Thesis</a>
+      </nav>
+
+      <span class="signal-chip boundary-chip">
+        <span aria-hidden="true"></span>
+        Research preview
+      </span>
+    </header>
+
+    <main class="content-shell method-page" id="method-main">
+      <section class="method-hero" aria-labelledby="method-title">
+        <div class="method-hero-copy">
+          <p class="content-eyebrow"><span>Research protocol 002</span> Experiment workbench</p>
+          <h1 id="method-title">Build the experiment before believing the output.</h1>
+          <p class="method-deck">
+            Keep market inputs, modeled traders, interventions, and validation gates as separate layers. A result advances only when it survives a held-out outcome.
+          </p>
+        </div>
+
+        <aside class="boundary-note" aria-label="Scientific boundary">
+          <div class="boundary-note-head">
+            <span class="boundary-kicker">Scientific boundary</span>
+            <strong>Scenario, not forecast</strong>
+          </div>
+          <p>
+            The initial 5,000 profiles form a deterministic trader field. Market observations seed the environment; they do not establish individual identity.
+          </p>
+          <dl>
+            <div><dt>Population</dt><dd>Modeled</dd></div>
+            <div><dt>Interviewed</dt><dd>0 of 5,000</dd></div>
+            <div><dt>Consent state</dt><dd>Not applicable</dd></div>
+          </dl>
+        </aside>
+      </section>
+
+      <section class="run-manifest" aria-label="Current run manifest">
+        <div>
+          <span>Protocol</span>
+          <strong>BRL-002</strong>
+        </div>
+        <div>
+          <span>Random seed</span>
+          <label class="manifest-seed">
+            <span class="sr-only">Random seed</span>
+            <input id="seed-input" inputmode="numeric" value="42017" maxlength="9" />
+          </label>
+        </div>
+        <div>
+          <span>Population</span>
+          <strong>5,000 trader profiles</strong>
+        </div>
+        <div>
+          <span>Runtime</span>
+          <strong>Deterministic browser model</strong>
+        </div>
+        <div class="manifest-action">
+          <button class="content-button is-quiet" id="copy-manifest" type="button">Copy manifest</button>
+        </div>
+      </section>
+
+      <div class="workbench-layout">
+        <aside class="method-rail" aria-label="Experiment stages">
+          <div class="method-rail-label">Construction</div>
+          <nav id="stage-nav">
+            <a href="#sources" data-stage-link="sources"><span>01</span>Sources</a>
+            <a href="#population" data-stage-link="population"><span>02</span>Population</a>
+            <a href="#environment" data-stage-link="environment"><span>03</span>Environment</a>
+            <a href="#intervention" data-stage-link="intervention"><span>04</span>Intervention</a>
+            <a href="#run" data-stage-link="run"><span>05</span>Run</a>
+            <a href="#validation" data-stage-link="validation"><span>06</span>Validation</a>
+          </nav>
+          <a class="rail-return" href="./">Open attention field <span aria-hidden="true">&#8599;</span></a>
+        </aside>
+
+        <div class="method-stages">
+          <section class="method-stage" id="sources" data-stage="sources" aria-labelledby="sources-title">
+            <header class="stage-header">
+              <div class="stage-number">01</div>
+              <div>
+                <p>Observed inputs</p>
+                <h2 id="sources-title">Source adapters</h2>
+              </div>
+              <span class="stage-state is-partial">Fixture assisted</span>
+            </header>
+
+            <p class="stage-intro">
+              Observed public traces initialize the environment. They are never copied into a profile as verified identity or private intent.
+            </p>
+
+            <div class="adapter-grid">
+              <article class="adapter-card" data-adapter="kalshi">
+                <div class="adapter-head">
+                  <span class="adapter-monogram">K</span>
+                  <div><strong>Kalshi markets</strong><small>Public market endpoint</small></div>
+                  <label class="adapter-toggle">
+                    <input type="checkbox" checked data-adapter-toggle="kalshi" />
+                    <span aria-hidden="true"></span><b class="sr-only">Include Kalshi adapter</b>
+                  </label>
+                </div>
+                <dl>
+                  <div><dt>Fields</dt><dd>Price, volume, open interest</dd></div>
+                  <div><dt>Role</dt><dd>Market prior</dd></div>
+                  <div><dt>Boundary</dt><dd>Not unique bettors</dd></div>
+                </dl>
+                <span class="adapter-provenance is-observed">Observed public data</span>
+              </article>
+
+              <article class="adapter-card" data-adapter="polymarket">
+                <div class="adapter-head">
+                  <span class="adapter-monogram">P</span>
+                  <div><strong>Polymarket events</strong><small>Gamma public endpoint</small></div>
+                  <label class="adapter-toggle">
+                    <input type="checkbox" checked data-adapter-toggle="polymarket" />
+                    <span aria-hidden="true"></span><b class="sr-only">Include Polymarket adapter</b>
+                  </label>
+                </div>
+                <dl>
+                  <div><dt>Fields</dt><dd>Probability, liquidity, volume</dd></div>
+                  <div><dt>Role</dt><dd>Market prior</dd></div>
+                  <div><dt>Boundary</dt><dd>Public aggregate only</dd></div>
+                </dl>
+                <span class="adapter-provenance is-observed">Observed public data</span>
+              </article>
+
+              <article class="adapter-card" data-adapter="mastodon">
+                <div class="adapter-head">
+                  <span class="adapter-monogram">M</span>
+                  <div><strong>Mastodon trends</strong><small>Zero-key social adapter</small></div>
+                  <label class="adapter-toggle">
+                    <input type="checkbox" checked data-adapter-toggle="mastodon" />
+                    <span aria-hidden="true"></span><b class="sr-only">Include Mastodon adapter</b>
+                  </label>
+                </div>
+                <dl>
+                  <div><dt>Fields</dt><dd>Links, posts, timestamps</dd></div>
+                  <div><dt>Role</dt><dd>Attention shock</dd></div>
+                  <div><dt>Boundary</dt><dd>One public instance</dd></div>
+                </dl>
+                <span class="adapter-provenance is-observed">Observed public data</span>
+              </article>
+
+              <article class="adapter-card is-future" data-adapter="interviews">
+                <div class="adapter-head">
+                  <span class="adapter-monogram">I</span>
+                  <div><strong>Consented interviews</strong><small>Human-grounding program</small></div>
+                  <span class="adapter-lock">Future phase</span>
+                </div>
+                <dl>
+                  <div><dt>Target</dt><dd>Traders, supporters, non-buyers</dd></div>
+                  <div><dt>Condition</dt><dd>Two-hour plus ablations</dd></div>
+                  <div><dt>Required</dt><dd>Consent and withdrawal</dd></div>
+                </dl>
+                <span class="adapter-provenance is-future">Not connected</span>
+              </article>
+            </div>
+
+            <details class="method-disclosure">
+              <summary>Adapter contract and missing fields</summary>
+              <div class="disclosure-body">
+                <p>Each adapter stores source URL, capture time, access method, methodology version, freshness, and confidence. Failed live requests use a dated official-market snapshot and remain visibly labeled.</p>
+                <ul>
+                  <li>No private or authenticated browser data.</li>
+                  <li>No claim of unique bettor counts from volume or open interest.</li>
+                  <li>No cross-platform identity resolution in the sandbox.</li>
+                </ul>
+              </div>
+            </details>
+          </section>
+
+          <section class="method-stage" id="population" data-stage="population" aria-labelledby="population-title">
+            <header class="stage-header">
+              <div class="stage-number">02</div>
+              <div>
+                <p>Modeled traders</p>
+                <h2 id="population-title">Population construction</h2>
+              </div>
+              <span class="stage-state is-modeled">Modeled</span>
+            </header>
+
+            <div class="population-grid">
+              <div class="population-summary">
+                <span class="population-total">5,000</span>
+                <strong>reproducible subjects</strong>
+                <p>Built from explicit priors for inspecting behavior, market state, and interventions.</p>
+                <a href="./" class="inline-link">Browse all profiles <span aria-hidden="true">&#8594;</span></a>
+              </div>
+
+              <div class="cohort-chart" aria-label="Modeled cohort composition">
+                <div class="cohort-row">
+                  <div><strong>Conviction traders</strong><span>625 agents</span></div>
+                  <i style="--cohort-width: 12.5%"></i>
+                </div>
+                <div class="cohort-row">
+                  <div><strong>Social signal seekers</strong><span>625 agents</span></div>
+                  <i style="--cohort-width: 12.5%"></i>
+                </div>
+                <div class="cohort-row">
+                  <div><strong>Creator loyalists</strong><span>625 agents</span></div>
+                  <i style="--cohort-width: 12.5%"></i>
+                </div>
+                <div class="cohort-row">
+                  <div><strong>Cautious observers</strong><span>625 agents</span></div>
+                  <i style="--cohort-width: 12.5%"></i>
+                </div>
+                <div class="cohort-row">
+                  <div><strong>Contrarian analysts</strong><span>625 agents</span></div>
+                  <i style="--cohort-width: 12.5%"></i>
+                </div>
+                <div class="cohort-row">
+                  <div><strong>Momentum chasers</strong><span>625 agents</span></div>
+                  <i style="--cohort-width: 12.5%"></i>
+                </div>
+                <div class="cohort-row">
+                  <div><strong>Value hunters</strong><span>625 agents</span></div>
+                  <i style="--cohort-width: 12.5%"></i>
+                </div>
+                <div class="cohort-row">
+                  <div><strong>Community bridges</strong><span>625 agents</span></div>
+                  <i style="--cohort-width: 12.5%"></i>
+                </div>
+              </div>
+            </div>
+
+            <div class="provenance-contract">
+              <span>Every profile field carries</span>
+              <div>
+                <code>status</code><code>sourceRef</code><code>observedAt</code><code>methodVersion</code><code>confidence</code>
+              </div>
+            </div>
+          </section>
+
+          <section class="method-stage" id="environment" data-stage="environment" aria-labelledby="environment-title">
+            <header class="stage-header">
+              <div class="stage-number">03</div>
+              <div>
+                <p>Rules around the agents</p>
+                <h2 id="environment-title">Environment and market</h2>
+              </div>
+              <span class="stage-state">Inspectable</span>
+            </header>
+
+            <div class="environment-diagram" aria-label="Simulation state loop">
+              <div class="environment-node"><span>01</span><strong>Expose</strong><small>Ranking and network</small></div>
+              <i aria-hidden="true"></i>
+              <div class="environment-node"><span>02</span><strong>Attend</strong><small>Budget and relevance</small></div>
+              <i aria-hidden="true"></i>
+              <div class="environment-node"><span>03</span><strong>Update</strong><small>Evidence and memory</small></div>
+              <i aria-hidden="true"></i>
+              <div class="environment-node"><span>04</span><strong>Commit</strong><small>Buy, sell, or leave</small></div>
+              <i aria-hidden="true"></i>
+              <div class="environment-node"><span>05</span><strong>Learn</strong><small>Outcome and error</small></div>
+            </div>
+
+            <div class="mechanism-grid">
+              <article>
+                <span>Attention allocation</span>
+                <code>interest + relevance + network pressure - attention cost</code>
+                <p>Exposure remains an environment decision, not a free choice by the agent.</p>
+              </article>
+              <article>
+                <span>Belief update</span>
+                <code>market prior + evidence + social update + memory</code>
+                <p>The market is a strong prior. It is not treated as resolved truth.</p>
+              </article>
+              <article>
+                <span>Costly action</span>
+                <code>expected payoff - price - risk - liquidity - identity cost</code>
+                <p>Payment is a dense revealed-preference signal, not automatic causal evidence.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="method-stage intervention-stage" id="intervention" data-stage="intervention" aria-labelledby="intervention-title">
+            <header class="stage-header">
+              <div class="stage-number">04</div>
+              <div>
+                <p>Counterfactual settings</p>
+                <h2 id="intervention-title">Define the change</h2>
+              </div>
+              <button class="stage-reset" id="reset-controls" type="button">Reset baseline</button>
+            </header>
+
+            <p class="stage-intro">
+              Baseline and intervention share the same seed and population. Only the declared controls below change.
+            </p>
+
+            <div class="control-grid" id="intervention-controls">
+              <label class="experiment-control">
+                <span><strong>Recommendation diversity</strong><output for="recommendation-diversity">52</output></span>
+                <input id="recommendation-diversity" type="range" min="0" max="100" value="52" data-baseline="52" />
+                <small>Broader exposure across communities</small>
+              </label>
+              <label class="experiment-control">
+                <span><strong>Social proof</strong><output for="social-proof">48</output></span>
+                <input id="social-proof" type="range" min="0" max="100" value="48" data-baseline="48" />
+                <small>Visibility of aggregate action</small>
+              </label>
+              <label class="experiment-control">
+                <span><strong>Price friction</strong><output for="price-friction">45</output></span>
+                <input id="price-friction" type="range" min="0" max="100" value="45" data-baseline="45" />
+                <small>Fees, spread, and perceived cost</small>
+              </label>
+              <label class="experiment-control">
+                <span><strong>Creator response</strong><output for="creator-response">35</output></span>
+                <input id="creator-response" type="range" min="0" max="100" value="35" data-baseline="35" />
+                <small>Timely direct acknowledgment</small>
+              </label>
+              <label class="experiment-control">
+                <span><strong>Information quality</strong><output for="information-quality">60</output></span>
+                <input id="information-quality" type="range" min="0" max="100" value="60" data-baseline="60" />
+                <small>Evidence coverage and provenance</small>
+              </label>
+              <label class="experiment-control">
+                <span><strong>Network concentration</strong><output for="network-concentration">62</output></span>
+                <input id="network-concentration" type="range" min="0" max="100" value="62" data-baseline="62" />
+                <small>Attention captured by central nodes</small>
+              </label>
+            </div>
+          </section>
+
+          <section class="method-stage run-stage" id="run" data-stage="run" aria-labelledby="run-title">
+            <header class="stage-header">
+              <div class="stage-number">05</div>
+              <div>
+                <p>Same seed comparison</p>
+                <h2 id="run-title">Baseline versus intervention</h2>
+              </div>
+              <span class="stage-state" id="run-state" aria-live="polite">Ready</span>
+            </header>
+
+            <div class="run-compare">
+              <article class="run-card baseline-card">
+                <header><span>Baseline</span><strong>Control conditions</strong></header>
+                <dl>
+                  <div><dt>Costly commitments</dt><dd id="base-commitments">142</dd></div>
+                  <div><dt>Trade conversion</dt><dd id="base-conversion">14.2%</dd></div>
+                  <div><dt>Attention concentration</dt><dd id="base-concentration">0.61</dd></div>
+                  <div><dt>Median confidence</dt><dd id="base-confidence">57%</dd></div>
+                </dl>
+              </article>
+
+              <div class="run-delta" aria-hidden="true">
+                <span></span><i></i><b></b>
+              </div>
+
+              <article class="run-card intervention-card">
+                <header><span>Intervention</span><strong>Declared changes only</strong></header>
+                <dl>
+                  <div><dt>Costly commitments</dt><dd id="int-commitments">142</dd><small id="delta-commitments">0</small></div>
+                  <div><dt>Trade conversion</dt><dd id="int-conversion">14.2%</dd><small id="delta-conversion">0.0 pp</small></div>
+                  <div><dt>Attention concentration</dt><dd id="int-concentration">0.61</dd><small id="delta-concentration">0.00</small></div>
+                  <div><dt>Median confidence</dt><dd id="int-confidence">57%</dd><small id="delta-confidence">0 pp</small></div>
+                </dl>
+              </article>
+            </div>
+
+            <div class="run-actions">
+              <button class="content-button is-primary" id="run-experiment" type="button">
+                <span>Run paired comparison</span>
+                <i aria-hidden="true">&#8594;</i>
+              </button>
+              <p id="run-note">Illustrative estimates update from declared controls. They are not measured outcomes.</p>
+            </div>
+          </section>
+
+          <section class="method-stage" id="validation" data-stage="validation" aria-labelledby="validation-title">
+            <header class="stage-header">
+              <div class="stage-number">06</div>
+              <div>
+                <p>Graduation criteria</p>
+                <h2 id="validation-title">Validation gates</h2>
+              </div>
+              <span class="stage-state is-pending">1 of 8 demo-ready</span>
+            </header>
+
+            <div class="gate-list">
+              <article class="gate-row is-ready">
+                <span class="gate-index">01</span><div><strong>Deterministic replay</strong><p>Same seed, inputs, and controls reproduce the same browser run.</p></div><b>Demo-ready</b>
+              </article>
+              <article class="gate-row">
+                <span class="gate-index">02</span><div><strong>Distribution matching</strong><p>Compare attention, action, and trading distributions with observed data.</p></div><b>Pending data</b>
+              </article>
+              <article class="gate-row">
+                <span class="gate-index">03</span><div><strong>Out-of-time forecast</strong><p>Freeze the model before unseen markets and events resolve.</p></div><b>Pending study</b>
+              </article>
+              <article class="gate-row">
+                <span class="gate-index">04</span><div><strong>Proper scoring</strong><p>Report Brier, log loss, ECE, MAE, RMSE, and calibration.</p></div><b>Pending study</b>
+              </article>
+              <article class="gate-row">
+                <span class="gate-index">05</span><div><strong>Interview test and retest</strong><p>Compare an agent with the same person's later decisions.</p></div><b>Future phase</b>
+              </article>
+              <article class="gate-row">
+                <span class="gate-index">06</span><div><strong>Randomized intervention</strong><p>Compare modeled and observed treatment effects.</p></div><b>Future phase</b>
+              </article>
+              <article class="gate-row">
+                <span class="gate-index">07</span><div><strong>Subgroup audit</strong><p>Measure error and calibration gaps across defined cohorts.</p></div><b>Pending study</b>
+              </article>
+              <article class="gate-row">
+                <span class="gate-index">08</span><div><strong>Prospective preregistration</strong><p>Publish hypotheses, endpoints, and failure conditions first.</p></div><b>Pending study</b>
+              </article>
+            </div>
+
+            <div class="method-conclusion">
+              <p class="content-eyebrow">Graduation rule</p>
+              <blockquote>
+                The model advances only through grounded inputs and prospective validation. Scale and motion are not substitutes.
+              </blockquote>
+              <a class="content-button is-paper" href="./thesis.html#protocol">Read the full protocol <span aria-hidden="true">&#8594;</span></a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer class="content-footer">
+      <div><strong>Backer Research Lab</strong><span>Predict attention. Test action. Learn from outcomes.</span></div>
+      <p>Research preview. No real money moves.</p>
+    </footer>
+
+    <div class="copy-toast" id="copy-toast" role="status" aria-live="polite">Manifest copied</div>
+  </body>
+</html>

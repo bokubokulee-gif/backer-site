@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#090806" />
+    <meta name="description" content="Backer Research Preview: an interactive field for studying where attention moves next." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="./img/backer-mark.png" />
+    <title>Backer Research Preview | Attention Field</title>
+    <script type="module" crossorigin src="./assets/lab-B2IVrEDl.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/styles-Chs1Ivit.js">
+    <link rel="stylesheet" crossorigin href="./assets/styles-3D9YtQHu.css">
+  </head>
+  <body class="lab-page">
+    <a class="skip-link" href="#attention-field">Skip to attention field</a>
+    <div id="app" class="lab-app">
+      <header class="topbar">
+        <a class="brand" href="./index.html" aria-label="Backer Research Preview home">
+          <span class="brand-mark" aria-hidden="true"><img src="./img/backer-mark.png" alt="" /></span>
+          <span class="brand-word">Backer</span>
+          <span class="brand-slash">/</span>
+          <span class="brand-lab">RESEARCH</span>
+        </a>
+        <div class="topbar-center" aria-label="Simulation status">
+          <span class="signal-chip signal-chip--strong">RESEARCH PREVIEW</span>
+          <span id="run-id" class="run-id">RUN BKR-042</span>
+          <button id="source-status" class="source-status" type="button" aria-haspopup="dialog">PMXT · CONNECTING</button>
+        </div>
+        <nav class="topnav" aria-label="Research Lab">
+          <button id="mobile-controls-toggle" class="mobile-controls-toggle" type="button" aria-expanded="false">SETUP</button>
+          <a class="is-active" href="./index.html">FIELD</a>
+          <a href="./method.html">METHOD</a>
+          <a href="./thesis.html">THESIS</a>
+        </nav>
+      </header>
+
+      <main class="lab-grid profile-is-empty">
+        <aside class="control-rail" aria-label="Field controls">
+          <section class="rail-section rail-intro">
+            <p class="instrument-label">ATTENTION FIELD / 5,000</p>
+            <h1>See where attention moves next.</h1>
+            <p>Choose a market. Shift the conditions. Watch the field reorganize.</p>
+          </section>
+
+          <section class="rail-section">
+            <div class="section-head">
+              <span class="label-with-info">SCENE <button class="info-trigger" type="button" data-info="scene" aria-label="Define scene modes">i</button></span>
+              <button id="reset-camera" class="text-button" type="button">RESET VIEW</button>
+            </div>
+            <div class="segmented-control" role="group" aria-label="Scene mode">
+              <button class="is-active" type="button" data-scene-mode="field">FLOW</button>
+              <button type="button" data-scene-mode="cascade">CASCADE</button>
+              <button type="button" data-scene-mode="market">MARKET</button>
+            </div>
+          </section>
+
+          <section class="rail-section experiment-section">
+            <div class="section-head">
+              <span class="label-with-info">COUNTERFACTUAL <button class="info-trigger" type="button" data-info="counterfactual" aria-label="Define counterfactual">i</button></span>
+              <span id="scenario-code">A / BASE</span>
+            </div>
+            <div id="scenario-control" class="scenario-control" role="radiogroup" aria-label="Counterfactual scenario">
+              <div class="scenario-option">
+                <button class="scenario-choice is-active" type="button" role="radio" aria-checked="true" data-scenario="baseline"><b>A</b><span><strong>Baseline</strong><small>reference state</small></span></button>
+                <button class="info-trigger" type="button" data-info="baseline" aria-label="Define baseline">i</button>
+              </div>
+              <div class="scenario-option">
+                <button class="scenario-choice" type="button" role="radio" aria-checked="false" data-scenario="social-proof"><b>B1</b><span><strong>Social proof</strong><small>influence 1.0× to 1.5×</small></span></button>
+                <button class="info-trigger" type="button" data-info="social-proof" aria-label="Define social proof">i</button>
+              </div>
+              <div class="scenario-option">
+                <button class="scenario-choice" type="button" role="radio" aria-checked="false" data-scenario="lower-friction"><b>B2</b><span><strong>Lower friction</strong><small>friction 1.0× to 0.5×</small></span></button>
+                <button class="info-trigger" type="button" data-info="trade-friction" aria-label="Define trade friction">i</button>
+              </div>
+              <div class="scenario-option">
+                <button class="scenario-choice" type="button" role="radio" aria-checked="false" data-scenario="diverse-reach"><b>B3</b><span><strong>Diverse reach</strong><small>broader, less concentrated</small></span></button>
+                <button class="info-trigger" type="button" data-info="diverse-reach" aria-label="Define diverse reach">i</button>
+              </div>
+            </div>
+            <p id="scenario-description" class="scenario-description">Observed market prior; no intervention applied.</p>
+          </section>
+
+          <section class="rail-section filter-section" aria-labelledby="market-browser-title">
+            <div class="section-head">
+              <span id="market-browser-title" class="label-with-info">REAL MARKET UNIVERSE <button class="info-trigger" type="button" data-info="market-universe" aria-label="Define real market universe">i</button></span>
+              <span id="visible-event-count">50</span>
+            </div>
+            <div id="selected-market-summary" class="selected-market-summary">
+              <span id="selected-market-meta">SELECTED MARKET</span>
+              <strong id="selected-market-title">Loading market universe...</strong>
+              <div><span id="selected-market-activity">Activity unavailable</span><a id="selected-market-source" href="#" target="_blank" rel="noopener">OPEN SOURCE ↗</a></div>
+            </div>
+            <label class="search-label" for="market-search">SEARCH MARKETS</label>
+            <div class="search-wrap market-search-wrap">
+              <input id="market-search" type="search" autocomplete="off" placeholder="Market, outcome, category" />
+              <kbd>M</kbd>
+            </div>
+            <div id="market-source-filter" class="market-source-filter" role="group" aria-label="Filter markets by source">
+              <button class="is-active" type="button" data-market-source="all" aria-pressed="true">ALL</button>
+              <button type="button" data-market-source="kalshi" aria-pressed="false">KALSHI</button>
+              <button type="button" data-market-source="polymarket" aria-pressed="false">POLY</button>
+            </div>
+            <div class="market-browser-meta">
+              <output id="market-results-count" aria-live="polite">50 RESULTS</output>
+              <span id="simulation-slate-count">8 MODELED</span>
+            </div>
+            <div id="event-filters" class="event-filter-list" role="radiogroup" aria-labelledby="market-browser-title"></div>
+            <div id="market-empty-state" class="market-empty-state" hidden>No markets match these filters.</div>
+          </section>
+
+          <section class="rail-section">
+            <label class="search-label" for="agent-search">FIND A MODELED TRADER</label>
+            <div class="search-wrap">
+              <input id="agent-search" type="search" autocomplete="off" placeholder="Name, ID, cohort" />
+              <kbd>/</kbd>
+            </div>
+            <div id="search-results" class="search-results" role="listbox" hidden></div>
+          </section>
+
+          <section class="rail-section">
+            <div class="section-head"><span class="label-with-info">BEHAVIOR LENS <button class="info-trigger" type="button" data-info="behavior-lens" aria-label="Define behavior lens">i</button></span></div>
+            <label class="select-label" for="cohort-filter">COHORT</label>
+            <select id="cohort-filter">
+              <option value="all">All cohorts</option>
+            </select>
+            <label class="select-label" for="action-filter">CURRENT ACTION</label>
+            <select id="action-filter">
+              <option value="all">All actions</option>
+              <option value="ignore">Ignore</option>
+              <option value="view">View</option>
+              <option value="dwell">Dwell</option>
+              <option value="engage">Engage</option>
+              <option value="follow">Follow</option>
+              <option value="share">Share</option>
+              <option value="trade">Trade</option>
+              <option value="buy">Buy</option>
+              <option value="sell">Sell</option>
+              <option value="hold">Hold</option>
+            </select>
+          </section>
+
+          <section class="rail-section boundary-note">
+            <span class="boundary-mark">BOUNDARY</span>
+            <p>Observed market signals and modeled behavior remain separate layers.</p>
+            <a href="./method.html#validation">View method</a>
+          </section>
+        </aside>
+
+        <section id="attention-field" class="field-stage is-flow-mode" aria-label="Interactive 3D causal attention flow">
+          <div id="scene-mount" class="scene-mount"></div>
+          <div class="field-vignette" aria-hidden="true"></div>
+          <div class="field-caption">
+            <span id="field-mode-label">CAUSAL ATTENTION FLOW</span>
+            <span id="field-source-line">PMXT MARKET LAYER · MODELED TRADERS · DRAG TO ORBIT</span>
+          </div>
+
+          <section id="causal-context" class="causal-context" aria-label="Selected real situation">
+            <div class="causal-context-copy">
+              <span class="instrument-label">REAL SITUATION / <b id="selected-situation-source">POLYMARKET</b></span>
+              <h2 id="selected-situation-title">Loading market situation…</h2>
+            </div>
+            <div class="observed-prior">
+              <div><span class="label-with-info">OBSERVED YES <button class="info-trigger" type="button" data-info="observed-yes" aria-label="Define observed Yes">i</button></span><strong id="observed-probability">-</strong></div>
+              <div><span class="label-with-info">MODEL BOOK <button class="info-trigger" type="button" data-info="model-book" aria-label="Define model book">i</button></span><strong id="simulated-book-probability">-</strong></div>
+              <div><span class="label-with-info"><span id="observed-volume-label">OBS. CUM. VOLUME</span> <button class="info-trigger" type="button" data-info="observed-volume" aria-label="Define observed volume">i</button></span><strong id="observed-volume">-</strong></div>
+              <a id="selected-situation-link" href="#" target="_blank" rel="noopener">OPEN SOURCE ↗</a>
+            </div>
+          </section>
+
+          <div id="causal-stage-grid" class="causal-stage-grid" aria-label="Five-stage attention and commitment flow"></div>
+
+          <section id="forecast-panel" class="forecast-panel" aria-label="Modeled behavior forecast">
+            <div class="forecast-question">
+              <span class="instrument-label">MODEL PROJECTION / PREVIEW</span>
+              <p id="forecast-question">Of 5,000 modeled traders, how many reach a paid or traded action?</p>
+            </div>
+            <div class="forecast-primary">
+              <span class="label-with-info">EXPECTED FILLED-CONTRACT PROXY <button class="info-trigger" type="button" data-info="filled-contract-proxy" aria-label="Define filled-contract proxy">i</button></span>
+              <strong id="forecast-expected">-</strong>
+              <small id="forecast-interval">- interval</small>
+            </div>
+            <div class="forecast-threshold">
+              <span class="label-with-info"><span id="forecast-threshold-label">P(CLEAR THRESHOLD)</span> <button class="info-trigger" type="button" data-info="clear-threshold" aria-label="Define probability of clearing the threshold">i</button></span>
+              <strong id="forecast-probability">-</strong>
+              <small id="forecast-delta">BASELINE</small>
+            </div>
+            <div class="forecast-drivers">
+              <span class="label-with-info">TOP MODELED DRIVERS <button class="info-trigger" type="button" data-info="modeled-drivers" aria-label="Define modeled drivers">i</button></span>
+              <ol id="forecast-driver-list" class="forecast-driver-list"></ol>
+            </div>
+          </section>
+
+          <div class="field-key" aria-label="Causal flow legend">
+            <span><i class="key-dot key-dot--outer"></i>1 DOT = 1 MODELED TRADER</span>
+            <span><i class="key-dot key-dot--core"></i>LANE = FURTHEST STAGE REACHED</span>
+          </div>
+          <div id="hover-card" class="hover-card" hidden></div>
+          <div id="event-labels" class="event-labels" aria-hidden="true"></div>
+          <div class="simulation-watermark" aria-hidden="true">5K</div>
+          <div id="loading-state" class="loading-state">
+            <span class="loading-line"></span>
+            <strong>ASSEMBLING 5,000 TRADER PROFILES</strong>
+            <span>Seed 42 · deterministic replay</span>
+          </div>
+          <button id="mobile-open-profile" class="mobile-profile-button" type="button">BROWSE 5,000 TRADERS</button>
+        </section>
+
+        <aside id="profile-panel" class="profile-panel" aria-label="Selected agent profile">
+          <div class="profile-empty" id="profile-empty">
+            <span class="profile-index">0000 / 5,000</span>
+            <h2>Select a trader in the field.</h2>
+            <p>Inspect their context, belief, position, and latest action.</p>
+            <button id="select-random" class="primary-button" type="button">SELECT ONE AT RANDOM</button>
+          </div>
+          <div id="profile-content" class="profile-content" hidden>
+            <div class="profile-topline">
+              <span id="profile-index" class="profile-index">0001 / 5,000</span>
+              <button id="close-profile" class="icon-button" type="button" aria-label="Close profile">CLOSE</button>
+            </div>
+            <div class="profile-identity">
+              <div id="profile-avatar" class="profile-avatar">AM</div>
+              <div>
+                <div class="profile-flags">
+                  <span class="signal-chip">MODELED</span>
+                  <span id="profile-cohort" class="signal-chip signal-chip--muted">SCOUT</span>
+                </div>
+                <h2 id="profile-name">Alex Morgan</h2>
+                <p id="profile-context">28 to 34 · Pacific · Product designer</p>
+              </div>
+            </div>
+
+            <section class="profile-section current-decision">
+              <div class="section-head"><span>NOW</span><span id="profile-tick">T+000</span></div>
+              <div class="decision-callout">
+                <span id="profile-action" class="decision-action">OBSERVING</span>
+                <p id="profile-reason">Waiting for a sufficient signal before committing attention.</p>
+              </div>
+              <div class="belief-row">
+                <div><span>BELIEF</span><strong id="profile-belief">51%</strong></div>
+                <div><span>MODEL BOOK</span><strong id="profile-market">49¢</strong></div>
+                <div><span>CERTAINTY*</span><strong id="profile-confidence">LOW</strong></div>
+              </div>
+              <div class="belief-track" aria-hidden="true"><span id="profile-belief-bar"></span><i id="profile-market-marker"></i></div>
+            </section>
+
+            <section class="profile-section">
+              <div class="section-head"><span>TRADER CONTEXT</span><span class="source-tag">MODEL PRIOR</span></div>
+              <dl id="profile-context-grid" class="profile-data-grid"></dl>
+            </section>
+
+            <section class="profile-section">
+              <div class="section-head"><span>BEHAVIORAL POLICY</span><button id="toggle-policy" class="text-button" type="button">DETAILS</button></div>
+              <div id="trait-bars" class="trait-bars"></div>
+            </section>
+
+            <section class="profile-section market-position">
+              <div class="section-head"><span>COMMITMENT</span><span id="profile-event" class="source-tag">NO POSITION</span></div>
+              <div class="position-grid">
+                <div><span>CASH</span><strong id="profile-cash">$0</strong></div>
+                <div><span>POSITION</span><strong id="profile-position">0</strong></div>
+                <div><span>AVG ENTRY</span><strong id="profile-entry">N/A</strong></div>
+              </div>
+            </section>
+
+            <section class="profile-section">
+              <div class="section-head"><span>RETRIEVED MEMORY</span><span class="source-tag">TRACE</span></div>
+              <ol id="memory-list" class="memory-list"></ol>
+              <blockquote id="profile-reflection">No higher-level reflection yet.</blockquote>
+            </section>
+
+            <section class="profile-section provenance-block">
+              <div class="section-head"><span>PROVENANCE</span></div>
+              <dl class="provenance-list">
+                <div><dt>Population</dt><dd>Behavior cohort v0.1</dd></div>
+                <div><dt>Market layer</dt><dd>PMXT compatible</dd></div>
+                <div><dt>Identity</dt><dd>Modeled profile</dd></div>
+                <div><dt>Stage</dt><dd>Research preview</dd></div>
+              </dl>
+            </section>
+          </div>
+        </aside>
+      </main>
+
+      <footer class="run-dock" aria-label="Simulation controls and live metrics">
+        <div class="playback-controls">
+          <button id="play-toggle" class="play-button" type="button" aria-label="Pause simulation">PAUSE</button>
+          <button id="step-once" class="dock-button" type="button">STEP</button>
+          <button id="reset-run" class="dock-button" type="button">REPLAY SEED</button>
+          <label for="speed-control">SPEED</label>
+          <select id="speed-control">
+            <option value="0.5">0.5×</option>
+            <option value="1" selected>1×</option>
+            <option value="2">2×</option>
+            <option value="4">4×</option>
+          </select>
+        </div>
+        <div class="timeline-wrap">
+          <div class="timeline-meta"><span id="tick-label">T+000</span><span id="phase-label">EXPOSURE</span></div>
+          <div class="timeline"><span id="timeline-progress"></span><i id="timeline-marker"></i></div>
+          <div class="timeline-phases" aria-hidden="true"><span>EXPOSURE</span><span>ATTENTION</span><span>COMMITMENT</span><span>REFLECTION</span></div>
+        </div>
+        <div class="live-metrics">
+          <div><span>MODEL ACTIVE / TICK</span><strong id="metric-active">0</strong></div>
+          <div><span>ALL-MKT ORDERS / CUM.</span><strong id="metric-trades">0</strong></div>
+          <div><span>ALL-MKT FILLED NOTIONAL</span><strong id="metric-volume">$0</strong></div>
+          <div><span>SOCIAL + TRADE / TICK</span><strong id="metric-cascade">0</strong></div>
+          <div><span>FPS</span><strong id="metric-fps">60</strong></div>
+        </div>
+      </footer>
+
+      <dialog id="source-dialog" class="instrument-dialog">
+        <div class="dialog-head">
+          <div><span class="instrument-label">DATA PROVENANCE</span><h2>What is live, and what is not.</h2></div>
+          <button id="close-source-dialog" class="icon-button" type="button">CLOSE</button>
+        </div>
+        <div id="source-dialog-content" class="source-dialog-content"></div>
+        <p class="dialog-boundary">PMXT normalizes the market layer. Backer keeps venue provenance and trader identity semantics separate.</p>
+      </dialog>
+      <div id="research-tooltip" class="research-tooltip" role="tooltip" hidden></div>
+    </div>
+  </body>
+</html>
