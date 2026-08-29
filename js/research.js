@@ -4,6 +4,7 @@
   var SPEED_PX_PER_SECOND = 2;
   var orbit = document.querySelector('.research-orbit');
   if (!orbit) return;
+  var previewLink = document.querySelector('[data-research-preview]');
 
   var runners = Array.prototype.slice.call(orbit.querySelectorAll('[data-orbit-runner]'));
 
@@ -28,5 +29,14 @@
     new ResizeObserver(syncVelocity).observe(orbit);
   } else {
     window.addEventListener('resize', syncVelocity, { passive: true });
+  }
+
+  if (previewLink) {
+    previewLink.addEventListener('click', function (event) {
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      event.preventDefault();
+      document.body.classList.add('is-launching');
+      window.setTimeout(function () { window.location.assign(previewLink.href); }, 360);
+    });
   }
 })();

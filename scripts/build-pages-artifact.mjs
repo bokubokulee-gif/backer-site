@@ -102,6 +102,10 @@ const PUBLIC_FILES = Object.freeze([
   'img/pitch/polymarket.png'
 ]);
 
+const PUBLIC_DIRECTORIES = Object.freeze([
+  'research-lab'
+]);
+
 if (!process.argv[2] || destination === ROOT || destination === path.parse(destination).root) {
   throw new Error('Choose a dedicated empty Pages artifact directory');
 }
@@ -117,4 +121,21 @@ for (const relativePath of PUBLIC_FILES) {
   await copyFile(source, target);
 }
 
-console.log(`Built allowlisted Pages artifact with ${PUBLIC_FILES.length} files.`);
+async function copyPublicDirectory(relativePath) {
+  const sourceRoot = path.join(ROOT, relativePath);
+  if (!(await stat(sourceRoot)).isDirectory()) throw new Error(`Missing allowlisted public directory: ${relativePath}`);
+  const entries = await readdir(sourceRoot, { withFileTypes: true });
+  for (const entry of entries) {
+    const child = path.join(relativePath, entry.name);
+    if (entry.isDirectory()) await copyPublicDirectory(child);
+    if (entry.isFile()) {
+      const target = path.join(destination, child);
+      await mkdir(path.dirname(target), { recursive: true });
+      await copyFile(path.join(ROOT, child), target);
+    }
+  }
+}
+
+for (const relativePath of PUBLIC_DIRECTORIES) await copyPublicDirectory(relativePath);
+
+console.log(`Built allowlisted Pages artifact with ${PUBLIC_FILES.length} files and ${PUBLIC_DIRECTORIES.length} public directory.`);
