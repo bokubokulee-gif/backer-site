@@ -47,6 +47,11 @@ test('Published Lab carries the Backer mark and the bounded PMXT layer', () => {
   }
   assert.match(methodPage, /class="content-brand-mark"[^>]*><img src="\.\/img\/backer-mark\.png"/);
   assert.match(thesisPage, /class="content-brand-mark"[^>]*><img src="\.\/img\/backer-mark\.png"/);
+  assert.match(methodPage, /Continuous Learning of Human Attention and Experiments/);
+  for (const sourceAsset of ['kalshi.png', 'polymarket.png', 'mastodon.svg', 'interviews.svg']) {
+    assert.match(methodPage, new RegExp(`img\\/sources\\/${sourceAsset.replace('.', '\\.')}`));
+    assert.equal(fs.existsSync(path.join(ROOT, 'research-lab/img/sources', sourceAsset)), true);
+  }
   assert.doesNotMatch(methodPage, /content-brand-mark[^\n]*<i>/);
   assert.doesNotMatch(thesisPage, /content-brand-mark[^\n]*<i>/);
   assert.deepEqual(
@@ -64,9 +69,29 @@ test('Published Lab carries the Backer mark and the bounded PMXT layer', () => {
   assert.ok(thesisAsset);
   assert.ok(contentStylesheet);
   assert.ok(labStylesheet);
-  assert.doesNotMatch(read(path.join('research-lab/assets', thesisAsset)), /synthetic/i);
-  assert.match(read(path.join('research-lab/assets', contentStylesheet)), /font-size:11\.5px/);
-  assert.match(read(path.join('research-lab/assets', contentStylesheet)), /font:500 10px\/1\.45 Manrope/);
+  const thesisScript = read(path.join('research-lab/assets', thesisAsset));
+  const contentStyles = read(path.join('research-lab/assets', contentStylesheet));
+  assert.doesNotMatch(thesisScript, /synthetic/i);
+  for (const revisedCopy of [
+    'Predicting human attention flow',
+    'Attention is a flow, accumulates to asset',
+    'Payment is an outcome',
+    'What we learn from Prediction Markets',
+    'Backer keeps those disciplines:',
+    'Lab predicts',
+    'What does discover attention flow early mean to us?',
+    'Cause and effect in the data loop',
+    'Prediction can change the future for the better',
+    'Simulations learn continuously, like humans',
+    'Inspirations',
+  ]) {
+    assert.match(thesisScript, new RegExp(revisedCopy.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+  assert.match(contentStyles, /font-size:11\.5px/);
+  assert.match(contentStyles, /font:500 10px\/1\.45 Manrope/);
+  assert.match(contentStyles, /font-size:clamp\(44px,12\.2vw,60px\)/);
+  assert.match(contentStyles, /h2#inspirations/);
+  assert.match(contentStyles, /scroll-margin-top:178px/);
   assert.match(read(path.join('research-lab/assets', labStylesheet)), /--muted-deep:\s*#918b82/);
   assert.match(read(path.join('research-lab/assets', labStylesheet)), /font-size:10\.5px/);
   assert.match(artifactBuilder, /'research-lab'/);

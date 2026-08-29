@@ -1,6 +1,6 @@
 import"./styles-CCsHLpTc.js";/* empty css                */const H=`# Backer Research Thesis #003
 
-## Predicting where attention goes next
+## Predicting human attention flow
 
 Backer Research Lab studies a concrete question: when a person, creator, product, project, or idea enters the internet's field of view, which cohorts will allocate attention to it next, how will that attention propagate or decay, and which interventions will change its path?
 
@@ -233,7 +233,7 @@ The internet is excellent at measuring attention after it accumulates. It counts
 
 That is the research question for Backer.
 
-## Attention is a flow, not a score
+## Attention is a flow, accumulates to asset
 
 Attention does not live inside one follower count. It moves between people, objects, platforms, and communities over time.
 
@@ -249,7 +249,7 @@ A useful forecast must state:
 
 This is more demanding than ranking what is popular now. A popularity chart describes the lake after it fills. Backer is trying to understand the tributaries while the water is still moving.
 
-## Payment is one outcome, not the mission
+## Payment is an outcome
 
 Purchases, trades, preorders, and investments matter because they commit scarce resources. They combine belief with price, timing, risk, trust, and opportunity cost. A prediction-market trade adds a falsifiable claim and a later resolution.
 
@@ -261,11 +261,11 @@ Backer should therefore ask which signal matches the outcome. A trade may be the
 
 Payment remains part of the map. It no longer defines the territory.
 
-## What prediction markets still teach us
+## What we learn from Prediction Markets
 
 Prediction markets remain useful research institutions. They force a question to be specified before the answer is known. They aggregate disagreement into a public prior. They preserve timing, confidence, volume, and resolution. They can be scored out of time instead of defended with a persuasive story after the fact.
 
-Backer should keep those disciplines:
+Backer keeps those disciplines:
 
 - Precommit the forecast and outcome definition.
 - Treat a market price as a prior, not truth.
@@ -275,7 +275,7 @@ Backer should keep those disciplines:
 
 Kalshi and Polymarket can seed methods and selected environments. They are not the proprietary core and their participants are not a representative sample of every audience Backer may study.
 
-## Lab predicts, the Network commits
+## Lab predicts
 
 Prediction becomes economically valuable when it changes a scarce decision.
 
@@ -298,7 +298,7 @@ observe
 
 The Lab gives the Network timing and judgment. The Network gives the Lab prospective decisions, logged interventions, and outcomes that cannot be scraped after the fact.
 
-## The business is earlier allocation
+## What does discover attention flow early mean to us?
 
 Businesses already pay for attention once it is visible. They hire the proven person, sponsor the established creator, acquire the mature audience, and buy distribution at the new price.
 
@@ -320,7 +320,7 @@ Someone who repeatedly sees important profiles early should build a proof-of-tas
 
 This structure does not require every participant to become a trader.
 
-## The research moat must be earned
+## Cause and effect in the data loop
 
 Public web data is available to many companies. Model capability will diffuse. A simulation can be copied. A contract can be copied.
 
@@ -340,7 +340,7 @@ A competitor can scrape a profile today. It cannot travel backward and recreate 
 
 Backer does not yet possess this record at meaningful scale. The current Lab is a modeled instrument prototype. The moat becomes real only through consent, useful participation, clean prospective resolution, retained rights, and forecast performance that beats simple baselines.
 
-## Prediction can change the future
+## Prediction can change the future for the better
 
 Attention forecasts are reflexive. Publishing a ranking, funding a creator, or routing a campaign can help cause the outcome that Backer predicted.
 
@@ -353,7 +353,7 @@ The first is a forecasting problem. The second is an intervention problem. Backe
 
 If the system touches the river, the model must record where it put its hand.
 
-## Start narrow enough to learn
+## Simulations learn continuously, like humans
 
 Backer's mission can eventually include creators, developers, founders, artists, researchers, products, projects, and ideas. Its first proof should remain much smaller.
 
@@ -365,7 +365,7 @@ Platforms measure where attention landed.
 
 Backer is building the record of where it may go next, who acted before consensus, and what happened because they did.
 
-## Sources and research context
+## Inspirations
 
 - [Social Simulacra](https://arxiv.org/abs/2208.04024)
 - [Generative Agents](https://arxiv.org/abs/2304.03442)
@@ -377,8 +377,8 @@ Backer is building the record of where it may go next, who acted before consensu
 - [Polymarket API documentation](https://docs.polymarket.com/)
 
 This essay states a research and company direction. It does not claim that Backer's current modeled agents predict real people, that public data reveals private intent, or that any live-money or investment product currently exists. The executable Lab remains governed by Backer's current documented product boundary, \`BACKER-MANIFESTO-PRODUCT-BOUNDARY.md\`.
-`,p=document.querySelector("#article-body"),L=document.querySelector("#article-title"),C=document.querySelector("#article-deck"),T=document.querySelector("#article-toc"),O=document.querySelector("#reading-time"),_=document.querySelector("#reading-progress-bar"),g=Array.from(document.querySelectorAll("[data-document]")),$={essay:{title:"Where Attention Goes Next",deck:"Attention becomes valuable before it becomes obvious. Backer studies where it moves, what changes its path, and how reality corrects the forecast.",source:W,label:"Essay"},protocol:{title:"Predicting where attention goes next",deck:"A research program for forecasting attention trajectories, separating prediction from intervention, and testing when costly commitment adds useful signal.",source:H,label:"Research protocol"}};let m="essay",j=null;function b(a){return String(a).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}function A(a){const t=[];let e=b(a).replace(/`([^`]+)`/g,(n,o)=>{const r=`@@CODE${t.length}@@`;return t.push(`<code>${o}</code>`),r});return e=e.replace(/\[([^\]]+)\]\(([^)]+)\)/g,(n,o,r)=>{const i=/^https?:\/\//i.test(r);return`<a href="${r}"${i?' target="_blank" rel="noopener noreferrer"':""}>${o}${i?'<span class="external-mark" aria-hidden="true">&#8599;</span>':""}</a>`}).replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>").replace(/(^|[^*])\*([^*]+)\*/g,"$1<em>$2</em>"),t.forEach((n,o)=>{e=e.replace(`@@CODE${o}@@`,n)}),e}function D(a,t){const e=a.toLowerCase().replace(/<[^>]+>/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"section",n=t.get(e)||0;return t.set(e,n+1),n?`${e}-${n+1}`:e}function F(a){const t=a.replace(/\r\n/g,`
+`,p=document.querySelector("#article-body"),L=document.querySelector("#article-title"),C=document.querySelector("#article-deck"),T=document.querySelector("#article-toc"),O=document.querySelector("#reading-time"),_=document.querySelector("#reading-progress-bar"),g=Array.from(document.querySelectorAll("[data-document]")),$={essay:{title:"Where Attention Goes Next",deck:"Attention becomes valuable before it becomes obvious. Backer studies where it moves, what changes its path, and how reality corrects the forecast.",source:W,label:"Essay"},protocol:{title:"Predicting human attention flow",deck:"A research program for forecasting attention trajectories, separating prediction from intervention, and testing when costly commitment adds useful signal.",source:H,label:"Research protocol"}};let m="essay",M=null;function b(a){return String(a).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}function A(a){const t=[];let e=b(a).replace(/`([^`]+)`/g,(n,o)=>{const r=`@@CODE${t.length}@@`;return t.push(`<code>${o}</code>`),r});return e=e.replace(/\[([^\]]+)\]\(([^)]+)\)/g,(n,o,r)=>{const i=/^https?:\/\//i.test(r);return`<a href="${r}"${i?' target="_blank" rel="noopener noreferrer"':""}>${o}${i?'<span class="external-mark" aria-hidden="true">&#8599;</span>':""}</a>`}).replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>").replace(/(^|[^*])\*([^*]+)\*/g,"$1<em>$2</em>"),t.forEach((n,o)=>{e=e.replace(`@@CODE${o}@@`,n)}),e}function D(a,t){const e=a.toLowerCase().replace(/<[^>]+>/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"section",n=t.get(e)||0;return t.set(e,n+1),n?`${e}-${n+1}`:e}function F(a){const t=a.replace(/\r\n/g,`
 `).split(`
 `),e=[],n=[],o=new Map;let r=[],i=null,v=[],y=[],f=!1,w="",S=[];const l=()=>{r.length&&(e.push(`<p>${A(r.join(" "))}</p>`),r=[])},c=()=>{!v.length||!i||(e.push(`<${i}>${v.map(u=>`<li>${A(u)}</li>`).join("")}</${i}>`),v=[],i=null)},d=()=>{y.length&&(e.push(`<blockquote><p>${A(y.join(" "))}</p></blockquote>`),y=[])},E=()=>{const u=w?`<span>${b(w)}</span>`:"";e.push(`<div class="article-code">${u}<pre><code>${b(S.join(`
 `))}</code></pre></div>`),S=[],w=""};return t.forEach(u=>{const s=u.trimEnd();if(s.startsWith("```")){f?(E(),f=!1):(l(),c(),d(),f=!0,w=s.slice(3).trim());return}if(f){S.push(u);return}const I=s.match(/^(#{1,3})\s+(.+)$/);if(I){l(),c(),d();const h=I[1].length,k=I[2].trim();if(h===1)return;const P=D(k,o);n.push({level:h,label:k,id:P}),e.push(`<h${h} id="${P}"><a href="#${P}" aria-label="Link to ${b(k)}">${A(k)}</a></h${h}>`);return}if(/^>\s?/.test(s)){l(),c(),y.push(s.replace(/^>\s?/,""));return}const B=s.match(/^[-*]\s+(.+)$/),R=s.match(/^\d+\.\s+(.+)$/);if(B||R){l(),d();const h=B?"ul":"ol";i&&i!==h&&c(),i=h,v.push((B||R)[1]);return}if(!s.trim()){l(),c(),d();return}if(/^---+$/.test(s.trim())){l(),c(),d(),e.push("<hr />");return}d(),c(),r.push(s.trim())}),f&&E(),l(),c(),d(),{html:e.join(`
-`),headings:n}}function z(a){T&&(T.innerHTML=a.filter(t=>t.level===2).map((t,e)=>`<a href="#${t.id}" data-toc-id="${t.id}"><span>${String(e+1).padStart(2,"0")}</span>${b(t.label)}</a>`).join(""),T.querySelectorAll("a").forEach(t=>{t.addEventListener("click",e=>{const n=document.querySelector(t.getAttribute("href"));n&&(e.preventDefault(),n.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"}),history.replaceState(null,"",t.getAttribute("href")))})}))}function N(){j?.disconnect();const a=Array.from(p?.querySelectorAll("h2")||[]);!a.length||!("IntersectionObserver"in window)||(j=new IntersectionObserver(t=>{const e=t.filter(n=>n.isIntersecting).sort((n,o)=>o.intersectionRatio-n.intersectionRatio)[0];e&&T?.querySelectorAll("a").forEach(n=>{const o=n.dataset.tocId===e.target.id;n.classList.toggle("is-active",o),o?n.setAttribute("aria-current","location"):n.removeAttribute("aria-current")})},{rootMargin:"-18% 0px -70% 0px",threshold:[0,.15,.5]}),a.forEach(t=>j.observe(t)))}function G(a){const t=a.replace(/```[\s\S]*?```/g," ").replace(/[#>*_`\[\]()/-]/g," ").trim().split(/\s+/).filter(Boolean).length;return Math.max(1,Math.ceil(t/220))}function x(a,t={}){const e=$[a]||$.essay;m=a in $?a:"essay";const n=F(e.source);L&&(L.textContent=e.title),C&&(C.textContent=e.deck),p&&(p.innerHTML=n.html),O&&(O.textContent=`${G(e.source)} min`),document.title=`${e.title} | Backer Research Lab`,g.forEach(o=>{const r=o.dataset.document===m;o.setAttribute("aria-selected",r?"true":"false"),o.tabIndex=r?0:-1}),z(n.headings),N(),M(),t.updateHistory!==!1&&history.pushState({document:m},"",`#${m}`),t.focusArticle&&document.querySelector(".reader-boundary")?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"})}g.forEach((a,t)=>{a.addEventListener("click",()=>{x(a.dataset.document,{focusArticle:!0})}),a.addEventListener("keydown",e=>{if(!["ArrowLeft","ArrowRight"].includes(e.key))return;e.preventDefault();const n=e.key==="ArrowRight"?1:-1,o=g[(t+n+g.length)%g.length];o.focus(),x(o.dataset.document)})});function M(){if(!p||!_)return;const a=p.getBoundingClientRect(),t=window.scrollY+a.top-window.innerHeight*.3,e=t+p.offsetHeight-window.innerHeight*.45,n=e<=t?0:(window.scrollY-t)/(e-t);_.style.transform=`scaleX(${Math.max(0,Math.min(1,n))})`}let q=!1;window.addEventListener("scroll",()=>{q||(q=!0,window.requestAnimationFrame(()=>{M(),q=!1}))},{passive:!0});window.addEventListener("resize",M,{passive:!0});window.addEventListener("popstate",()=>{const a=location.hash==="#protocol"?"protocol":location.hash==="#essay"?"essay":m;a!==m&&x(a,{updateHistory:!1})});document.querySelector("#print-article")?.addEventListener("click",()=>window.print());const K=location.hash==="#protocol"?"protocol":"essay";x(K,{updateHistory:!1});
+`),headings:n}}function z(a){T&&(T.innerHTML=a.filter(t=>t.level===2).map((t,e)=>`<a href="#${t.id}" data-toc-id="${t.id}"><span>${String(e+1).padStart(2,"0")}</span>${b(t.label)}</a>`).join(""),T.querySelectorAll("a").forEach(t=>{t.addEventListener("click",e=>{const n=document.querySelector(t.getAttribute("href"));n&&(e.preventDefault(),n.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"}),history.replaceState(null,"",t.getAttribute("href")))})}))}function G(){M?.disconnect();const a=Array.from(p?.querySelectorAll("h2")||[]);!a.length||!("IntersectionObserver"in window)||(M=new IntersectionObserver(t=>{const e=t.filter(n=>n.isIntersecting).sort((n,o)=>o.intersectionRatio-n.intersectionRatio)[0];e&&T?.querySelectorAll("a").forEach(n=>{const o=n.dataset.tocId===e.target.id;n.classList.toggle("is-active",o),o?n.setAttribute("aria-current","location"):n.removeAttribute("aria-current")})},{rootMargin:"-18% 0px -70% 0px",threshold:[0,.15,.5]}),a.forEach(t=>M.observe(t)))}function N(a){const t=a.replace(/```[\s\S]*?```/g," ").replace(/[#>*_`\[\]()/-]/g," ").trim().split(/\s+/).filter(Boolean).length;return Math.max(1,Math.ceil(t/220))}function x(a,t={}){const e=$[a]||$.essay;m=a in $?a:"essay";const n=F(e.source);L&&(L.textContent=e.title),C&&(C.textContent=e.deck),p&&(p.innerHTML=n.html),O&&(O.textContent=`${N(e.source)} min`),document.title=`${e.title} | Backer Research Lab`,g.forEach(o=>{const r=o.dataset.document===m;o.setAttribute("aria-selected",r?"true":"false"),o.tabIndex=r?0:-1}),z(n.headings),G(),q(),t.updateHistory!==!1&&history.pushState({document:m},"",`#${m}`),t.focusArticle&&document.querySelector(".reader-boundary")?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"})}g.forEach((a,t)=>{a.addEventListener("click",()=>{x(a.dataset.document,{focusArticle:!0})}),a.addEventListener("keydown",e=>{if(!["ArrowLeft","ArrowRight"].includes(e.key))return;e.preventDefault();const n=e.key==="ArrowRight"?1:-1,o=g[(t+n+g.length)%g.length];o.focus(),x(o.dataset.document)})});function q(){if(!p||!_)return;const a=p.getBoundingClientRect(),t=window.scrollY+a.top-window.innerHeight*.3,e=t+p.offsetHeight-window.innerHeight*.45,n=e<=t?0:(window.scrollY-t)/(e-t);_.style.transform=`scaleX(${Math.max(0,Math.min(1,n))})`}let j=!1;window.addEventListener("scroll",()=>{j||(j=!0,window.requestAnimationFrame(()=>{q(),j=!1}))},{passive:!0});window.addEventListener("resize",q,{passive:!0});window.addEventListener("popstate",()=>{const a=location.hash==="#protocol"?"protocol":location.hash==="#essay"?"essay":m;a!==m&&x(a,{updateHistory:!1})});document.querySelector("#print-article")?.addEventListener("click",()=>window.print());const K=location.hash==="#protocol"?"protocol":"essay";x(K,{updateHistory:!1});
