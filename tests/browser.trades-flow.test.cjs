@@ -170,10 +170,11 @@ test('direct Trades loads the complete scaled inventory without loading Discover
       'a direct #trades route must not request the archived fixture interface');
     assert.equal(requestedPaths.some((pathname) => pathname.endsWith('/css/market-archive.css')), false,
       'a direct #trades route must not request archived fixture styles');
-    const inventory = await page.locator('.mkt-catalog-line').innerText();
-    assert.match(inventory, new RegExp(`${TRADE_MODEL.people.length.toLocaleString('en-US')}\\s+creator-account markets`, 'i'));
-    assert.match(inventory, new RegExp(`${TRADE_MODEL.contents.length.toLocaleString('en-US')}\\s+work markets`, 'i'));
-    assert.match(inventory, new RegExp(`${(TRADE_MODEL.people.length + TRADE_MODEL.contents.length).toLocaleString('en-US')}\\s+active contracts`, 'i'));
+    const news = page.locator('.mkt-news-line');
+    assert.match(await news.innerText(), /LATEST/i);
+    assert.match(await news.locator('[data-mkt-news-link]').getAttribute('href'), /^https?:\/\//);
+    assert.match(await page.getByRole('tab', { name: /Profiles/ }).innerText(), new RegExp(TRADE_MODEL.people.length.toLocaleString('en-US')));
+    assert.match(await page.getByRole('tab', { name: /Contents/ }).innerText(), new RegExp(TRADE_MODEL.contents.length.toLocaleString('en-US')));
     assert.equal(await page.locator('.mkt-catalog-card').count(), 15, 'browse routes mount exactly one 15-card page');
     assert.equal(await page.locator('.mkt-pagination').count(), 2, 'page controls remain reachable above and below the bounded result slice');
     assert.match(await page.locator('.mkt-pagination').first().innerText(), new RegExp(`Showing\\s+1-15\\s+of\\s+${TRADE_MODEL.people.length.toLocaleString('en-US')}`, 'i'));
@@ -322,12 +323,11 @@ test('real-catalog Trades deep link, paper account, Back/Fade ticket, receipt, p
 
     assert.equal(requestedPaths.filter((pathname) => pathname.endsWith('/js/market-data.js')).length, 0,
       '#trades must never request the legacy fixture data module');
-    assert.equal(await page.locator('.mkt-paper-status').count(), 1, 'the board uses one compact paper-model status');
-    assert.equal((await page.locator('.mkt-paper-status').innerText()).trim(), 'Paper market · modeled quotes');
-    const inventoryText = await page.locator('.mkt-catalog-line').innerText();
-    assert.match(inventoryText, /\$20(?:\.00)?\s+paper cash/i);
-    assert.match(inventoryText, new RegExp(`${TRADE_MODEL.people.length.toLocaleString('en-US')}\\s+creator-account markets`, 'i'));
-    assert.match(inventoryText, new RegExp(`${TRADE_MODEL.contents.length.toLocaleString('en-US')}\\s+work markets`, 'i'));
+    assert.equal(await page.locator('.mkt-news-line').count(), 1, 'the board uses one compact latest-source news line');
+    assert.match(await page.locator('.mkt-news-line').innerText(), /LATEST/i);
+    assert.equal(await page.locator('.mkt-paper-status').count(), 0);
+    assert.match(await page.getByRole('tab', { name: /Profiles/ }).innerText(), new RegExp(TRADE_MODEL.people.length.toLocaleString('en-US')));
+    assert.match(await page.getByRole('tab', { name: /Contents/ }).innerText(), new RegExp(TRADE_MODEL.contents.length.toLocaleString('en-US')));
     assert.equal(await page.locator('.mkt-disclosure').count(), 0);
     assert.doesNotMatch(await page.locator('.mkt').innerText(), /Ada Maker|Marcus Stillwater|BACKER_MKT|Demo simulations/i);
     assert.equal((await card.locator('.mkt-contract h3').innerText()).trim(), subject.contract.question);
@@ -429,11 +429,11 @@ test('real-catalog Trades deep link, paper account, Back/Fade ticket, receipt, p
     assert.equal((await page.locator('.mkt-position-contract h4').innerText()).trim(), subject.contract.question);
 
     await page.getByRole('tab', { name: /For you/ }).click();
-    assert.match(await page.locator('.mkt-personalization').innerText(), /1 simulated trade[\s\S]*Preferences stay on this device/i);
+    assert.match(await page.locator('.mkt-personalization').innerText(), /Backer learns your preferences/i);
     assert.equal(await page.locator('.mkt-feed-section').first().locator('.mkt-catalog-card').first().getAttribute('data-mkt-subject-id'), subject.id,
       'the exact traded profile should lead the device-personalized profile feed');
-    await page.getByRole('button', { name: 'Reset personalization' }).click();
-    await page.waitForFunction(() => document.querySelector('.mkt-personalization')?.textContent.includes('Default order restored'));
+    await page.getByRole('button', { name: /Refine Feed/ }).click();
+    await page.waitForFunction(() => Boolean(localStorage.getItem('backer_trades_personalization_reset_v1')));
     const resetState = await page.evaluate(() => ({
       watches: localStorage.getItem('backer_market2_watch_v1'),
       actions: localStorage.getItem('backer_discovery_interest_v1'),
@@ -622,10 +622,10 @@ test('watching an exact work reorders personalized content and reset restores de
     await page.getByRole('tab', { name: /For you/ }).click();
     const personalizedContent = page.locator('.mkt-feed-section').nth(1);
     assert.equal(await personalizedContent.locator('.mkt-catalog-card.is-content').first().getAttribute('data-mkt-subject-id'), targetId);
-    assert.match(await page.locator('.mkt-personalization').innerText(), /1 watched work/i);
+    assert.match(await page.locator('.mkt-personalization').innerText(), /Backer learns your preferences/i);
 
-    await page.getByRole('button', { name: 'Reset personalization' }).click();
-    await page.waitForFunction(() => document.querySelector('.mkt-personalization')?.textContent.includes('Default order restored'));
+    await page.getByRole('button', { name: /Refine Feed/ }).click();
+    await page.waitForFunction(() => Boolean(localStorage.getItem('backer_trades_personalization_reset_v1')));
     await page.waitForFunction((id) => document.querySelectorAll('.mkt-feed-section')[1]?.querySelector('.mkt-catalog-card.is-content')?.getAttribute('data-mkt-subject-id') === id, defaultFirst);
     const reset = await page.evaluate(() => ({
       work: localStorage.getItem('backer_trades_work_watch_v1'),

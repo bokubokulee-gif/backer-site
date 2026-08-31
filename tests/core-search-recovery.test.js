@@ -223,10 +223,10 @@ test('every changed public Search asset is allowlisted and uses its current cach
   const versions = {
     'css/styles.css': '20260826-perf-1',
     'css/backer-dock.css': '20260821-2',
-    'css/market.css': '20260821-account-metrics-1',
+    'css/market.css': '20260831-trades-news-2',
     'css/market2.css': '20260821-account-metrics-1',
     'css/search.css': '20260824-sources-clean-1',
-    'js/app.js': '20260826-perf-1',
+    'js/app.js': '20260831-trades-news-2',
     'js/backer-dock.js': '20260826-perf-1',
     'js/market2.js': '20260826-perf-1',
     'js/search-engine.js': '20260826-perf-1',

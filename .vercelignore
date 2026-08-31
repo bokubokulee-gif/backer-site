@@ -6,10 +6,8 @@ migrations/
 deploy.sh
 run.sh
 scripts/discovery-pagination.mjs
-scripts/build-pages-artifact.mjs
 scripts/generate-discovery-catalog.mjs
 scripts/hash-admin-password.js
 scripts/lint.js
 scripts/sync-github-momentum.mjs
 scripts/vendor-cobe.js
-js/search-engine.js

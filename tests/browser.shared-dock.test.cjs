@@ -785,7 +785,7 @@ test('Search, Discovery, and Trades share one retained catalog load per page ses
 
     await page.locator('.backer-dock-trades').click();
     await page.waitForSelector('.mkt-catalog-card', { state: 'visible' });
-    await page.waitForFunction(() => document.querySelector('.mkt-catalog-line') && /1,\d{3}/.test(document.querySelector('.mkt-catalog-line').textContent));
+    await page.waitForFunction(() => document.querySelector('[data-mkt-news-title]') && /1,\d{3}/.test(document.querySelector('.mkt-tabs').textContent));
 
     assert.deepEqual(requests, { catalog: 1, eligibility: 1 }, 'hash-route projections must reuse the same retained source promises');
     assert.deepEqual(await page.evaluate(() => Object.keys(window.__backerRetainedSourcePromises || {}).map((url) => new URL(url, location.href).pathname).sort()), [
@@ -1012,13 +1012,12 @@ test('canonical Trades and the #market alias render the public source-backed Tra
       await page.waitForSelector('.mkt-header h1', { state: 'visible' });
       assert.equal(await page.locator('.mkt-header h1').innerText(), 'Trade future growth in creator accounts and work', `${hash} should render Trades`);
       assert.equal(await page.locator('.backer-dock-trades').getAttribute('aria-current'), 'page', `${hash} should mark Trades active`);
-      assert.equal(await page.locator('.mkt-paper-status').count(), 1, `${hash} should show one compact paper-market status`);
-      assert.equal((await page.locator('.mkt-paper-status').innerText()).trim(), 'Paper market · modeled quotes');
+      assert.equal(await page.locator('.mkt-news-line').count(), 1, `${hash} should show one compact source-news line`);
+      assert.match(await page.locator('.mkt-news-line').innerText(), /LATEST/i);
+      assert.match(await page.locator('[data-mkt-news-link]').getAttribute('href'), /^https?:\/\//);
       assert.equal(await page.locator('.mkt-disclosure').count(), 0, `${hash} should not restore the abandoned full-width demo disclosure`);
-      const inventory = await page.locator('.mkt-catalog-line').innerText();
-      assert.match(inventory, /\$10,000(?:\.00)?\s+paper cash/i);
-      assert.match(inventory, new RegExp(`${SEARCH_TRADE_MODEL.people.length.toLocaleString('en-US')}\\s+creator-account markets`, 'i'));
-      assert.match(inventory, new RegExp(`${SEARCH_TRADE_MODEL.contents.length.toLocaleString('en-US')}\\s+work markets`, 'i'));
+      assert.match(await page.getByRole('tab', { name: /Profiles/ }).innerText(), new RegExp(SEARCH_TRADE_MODEL.people.length.toLocaleString('en-US')));
+      assert.match(await page.getByRole('tab', { name: /Contents/ }).innerText(), new RegExp(SEARCH_TRADE_MODEL.contents.length.toLocaleString('en-US')));
       assert.doesNotMatch(await page.locator('.mkt').innerText(), /Ada Maker|Marcus Stillwater|BACKER_MKT|Demo simulations/i);
     }
   } finally {
@@ -1043,7 +1042,7 @@ test('the pre-Trades demo market remains independently available at #market-arch
     assert.equal(requestedPaths.some((pathname) => pathname.endsWith('/data/discovery-catalog.json')), false, 'the archive must not fetch the retained Discovery catalog');
     assert.equal(requestedPaths.some((pathname) => pathname.endsWith('/data/trades-eligible-accounts.json')), false, 'the archive must not fetch the Trades eligibility registry');
     assert.equal(requestedPaths.some((pathname) => pathname.endsWith('/css/market.css')), false, 'the archive must not load Trades styles');
-    assert.equal(await page.locator('.mkt-paper-status').count(), 0, 'the archive must not masquerade as Trades');
+    assert.equal(await page.locator('.mkt-news-line').count(), 0, 'the archive must not masquerade as Trades');
     assert.match(await page.locator('.mkt-foot').innerText(), /Simulated markets · no real money moves[\s\S]*fixture catalog/i);
     assert.equal(await page.locator('.backer-dock-trades').getAttribute('aria-current'), null, 'the historical archive must not claim to be Trades');
     const archivedMarket = page.locator('[data-market-open]').first();
@@ -1266,7 +1265,8 @@ test('initial short-mobile Trades actions clear the expanded bottom dock', async
           && dock.top < actions.bottom - 1 && dock.bottom > actions.top + 1,
         buttonHeight: button.getBoundingClientRect().height,
         buttonFont: Number.parseFloat(getComputedStyle(button).fontSize),
-        linkFont: Number.parseFloat(getComputedStyle(link).fontSize),
+        buttonText: button.textContent.trim(),
+        linkCount: Number(Boolean(link)),
         scrollY,
         scrollWidth: document.documentElement.scrollWidth,
         innerWidth
@@ -1276,8 +1276,40 @@ test('initial short-mobile Trades actions clear the expanded bottom dock', async
     assert.equal(geometry.overlaps, false, `personalization actions must clear the dock: ${JSON.stringify(geometry)}`);
     assert.ok(geometry.actions.bottom <= geometry.dock.top - 11, `actions should retain a 12px dock gap: ${JSON.stringify(geometry)}`);
     assert.ok(geometry.buttonHeight >= 44, 'reset remains a full-size touch target');
-    assert.ok(geometry.buttonFont >= 14 && geometry.linkFont >= 14, 'compact labels must remain readable');
+    assert.ok(geometry.buttonFont >= 14, 'compact labels must remain readable');
+    assert.equal(geometry.buttonText, 'Refine Feed');
+    assert.equal(geometry.linkCount, 0, 'the redundant Discovery link should be removed');
     assert.ok(geometry.scrollWidth <= geometry.innerWidth + 1, 'short-mobile clearance must not create horizontal overflow');
+  } finally {
+    await instance.close();
+  }
+});
+
+test('mid-width mobile Trades keeps the personalization gap compact without crossing the bottom dock', async () => {
+  const instance = await context({ width: 492, height: 688 });
+  await instance.addInitScript(() => {
+    localStorage.setItem('backer_shared_dock_v1', JSON.stringify({ edge: 'bottom', crossAxisRatio: 0.5, minimized: false }));
+  });
+  const page = await instance.newPage();
+  try {
+    await page.goto(`${origin}/backerdemo.html#trades?view=feed`);
+    await page.waitForSelector('.mkt-personalization', { state: 'visible' });
+    await waitForDock(page);
+    const geometry = await page.evaluate(() => {
+      const card = document.querySelector('.mkt-personalization').getBoundingClientRect();
+      const heading = document.querySelector('.mkt-feed-section .mkt-section-head').getBoundingClientRect();
+      const dock = document.querySelector('.backer-float-dock').getBoundingClientRect();
+      return {
+        gap: heading.top - card.bottom,
+        headingTop: heading.top,
+        dockBottom: dock.bottom,
+        scrollWidth: document.documentElement.scrollWidth,
+        innerWidth
+      };
+    });
+    assert.ok(geometry.gap >= 48 && geometry.gap <= 96, `the refined mobile gap should stay compact: ${JSON.stringify(geometry)}`);
+    assert.ok(geometry.headingTop >= geometry.dockBottom + 11, `the first heading should clear the dock: ${JSON.stringify(geometry)}`);
+    assert.ok(geometry.scrollWidth <= geometry.innerWidth + 1, 'the compact gap must not create horizontal overflow');
   } finally {
     await instance.close();
   }

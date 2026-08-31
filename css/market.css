@@ -65,26 +65,24 @@ body.trades-ticket-open #app{z-index:70}
   font-weight:560;
   line-height:1.55;
 }
-.mkt-catalog-line{
-  display:flex;
-  min-height:48px;
+.mkt-news-line{
+  min-height:50px;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
   align-items:center;
-  gap:12px 24px;
-  overflow-x:auto;
+  gap:14px;
+  overflow:hidden;
   border-bottom:1px solid var(--mkt-soft-rule);
-  color:var(--mkt-muted);
-  font-size:14px;
-  font-weight:650;
   white-space:nowrap;
-  scrollbar-width:none;
 }
-.mkt-catalog-line::-webkit-scrollbar{display:none}
-.mkt-catalog-line>*{min-width:max-content;flex:none}
-.mkt-catalog-line span{display:flex;align-items:baseline;gap:6px}
-.mkt-catalog-line .mkt-paper-status{align-items:center;padding:5px 8px;border:1px solid color-mix(in srgb,var(--mkt-up) 38%,transparent);border-radius:999px;color:var(--mkt-secondary);font-size:14px}
-.mkt-paper-status i{width:7px;height:7px;border-radius:50%;background:var(--mkt-up);box-shadow:0 0 0 4px color-mix(in srgb,var(--mkt-up) 14%,transparent);animation:mkt-live 2s ease-in-out infinite}
-.mkt-catalog-line b{color:var(--ink,#f7f4ed);font-family:var(--mono,ui-monospace,monospace);font-size:15px;font-variant-numeric:tabular-nums}
-.mkt-catalog-line a{margin-left:auto;color:var(--accent,#e9bd86);font-weight:760;text-underline-offset:4px}
+.mkt-news-label{display:inline-flex;align-items:center;gap:8px;color:var(--accent,#e9bd86);font-family:var(--mono,ui-monospace,monospace);font-size:11px;font-weight:800;letter-spacing:.1em}
+.mkt-news-label i{width:7px;height:7px;border-radius:50%;background:var(--mkt-up);box-shadow:0 0 0 4px color-mix(in srgb,var(--mkt-up) 14%,transparent);animation:mkt-live 2s ease-in-out infinite}
+.mkt-news-line>a{min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;color:var(--ink,#f7f4ed);text-decoration:none}
+.mkt-news-line>a>span{color:var(--mkt-muted);font-family:var(--mono,ui-monospace,monospace);font-size:11px;font-weight:700;letter-spacing:.06em}
+.mkt-news-line>a>b{overflow:hidden;color:var(--ink,#f7f4ed);font-size:14px;font-weight:730;text-overflow:ellipsis;white-space:nowrap}
+.mkt-news-line>a>i{color:var(--accent,#e9bd86);font-style:normal}
+.mkt-news-line>a:hover b{text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--accent,#e9bd86) 65%,transparent);text-underline-offset:4px}
+.mkt-news-count{color:var(--mkt-muted);font-family:var(--mono,ui-monospace,monospace);font-size:11px;font-variant-numeric:tabular-nums;letter-spacing:.06em}
 
 .mkt-tabs{
   display:flex;
@@ -141,25 +139,9 @@ body.trades-ticket-open #app{z-index:70}
 .mkt-personalization-actions button{min-height:44px;padding:0 13px;border:1px solid var(--mkt-rule);border-radius:9px;background:var(--mkt-surface);color:var(--mkt-secondary);font-size:14px;font-weight:720}
 .mkt-personalization-actions button:hover{border-color:color-mix(in srgb,var(--ink,#f7f4ed) 34%,transparent);color:var(--ink,#f7f4ed)}
 
-/* Reserve a visible lane for the floating dock instead of letting it cover the
-   first market heading on short mobile viewports. Side-edge clearance is
-   consumed by .mkt's inline padding above. */
-html[data-backer-dock-edge="bottom"][data-backer-dock-minimized="false"] .mkt-personalization{
-  margin-bottom:calc(180px + var(--backer-dock-clearance-bottom,0px));
-}
-html[data-backer-dock-edge="bottom"][data-backer-dock-minimized="true"] .mkt-personalization{
-  margin-bottom:calc(180px + var(--backer-dock-clearance-bottom,0px));
-}
-
-@media (min-width:521px) and (max-width:720px){
-  /* The two-column/tablet composition makes personalization shorter than the
-     phone stack. Reserve the same readable dock lane before the first market
-     heading instead of allowing the bottom dock to cover it. */
-  html[data-backer-dock-edge="bottom"][data-backer-dock-minimized="false"] .mkt-personalization,
-  html[data-backer-dock-edge="bottom"][data-backer-dock-minimized="true"] .mkt-personalization{
-    margin-bottom:calc(240px + var(--backer-dock-clearance-bottom,0px));
-  }
-}
+/* Keep the feed rhythm compact; dock clearance belongs to the page edge, not
+   between personalization and the first market section. */
+html[data-backer-dock-edge="bottom"] .mkt-personalization{margin-bottom:40px}
 
 .mkt-feed-section+.mkt-feed-section{margin-top:64px;padding-top:48px;border-top:1px solid var(--mkt-rule)}
 .mkt-section-head{display:flex;align-items:end;justify-content:space-between;gap:28px;margin-bottom:22px}
@@ -212,13 +194,23 @@ html[data-backer-dock-edge="bottom"][data-backer-dock-minimized="true"] .mkt-per
 .mkt-contract{margin:0 18px 15px;padding:15px;border:1px solid color-mix(in srgb,var(--accent,#e9bd86) 27%,var(--mkt-rule));border-radius:11px;background:color-mix(in srgb,var(--accent,#e9bd86) 4.5%,var(--mkt-surface-2))}
 .mkt-contract-label,.mkt-ticket-contract>span,.mkt-position-contract>span{display:block;color:var(--accent,#e9bd86);font-family:var(--mono,ui-monospace,monospace);font-size:14px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
 .mkt-contract h3{margin:7px 0 13px;color:var(--ink,#f7f4ed);font-size:17px;font-weight:760;letter-spacing:-.012em;line-height:1.38;overflow-wrap:anywhere}
-.mkt-contract-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:hidden;border-top:1px solid var(--mkt-soft-rule)}
+.mkt-contract-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible;border-top:1px solid var(--mkt-soft-rule)}
 .mkt-contract-facts>div,.mkt-contract-facts>a{display:grid;align-content:start;min-width:0;padding:11px 9px 0;border-right:1px solid var(--mkt-soft-rule);text-decoration:none}
 .mkt-contract-facts>*:first-child{padding-left:0}
 .mkt-contract-facts>*:last-child{padding-right:0;border-right:0}
 .mkt-contract-facts span{color:var(--mkt-muted);font-size:14px;font-weight:720}
 .mkt-contract-facts b{margin-top:4px;color:var(--ink,#f7f4ed);font-family:var(--mono,ui-monospace,monospace);font-size:14px;font-variant-numeric:tabular-nums;font-weight:780;line-height:1.25;overflow-wrap:anywhere}
 .mkt-contract-facts small{margin-top:4px;color:var(--mkt-secondary);font-size:14px;font-weight:620;line-height:1.3;overflow-wrap:anywhere}
+.mkt-contract-facts b a,.mkt-contract-facts small a{color:inherit;text-decoration:none}
+.mkt-contract-facts small a{color:var(--accent,#e9bd86);text-underline-offset:3px}
+.mkt-contract-term{display:flex;align-items:center;gap:6px;color:var(--mkt-muted);font-size:14px;font-weight:720}
+.mkt-term-help{position:relative;display:inline-flex}
+.mkt-term-help summary{display:grid;width:18px;height:18px;place-items:center;border:1px solid var(--mkt-rule);border-radius:50%;color:var(--mkt-secondary);font-family:var(--mono,ui-monospace,monospace);font-size:10px;font-weight:700;line-height:1;list-style:none;cursor:pointer}
+.mkt-term-help summary::-webkit-details-marker{display:none}
+.mkt-term-help[open] summary{border-color:color-mix(in srgb,var(--accent,#e9bd86) 62%,transparent);color:var(--accent,#e9bd86)}
+.mkt-term-help>span{position:absolute;z-index:35;bottom:calc(100% + 8px);left:0;width:220px;padding:10px 11px;border:1px solid var(--mkt-rule);border-radius:8px;background:var(--mkt-surface-2);box-shadow:0 14px 34px rgba(0,0,0,.42);color:var(--mkt-secondary);font-size:12px;font-weight:580;line-height:1.45}
+.mkt-term-help>span b{display:block;margin:0 0 3px;color:var(--ink,#f7f4ed);font-family:"Geist","Avenir Next","Segoe UI",sans-serif;font-size:12px;font-weight:760}
+.mkt-contract-facts>div:last-child .mkt-term-help>span{right:0;left:auto}
 
 .mkt-sim-market{display:grid;grid-template-columns:auto minmax(72px,1fr);gap:10px 14px;margin-top:auto;padding:15px 18px;border-top:1px solid var(--mkt-rule);border-bottom:1px solid var(--mkt-rule);background:color-mix(in srgb,var(--ink,#f7f4ed) 2.5%,transparent)}
 .mkt-quote{display:grid;grid-template-columns:auto auto;align-items:end;gap:1px 8px}
@@ -391,11 +383,11 @@ html[data-theme="light"] .mkt-open-source{background:rgba(255,253,248,.9);color:
   body.mkt-full .app{padding-inline:14px}
   .mkt{padding-top:calc(7px + var(--backer-dock-clearance-top,0px))}
   .mkt-header{padding-top:12px}
-  .mkt-catalog-line a{margin-left:0}
+  .mkt-news-line{gap:10px}
   .mkt-toolbar{grid-template-columns:repeat(3,minmax(0,1fr))}
   .mkt-toolbar .mkt-search{grid-column:1/-1}
   .mkt-personalization,.mkt-section-head{align-items:flex-start;flex-direction:column}
-  .mkt-personalization-actions{width:100%;justify-content:space-between;flex-wrap:wrap}
+  .mkt-personalization-actions{width:100%;justify-content:flex-end;flex-wrap:wrap}
   .mkt-feed-section+.mkt-feed-section{margin-top:48px;padding-top:38px}
   .mkt-pagination{align-items:flex-start;flex-direction:column}
   .mkt-pagination>div{width:100%;justify-content:space-between}
@@ -421,8 +413,14 @@ html[data-theme="light"] .mkt-open-source{background:rgba(255,253,248,.9);color:
   .mkt-ticket-layer{padding:12px}
   .mkt-ticket{max-height:calc(100dvh - 24px);border-radius:17px}
 }
+@media (min-width:441px) and (max-width:520px){
+  html[data-backer-dock-edge="bottom"] .mkt-personalization{margin-bottom:32px}
+}
 @media (max-width:520px){
   .mkt-catalog-grid,.mkt-skeleton-grid{grid-template-columns:1fr}
+  .mkt-news-line{grid-template-columns:auto minmax(0,1fr);min-height:46px}
+  .mkt-news-line>a{grid-template-columns:minmax(0,1fr) auto}
+  .mkt-news-line>a>span,.mkt-news-count{display:none}
 }
 @media (max-width:440px){
   .mkt-header h1{font-size:38px}
@@ -458,7 +456,6 @@ html[data-theme="light"] .mkt-open-source{background:rgba(255,253,248,.9);color:
   .mkt-personalization{gap:6px;padding:12px}
   .mkt-personalization p{margin-top:2px;line-height:1.42}
   .mkt-personalization-actions{flex-wrap:nowrap;gap:8px}
-  .mkt-personalization-actions a{white-space:nowrap}
   .mkt-personalization-actions button{padding-inline:10px;white-space:nowrap}
   .mkt-ticket-layer{padding:6px}
   .mkt-ticket{max-height:calc(100dvh - 12px);padding:12px;border-radius:14px}

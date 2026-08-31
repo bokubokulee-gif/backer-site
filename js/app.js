@@ -59,7 +59,7 @@
     return new Promise((resolve, reject) => {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
-      link.href = 'css/market.css?v=20260821-account-metrics-1';
+      link.href = 'css/market.css?v=20260831-trades-news-2';
       link.dataset.backerTrades = 'true';
       link.media = 'print';
       link.onload = () => {
@@ -132,7 +132,7 @@
         loadTradesScript('js/trades-catalog-model.js?v=20260826-perf-1', 'catalog')
       ]);
       tradesAssets = Promise.all([loadTradesStyle(), dependencies])
-        .then(() => loadTradesScript('js/market.js?v=20260826-perf-1', 'view'))
+        .then(() => loadTradesScript('js/market.js?v=20260831-trades-news-2', 'view'))
         .then(() => { tradesAssetError = null; })
         .catch((error) => {
           document.querySelectorAll('link[data-backer-trades]:not([data-backer-style-ready="true"])').forEach((node) => node.remove());

@@ -1,5 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "node scripts/build-pages-artifact.mjs .vercel-public",
+  "outputDirectory": ".vercel-public",
+  "public": false,
   "trailingSlash": false,
   "env": {
     "PUBLIC_VIEW_COUNTS_ENABLED": "false"
@@ -33,6 +36,14 @@
         {
           "key": "Cross-Origin-Opener-Policy",
           "value": "same-origin"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "same-origin"
+        },
+        {
+          "key": "X-Permitted-Cross-Domain-Policies",
+          "value": "none"
         },
         {
           "key": "Permissions-Policy",

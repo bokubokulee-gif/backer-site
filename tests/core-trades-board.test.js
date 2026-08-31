@@ -127,7 +127,12 @@ test('Trades renders only retained catalog subjects with a complete priced contr
   assert.match(target.innerHTML, /\$24\.8K/);
   assert.match(target.innerHTML, />Back</);
   assert.match(target.innerHTML, />Fade</);
-  assert.match(target.innerHTML, /Paper market · modeled quotes/);
+  assert.match(target.innerHTML, /mkt-news-line/);
+  assert.match(target.innerHTML, /data-mkt-news-title>Building in public/);
+  assert.match(target.innerHTML, /data-mkt-news-link/);
+  assert.match(target.innerHTML, /What Baseline means/);
+  assert.match(target.innerHTML, /What Target means/);
+  assert.match(target.innerHTML, /What Metric means/);
   assert.doesNotMatch(target.innerHTML, /Ada Maker|Marcus Stillwater|BACKER_MKT|Demo simulations/i);
 });
 
@@ -152,13 +157,21 @@ test('Trades is people-first, personalized from device-local Discovery signals, 
   assert.match(market, /backer_trades_positions_v1/);
   assert.match(market, /backer_trades_account_v1/);
   assert.doesNotMatch(market, /BACKER_MKT|backer_portfolio_v1/);
-  assert.match(market, /For you · on this device/);
+  assert.match(market, /<b>For you<\/b>/);
+  assert.match(market, /Backer learns your preferences/);
   assert.match(market, /positionSubjectIds/);
   assert.match(market, /proposedContentIds/);
   assert.match(market, /watchedPersonIds/);
   assert.match(market, /watchedContentIds/);
   assert.match(market, /market_work_watch_changed/);
-  assert.match(market, /aria-label="Reset personalization"[^>]*>Reset feed/);
+  assert.match(market, /aria-label="Refine Feed, reset personalization"[^>]*>Refine Feed/);
+  assert.doesNotMatch(market, /Refine Discovery/);
+  assert.match(market, /Back or fade internet profiles\./);
+  assert.match(market, /Back or fade contents, projects, repos, etc\./);
+  assert.match(market, /function catalogNews\(\)/);
+  assert.match(market, /data-mkt-news-link/);
+  assert.match(css, /html\[data-backer-dock-edge="bottom"\] \.mkt-personalization\{margin-bottom:40px\}/);
+  assert.doesNotMatch(css, /margin-bottom:calc\(180px/);
 });
 
 test('content Watch uses exact device-local work state and visibly personalizes that work', async () => {
@@ -199,19 +212,19 @@ test('reset personalization restores default ranking without deleting proposals,
   assert.equal(JSON.parse(values.get('backer_trades_account_v1')).cash, 9975);
   assert.equal(JSON.parse(values.get('backer_site_market_draft_v2:keep')).draftId, 'keep');
   assert.ok(Date.parse(values.get('backer_trades_personalization_reset_v1')) > 0);
-  assert.match(target.innerHTML, /Default order restored/);
-  assert.match(target.innerHTML, /All saved data remains/);
+  assert.match(target.innerHTML, /Backer learns your preferences/);
 });
 
 test('public Trades loader requests the real catalog model before the view and never loads fixture market data', () => {
   const catalogIndex = app.indexOf("loadTradesScript('js/trades-catalog-model.js");
   const viewIndex = app.indexOf("loadTradesScript('js/market.js");
   assert.ok(catalogIndex >= 0 && viewIndex > catalogIndex, 'the catalog projection must initialize before the Trades view');
-  assert.match(app, /css\/market\.css\?v=20260821-account-metrics-1/);
+  assert.match(app, /css\/market\.css\?v=20260831-trades-news-2/);
   assert.match(app, /js\/trades-catalog-model\.js\?v=20260826-perf-1/);
-  assert.match(app, /js\/market\.js\?v=20260826-perf-1/);
+  assert.match(app, /js\/market\.js\?v=20260831-trades-news-2/);
   assert.match(market, /js\/trades-catalog-model\.js\?v=20260826-perf-1/);
-  assert.match(market, /href="backerdemo\.html#market-archive">Archived demo market/);
+  assert.match(market, /Latest source-backed work and profiles/);
+  assert.match(market, /Open original:/);
   assert.doesNotMatch(app, /loadTradesScript\(['"]js\/market-data\.js/);
   assert.doesNotMatch(market, /BACKER_MKT|backer_portfolio_v1/);
 });

@@ -32,14 +32,15 @@ test('Published Lab carries the Backer mark and the bounded PMXT layer', () => {
   const snapshot = JSON.parse(read('research-lab/data/real-market-snapshot.json'));
   const artifactBuilder = read('scripts/build-pages-artifact.mjs');
   const compressedPopulation = path.join(ROOT, 'research-lab/data/agents.json.gz');
+  const publicFieldPresenter = path.join(ROOT, 'research-lab/assets/lab-public-v1.js');
   const rawPopulation = path.join(ROOT, 'research-lab/data/agents.json');
   const unusedFallback = path.join(ROOT, 'research-lab/data/events-fallback.json');
   const thesisAsset = fs.readdirSync(path.join(ROOT, 'research-lab/assets'))
     .find((file) => /^thesis-.*\.js$/.test(file));
   const contentStylesheet = fs.readdirSync(path.join(ROOT, 'research-lab/assets'))
     .find((file) => /^content-.*\.css$/.test(file));
-  const labStylesheet = fs.readdirSync(path.join(ROOT, 'research-lab/assets'))
-    .find((file) => /^styles-.*\.css$/.test(file));
+  const labStylesheet = labPage.match(/\.\/assets\/(styles-[^"']+\.css)/)?.[1];
+  const labScriptAsset = labPage.match(/\.\/assets\/(lab-[^"']+\.js)/)?.[1];
 
   assert.match(labPage, /img\/backer-mark\.png/);
   for (const page of [labPage, methodPage, thesisPage]) {
@@ -58,17 +59,19 @@ test('Published Lab carries the Backer mark and the bounded PMXT layer', () => {
     fs.readFileSync(path.join(ROOT, 'img/backer-mark.png')),
     fs.readFileSync(path.join(ROOT, 'research-lab/img/backer-mark.png')),
   );
-  assert.match(labPage, /PMXT · CONNECTING/);
+  assert.match(labPage, /PMXT · PUBLIC SNAPSHOT/);
   assert.match(labPage, /RESEARCH PREVIEW/);
   assert.doesNotMatch(labPage, />[^<]*SYNTHETIC[^<]*</i);
   assert.equal(snapshot.normalizationLayer, 'UnifiedMarket@2.17.1');
   assert.equal(snapshot.provider.id, 'pmxt');
-  assert.equal(fs.existsSync(compressedPopulation), true);
+  assert.equal(fs.existsSync(compressedPopulation), false);
+  assert.equal(fs.existsSync(publicFieldPresenter), true);
   assert.equal(fs.existsSync(rawPopulation), false);
   assert.equal(fs.existsSync(unusedFallback), false);
   assert.ok(thesisAsset);
   assert.ok(contentStylesheet);
   assert.ok(labStylesheet);
+  assert.ok(labScriptAsset);
   const thesisScript = read(path.join('research-lab/assets', thesisAsset));
   const contentStyles = read(path.join('research-lab/assets', contentStylesheet));
   assert.doesNotMatch(thesisScript, /synthetic/i);
@@ -92,7 +95,34 @@ test('Published Lab carries the Backer mark and the bounded PMXT layer', () => {
   assert.match(contentStyles, /font-size:clamp\(44px,12\.2vw,60px\)/);
   assert.match(contentStyles, /h2#inspirations/);
   assert.match(contentStyles, /scroll-margin-top:178px/);
-  assert.match(read(path.join('research-lab/assets', labStylesheet)), /--muted-deep:\s*#918b82/);
-  assert.match(read(path.join('research-lab/assets', labStylesheet)), /font-size:10\.5px/);
-  assert.match(artifactBuilder, /'research-lab'/);
+  const labStyles = read(path.join('research-lab/assets', labStylesheet));
+  const labScript = read(path.join('research-lab/assets', labScriptAsset));
+  assert.match(labStyles, /--muted-deep:\s*#918b82/);
+  assert.match(labStyles, /font-size:10\.5px/);
+  for (const clarityMarker of [
+    'FORECAST WORKBENCH',
+    'ATTENTION GRAPH',
+    'OBSERVED',
+    'SIMULATED',
+    'NOT A REAL-WORLD OUTCOME',
+    'NOT YET OBSERVED',
+  ]) {
+    assert.match(labPage, new RegExp(clarityMarker));
+  }
+  assert.match(labPage, /class="graph-stage-labels"/);
+  assert.match(labStyles, /--workbench-w/);
+  assert.match(labStyles, /\.graph-stage-labels/);
+  assert.match(labScript, /Could see it/);
+  assert.match(labScript, /Spread the signal/);
+  assert.match(labScript, /width < 560/);
+  for (const reviewedPublicArtifact of [
+    'research-lab/index.html',
+    'research-lab/assets/lab-public-v1.js',
+    'research-lab/assets/method-public-v1.js',
+    'research-lab/data/real-market-snapshot.json',
+  ]) {
+    assert.match(artifactBuilder, new RegExp(`'${reviewedPublicArtifact.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}'`));
+  }
+  assert.doesNotMatch(artifactBuilder, /'research-lab\/data\/agents\.json\.gz'/);
+  assert.doesNotMatch(artifactBuilder, /PUBLIC_DIRECTORIES|copyPublicDirectory/);
 });

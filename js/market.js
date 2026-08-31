@@ -21,6 +21,8 @@
   var mountedRoot = null;
   var modelPromise = null;
   var refreshTimer = null;
+  var newsTimer = null;
+  var newsIndex = 0;
   var ticketReturnFocus = null;
   var firstCardPaintScheduled = false;
   var state = {
@@ -200,19 +202,7 @@
     };
   }
   function personalizationSummary() {
-    var signals = deviceSignals();
-    function reason(count, singular) {
-      return count ? count + ' ' + singular + (count === 1 ? '' : 's') : '';
-    }
-    var reasons = [
-      reason(signals.watchedPersonIds.length, 'watched profile'),
-      reason(signals.watchedContentIds.length, 'watched work'),
-      reason(signals.proposedPersonIds.length + signals.proposedContentIds.length, 'saved proposal'),
-      reason(signals.positionSubjectIds.length, 'simulated trade'),
-      reason(signals.recentActions.length, 'recent Discovery action')
-    ].filter(Boolean);
-    if (reasons.length) return 'Ranked by ' + reasons.join(', ') + '. Preferences stay on this device.';
-    return signals.resetAt ? 'Default order restored. All saved data remains.' : 'Watch or trade to rank this local feed.';
+    return 'Backer learns your preferences';
   }
 
   function readURL() {
@@ -289,6 +279,7 @@
     modelPromise = catalogAPI().then(function (api) { return api.load({ signals: deviceSignals() }); }).then(function (catalog) {
       if (!catalog || !array(catalog.people).length) throw new Error('The retained catalog did not return eligible creator accounts');
       state.catalog = normalizeCatalog(catalog);
+      newsIndex = 0;
       timing.catalogLoadedAt = performanceNow();
       performanceMark('backer-trades:catalog-load-end');
       performanceMeasure('backer-trades:catalog-load', 'backer-trades:catalog-load-start', 'backer-trades:catalog-load-end');
@@ -296,6 +287,7 @@
       prepareSubjectRoute();
       scheduleModelRefresh(state.catalog);
       renderContent();
+      scheduleNewsRotation();
       return state.catalog;
     }).catch(function (error) {
       state.loading = false;
@@ -430,6 +422,9 @@
     var date = formatDate(observedAt || value && value.observedAt);
     return freshnessState(value) === 'last_good' ? 'Last good · observed ' + date : date;
   }
+  function termHelp(label, copy) {
+    return '<details class="mkt-term-help"><summary aria-label="What ' + esc(label) + ' means">i</summary><span role="tooltip"><b>' + esc(label) + '</b>' + esc(copy) + '</span></details>';
+  }
   function metricHTML(metric) {
     var value = metric.value != null ? metric.value : metric.count;
     var lastGood = freshnessState(metric) === 'last_good';
@@ -444,7 +439,7 @@
     var contract = validContract(row);
     if (!contract) return '';
     var metric = contract.metric, baseline = contract.baseline, target = contract.target;
-    return '<section class="mkt-contract" aria-label="Paper market proposition"><span class="mkt-contract-label">Market question</span><h3>' + esc(contract.question) + '</h3><div class="mkt-contract-facts"><div><span>Baseline</span><b>' + esc(baseline.label) + '</b><small>' + esc(baselineEvidenceText(baseline, baseline.observedAt)) + '</small></div><div><span>Target</span><b>' + esc(target.label) + '</b><small>by ' + esc(formatDate(contract.cutoff)) + '</small></div><a href="' + esc(safeURL(metric.sourceUrl)) + '" target="_blank" rel="noopener noreferrer" data-mkt-source-open><span>Metric</span><b>' + esc(metric.label) + '</b><small>' + esc(platformLabel(metric.provider)) + ' source ↗</small></a></div></section>';
+    return '<section class="mkt-contract" aria-label="Paper market proposition"><span class="mkt-contract-label">Market question</span><h3>' + esc(contract.question) + '</h3><div class="mkt-contract-facts"><div><div class="mkt-contract-term">Baseline ' + termHelp('Baseline', 'The latest retained public observation used as this contract’s starting value.') + '</div><b>' + esc(baseline.label) + '</b><small>' + esc(baselineEvidenceText(baseline, baseline.observedAt)) + '</small></div><div><div class="mkt-contract-term">Target ' + termHelp('Target', 'The value this subject must reach by the cutoff for a Back position to resolve as correct.') + '</div><b>' + esc(target.label) + '</b><small>by ' + esc(formatDate(contract.cutoff)) + '</small></div><div><div class="mkt-contract-term">Metric ' + termHelp('Metric', 'The source-linked public measurement Backer rechecks when the contract resolves.') + '</div><b><a href="' + esc(safeURL(metric.sourceUrl)) + '" target="_blank" rel="noopener noreferrer" data-mkt-source-open>' + esc(metric.label) + '</a></b><small><a href="' + esc(safeURL(metric.sourceUrl)) + '" target="_blank" rel="noopener noreferrer" data-mkt-source-open>' + esc(platformLabel(metric.provider)) + ' source ↗</a></small></div></div></section>';
   }
   function providerBadges(person) {
     return array(person && (person.accounts || person.platforms)).slice(0, 4).map(function (account) {
@@ -562,12 +557,79 @@
     var catalog = state.catalog || { people: [], contents: [], counts: {} };
     return { people: number(catalog.counts.people || catalog.counts.profiles) || catalog.people.length, contents: number(catalog.counts.contents || catalog.counts.works) || catalog.contents.length };
   }
+  function newsTimestamp(kind, row) {
+    var candidates = kind === 'content'
+      ? [row && row.publishedAt, row && row.observedAt, row && row.lastObservedAt, row && row.updatedAt]
+      : [row && row.lastObservedAt, row && row.observedAt, row && row.updatedAt].concat(array(row && row.metrics).map(function (metric) { return metric && metric.observedAt; }));
+    return candidates.reduce(function (latest, value) {
+      var parsed = Date.parse(value || '');
+      return isFinite(parsed) && parsed > latest ? parsed : latest;
+    }, 0);
+  }
+  function catalogNews() {
+    if (!state.catalog) return [{ kind: 'LATEST', title: 'Loading new source-backed work…', provider: 'DISCOVERY', url: 'backerdemo.html#market2', timestamp: 0 }];
+    if (state.routeMissing) return [{ kind: 'LATEST', title: 'Browse source-backed work and profiles', provider: 'DISCOVERY', url: 'backerdemo.html#market2', timestamp: 0 }];
+    var rows = [];
+    array(state.catalog.contents).forEach(function (work) {
+      var url = contentURL(work), title = display(work && work.title), provider = contentProvider(work);
+      if (!url || !title) return;
+      rows.push({
+        kind: provider === 'github' ? 'NEW PROJECT' : 'NEW CONTENT',
+        title: title,
+        provider: platformLabel(provider),
+        url: url,
+        priority: 2,
+        timestamp: newsTimestamp('content', work)
+      });
+    });
+    array(state.catalog.people).forEach(function (person) {
+      var url = profileURL(person), title = personName(person), provider = primaryProvider(person);
+      if (!url || !title) return;
+      rows.push({ kind: 'NEW PROFILE', title: title, provider: platformLabel(provider), url: url, priority: 1, timestamp: newsTimestamp('profile', person) });
+    });
+    rows.sort(function (a, b) { return b.timestamp - a.timestamp || b.priority - a.priority || a.title.localeCompare(b.title); });
+    return rows.filter(function (item) { return item.priority === 2; }).slice(0, 12)
+      .concat(rows.filter(function (item) { return item.priority === 1; }).slice(0, 4));
+  }
+  function activeNewsItem() {
+    var items = catalogNews();
+    return { item: items[newsIndex % Math.max(1, items.length)], count: items.length };
+  }
+  function updateNewsTicker() {
+    if (!mountedRoot) return;
+    var active = activeNewsItem(), item = active.item;
+    var link = mountedRoot.querySelector('[data-mkt-news-link]');
+    if (!link || !item) return;
+    link.href = item.url;
+    link.target = item.url.indexOf('backerdemo.html#') === 0 ? '' : '_blank';
+    link.rel = link.target ? 'noopener noreferrer' : '';
+    link.setAttribute('aria-label', 'Open original: ' + item.title);
+    var kind = link.querySelector('[data-mkt-news-kind]'), title = link.querySelector('[data-mkt-news-title]');
+    var count = mountedRoot.querySelector('[data-mkt-news-count]');
+    if (kind) kind.textContent = item.kind + ' · ' + item.provider;
+    if (title) title.textContent = item.title;
+    if (count) count.textContent = String((newsIndex % active.count) + 1).padStart(2, '0') + ' / ' + String(active.count).padStart(2, '0');
+  }
+  function scheduleNewsRotation() {
+    if (newsTimer) root.clearInterval(newsTimer);
+    newsTimer = null;
+    if (typeof root.setInterval !== 'function' || catalogNews().length < 2 || root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    newsTimer = root.setInterval(function () {
+      newsIndex += 1;
+      updateNewsTicker();
+    }, 6500);
+  }
+  function newsTickerHTML() {
+    var active = activeNewsItem(), item = active.item;
+    var internal = item.url.indexOf('backerdemo.html#') === 0;
+    return '<div class="mkt-news-line" aria-label="Latest source-backed work and profiles"><span class="mkt-news-label"><i></i>LATEST</span><a href="' + esc(item.url) + '"' + (internal ? '' : ' target="_blank" rel="noopener noreferrer"') + ' data-mkt-news-link aria-label="Open original: ' + esc(item.title) + '"><span data-mkt-news-kind>' + esc(item.kind + ' · ' + item.provider) + '</span><b data-mkt-news-title>' + esc(item.title) + '</b><i aria-hidden="true">↗</i></a><span class="mkt-news-count" data-mkt-news-count>' + esc(String((newsIndex % active.count) + 1).padStart(2, '0') + ' / ' + String(active.count).padStart(2, '0')) + '</span></div>';
+  }
   function tabButton(view, label, count) {
     return '<button type="button" role="tab" aria-selected="' + (state.view === view) + '" class="' + (state.view === view ? 'is-active' : '') + '" data-trades-view="' + view + '"><span>' + esc(label) + '</span><b>' + esc(formatExactCount(count)) + '</b></button>';
   }
   function headerHTML() {
-    var counts = catalogCounts(), generated = formatDate(state.catalog && state.catalog.generatedAt);
-    return '<header class="mkt-header"><div><span class="mkt-kicker">Backer Trades</span><h1>Trade future growth in creator accounts and work</h1><p>Source-backed creator accounts and original content from Discovery. Back, fade, or draft exact market rules around what grows next.</p></div></header><div class="mkt-catalog-line"><span class="mkt-paper-status"><i></i>Paper market · modeled quotes</span><span><b>' + esc(formatMoney(readAccount().cash)) + '</b> paper cash</span><span><b>' + esc(formatExactCount(counts.people)) + '</b> creator-account markets</span><span><b>' + esc(formatExactCount(counts.contents)) + '</b> work markets</span><span><b>' + esc(formatExactCount(counts.people + counts.contents)) + '</b> active contracts</span>' + (generated ? '<span>Observed ' + esc(generated) + '</span>' : '') + '<a href="backerdemo.html#market2">Open Discovery ↗</a><a href="backerdemo.html#market-archive">Archived demo market ↗</a></div><nav class="mkt-tabs" role="tablist" aria-label="Trades views">' + tabButton('feed', 'For you', counts.people + counts.contents) + tabButton('profiles', 'Profiles', counts.people) + tabButton('contents', 'Contents', counts.contents) + tabButton('positions', 'Your trades', listPositions().length) + tabButton('proposals', 'Proposals', proposalRows().length) + '</nav>';
+    var counts = catalogCounts();
+    return '<header class="mkt-header"><div><span class="mkt-kicker">Backer Trades</span><h1>Trade future growth in creator accounts and work</h1><p>Source-backed creator accounts and original content from Discovery. Back, fade, or draft exact market rules around what grows next.</p></div></header>' + newsTickerHTML() + '<nav class="mkt-tabs" role="tablist" aria-label="Trades views">' + tabButton('feed', 'For you', counts.people + counts.contents) + tabButton('profiles', 'Profiles', counts.people) + tabButton('contents', 'Contents', counts.contents) + tabButton('positions', 'Your trades', listPositions().length) + tabButton('proposals', 'Proposals', proposalRows().length) + '</nav>';
   }
   function facetOptions(view, facet) {
     var map = Object.create(null);
@@ -633,7 +695,7 @@
     return '<section class="mkt-feed-section"><div class="mkt-section-head"><div><span class="mkt-eyebrow">Same retained catalog as Discovery</span><h2>' + esc(title) + '</h2><p>' + esc(copy) + '</p></div><button type="button" class="mkt-text-action" data-trades-view="' + view + '">Browse all →</button></div>' + gridHTML(kind, rows, 6) + '</section>';
   }
   function feedHTML() {
-    return '<section class="mkt-personalization"><div><b>For you · on this device</b><p>' + esc(personalizationSummary()) + '</p></div><div class="mkt-personalization-actions"><a href="backerdemo.html#market2">Refine Discovery</a><button type="button" aria-label="Reset personalization" data-reset-personalization>Reset feed</button></div></section>' + sectionHTML('profile', 'Profile markets', 'Back or fade attention around source-backed creator accounts, then draft exact resolution rules when you want a custom bet.', personalize('profile', state.catalog.people)) + sectionHTML('content', 'Content markets', 'Express conviction around retained original work while its creator, source, and native evidence stay attached.', personalize('content', state.catalog.contents));
+    return '<section class="mkt-personalization"><div><b>For you</b><p>' + esc(personalizationSummary()) + '</p></div><div class="mkt-personalization-actions"><button type="button" aria-label="Refine Feed, reset personalization" data-reset-personalization>Refine Feed</button></div></section>' + sectionHTML('profile', 'Profile markets', 'Back or fade internet profiles.', personalize('profile', state.catalog.people)) + sectionHTML('content', 'Content markets', 'Back or fade contents, projects, repos, etc.', personalize('content', state.catalog.contents));
   }
   function pageSlice(rows) {
     var pages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));

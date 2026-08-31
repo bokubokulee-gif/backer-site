@@ -9,6 +9,8 @@
   },
   "scripts": {
     "build:globe": "node scripts/vendor-cobe.js",
+    "build:public": "node scripts/build-pages-artifact.mjs .public-artifact",
+    "audit:public": "node scripts/build-pages-artifact.mjs .public-artifact",
     "lint": "node scripts/lint.js",
     "test": "node --test tests/core*.test.js tests/backend*.test.js tests/market2-v21-release.test.js",
     "test:backend": "node --test tests/backend*.test.js",
@@ -24,6 +26,7 @@
     "pg": "^8.16.3"
   },
   "devDependencies": {
+    "esbuild": "0.28.2",
     "playwright": "^1.61.1"
   }
 }

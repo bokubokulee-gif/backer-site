@@ -10,9 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
     <link rel="icon" type="image/png" href="./img/backer-mark.png" />
     <title>Backer Research Preview | Attention Field</title>
-    <script type="module" crossorigin src="./assets/lab-DPQGlpRQ.js"></script>
-    <link rel="modulepreload" crossorigin href="./assets/styles-CCsHLpTc.js">
-    <link rel="stylesheet" crossorigin href="./assets/styles-bV09n3CR.css">
+    <script type="module" src="./assets/lab-public-v1.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/styles-D6FYb-UD.css">
   </head>
   <body class="lab-page">
     <a class="skip-link" href="#attention-field">Skip to attention field</a>
@@ -27,7 +26,7 @@
         <div class="topbar-center" aria-label="Simulation status">
           <span class="signal-chip signal-chip--strong">RESEARCH PREVIEW</span>
           <span id="run-id" class="run-id">RUN BKR-042</span>
-          <button id="source-status" class="source-status" type="button" aria-haspopup="dialog">PMXT · CONNECTING</button>
+          <button id="source-status" class="source-status" type="button" aria-haspopup="dialog">PMXT · PUBLIC SNAPSHOT</button>
         </div>
         <nav class="topnav" aria-label="Research Lab">
           <button id="mobile-controls-toggle" class="mobile-controls-toggle" type="button" aria-expanded="false">SETUP</button>
@@ -45,20 +44,20 @@
       <main class="lab-grid profile-is-empty">
         <aside class="control-rail" aria-label="Field controls">
           <section class="rail-section rail-intro">
-            <p class="instrument-label">ATTENTION FIELD / 5,000</p>
-            <h1>See where attention moves next.</h1>
-            <p>Choose a market. Shift the conditions. Watch the field reorganize.</p>
+            <p class="instrument-label">FORECAST LAB / 5,000</p>
+            <h1>Rehearse one future at a time.</h1>
+            <p>Choose a market and an intervention. Read the published model projection from signal to outcome.</p>
           </section>
 
           <section class="rail-section">
             <div class="section-head">
-              <span class="label-with-info">SCENE <button class="info-trigger" type="button" data-info="scene" aria-label="Define scene modes">i</button></span>
-              <button id="reset-camera" class="text-button" type="button">RESET VIEW</button>
+              <span class="label-with-info">VIEW <button class="info-trigger" type="button" data-info="scene" aria-label="Define view modes">i</button></span>
+              <button id="reset-camera" class="text-button" type="button" hidden>RESET CAMERA</button>
             </div>
-            <div class="segmented-control" role="group" aria-label="Scene mode">
-              <button class="is-active" type="button" data-scene-mode="field">FLOW</button>
-              <button type="button" data-scene-mode="cascade">CASCADE</button>
-              <button type="button" data-scene-mode="market">MARKET</button>
+            <div class="segmented-control" role="group" aria-label="Research view">
+              <button class="is-active" type="button" data-scene-mode="field">FORECAST</button>
+              <button type="button" data-scene-mode="cascade">NETWORK</button>
+              <button type="button" data-scene-mode="market">MARKETS</button>
             </div>
           </section>
 
@@ -117,9 +116,9 @@
           </section>
 
           <section class="rail-section">
-            <label class="search-label" for="agent-search">FIND A MODELED TRADER</label>
+            <label class="search-label" for="agent-search">FIND A PUBLIC FIELD MARKER</label>
             <div class="search-wrap">
-              <input id="agent-search" type="search" autocomplete="off" placeholder="Name, ID, cohort" />
+              <input id="agent-search" type="search" autocomplete="off" placeholder="Marker number" inputmode="numeric" />
               <kbd>/</kbd>
             </div>
             <div id="search-results" class="search-results" role="listbox" hidden></div>
@@ -149,75 +148,111 @@
 
           <section class="rail-section boundary-note">
             <span class="boundary-mark">BOUNDARY</span>
-            <p>Observed market signals and modeled behavior remain separate layers.</p>
+            <p>Observed market signals and published aggregate projections remain separate layers.</p>
             <a href="./method.html#validation">View method</a>
           </section>
         </aside>
 
-        <section id="attention-field" class="field-stage is-flow-mode" aria-label="Interactive 3D causal attention flow">
+        <section id="attention-field" class="field-stage is-flow-mode" aria-label="Modeled attention forecast and causal path">
           <div id="scene-mount" class="scene-mount"></div>
+          <div class="graph-stage-labels" aria-hidden="true">
+            <span><b>01</b>EXPOSED</span>
+            <span><b>02</b>ATTENDING</span>
+            <span><b>03</b>PROPAGATING</span>
+            <span><b>04</b>COMMITTED</span>
+            <span><b>05</b>FILLED</span>
+          </div>
           <div class="field-vignette" aria-hidden="true"></div>
           <div class="field-caption">
-            <span id="field-mode-label">CAUSAL ATTENTION FLOW</span>
-            <span id="field-source-line">PMXT MARKET LAYER · MODELED TRADERS · DRAG TO ORBIT</span>
+            <span id="field-mode-label">ATTENTION GRAPH</span>
+            <span id="field-source-line">PMXT MARKET LAYER · 5,000 MODELED TRADERS</span>
           </div>
 
-          <section id="causal-context" class="causal-context" aria-label="Selected real situation">
-            <div class="causal-context-copy">
-              <span class="instrument-label">REAL SITUATION / <b id="selected-situation-source">POLYMARKET</b></span>
-              <h2 id="selected-situation-title">Loading market situation…</h2>
+          <div class="forecast-surface">
+            <div class="workbench-head">
+              <span>FORECAST WORKBENCH</span>
+              <span>STEP 4 / FORECAST</span>
             </div>
-            <div class="observed-prior">
-              <div><span class="label-with-info">OBSERVED YES <button class="info-trigger" type="button" data-info="observed-yes" aria-label="Define observed Yes">i</button></span><strong id="observed-probability">-</strong></div>
-              <div><span class="label-with-info">MODEL BOOK <button class="info-trigger" type="button" data-info="model-book" aria-label="Define model book">i</button></span><strong id="simulated-book-probability">-</strong></div>
-              <div><span class="label-with-info"><span id="observed-volume-label">OBS. CUM. VOLUME</span> <button class="info-trigger" type="button" data-info="observed-volume" aria-label="Define observed volume">i</button></span><strong id="observed-volume">-</strong></div>
-              <a id="selected-situation-link" href="#" target="_blank" rel="noopener">OPEN SOURCE ↗</a>
+            <div class="forecast-workflow" aria-label="Forecast workflow">
+              <span><b>01</b> OBSERVE</span><i aria-hidden="true"></i>
+              <span><b>02</b> INTERVENE</span><i aria-hidden="true"></i>
+              <span><b>03</b> SIMULATE</span><i aria-hidden="true"></i>
+              <span><b>04</b> FORECAST</span>
             </div>
-          </section>
 
-          <div id="causal-stage-grid" class="causal-stage-grid" aria-label="Five-stage attention and commitment flow"></div>
+            <section id="causal-context" class="causal-context" aria-label="Forecast question and selected market signal">
+              <div class="causal-context-copy">
+                <span class="instrument-label">FORECAST QUESTION</span>
+                <h2 id="forecast-question">Within the next 24 model steps, how many of 5,000 modeled traders are expected to hold a filled contract?</h2>
+                <p class="situation-line"><span>STARTING SIGNAL</span><b id="selected-situation-source">POLYMARKET</b><strong id="selected-situation-title">Loading market situation…</strong></p>
+                <p class="scenario-line"><span>INTERVENTION</span><b id="forecast-scenario-label">BASELINE</b><strong id="forecast-scenario-note">No modeled condition changed.</strong></p>
+              </div>
+              <div class="forecast-reference" aria-label="Observed and modeled reference values">
+                <div class="reference-layer reference-layer--observed">
+                  <span class="layer-label">OBSERVED</span>
+                  <div class="reference-metrics">
+                    <div><span class="label-with-info">VENUE YES <button class="info-trigger" type="button" data-info="observed-yes" aria-label="Define observed Yes">i</button></span><strong id="observed-probability">-</strong></div>
+                    <div><span class="label-with-info"><span id="observed-volume-label">VENUE VOLUME</span> <button class="info-trigger" type="button" data-info="observed-volume" aria-label="Define observed volume">i</button></span><strong id="observed-volume">-</strong></div>
+                  </div>
+                  <a id="selected-situation-link" href="#" target="_blank" rel="noopener">OPEN SOURCE ↗</a>
+                </div>
+                <div class="reference-layer reference-layer--modeled">
+                  <span class="layer-label">SIMULATED</span>
+                  <div class="reference-metrics">
+                    <div><span class="label-with-info">MODEL BOOK <button class="info-trigger" type="button" data-info="model-book" aria-label="Define model book">i</button></span><strong id="simulated-book-probability">-</strong></div>
+                  </div>
+                  <span class="model-boundary">NOT A REAL-WORLD OUTCOME</span>
+                </div>
+              </div>
+            </section>
 
-          <section id="forecast-panel" class="forecast-panel" aria-label="Modeled behavior forecast">
-            <div class="forecast-question">
-              <span class="instrument-label">MODEL PROJECTION / PREVIEW</span>
-              <p id="forecast-question">Of 5,000 modeled traders, how many reach a paid or traded action?</p>
-            </div>
-            <div class="forecast-primary">
-              <span class="label-with-info">EXPECTED FILLED-CONTRACT PROXY <button class="info-trigger" type="button" data-info="filled-contract-proxy" aria-label="Define filled-contract proxy">i</button></span>
-              <strong id="forecast-expected">-</strong>
-              <small id="forecast-interval">- interval</small>
-            </div>
-            <div class="forecast-threshold">
-              <span class="label-with-info"><span id="forecast-threshold-label">P(CLEAR THRESHOLD)</span> <button class="info-trigger" type="button" data-info="clear-threshold" aria-label="Define probability of clearing the threshold">i</button></span>
-              <strong id="forecast-probability">-</strong>
-              <small id="forecast-delta">BASELINE</small>
-            </div>
-            <div class="forecast-drivers">
-              <span class="label-with-info">TOP MODELED DRIVERS <button class="info-trigger" type="button" data-info="modeled-drivers" aria-label="Define modeled drivers">i</button></span>
-              <ol id="forecast-driver-list" class="forecast-driver-list"></ol>
-            </div>
-          </section>
+            <section id="forecast-panel" class="forecast-panel" aria-label="Modeled behavior forecast">
+              <div class="forecast-primary">
+                <span class="label-with-info">MODEL ANSWER <button class="info-trigger" type="button" data-info="filled-contract-proxy" aria-label="Define modeled answer">i</button></span>
+                <div class="forecast-value"><strong id="forecast-expected">-</strong><span>EXPECTED FILLS</span></div>
+                <small id="forecast-interval">- interval</small>
+              </div>
+              <div class="forecast-threshold">
+                <span class="label-with-info"><span id="forecast-threshold-label">P(CLEAR THRESHOLD)</span> <button class="info-trigger" type="button" data-info="clear-threshold" aria-label="Define probability of clearing the threshold">i</button></span>
+                <strong id="forecast-probability">-</strong>
+                <small id="forecast-delta">BASELINE</small>
+              </div>
+              <div class="forecast-drivers">
+                <span class="label-with-info">WHY THE MODEL MOVED <button class="info-trigger" type="button" data-info="modeled-drivers" aria-label="Define modeled drivers">i</button></span>
+                <ol id="forecast-driver-list" class="forecast-driver-list"></ol>
+                <p class="outcome-check"><span>OUTCOME CHECK</span><strong>NOT YET OBSERVED</strong><small>Compare this forecast with the resolved market outcome.</small></p>
+              </div>
+            </section>
 
-          <div class="field-key" aria-label="Causal flow legend">
+            <section class="causal-path" aria-labelledby="causal-path-title">
+              <div class="causal-path-head">
+                <span id="causal-path-title">SIMULATED CAUSAL PATH</span>
+                <span>MAIN NUMBER = PEOPLE WHO REACHED EACH STAGE</span>
+              </div>
+              <div id="causal-stage-grid" class="causal-stage-grid" aria-label="Five-stage attention and commitment flow"></div>
+            </section>
+          </div>
+
+          <div class="field-key" aria-label="Interactive field legend">
             <span><i class="key-dot key-dot--outer"></i>1 DOT = 1 MODELED TRADER</span>
-            <span><i class="key-dot key-dot--core"></i>LANE = FURTHEST STAGE REACHED</span>
+            <span><i class="key-dot key-dot--core"></i>CLICK A DOT FOR ITS PUBLIC STAGE</span>
           </div>
           <div id="hover-card" class="hover-card" hidden></div>
           <div id="event-labels" class="event-labels" aria-hidden="true"></div>
           <div class="simulation-watermark" aria-hidden="true">5K</div>
           <div id="loading-state" class="loading-state">
             <span class="loading-line"></span>
-            <strong>ASSEMBLING 5,000 TRADER PROFILES</strong>
-            <span>Seed 42 · deterministic replay</span>
+            <strong>ASSEMBLING 5,000 ANONYMOUS FIELD MARKERS</strong>
+            <span>Reviewed public projection · no profile corpus</span>
           </div>
-          <button id="mobile-open-profile" class="mobile-profile-button" type="button">BROWSE 5,000 TRADERS</button>
+          <button id="mobile-open-profile" class="mobile-profile-button" type="button">BROWSE PUBLIC MARKERS</button>
         </section>
 
         <aside id="profile-panel" class="profile-panel" aria-label="Selected agent profile">
           <div class="profile-empty" id="profile-empty">
-            <span class="profile-index">0000 / 5,000</span>
-            <h2>Select a trader in the field.</h2>
-            <p>Inspect their context, belief, position, and latest action.</p>
+            <span class="profile-index">PUBLIC PROJECTION</span>
+            <h2>Select a marker in the field.</h2>
+            <p>Inspect its published aggregate stage. Individual research profiles are not shipped to browsers.</p>
             <button id="select-random" class="primary-button" type="button">SELECT ONE AT RANDOM</button>
           </div>
           <div id="profile-content" class="profile-content" hidden>
@@ -229,11 +264,11 @@
               <div id="profile-avatar" class="profile-avatar">AM</div>
               <div>
                 <div class="profile-flags">
-                  <span class="signal-chip">MODELED</span>
-                  <span id="profile-cohort" class="signal-chip signal-chip--muted">SCOUT</span>
+                  <span class="signal-chip">PUBLIC</span>
+                  <span id="profile-cohort" class="signal-chip signal-chip--muted">AGGREGATE</span>
                 </div>
-                <h2 id="profile-name">Alex Morgan</h2>
-                <p id="profile-context">28 to 34 · Pacific · Product designer</p>
+                <h2 id="profile-name">Anonymous marker</h2>
+                <p id="profile-context">No individual identity or profile attributes are public.</p>
               </div>
             </div>
 
@@ -279,9 +314,9 @@
             <section class="profile-section provenance-block">
               <div class="section-head"><span>PROVENANCE</span></div>
               <dl class="provenance-list">
-                <div><dt>Population</dt><dd>Behavior cohort v0.1</dd></div>
+                <div><dt>Population</dt><dd>Reviewed aggregate projection</dd></div>
                 <div><dt>Market layer</dt><dd>PMXT compatible</dd></div>
-                <div><dt>Identity</dt><dd>Modeled profile</dd></div>
+                <div><dt>Identity</dt><dd>Anonymous visual marker</dd></div>
                 <div><dt>Stage</dt><dd>Research preview</dd></div>
               </dl>
             </section>
