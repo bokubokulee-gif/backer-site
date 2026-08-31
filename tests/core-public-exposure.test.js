@@ -98,6 +98,7 @@ test('public build is explicit, minified, source-map-free, and used by Vercel', 
   assert.match(builder, /'css\/admin-analytics\.css'/);
   assert.match(builder, /'js\/admin-analytics\.js'/);
   assert.match(builder, /'research-lab\/assets\/lab-public-v1\.js'/);
+  assert.match(builder, /'research-lab\/assets\/lab-public-v2\.css'/);
   assert.match(builder, /'research-lab\/assets\/method-public-v1\.js'/);
   assert.doesNotMatch(builder, /'research-lab\/data\/agents\.json\.gz'/);
   assert.doesNotMatch(builder, /'research-lab\/assets\/lab-CsGj-wRf\.js'/);

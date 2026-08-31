@@ -12,6 +12,7 @@
     <title>Backer Research Preview | Attention Field</title>
     <script type="module" src="./assets/lab-public-v1.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/styles-D6FYb-UD.css">
+    <link rel="stylesheet" href="./assets/lab-public-v2.css">
   </head>
   <body class="lab-page">
     <a class="skip-link" href="#attention-field">Skip to attention field</a>
@@ -155,6 +156,13 @@
 
         <section id="attention-field" class="field-stage is-flow-mode" aria-label="Modeled attention forecast and causal path">
           <div id="scene-mount" class="scene-mount"></div>
+          <div class="graph-camera-controls" aria-label="Attention graph camera controls">
+            <button id="zoom-out" type="button" aria-label="Zoom attention graph out">−</button>
+            <output id="zoom-level" aria-live="polite">1.00×</output>
+            <button id="zoom-in" type="button" aria-label="Zoom attention graph in">+</button>
+            <button id="zoom-reset" class="camera-reset" type="button">RESET</button>
+          </div>
+          <p id="graph-gesture-hint" class="graph-gesture-hint">DRAG TO ORBIT · SHIFT + DRAG TO PAN · SCROLL / PINCH TO DOLLY</p>
           <div class="graph-stage-labels" aria-hidden="true">
             <span><b>01</b>EXPOSED</span>
             <span><b>02</b>ATTENDING</span>
@@ -235,7 +243,7 @@
 
           <div class="field-key" aria-label="Interactive field legend">
             <span><i class="key-dot key-dot--outer"></i>1 DOT = 1 MODELED TRADER</span>
-            <span><i class="key-dot key-dot--core"></i>CLICK A DOT FOR ITS PUBLIC STAGE</span>
+            <span><i class="key-dot key-dot--core"></i>ORBIT · DOLLY · PAN · CLICK TO INSPECT</span>
           </div>
           <div id="hover-card" class="hover-card" hidden></div>
           <div id="event-labels" class="event-labels" aria-hidden="true"></div>

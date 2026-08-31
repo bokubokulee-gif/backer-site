@@ -110,14 +110,32 @@ test('Published Lab carries the Backer mark and the bounded PMXT layer', () => {
     assert.match(labPage, new RegExp(clarityMarker));
   }
   assert.match(labPage, /class="graph-stage-labels"/);
+  assert.match(labPage, /id="zoom-level"/);
+  assert.match(labPage, /DRAG TO ORBIT/);
+  assert.match(labPage, /SCROLL \/ PINCH TO DOLLY/);
+  assert.match(labPage, /ORBIT · DOLLY · PAN · CLICK TO INSPECT/);
   assert.match(labStyles, /--workbench-w/);
   assert.match(labStyles, /\.graph-stage-labels/);
   assert.match(labScript, /Could see it/);
   assert.match(labScript, /Spread the signal/);
   assert.match(labScript, /width < 560/);
+  assert.match(labScript, /function pointWorldPosition/);
+  assert.match(labScript, /function projectWorld/);
+  assert.match(labScript, /camera\.yaw/);
+  assert.match(labScript, /camera\.pitch/);
+  assert.match(labScript, /cameraDepth/);
+  assert.match(labScript, /sort\(\(first, second\) => second\.cameraDepth - first\.cameraDepth\)/);
+  assert.match(labScript, /mode: event\.shiftKey[^\n]+\? 'pan' : 'orbit'/);
+  assert.match(labScript, /addEventListener\('wheel'/);
+  assert.match(labScript, /addEventListener\('pointerdown'/);
+  assert.match(labScript, /beginPinch/);
+  assert.match(labScript, /data-focus-stage/);
+  assert.match(labScript, /if \(state\.tick >= REPLAY_END\) state\.tick = 0/);
+  assert.match(labScript, /state\.tick = state\.tick >= REPLAY_END \? 1/);
   for (const reviewedPublicArtifact of [
     'research-lab/index.html',
     'research-lab/assets/lab-public-v1.js',
+    'research-lab/assets/lab-public-v2.css',
     'research-lab/assets/method-public-v1.js',
     'research-lab/data/real-market-snapshot.json',
   ]) {

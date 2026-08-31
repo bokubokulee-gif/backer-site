@@ -112,6 +112,7 @@ const PUBLIC_FILES = Object.freeze([
   'research-lab/assets/dm-mono-latin-ext-400-normal-1aZr6b2b.woff',
   'research-lab/assets/dm-mono-latin-ext-400-normal-C2zvOubV.woff2',
   'research-lab/assets/lab-public-v1.js',
+  'research-lab/assets/lab-public-v2.css',
   'research-lab/assets/manrope-cyrillic-400-normal-BMzJvInZ.woff2',
   'research-lab/assets/manrope-cyrillic-400-normal-Dvx59UGC.woff',
   'research-lab/assets/manrope-cyrillic-500-normal-B1OEZity.woff2',
