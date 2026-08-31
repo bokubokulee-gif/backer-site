@@ -1,773 +1,223 @@
-/* =========================================================
-   BACKER — Creator markets: contract-first exchange homepage
-   (Exchange Homepage PRDs, 2026-07-15). Owns the archived "market"
-   view inside backerdemo.html.
-   Page order: compact framing → browse/category rail →
-   status ticker → tabs + controls → featured market row →
-   All Markets compact grid + Backer Pulse right rail →
-   Creator Radar / Resolved previews → methodology footer.
-   Demo · simulated data — fixture catalog, fixed snapshot.
-   ========================================================= */
-window.BackerLegacyMarket = (function () {
-  'use strict';
-  const B = window.BACKER, M = window.BACKER_MKT;
-  const $ = (s, r = document) => r.querySelector(s);
-  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
-  const esc = s => String(s).replace(/</g, '&lt;');
-  function analyticsTrack(event, props) {
-    try {
-      if (window.BackerAnalytics) window.BackerAnalytics.track(event, props || {});
-    } catch (e) {}
-  }
-
-  /* ---------------- view state ---------------- */
-  const state = {
-    view: 'markets',              // markets | radar | resolved
-    browse: null,                 // trending|new|rising|ending|most-backed|high-poa|risk-watch
-    window: M.DEFAULT_WINDOW,
-    genre: null,
-    platforms: [], scale: [], poa: [], multiple: [],
-    evidence: 'all', risk: 'all',
-    quickOpen: true, ending: false, u100: false,
-    sort: 'pulse', shown: 12, featIdx: 0
-  };
-  let root = null, lastTrigger = null;
-  const sessionAdds = {};        // this-session simulated position overlay (display only)
-
-  /* ---------------- watchlist (demo: localStorage) ---------------- */
-  const WKEY = 'backer_watchlist_v1', PKEY = 'backer_portfolio_v1';
-  function getWatch() { try { return new Set(JSON.parse(localStorage.getItem(WKEY) || '[]')); } catch (e) { return new Set(); } }
-  function setWatch(set) { try { localStorage.setItem(WKEY, JSON.stringify([...set])); } catch (e) {} }
-  let watch = getWatch();
-  function getPositions() { try { return JSON.parse(localStorage.getItem(PKEY) || '[]'); } catch (e) { return []; } }
-
-  function toast(msg, kind) {
-    if (window.__backerToast) return window.__backerToast(msg, kind);
-    const t = $('#toast'); if (!t) return;
-    t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2400);
-  }
-
-  function focusTerminalTrigger(trigger) {
-    if (!trigger || !trigger.focus) return;
-    try { trigger.focus({ preventScroll: true }); } catch (e) { try { trigger.focus(); } catch (x) {} }
-  }
-  function openMarketTerminal(c, trigger) {
-    if (!c) return;
-    focusTerminalTrigger(trigger);
-    analyticsTrack('market_card_opened', { market_id: c.id, creator_id: c.id, source: 'market' });
-    window.location.href = 'backermarket.html?market=' + encodeURIComponent(c.id) + '&source=market-archive';
-  }
-  function openPoaTerminal(c, trigger) {
-    if (!c) return;
-    focusTerminalTrigger(trigger);
-    const terminal = window.PoaTerminal;
-    const context = { seed: c.id, creator: c, name: c.name, surface: 'poa' };
-    if (terminal && typeof terminal.open === 'function') { terminal.open(context); return; }
-    if (terminal && typeof terminal.openByCreator === 'function') { terminal.openByCreator(c.id, context); return; }
-    lastTrigger = trigger;
-    openPoa(c);
-  }
-
-  /* ---------------- URL state (defaults omitted; legacy keys still read) ---------------- */
-  function writeURL() {
-    const p = [];
-    if (state.view !== 'markets') p.push('view=' + state.view);
-    if (state.browse) p.push('browse=' + state.browse);
-    if (state.window !== M.DEFAULT_WINDOW) p.push('window=' + state.window);
-    if (state.genre) p.push('genre=' + state.genre);
-    if (state.platforms.length) p.push('platform=' + state.platforms.join(','));
-    if (state.scale.length) p.push('scale=' + state.scale.join(','));
-    if (state.poa.length) p.push('poa=' + state.poa.join(','));
-    if (state.multiple.length) p.push('multiple=' + state.multiple.join(','));
-    if (state.evidence !== 'all') p.push('evidence=' + state.evidence);
-    if (state.risk !== 'all') p.push('risk=' + state.risk);
-    if (!state.quickOpen) p.push('status=all');
-    if (state.ending) p.push('ending=1');
-    if (state.u100) p.push('u100=1');
-    if (state.sort !== 'pulse') p.push('sort=' + state.sort);
-    try { history.replaceState(null, '', location.pathname + location.search + (p.length ? '#market-archive?' + p.join('&') : '#market-archive')); } catch (e) {}
-  }
-  function readURL() {
-    const h = location.hash;
-    if (!/^#market-archive\?/.test(h)) return;
-    const p = new URLSearchParams(h.slice('#market-archive?'.length));
-    const oneOf = (key, values) => {
-      const value = p.get(key);
-      return values.includes(value) ? value : null;
-    };
-    const manyOf = (key, values) => {
-      const allowed = new Set(values);
-      return (p.get(key) || '').split(',').filter((value, index, list) => allowed.has(value) && list.indexOf(value) === index);
-    };
-    const view = oneOf('view', ['markets', 'radar', 'resolved']);
-    const browse = oneOf('browse', BROWSE.map(item => item[0]));
-    const win = oneOf('window', M.WINDOWS);
-    const genre = oneOf('genre', M.TAXONOMY.map(item => item.id));
-    const sort = oneOf('sort', SORTS.map(item => item[0]));
-    const evidence = oneOf('evidence', ['all', 'high', 'medium', 'low']);
-    const risk = oneOf('risk', ['all', 'none', 'low', 'medium', 'elevated']);
-    if (view) state.view = view;
-    if (browse) state.browse = browse;
-    if (win) state.window = win;
-    if (genre) state.genre = genre;
-    state.platforms = manyOf('platform', M.PLATFORMS.map(item => item.id));
-    state.scale = manyOf('scale', M.TIERS.map(item => item.id));
-    state.poa = manyOf('poa', ['strong', 'mixed', 'risk', 'insufficient']);
-    state.multiple = manyOf('multiple', ['1x', '15x', '2x']);
-    if (evidence) state.evidence = evidence;
-    if (risk) state.risk = risk;
-    if (p.get('status') === 'all') state.quickOpen = false;
-    state.ending = p.get('ending') === '1';
-    state.u100 = p.get('u100') === '1';
-    if (sort) state.sort = sort;
-    const legacyMarket = p.get('market');
-    if (legacyMarket) { // legacy state filter → nearest new state
-      const legacyState = legacyMarket.toUpperCase();
-      if (/RESOLVED/.test(legacyState)) state.view = 'resolved';
-      else if (/WATCH|NO_CONTRACT|REVIEW|PENDING/.test(legacyState)) state.view = 'radar';
-    }
-  }
-
-  function resetState() {
-    state.view = 'markets';
-    state.browse = null;
-    state.window = M.DEFAULT_WINDOW;
-    state.genre = null;
-    state.platforms = [];
-    state.scale = [];
-    state.poa = [];
-    state.multiple = [];
-    state.evidence = 'all';
-    state.risk = 'all';
-    state.quickOpen = true;
-    state.ending = false;
-    state.u100 = false;
-    state.sort = 'pulse';
-    state.shown = 12;
-    state.featIdx = 0;
-  }
-
-  /* ---------------- filtering + sorting ---------------- */
-  const RISK_ORDER = ['none', 'low', 'medium', 'elevated', 'severe'];
-  const EV_MIN = { high: 80, medium: 60, low: 35 };
-  const multBand = m => m >= 2 ? '2x' : m >= 1.5 ? '15x' : '1x';
-
-  function baseFilter(c) {
-    const m = c.mkt;
-    if (state.genre && m.cat !== state.genre) return false;
-    if (state.platforms.length && !m.profiles.some(p => state.platforms.includes(p.plat))) return false;
-    if (state.scale.length && !state.scale.includes(m.tier.id)) return false;
-    if (state.poa.length && !state.poa.includes(m.poa.band)) return false;
-    if (state.evidence !== 'all' && m.evidence.score < EV_MIN[state.evidence]) return false;
-    if (state.risk !== 'all' && RISK_ORDER.indexOf(m.risk.level) > RISK_ORDER.indexOf(state.risk)) return false;
-    if (state.u100 && c.followers >= 1e5) return false;
-    return true;
-  }
-  function marketList() {
-    let list = M.CONTRACTS.filter(c => ['OPEN', 'OPENING_SOON', 'CLOSED'].includes(c.mkt.state) && baseFilter(c));
-    if (state.quickOpen) list = list.filter(c => c.mkt.state === 'OPEN');
-    if (state.ending) list = list.filter(c => c.mkt.state === 'OPEN' && c.contract.closeDays <= 30);
-    if (state.multiple.length) list = list.filter(c => state.multiple.includes(multBand(c.contract.mult)));
-    if (state.browse === 'new') list = list.filter(c => c.contract.isNew);
-    else if (state.browse === 'ending') list = list.filter(c => c.mkt.state === 'OPEN' && c.contract.closeDays <= 30);
-    else if (state.browse === 'high-poa') list = list.filter(c => c.mkt.poa.score >= 75 && c.mkt.evidence.score >= 60);
-    else if (state.browse === 'risk-watch') list = list.filter(c => ['medium', 'elevated', 'severe'].includes(c.mkt.risk.level));
-    return sortContracts(list);
-  }
-  function radarList() {
-    return M.ALL.filter(c => M.RADAR_STATES.includes(c.mkt.state) && baseFilter(c))
-      .sort((a, b) => b.mkt.windows[state.window].pulse.value - a.mkt.windows[state.window].pulse.value
-        || b.mkt.evidence.score - a.mkt.evidence.score || (a.id < b.id ? -1 : 1));
-  }
-  function resolvedList() {
-    return M.CONTRACTS.filter(c => c.mkt.state === 'RESOLVED' && baseFilter(c))
-      .sort((a, b) => b.contract.simVol - a.contract.simVol);
-  }
-  function sortContracts(list) {
-    const w = state.window;
-    const by = f => list.slice().sort((a, b) => f(b) - f(a) || b.mkt.evidence.score - a.mkt.evidence.score || (a.id < b.id ? -1 : 1));
-    switch (state.sort) {
-      case 'trending': { const idx = {}; M.trendingList(w).forEach((c, i) => idx[c.id] = i); return list.slice().sort((a, b) => (idx[a.id] ?? 999) - (idx[b.id] ?? 999)); }
-      case 'most-backed': return by(c => c.contract.simVol);
-      case 'ending': return list.slice().sort((a, b) => (a.mkt.state === 'OPEN' ? a.contract.closeDays : 999) - (b.mkt.state === 'OPEN' ? b.contract.closeDays : 999));
-      case 'newest': return list.slice().sort((a, b) => a.contract.listedDaysAgo - b.contract.listedDaysAgo);
-      case 'poa': return by(c => c.mkt.poa.score * 1000 + c.mkt.evidence.score);
-      case 'evidence': return by(c => c.mkt.evidence.score * 1000 + c.mkt.poa.score);
-      case 'rising': return by(c => c.mkt.windows[w].pulse.comp.momentum * 1000 + c.mkt.windows[w].pulse.value);
-      case 'risk': return list.slice().sort((a, b) => RISK_ORDER.indexOf(a.mkt.risk.level) - RISK_ORDER.indexOf(b.mkt.risk.level) || b.mkt.poa.score - a.mkt.poa.score);
-      case 'multiple': return by(c => c.contract.mult);
-      default: return by(c => c.mkt.windows[w].pulse.value);
-    }
-  }
-  const SORTS = [
-    ['pulse', 'Attention Pulse'], ['trending', 'Trending'], ['most-backed', 'Most backed'],
-    ['ending', 'Ending soon'], ['newest', 'Newest'], ['poa', 'Strongest PoA'],
-    ['evidence', 'Highest evidence'], ['rising', 'Fastest rising'], ['risk', 'Lowest risk'], ['multiple', 'Highest multiple']
-  ];
-  const BROWSE = [
-    ['trending', 'Trending', 'trending'], ['new', 'New', 'newest'], ['rising', 'Rising', 'rising'],
-    ['ending', 'Ending soon', 'ending'], ['most-backed', 'Most backed', 'most-backed'],
-    ['high-poa', 'High PoA', 'poa'], ['risk-watch', 'Risk watch', 'risk']
-  ];
-
-  /* ---------------- tiny render helpers ---------------- */
-  function initials(name) { return name.split(' ').slice(0, 2).map(x => x[0]).join('').toUpperCase(); }
-  function avatar(c, size) {
-    return `<span class="mkt-av" style="width:${size}px;height:${size}px;background:radial-gradient(circle at 32% 26%, hsl(${c.hue} 70% 62%), hsl(${c.hue + 26} 55% 32%) 64%, hsl(${c.hue + 8} 38% 15%));font-size:${Math.round(size * .36)}px;color:hsl(${c.hue} 60% 12%)">${initials(c.name)}</span>`;
-  }
-  function poaPill(c) {
-    const m = c.mkt, band = m.poa.band;
-    const txt = band === 'insufficient' ? '—' : m.poa.score;
-    const g = m.evidence.grade[0];
-    return `<button type="button" class="mkt-poa ${band}" data-mkt-poa-open="${c.id}" aria-label="Open Proof of Attention composition for ${esc(c.name)}; ${band === 'insufficient' ? 'insufficient evidence' : 'score ' + m.poa.score + ', evidence ' + m.evidence.grade}" title="PoA ${txt} · Evidence ${m.evidence.grade} — underwriting, not success odds"><i></i>${txt}<em>${g}</em></button>`;
-  }
-  function watchBtn(c, label) {
-    const on = watch.has(c.id);
-    return `<button class="mkt-watch ${on ? 'on' : ''}" data-watch="${c.id}" aria-pressed="${on}" aria-label="${on ? 'Remove from watchlist' : 'Add to watchlist'}" title="${on ? 'Watching' : 'Watch'}"><svg viewBox="0 0 24 24"><path d="M12 3l2.7 5.8 6.3.8-4.6 4.3 1.2 6.1L12 17l-5.6 3 1.2-6.1L3 9.6l6.3-.8z"/></svg>${label ? `<span>${on ? 'Watching' : 'Watch'}</span>` : ''}</button>`;
-  }
-  function deltaTag(c, small) {
-    const d = c.mkt.windows[state.window].delta;
-    return `<span class="mkt-delta ${d > 0 ? 'up' : d < 0 ? 'down' : 'flat'}">${d > 0 ? '+' : ''}${d.toFixed(1)}${small ? `<small> Pulse ${state.window.toUpperCase()}</small>` : ''}</span>`;
-  }
-  const riskWord = { none: 'Low material risk', low: 'Low risk', medium: 'Mixed evidence', elevated: 'Elevated risk', severe: 'Material risk' };
-  function riskTag(c) {
-    const l = c.mkt.risk.level;
-    return `<span class="mkt-risk ${l}" title="${esc(c.mkt.risk.label)}">${riskWord[l]}</span>`;
-  }
-  function safePublicEvidence(c) {
-    const text = c && c.mkt && c.mkt.poa ? String(c.mkt.poa.positive || '') : '';
-    if (!text || /watch\s*time|view\s*duration|retention|returning[-\s]*viewer/i.test(text)) {
-      return 'Stable public engagement breadth across sampled content.';
-    }
-    return text;
-  }
-  function simVolOf(c) { return c.contract.simVol + (sessionAdds[c.id] || 0); }
-  function backersOf(c) { return c.contract.backers + (sessionAdds[c.id] ? 1 : 0); }
-  function freshTag(c) {
-    const f = c.contract ? `upd ${c.contract.freshMin}m` : `${c.mkt.profiles[0].fresh.label.toLowerCase()} ${c.mkt.profiles[0].fresh.ago}`;
-    return `<span class="mkt-fr" title="Relative to the fixed demo snapshot (${M.DEMO_SNAP_LABEL}). Fixture data — never a live claim.">${f} · demo</span>`;
-  }
-  function statusBadge(c) {
-    const st = c.mkt.state, k = c.contract;
-    if (st === 'OPEN' && k.closingSoon) return `<span class="mkt-badge closing">Closing soon</span>`;
-    if (st === 'OPEN' && k.isNew) return `<span class="mkt-badge new">New</span>`;
-    if (st === 'OPEN') return `<span class="mkt-badge open">Open</span>`;
-    if (st === 'OPENING_SOON') return `<span class="mkt-badge soon">Opens in ${k.opensInDays}d</span>`;
-    if (st === 'CLOSED') return `<span class="mkt-badge closed">Closed</span>`;
-    if (st === 'RESOLVED') return k.outcome === 'HIT' ? `<span class="mkt-badge hit">Resolved · hit</span>` : `<span class="mkt-badge miss">Resolved · miss</span>`;
-    return `<span class="mkt-badge closed">${M.STATES[st].label}</span>`;
-  }
-  function cardCTA(c) {
-    const st = c.mkt.state;
-    if (st === 'OPEN') return `<button type="button" class="mkt-cta" data-market-open="${c.id}" aria-label="Open a simulated position on ${esc(c.name)}">Open position</button>`;
-    if (st === 'OPENING_SOON') return watchBtn(c, true);
-    if (st === 'CLOSED') return `<button type="button" class="mkt-btn ghost sm" data-market-open="${c.id}">View contract</button>`;
-    if (st === 'RESOLVED') return `<button type="button" class="mkt-btn ghost sm" data-market-open="${c.id}">View result</button>`;
-    return '';
-  }
-  function sparkline(c, w, h) {
-    const s = c.contract.spark, tgt = c.milestone.target;
-    const max = Math.max(tgt, ...s), min = Math.min(...s);
-    const rng = Math.max(1, max - min);
-    const pts = s.map((v, i) => `${(i / (s.length - 1) * w).toFixed(1)},${(h - 4 - (v - min) / rng * (h - 8)).toFixed(1)}`).join(' ');
-    const ty = (h - 4 - (tgt - min) / rng * (h - 8)).toFixed(1);
-    return `<svg class="mkt-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="Milestone progress trajectory: ${c.contract.curLabel} of ${c.contract.tgtLabel} target (${c.contract.progressPct}% milestone progress)">
-      <line x1="0" y1="${ty}" x2="${w}" y2="${ty}" class="sp-target"/>
-      <polyline points="${pts}" class="sp-line"/>
-      <circle cx="${w}" cy="${(h - 4 - (s[s.length - 1] - min) / rng * (h - 8)).toFixed(1)}" r="2.5" class="sp-dot"/>
-    </svg>`;
-  }
-
-  /* ---------------- standard market card (PRD §13) ---------------- */
-  function card(c) {
-    const m = c.mkt, k = c.contract, cat = M.catById(m.cat);
-    const p0 = M.platById(m.profiles[0].plat);
-    return `<article class="mkt-card st-${m.state.toLowerCase()}" data-row="${c.id}" data-market-card aria-label="${esc(k.title)} — ${esc(c.name)}">
-      <button type="button" class="mkt-card-hit" data-market-open="${c.id}" aria-label="Open traded market for ${esc(c.name)}: ${esc(k.title)}"></button>
+window.BackerLegacyMarket=(function(){"use strict";const h=window.BACKER,d=window.BACKER_MKT,u=(t,e=document)=>e.querySelector(t),J=(t,e=document)=>Array.from(e.querySelectorAll(t)),m=t=>String(t).replace(/</g,"&lt;");function w(t,e){try{window.BackerAnalytics&&window.BackerAnalytics.track(t,e||{})}catch{}}const a={view:"markets",browse:null,window:d.DEFAULT_WINDOW,genre:null,platforms:[],scale:[],poa:[],multiple:[],evidence:"all",risk:"all",quickOpen:!0,ending:!1,u100:!1,sort:"pulse",shown:12,featIdx:0};let v=null,E=null;const x={},Q="backer_watchlist_v1",X="backer_portfolio_v1";function Z(){try{return new Set(JSON.parse(localStorage.getItem(Q)||"[]"))}catch{return new Set}}function wt(t){try{localStorage.setItem(Q,JSON.stringify([...t]))}catch{}}let P=Z();function tt(){try{return JSON.parse(localStorage.getItem(X)||"[]")}catch{return[]}}function M(t,e){if(window.__backerToast)return window.__backerToast(t,e);const s=u("#toast");s&&(s.textContent=t,s.classList.add("show"),setTimeout(()=>s.classList.remove("show"),2400))}function et(t){if(!(!t||!t.focus))try{t.focus({preventScroll:!0})}catch{try{t.focus()}catch{}}}function gt(t,e){t&&(et(e),w("market_card_opened",{market_id:t.id,creator_id:t.id,source:"market"}),window.location.href="backermarket.html?market="+encodeURIComponent(t.id)+"&source=market-archive")}function $t(t,e){if(!t)return;et(e);const s=window.PoaTerminal,n={seed:t.id,creator:t,name:t.name,surface:"poa"};if(s&&typeof s.open=="function"){s.open(n);return}if(s&&typeof s.openByCreator=="function"){s.openByCreator(t.id,n);return}E=e,pt(t)}function at(){const t=[];a.view!=="markets"&&t.push("view="+a.view),a.browse&&t.push("browse="+a.browse),a.window!==d.DEFAULT_WINDOW&&t.push("window="+a.window),a.genre&&t.push("genre="+a.genre),a.platforms.length&&t.push("platform="+a.platforms.join(",")),a.scale.length&&t.push("scale="+a.scale.join(",")),a.poa.length&&t.push("poa="+a.poa.join(",")),a.multiple.length&&t.push("multiple="+a.multiple.join(",")),a.evidence!=="all"&&t.push("evidence="+a.evidence),a.risk!=="all"&&t.push("risk="+a.risk),a.quickOpen||t.push("status=all"),a.ending&&t.push("ending=1"),a.u100&&t.push("u100=1"),a.sort!=="pulse"&&t.push("sort="+a.sort);try{history.replaceState(null,"",location.pathname+location.search+(t.length?"#market-archive?"+t.join("&"):"#market-archive"))}catch{}}function yt(){const t=location.hash;if(!/^#market-archive\?/.test(t))return;const e=new URLSearchParams(t.slice(16)),s=(f,$)=>{const y=e.get(f);return $.includes(y)?y:null},n=(f,$)=>{const y=new Set($);return(e.get(f)||"").split(",").filter((ht,jt,Ft)=>y.has(ht)&&Ft.indexOf(ht)===jt)},l=s("view",["markets","radar","resolved"]),o=s("browse",N.map(f=>f[0])),i=s("window",d.WINDOWS),r=s("genre",d.TAXONOMY.map(f=>f.id)),c=s("sort",F.map(f=>f[0])),k=s("evidence",["all","high","medium","low"]),b=s("risk",["all","none","low","medium","elevated"]);l&&(a.view=l),o&&(a.browse=o),i&&(a.window=i),r&&(a.genre=r),a.platforms=n("platform",d.PLATFORMS.map(f=>f.id)),a.scale=n("scale",d.TIERS.map(f=>f.id)),a.poa=n("poa",["strong","mixed","risk","insufficient"]),a.multiple=n("multiple",["1x","15x","2x"]),k&&(a.evidence=k),b&&(a.risk=b),e.get("status")==="all"&&(a.quickOpen=!1),a.ending=e.get("ending")==="1",a.u100=e.get("u100")==="1",c&&(a.sort=c);const p=e.get("market");if(p){const f=p.toUpperCase();/RESOLVED/.test(f)?a.view="resolved":/WATCH|NO_CONTRACT|REVIEW|PENDING/.test(f)&&(a.view="radar")}}function Pt(){a.view="markets",a.browse=null,a.window=d.DEFAULT_WINDOW,a.genre=null,a.platforms=[],a.scale=[],a.poa=[],a.multiple=[],a.evidence="all",a.risk="all",a.quickOpen=!0,a.ending=!1,a.u100=!1,a.sort="pulse",a.shown=12,a.featIdx=0}const R=["none","low","medium","elevated","severe"],Lt={high:80,medium:60,low:35},Et=t=>t>=2?"2x":t>=1.5?"15x":"1x";function H(t){const e=t.mkt;return!(a.genre&&e.cat!==a.genre||a.platforms.length&&!e.profiles.some(s=>a.platforms.includes(s.plat))||a.scale.length&&!a.scale.includes(e.tier.id)||a.poa.length&&!a.poa.includes(e.poa.band)||a.evidence!=="all"&&e.evidence.score<Lt[a.evidence]||a.risk!=="all"&&R.indexOf(e.risk.level)>R.indexOf(a.risk)||a.u100&&t.followers>=1e5)}function q(){let t=d.CONTRACTS.filter(e=>["OPEN","OPENING_SOON","CLOSED"].includes(e.mkt.state)&&H(e));return a.quickOpen&&(t=t.filter(e=>e.mkt.state==="OPEN")),a.ending&&(t=t.filter(e=>e.mkt.state==="OPEN"&&e.contract.closeDays<=30)),a.multiple.length&&(t=t.filter(e=>a.multiple.includes(Et(e.contract.mult)))),a.browse==="new"?t=t.filter(e=>e.contract.isNew):a.browse==="ending"?t=t.filter(e=>e.mkt.state==="OPEN"&&e.contract.closeDays<=30):a.browse==="high-poa"?t=t.filter(e=>e.mkt.poa.score>=75&&e.mkt.evidence.score>=60):a.browse==="risk-watch"&&(t=t.filter(e=>["medium","elevated","severe"].includes(e.mkt.risk.level))),Mt(t)}function C(){return d.ALL.filter(t=>d.RADAR_STATES.includes(t.mkt.state)&&H(t)).sort((t,e)=>e.mkt.windows[a.window].pulse.value-t.mkt.windows[a.window].pulse.value||e.mkt.evidence.score-t.mkt.evidence.score||(t.id<e.id?-1:1))}function j(){return d.CONTRACTS.filter(t=>t.mkt.state==="RESOLVED"&&H(t)).sort((t,e)=>e.contract.simVol-t.contract.simVol)}function Mt(t){const e=a.window,s=n=>t.slice().sort((l,o)=>n(o)-n(l)||o.mkt.evidence.score-l.mkt.evidence.score||(l.id<o.id?-1:1));switch(a.sort){case"trending":{const n={};return d.trendingList(e).forEach((l,o)=>n[l.id]=o),t.slice().sort((l,o)=>(n[l.id]??999)-(n[o.id]??999))}case"most-backed":return s(n=>n.contract.simVol);case"ending":return t.slice().sort((n,l)=>(n.mkt.state==="OPEN"?n.contract.closeDays:999)-(l.mkt.state==="OPEN"?l.contract.closeDays:999));case"newest":return t.slice().sort((n,l)=>n.contract.listedDaysAgo-l.contract.listedDaysAgo);case"poa":return s(n=>n.mkt.poa.score*1e3+n.mkt.evidence.score);case"evidence":return s(n=>n.mkt.evidence.score*1e3+n.mkt.poa.score);case"rising":return s(n=>n.mkt.windows[e].pulse.comp.momentum*1e3+n.mkt.windows[e].pulse.value);case"risk":return t.slice().sort((n,l)=>R.indexOf(n.mkt.risk.level)-R.indexOf(l.mkt.risk.level)||l.mkt.poa.score-n.mkt.poa.score);case"multiple":return s(n=>n.contract.mult);default:return s(n=>n.mkt.windows[e].pulse.value)}}const F=[["pulse","Attention Pulse"],["trending","Trending"],["most-backed","Most backed"],["ending","Ending soon"],["newest","Newest"],["poa","Strongest PoA"],["evidence","Highest evidence"],["rising","Fastest rising"],["risk","Lowest risk"],["multiple","Highest multiple"]],N=[["trending","Trending","trending"],["new","New","newest"],["rising","Rising","rising"],["ending","Ending soon","ending"],["most-backed","Most backed","most-backed"],["high-poa","High PoA","poa"],["risk-watch","Risk watch","risk"]];function Ot(t){return t.split(" ").slice(0,2).map(e=>e[0]).join("").toUpperCase()}function A(t,e){return`<span class="mkt-av" style="width:${e}px;height:${e}px;background:radial-gradient(circle at 32% 26%, hsl(${t.hue} 70% 62%), hsl(${t.hue+26} 55% 32%) 64%, hsl(${t.hue+8} 38% 15%));font-size:${Math.round(e*.36)}px;color:hsl(${t.hue} 60% 12%)">${Ot(t.name)}</span>`}function V(t){const e=t.mkt,s=e.poa.band,n=s==="insufficient"?"—":e.poa.score,l=e.evidence.grade[0];return`<button type="button" class="mkt-poa ${s}" data-mkt-poa-open="${t.id}" aria-label="Open Proof of Attention composition for ${m(t.name)}; ${s==="insufficient"?"insufficient evidence":"score "+e.poa.score+", evidence "+e.evidence.grade}" title="PoA ${n} · Evidence ${e.evidence.grade} — underwriting, not success odds"><i></i>${n}<em>${l}</em></button>`}function _(t,e){const s=P.has(t.id);return`<button class="mkt-watch ${s?"on":""}" data-watch="${t.id}" aria-pressed="${s}" aria-label="${s?"Remove from watchlist":"Add to watchlist"}" title="${s?"Watching":"Watch"}"><svg viewBox="0 0 24 24"><path d="M12 3l2.7 5.8 6.3.8-4.6 4.3 1.2 6.1L12 17l-5.6 3 1.2-6.1L3 9.6l6.3-.8z"/></svg>${e?`<span>${s?"Watching":"Watch"}</span>`:""}</button>`}function W(t,e){const s=t.mkt.windows[a.window].delta;return`<span class="mkt-delta ${s>0?"up":s<0?"down":"flat"}">${s>0?"+":""}${s.toFixed(1)}${e?`<small> Pulse ${a.window.toUpperCase()}</small>`:""}</span>`}const st={none:"Low material risk",low:"Low risk",medium:"Mixed evidence",elevated:"Elevated risk",severe:"Material risk"};function U(t){const e=t.mkt.risk.level;return`<span class="mkt-risk ${e}" title="${m(t.mkt.risk.label)}">${st[e]}</span>`}function St(t){const e=t&&t.mkt&&t.mkt.poa?String(t.mkt.poa.positive||""):"";return!e||/watch\s*time|view\s*duration|retention|returning[-\s]*viewer/i.test(e)?"Stable public engagement breadth across sampled content.":e}function nt(t){return t.contract.simVol+(x[t.id]||0)}function it(t){return t.contract.backers+(x[t.id]?1:0)}function Y(t){const e=t.contract?`upd ${t.contract.freshMin}m`:`${t.mkt.profiles[0].fresh.label.toLowerCase()} ${t.mkt.profiles[0].fresh.ago}`;return`<span class="mkt-fr" title="Relative to the fixed demo snapshot (${d.DEMO_SNAP_LABEL}). Fixture data — never a live claim.">${e} · demo</span>`}function ot(t){const e=t.mkt.state,s=t.contract;return e==="OPEN"&&s.closingSoon?'<span class="mkt-badge closing">Closing soon</span>':e==="OPEN"&&s.isNew?'<span class="mkt-badge new">New</span>':e==="OPEN"?'<span class="mkt-badge open">Open</span>':e==="OPENING_SOON"?`<span class="mkt-badge soon">Opens in ${s.opensInDays}d</span>`:e==="CLOSED"?'<span class="mkt-badge closed">Closed</span>':e==="RESOLVED"?s.outcome==="HIT"?'<span class="mkt-badge hit">Resolved · hit</span>':'<span class="mkt-badge miss">Resolved · miss</span>':`<span class="mkt-badge closed">${d.STATES[e].label}</span>`}function xt(t){const e=t.mkt.state;return e==="OPEN"?`<button type="button" class="mkt-cta" data-market-open="${t.id}" aria-label="Open a simulated position on ${m(t.name)}">Open position</button>`:e==="OPENING_SOON"?_(t,!0):e==="CLOSED"?`<button type="button" class="mkt-btn ghost sm" data-market-open="${t.id}">View contract</button>`:e==="RESOLVED"?`<button type="button" class="mkt-btn ghost sm" data-market-open="${t.id}">View result</button>`:""}function At(t,e,s){const n=t.contract.spark,l=t.milestone.target,o=Math.max(l,...n),i=Math.min(...n),r=Math.max(1,o-i),c=n.map((b,p)=>`${(p/(n.length-1)*e).toFixed(1)},${(s-4-(b-i)/r*(s-8)).toFixed(1)}`).join(" "),k=(s-4-(l-i)/r*(s-8)).toFixed(1);return`<svg class="mkt-spark" viewBox="0 0 ${e} ${s}" preserveAspectRatio="none" role="img" aria-label="Milestone progress trajectory: ${t.contract.curLabel} of ${t.contract.tgtLabel} target (${t.contract.progressPct}% milestone progress)">
+      <line x1="0" y1="${k}" x2="${e}" y2="${k}" class="sp-target"/>
+      <polyline points="${c}" class="sp-line"/>
+      <circle cx="${e}" cy="${(s-4-(n[n.length-1]-i)/r*(s-8)).toFixed(1)}" r="2.5" class="sp-dot"/>
+    </svg>`}function rt(t){const e=t.mkt,s=t.contract,n=d.catById(e.cat),l=d.platById(e.profiles[0].plat);return`<article class="mkt-card st-${e.state.toLowerCase()}" data-row="${t.id}" data-market-card aria-label="${m(s.title)} — ${m(t.name)}">
+      <button type="button" class="mkt-card-hit" data-market-open="${t.id}" aria-label="Open traded market for ${m(t.name)}: ${m(s.title)}"></button>
       <header class="mkt-card-h">
-        <button type="button" class="mkt-name" data-mkt-poa-open="${c.id}" aria-label="Open Proof of Attention composition for ${esc(c.name)}">${avatar(c, 30)}<span><b>${esc(c.name)}</b><small>${p0 ? p0.name : ''} · ${cat ? cat.name : ''}</small></span></button>
-        ${statusBadge(c)}${watchBtn(c)}
+        <button type="button" class="mkt-name" data-mkt-poa-open="${t.id}" aria-label="Open Proof of Attention composition for ${m(t.name)}">${A(t,30)}<span><b>${m(t.name)}</b><small>${l?l.name:""} · ${n?n.name:""}</small></span></button>
+        ${ot(t)}${_(t)}
       </header>
-      <h3 class="mkt-card-title"><button type="button" data-market-open="${c.id}" title="Open traded market">${esc(k.title)}</button></h3>
-      <div class="mkt-prog" role="img" aria-label="Milestone progress: ${k.curLabel} of ${k.tgtLabel}, ${k.progressPct}%">
-        <b>${k.curLabel}</b><span class="mkt-bar"><i style="width:${k.progressPct}%"></i></span><b>${k.tgtLabel}</b>
-        <em title="Milestone progress — completion toward the target, not chance of success">${k.progressPct}%</em>
+      <h3 class="mkt-card-title"><button type="button" data-market-open="${t.id}" title="Open traded market">${m(s.title)}</button></h3>
+      <div class="mkt-prog" role="img" aria-label="Milestone progress: ${s.curLabel} of ${s.tgtLabel}, ${s.progressPct}%">
+        <b>${s.curLabel}</b><span class="mkt-bar"><i style="width:${s.progressPct}%"></i></span><b>${s.tgtLabel}</b>
+        <em title="Milestone progress — completion toward the target, not chance of success">${s.progressPct}%</em>
       </div>
       <div class="mkt-terms">
-        <span class="t-mult"><b>${k.mult}×</b><small>fixed term</small></span>
-        <span class="t-pulse">${deltaTag(c)}<small>Pulse ${state.window.toUpperCase()}</small></span>
-        ${poaPill(c)}
-        ${riskTag(c)}
+        <span class="t-mult"><b>${s.mult}×</b><small>fixed term</small></span>
+        <span class="t-pulse">${W(t)}<small>Pulse ${a.window.toUpperCase()}</small></span>
+        ${V(t)}
+        ${U(t)}
       </div>
       <footer class="mkt-card-f">
-        <span class="f-act">${k.simVol || sessionAdds[c.id] ? `${B.money(simVolOf(c))} <em>sim. vol.</em> · ${backersOf(c)} backers` : `${k.watchers} watching`} · ${freshTag(c)}</span>
-        <span class="f-cta"><button type="button" class="mkt-link" data-market-open="${c.id}">Details</button>${cardCTA(c)}</span>
+        <span class="f-act">${s.simVol||x[t.id]?`${h.money(nt(t))} <em>sim. vol.</em> · ${it(t)} backers`:`${s.watchers} watching`} · ${Y(t)}</span>
+        <span class="f-cta"><button type="button" class="mkt-link" data-market-open="${t.id}">Details</button>${xt(t)}</span>
       </footer>
-    </article>`;
-  }
-
-  /* ---------------- featured market (PRD §14) ---------------- */
-  function featuredHTML() {
-    const feats = M.featuredList(state.window);
-    if (!feats.length) return '';
-    state.featIdx = Math.max(0, Math.min(state.featIdx, feats.length - 1));
-    const c = feats[state.featIdx], m = c.mkt, k = c.contract, cat = M.catById(m.cat);
-    const p0 = M.platById(m.profiles[0].plat);
-    return `<article class="mkt-feat" data-row="${c.id}" data-market-card aria-label="Featured market: ${esc(k.title)}">
-      <button type="button" class="mkt-card-hit" data-market-open="${c.id}" aria-label="Open traded market for ${esc(c.name)}: ${esc(k.title)}"></button>
+    </article>`}function _t(){const t=d.featuredList(a.window);if(!t.length)return"";a.featIdx=Math.max(0,Math.min(a.featIdx,t.length-1));const e=t[a.featIdx],s=e.mkt,n=e.contract,l=d.catById(s.cat),o=d.platById(s.profiles[0].plat);return`<article class="mkt-feat" data-row="${e.id}" data-market-card aria-label="Featured market: ${m(n.title)}">
+      <button type="button" class="mkt-card-hit" data-market-open="${e.id}" aria-label="Open traded market for ${m(e.name)}: ${m(n.title)}"></button>
       <header class="mkt-card-h">
         <span class="mkt-feat-tag">Featured market</span>
-        <button type="button" class="mkt-name" data-mkt-poa-open="${c.id}" aria-label="Open Proof of Attention composition for ${esc(c.name)}">${avatar(c, 34)}<span><b>${esc(c.name)}</b><small>${p0 ? p0.name : ''} · ${cat ? cat.name : ''}</small></span></button>
-        ${statusBadge(c)}
-        <span class="mkt-feat-nav"><button data-feat-prev aria-label="Previous featured market" ${state.featIdx === 0 ? 'disabled' : ''}>‹</button><em>${state.featIdx + 1} of ${feats.length}</em><button data-feat-next aria-label="Next featured market" ${state.featIdx === feats.length - 1 ? 'disabled' : ''}>›</button></span>
-        ${watchBtn(c)}
+        <button type="button" class="mkt-name" data-mkt-poa-open="${e.id}" aria-label="Open Proof of Attention composition for ${m(e.name)}">${A(e,34)}<span><b>${m(e.name)}</b><small>${o?o.name:""} · ${l?l.name:""}</small></span></button>
+        ${ot(e)}
+        <span class="mkt-feat-nav"><button data-feat-prev aria-label="Previous featured market" ${a.featIdx===0?"disabled":""}>‹</button><em>${a.featIdx+1} of ${t.length}</em><button data-feat-next aria-label="Next featured market" ${a.featIdx===t.length-1?"disabled":""}>›</button></span>
+        ${_(e)}
       </header>
-      <h3 class="mkt-feat-title"><button type="button" data-market-open="${c.id}">${esc(k.title)}</button></h3>
-      <div class="mkt-prog big" role="img" aria-label="Milestone progress: ${k.curLabel} of ${k.tgtLabel}, ${k.progressPct}%">
-        <b>${k.curLabel}</b><span class="mkt-bar"><i style="width:${k.progressPct}%"></i></span><b>${k.tgtLabel}</b>
-        <em title="Milestone progress — completion toward the target, not chance of success">${k.progressPct}% progress</em>
+      <h3 class="mkt-feat-title"><button type="button" data-market-open="${e.id}">${m(n.title)}</button></h3>
+      <div class="mkt-prog big" role="img" aria-label="Milestone progress: ${n.curLabel} of ${n.tgtLabel}, ${n.progressPct}%">
+        <b>${n.curLabel}</b><span class="mkt-bar"><i style="width:${n.progressPct}%"></i></span><b>${n.tgtLabel}</b>
+        <em title="Milestone progress — completion toward the target, not chance of success">${n.progressPct}% progress</em>
       </div>
       <div class="mkt-feat-chart">
-        <small>${esc(c.milestone.metric)} trajectory · fixture series to ${M.DEMO_SNAP_LABEL}</small>
-        ${sparkline(c, 560, 64)}
+        <small>${m(e.milestone.metric)} trajectory · fixture series to ${d.DEMO_SNAP_LABEL}</small>
+        ${At(e,560,64)}
       </div>
       <div class="mkt-terms big">
-        <span class="t-mult"><b>${k.mult}×</b><small>fixed sim term</small></span>
-        <span class="t-pulse">${deltaTag(c)}<small>Pulse ${state.window.toUpperCase()}</small></span>
-        ${poaPill(c)}
-        ${riskTag(c)}
-        <span class="t-close">${k.closeLabel ? `<b>${k.closeLabel}</b><small>entry closes</small>` : ''}</span>
+        <span class="t-mult"><b>${n.mult}×</b><small>fixed sim term</small></span>
+        <span class="t-pulse">${W(e)}<small>Pulse ${a.window.toUpperCase()}</small></span>
+        ${V(e)}
+        ${U(e)}
+        <span class="t-close">${n.closeLabel?`<b>${n.closeLabel}</b><small>entry closes</small>`:""}</span>
       </div>
-      <p class="mkt-feat-ev">+ ${esc(safePublicEvidence(c))}</p>
+      <p class="mkt-feat-ev">+ ${m(St(e))}</p>
       <footer class="mkt-card-f">
-        <span class="f-act">${B.money(simVolOf(c))} <em>sim. vol.</em> · ${backersOf(c)} backers · ${freshTag(c)}</span>
-        <span class="f-cta"><button type="button" class="mkt-btn ghost sm" data-market-open="${c.id}">Details</button><button type="button" class="mkt-cta" data-market-open="${c.id}" aria-label="Open a simulated position on ${esc(c.name)}">Open position</button></span>
+        <span class="f-act">${h.money(nt(e))} <em>sim. vol.</em> · ${it(e)} backers · ${Y(e)}</span>
+        <span class="f-cta"><button type="button" class="mkt-btn ghost sm" data-market-open="${e.id}">Details</button><button type="button" class="mkt-cta" data-market-open="${e.id}" aria-label="Open a simulated position on ${m(e.name)}">Open position</button></span>
       </footer>
-    </article>`;
-  }
-
-  /* ---------------- Creator Radar card (PRD §16 — no terms, ever) ---------------- */
-  function radarCard(c) {
-    const m = c.mkt, cat = M.catById(m.cat), st = M.STATES[m.state];
-    const p0 = M.platById(m.profiles[0].plat);
-    const win = m.windows[state.window];
-    return `<article class="mkt-card mkt-rcard" data-row="${c.id}">
+    </article>`}function lt(t){const e=t.mkt,s=d.catById(e.cat),n=d.STATES[e.state],l=d.platById(e.profiles[0].plat),o=e.windows[a.window];return`<article class="mkt-card mkt-rcard" data-row="${t.id}">
       <header class="mkt-card-h">
-        <button type="button" class="mkt-name" data-mkt-poa-open="${c.id}" aria-label="Open Proof of Attention composition for ${esc(c.name)}">${avatar(c, 30)}<span><b>${esc(c.name)}</b><small>${p0 ? p0.name : ''} · ${cat ? cat.name : ''}</small></span></button>
-        <span class="mkt-badge watch">${st.label}</span>${watchBtn(c)}
+        <button type="button" class="mkt-name" data-mkt-poa-open="${t.id}" aria-label="Open Proof of Attention composition for ${m(t.name)}">${A(t,30)}<span><b>${m(t.name)}</b><small>${l?l.name:""} · ${s?s.name:""}</small></span></button>
+        <span class="mkt-badge watch">${n.label}</span>${_(t)}
       </header>
       <div class="mkt-rcard-grid">
-        <div><small>Reach</small><b>${B.fmt(c.followers)}</b></div>
-        <div><small>Pulse ${state.window.toUpperCase()}</small><b>${win.pulse.value.toFixed(1)}</b> ${deltaTag(c)}</div>
-        <div><small>PoA · Evidence</small>${poaPill(c)}</div>
-        <div><small>Risk</small>${riskTag(c)}</div>
+        <div><small>Reach</small><b>${h.fmt(t.followers)}</b></div>
+        <div><small>Pulse ${a.window.toUpperCase()}</small><b>${o.pulse.value.toFixed(1)}</b> ${W(t)}</div>
+        <div><small>PoA · Evidence</small>${V(t)}</div>
+        <div><small>Risk</small>${U(t)}</div>
       </div>
       <p class="mkt-rcard-note">Watch-only research — no open contract. No terms are synthesized.</p>
       <footer class="mkt-card-f">
-        <span class="f-act">${freshTag(c)}</span>
-        <span class="f-cta"><button type="button" class="mkt-link" data-mkt-poa-open="${c.id}">Open PoA composition</button>${watchBtn(c, true)}</span>
+        <span class="f-act">${Y(t)}</span>
+        <span class="f-cta"><button type="button" class="mkt-link" data-mkt-poa-open="${t.id}">Open PoA composition</button>${_(t,!0)}</span>
       </footer>
-    </article>`;
-  }
-
-  /* ---------------- Backer Pulse right rail (PRD §15) ---------------- */
-  function railRow(c, i, val, sub, ctx) {
-    return `<button type="button" class="mkt-rrow" data-mkt-poa-open="${c.id}" aria-label="Open Proof of Attention composition for ${esc(c.name)}">
-      <span class="rr-rank">${String(i + 1).padStart(2, '0')}</span>
-      <span class="rr-body"><b>${esc(c.name)}</b><small>${esc(ctx)}</small></span>
-      <span class="rr-val"><b>${val}</b><small>${sub}</small></span>
-    </button>`;
-  }
-  function railHTML() {
-    const w = state.window, wl = w.toUpperCase();
-    const mods = [];
-
-    /* A — Your Market */
-    const pos = getPositions();
-    const watched = M.ALL.filter(c => watch.has(c.id));
-    if (!pos.length && !watched.length) {
-      mods.push(`<section class="mkt-rmod"><h4>Your market</h4>
+    </article>`}function D(t,e,s,n,l){return`<button type="button" class="mkt-rrow" data-mkt-poa-open="${t.id}" aria-label="Open Proof of Attention composition for ${m(t.name)}">
+      <span class="rr-rank">${String(e+1).padStart(2,"0")}</span>
+      <span class="rr-body"><b>${m(t.name)}</b><small>${m(l)}</small></span>
+      <span class="rr-val"><b>${s}</b><small>${n}</small></span>
+    </button>`}function dt(){const t=a.window,e=t.toUpperCase(),s=[],n=tt(),l=d.ALL.filter(p=>P.has(p.id));if(!n.length&&!l.length)s.push(`<section class="mkt-rmod"><h4>Your market</h4>
         <p class="rm-copy">Backer runs simulated milestone markets — every position is practice capital, no real money moves.</p>
         <div class="rm-btns"><button class="mkt-btn sm" data-tab="radar">Build your watchlist</button><button class="mkt-btn ghost sm" data-scroll-method>How contracts work</button></div>
-      </section>`);
-    } else {
-      const wRows = watched.slice().sort((a, b) => Math.abs(b.mkt.windows[w].delta) - Math.abs(a.mkt.windows[w].delta)).slice(0, 3)
-        .map((c, i) => railRow(c, i, (c.mkt.windows[w].delta > 0 ? '+' : '') + c.mkt.windows[w].delta.toFixed(1), 'Pulse ' + wl, M.catById(c.mkt.cat).name)).join('');
-      const invested = pos.reduce((n, p) => n + p.invested, 0);
-      mods.push(`<section class="mkt-rmod"><h4>Your market</h4>
-        ${pos.length ? `<p class="rm-copy">${pos.length} simulated position${pos.length > 1 ? 's' : ''} · ${B.money(invested)} <em>sim.</em> at stake.</p>` : ''}
-        ${wRows}
+      </section>`);else{const p=l.slice().sort(($,y)=>Math.abs(y.mkt.windows[t].delta)-Math.abs($.mkt.windows[t].delta)).slice(0,3).map(($,y)=>D($,y,($.mkt.windows[t].delta>0?"+":"")+$.mkt.windows[t].delta.toFixed(1),"Pulse "+e,d.catById($.mkt.cat).name)).join(""),f=n.reduce(($,y)=>$+y.invested,0);s.push(`<section class="mkt-rmod"><h4>Your market</h4>
+        ${n.length?`<p class="rm-copy">${n.length} simulated position${n.length>1?"s":""} · ${h.money(f)} <em>sim.</em> at stake.</p>`:""}
+        ${p}
         <button class="mkt-link rm-all" data-go-portfolio>View portfolio →</button>
-      </section>`);
-    }
-
-    /* B — Backer AI Pulse (deterministic, source-backed) */
-    const bullets = M.aiPulse(w).map(x => `<li>${esc(x.t)} <small>· ${x.src}</small></li>`).join('');
-    mods.push(`<section class="mkt-rmod"><h4>Backer AI Pulse <span class="rm-note" title="Deterministic digest computed from structured fixture snapshots — every bullet carries its source context. No free-form generation.">ⓘ sourced</span></h4>
-      <ul class="rm-bullets">${bullets}</ul>
-      <small class="rm-stamp">Updated at demo snapshot · ${M.DEMO_SNAP_LABEL}</small>
-    </section>`);
-
-    /* C — Trending (documented formula) */
-    const tr = M.trendingList(w).slice(0, 3);
-    if (tr.length >= 3) mods.push(`<section class="mkt-rmod"><h4>Trending <span class="rm-note" title="0.40 sim-volume growth + 0.25 position starts + 0.15 watch adds (24H percentiles) + 0.20 Pulse delta. Separate from the default grid order.">ⓘ 24H</span></h4>
-      ${tr.map((c, i) => railRow(c, i, c.contract.mult + '×', (c.mkt.windows[w].delta > 0 ? '+' : '') + c.mkt.windows[w].delta.toFixed(1) + ' Pulse', c.contract.progressPct + '% progress')).join('')}
+      </section>`)}const o=d.aiPulse(t).map(p=>`<li>${m(p.t)} <small>· ${p.src}</small></li>`).join("");s.push(`<section class="mkt-rmod"><h4>Backer AI Pulse <span class="rm-note" title="Deterministic digest computed from structured fixture snapshots — every bullet carries its source context. No free-form generation.">ⓘ sourced</span></h4>
+      <ul class="rm-bullets">${o}</ul>
+      <small class="rm-stamp">Updated at demo snapshot · ${d.DEMO_SNAP_LABEL}</small>
+    </section>`);const i=d.trendingList(t).slice(0,3);i.length>=3&&s.push(`<section class="mkt-rmod"><h4>Trending <span class="rm-note" title="0.40 sim-volume growth + 0.25 position starts + 0.15 watch adds (24H percentiles) + 0.20 Pulse delta. Separate from the default grid order.">ⓘ 24H</span></h4>
+      ${i.map((p,f)=>D(p,f,p.contract.mult+"×",(p.mkt.windows[t].delta>0?"+":"")+p.mkt.windows[t].delta.toFixed(1)+" Pulse",p.contract.progressPct+"% progress")).join("")}
       <button class="mkt-link rm-all" data-viewall="trending">View all →</button>
-    </section>`);
-
-    /* D — Top movers */
-    const mv = M.moversList(w);
-    if (mv.length >= 3) mods.push(`<section class="mkt-rmod"><h4>Top movers <span class="rm-note">Pulse pts / ${wl}</span></h4>
-      ${mv.map((c, i) => railRow(c, i, (c.mkt.windows[w].delta > 0 ? '+' : '') + c.mkt.windows[w].delta.toFixed(1), 'pts / ' + wl, riskWord[c.mkt.risk.level])).join('')}
+    </section>`);const r=d.moversList(t);r.length>=3&&s.push(`<section class="mkt-rmod"><h4>Top movers <span class="rm-note">Pulse pts / ${e}</span></h4>
+      ${r.map((p,f)=>D(p,f,(p.mkt.windows[t].delta>0?"+":"")+p.mkt.windows[t].delta.toFixed(1),"pts / "+e,st[p.mkt.risk.level])).join("")}
       <button class="mkt-link rm-all" data-viewall="rising">View all →</button>
-    </section>`);
-
-    /* E — Risk watch (material changes only) */
-    const rw = M.riskWatchList();
-    if (rw.length) mods.push(`<section class="mkt-rmod warn"><h4>Risk watch</h4>
-      ${rw.map((x, i) => `<button type="button" class="mkt-rrow" data-mkt-poa-open="${x.c.id}" aria-label="Open Proof of Attention composition for ${esc(x.c.name)}"><span class="rr-rank warn">!</span><span class="rr-body"><b>${esc(x.c.name)}</b><small>${esc(x.msg)}</small></span></button>`).join('')}
+    </section>`);const c=d.riskWatchList();c.length&&s.push(`<section class="mkt-rmod warn"><h4>Risk watch</h4>
+      ${c.map((p,f)=>`<button type="button" class="mkt-rrow" data-mkt-poa-open="${p.c.id}" aria-label="Open Proof of Attention composition for ${m(p.c.name)}"><span class="rr-rank warn">!</span><span class="rr-body"><b>${m(p.c.name)}</b><small>${m(p.msg)}</small></span></button>`).join("")}
       <button class="mkt-link rm-all" data-viewall="risk-watch">View all →</button>
-    </section>`);
-
-    /* compact links to remaining modules */
-    const os = M.openingSoonList().length, nw = M.newList().length;
-    mods.push(`<section class="mkt-rmod links"><h4>More</h4>
+    </section>`);const k=d.openingSoonList().length,b=d.newList().length;return s.push(`<section class="mkt-rmod links"><h4>More</h4>
       <div class="rm-links">
-        ${nw ? `<button class="mkt-link" data-viewall="new">New contracts (${nw})</button>` : ''}
-        ${os ? `<button class="mkt-link" data-tab-open-soon>Opening soon (${os})</button>` : ''}
+        ${b?`<button class="mkt-link" data-viewall="new">New contracts (${b})</button>`:""}
+        ${k?`<button class="mkt-link" data-tab-open-soon>Opening soon (${k})</button>`:""}
         <button class="mkt-link" data-viewall="most-backed">Highest simulated volume</button>
       </div>
-    </section>`);
-
-    return `<aside class="mkt-rail" aria-label="Backer Pulse — market intelligence">${mods.join('')}</aside>`;
-  }
-
-  /* inline Pulse strip for mobile (interleaves after 4th card) */
-  function inlinePulse() {
-    const tr = M.trendingList(state.window).slice(0, 3);
-    if (tr.length < 3) return '';
-    return `<div class="mkt-inline"><h4>Backer Pulse · Trending</h4>${tr.map((c, i) =>
-      railRow(c, i, c.contract.mult + '×', (c.mkt.windows[state.window].delta > 0 ? '+' : '') + c.mkt.windows[state.window].delta.toFixed(1) + ' Pulse', c.contract.progressPct + '% progress')).join('')}</div>`;
-  }
-
-  /* ---------------- filters drawer ---------------- */
-  function chip(group, val, label, active) { return `<button class="mkt-fchip ${active ? 'on' : ''}" data-f="${group}" data-v="${val}">${label}</button>`; }
-  function drawerHTML() {
-    const n = state.view === 'radar' ? radarList().length : state.view === 'resolved' ? resolvedList().length : marketList().length;
-    return `<div class="mkt-drawer-h"><h3>Filter ${state.view === 'radar' ? 'Creator Radar' : 'markets'}</h3><button class="mkt-x" data-close-drawer aria-label="Close filters"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    </section>`),`<aside class="mkt-rail" aria-label="Backer Pulse — market intelligence">${s.join("")}</aside>`}function Tt(){const t=d.trendingList(a.window).slice(0,3);return t.length<3?"":`<div class="mkt-inline"><h4>Backer Pulse · Trending</h4>${t.map((e,s)=>D(e,s,e.contract.mult+"×",(e.mkt.windows[a.window].delta>0?"+":"")+e.mkt.windows[a.window].delta.toFixed(1)+" Pulse",e.contract.progressPct+"% progress")).join("")}</div>`}function L(t,e,s,n){return`<button class="mkt-fchip ${n?"on":""}" data-f="${t}" data-v="${e}">${s}</button>`}function ct(){const t=a.view==="radar"?C().length:a.view==="resolved"?j().length:q().length;return`<div class="mkt-drawer-h"><h3>Filter ${a.view==="radar"?"Creator Radar":"markets"}</h3><button class="mkt-x" data-close-drawer aria-label="Close filters"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
     <div class="mkt-drawer-b">
       <h5>Contract</h5>
-      <div class="mkt-fgroup">${chip('open', '1', 'Open only', state.quickOpen)}${chip('ending', '1', 'Ending <30d', state.ending)}</div>
-      <h5>Payout multiple</h5><div class="mkt-fgroup">${[['1x', '1.0–1.49×'], ['15x', '1.5–1.99×'], ['2x', '2.0×+']].map(x => chip('mult', x[0], x[1], state.multiple.includes(x[0]))).join('')}</div>
-      <h5>Platform</h5><div class="mkt-fgroup">${M.PLATFORMS.map(p => chip('plat', p.id, p.name, state.platforms.includes(p.id))).join('')}</div>
-      <h5>Creator scale</h5><div class="mkt-fgroup">${M.TIERS.map(t => chip('scale', t.id, t.label, state.scale.includes(t.id))).join('')}</div>
-      <h5>PoA signal</h5><div class="mkt-fgroup">${[['strong', 'Strong'], ['mixed', 'Mixed'], ['risk', 'Elevated risk'], ['insufficient', 'Insufficient']].map(x => chip('poa', x[0], x[1], state.poa.includes(x[0]))).join('')}</div>
-      <h5>Evidence Confidence</h5><div class="mkt-fgroup">${[['all', 'Any'], ['high', 'High only'], ['medium', 'Medium+'], ['low', 'Include Low']].map(x => chip('ev', x[0], x[1], state.evidence === x[0])).join('')}</div>
-      <h5>Maximum risk</h5><div class="mkt-fgroup">${[['all', 'Any'], ['none', 'None'], ['low', 'Low'], ['medium', 'Medium'], ['elevated', 'Elevated']].map(x => chip('risk', x[0], x[1], state.risk === x[0])).join('')}</div>
+      <div class="mkt-fgroup">${L("open","1","Open only",a.quickOpen)}${L("ending","1","Ending <30d",a.ending)}</div>
+      <h5>Payout multiple</h5><div class="mkt-fgroup">${[["1x","1.0–1.49×"],["15x","1.5–1.99×"],["2x","2.0×+"]].map(e=>L("mult",e[0],e[1],a.multiple.includes(e[0]))).join("")}</div>
+      <h5>Platform</h5><div class="mkt-fgroup">${d.PLATFORMS.map(e=>L("plat",e.id,e.name,a.platforms.includes(e.id))).join("")}</div>
+      <h5>Creator scale</h5><div class="mkt-fgroup">${d.TIERS.map(e=>L("scale",e.id,e.label,a.scale.includes(e.id))).join("")}</div>
+      <h5>PoA signal</h5><div class="mkt-fgroup">${[["strong","Strong"],["mixed","Mixed"],["risk","Elevated risk"],["insufficient","Insufficient"]].map(e=>L("poa",e[0],e[1],a.poa.includes(e[0]))).join("")}</div>
+      <h5>Evidence Confidence</h5><div class="mkt-fgroup">${[["all","Any"],["high","High only"],["medium","Medium+"],["low","Include Low"]].map(e=>L("ev",e[0],e[1],a.evidence===e[0])).join("")}</div>
+      <h5>Maximum risk</h5><div class="mkt-fgroup">${[["all","Any"],["none","None"],["low","Low"],["medium","Medium"],["elevated","Elevated"]].map(e=>L("risk",e[0],e[1],a.risk===e[0])).join("")}</div>
     </div>
-    <div class="mkt-drawer-f"><button class="mkt-btn ghost" data-reset-filters>Reset</button><button class="mkt-btn accent" data-close-drawer>Show ${n} ${state.view === 'radar' ? 'creators' : 'markets'}</button></div>`;
-  }
-  function openDrawer() { const d = $('#mktDrawer', root); d.classList.add('open'); d.setAttribute('aria-hidden', 'false'); d.innerHTML = `<div class="mkt-drawer-panel" role="dialog" aria-label="Filter market">${drawerHTML()}</div>`; }
-  function refreshDrawer() { const d = $('#mktDrawer', root); if (d.classList.contains('open')) $('.mkt-drawer-panel', d).innerHTML = drawerHTML(); }
-  function closeDrawer() { const d = $('#mktDrawer', root); if (!d) return; d.classList.remove('open'); d.setAttribute('aria-hidden', 'true'); d.innerHTML = ''; }
-
-  /* ---------------- position drawer (PRD §18) ---------------- */
-  function maxFor(c) {
-    const m = c.mkt, evW = M.EV_GRADES[m.evidence.grade].w;
-    const riskF = { none: 1, low: 1, medium: .6, elevated: .35, severe: .2 }[m.risk.level];
-    return Math.max(50, Math.round(m.poa.score * 10 * Math.max(evW, .3) * riskF / 10) * 10);
-  }
-  function posPreview(c, amt) {
-    const k = c.contract, max = maxFor(c);
-    const bad = !(amt >= 1) ? 'Minimum simulated position is $1.' : amt > max ? `Above the $${max} position ceiling for this contract.` : null;
-    const win = Math.round(amt * k.mult * 100) / 100;
-    return `
-      <div class="mkt-kv"><span>If milestone hits</span><b class="pos">${B.money(win)} simulated payout (+${B.money(Math.round((win - amt) * 100) / 100)})</b></div>
+    <div class="mkt-drawer-f"><button class="mkt-btn ghost" data-reset-filters>Reset</button><button class="mkt-btn accent" data-close-drawer>Show ${t} ${a.view==="radar"?"creators":"markets"}</button></div>`}function It(){const t=u("#mktDrawer",v);t.classList.add("open"),t.setAttribute("aria-hidden","false"),t.innerHTML=`<div class="mkt-drawer-panel" role="dialog" aria-label="Filter market">${ct()}</div>`}function mt(){const t=u("#mktDrawer",v);t.classList.contains("open")&&(u(".mkt-drawer-panel",t).innerHTML=ct())}function T(){const t=u("#mktDrawer",v);t&&(t.classList.remove("open"),t.setAttribute("aria-hidden","true"),t.innerHTML="")}function K(t){const e=t.mkt,s=d.EV_GRADES[e.evidence.grade].w,n={none:1,low:1,medium:.6,elevated:.35,severe:.2}[e.risk.level];return Math.max(50,Math.round(e.poa.score*10*Math.max(s,.3)*n/10)*10)}function B(t,e){const s=t.contract,n=K(t),l=e>=1?e>n?`Above the $${n} position ceiling for this contract.`:null:"Minimum simulated position is $1.",o=Math.round(e*s.mult*100)/100;return`
+      <div class="mkt-kv"><span>If milestone hits</span><b class="pos">${h.money(o)} simulated payout (+${h.money(Math.round((o-e)*100)/100)})</b></div>
       <div class="mkt-kv"><span>If milestone misses</span><b class="neg">$0 — full simulated stake lost</b></div>
-      ${bad ? `<p class="mkt-pos-err" role="alert">${bad}</p>` : ''}`;
-  }
-  function openPosition(c) {
-    if (c.mkt.state !== 'OPEN') {
-      analyticsTrack('market_position_blocked', { market_id: c.id, creator_id: c.id, instrument: 'milestone', reason: 'market-closed', source: 'market' });
-      return;
-    }
-    analyticsTrack('market_position_started', { market_id: c.id, creator_id: c.id, instrument: 'milestone', source: 'market' });
-    const k = c.contract, m = c.mkt, max = maxFor(c);
-    const d = $('#mktPos', root);
-    d.classList.add('open'); d.setAttribute('aria-hidden', 'false');
-    d.innerHTML = `<div class="mkt-drawer-panel mkt-pos-panel" role="dialog" aria-label="Take a simulated position">
-      <div class="mkt-drawer-h">${avatar(c, 34)}<div class="mkt-poa-t"><h3>Simulated position</h3><small>${esc(c.name)} · ${esc(k.title)}</small></div><button class="mkt-x" data-close-pos aria-label="Close position drawer"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+      ${l?`<p class="mkt-pos-err" role="alert">${l}</p>`:""}`}function Rt(t){if(t.mkt.state!=="OPEN"){w("market_position_blocked",{market_id:t.id,creator_id:t.id,instrument:"milestone",reason:"market-closed",source:"market"});return}w("market_position_started",{market_id:t.id,creator_id:t.id,instrument:"milestone",source:"market"});const e=t.contract,s=t.mkt,n=K(t),l=u("#mktPos",v);l.classList.add("open"),l.setAttribute("aria-hidden","false"),l.innerHTML=`<div class="mkt-drawer-panel mkt-pos-panel" role="dialog" aria-label="Take a simulated position">
+      <div class="mkt-drawer-h">${A(t,34)}<div class="mkt-poa-t"><h3>Simulated position</h3><small>${m(t.name)} · ${m(e.title)}</small></div><button class="mkt-x" data-close-pos aria-label="Close position drawer"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
       <div class="mkt-drawer-b" id="mktPosBody">
-        <div class="mkt-kv"><span>Current → target</span><b>${k.curLabel} → ${k.tgtLabel} (${k.progressPct}% progress)</b></div>
-        <div class="mkt-kv"><span>Milestone deadline</span><b>${k.deadlineLabel}</b></div>
-        <div class="mkt-kv"><span>Entry closes</span><b>${k.closeLabel || '—'}</b></div>
-        <div class="mkt-kv"><span>Payout multiple</span><b>${k.mult}× — fixed contract term, not market odds</b></div>
-        <div class="mkt-kv"><span>PoA · Evidence</span><b>${m.poa.band === 'insufficient' ? 'Insufficient' : m.poa.score} · ${m.evidence.grade}</b></div>
-        <div class="mkt-kv"><span>Primary risk</span><b>${esc(m.risk.label)}</b></div>
-        <div class="mkt-kv"><span>Resolution source</span><b>${esc(k.source)}</b></div>
-        <div class="mkt-kv"><span>Terms version</span><b>${k.id} · ${k.version}</b></div>
+        <div class="mkt-kv"><span>Current → target</span><b>${e.curLabel} → ${e.tgtLabel} (${e.progressPct}% progress)</b></div>
+        <div class="mkt-kv"><span>Milestone deadline</span><b>${e.deadlineLabel}</b></div>
+        <div class="mkt-kv"><span>Entry closes</span><b>${e.closeLabel||"—"}</b></div>
+        <div class="mkt-kv"><span>Payout multiple</span><b>${e.mult}× — fixed contract term, not market odds</b></div>
+        <div class="mkt-kv"><span>PoA · Evidence</span><b>${s.poa.band==="insufficient"?"Insufficient":s.poa.score} · ${s.evidence.grade}</b></div>
+        <div class="mkt-kv"><span>Primary risk</span><b>${m(s.risk.label)}</b></div>
+        <div class="mkt-kv"><span>Resolution source</span><b>${m(e.source)}</b></div>
+        <div class="mkt-kv"><span>Terms version</span><b>${e.id} · ${e.version}</b></div>
         <h5>Simulated amount</h5>
-        <div class="mkt-amt"><span class="cur">$</span><input id="mktAmt" type="number" min="1" max="${max}" value="25" inputmode="numeric" aria-label="Simulated amount in dollars"/></div>
-        <div class="mkt-fgroup">${[1, 5, 25, 100].map(v => `<button class="mkt-fchip ${v === 25 ? 'on' : ''}" data-amt-quick="${v}">$${v}</button>`).join('')}</div>
-        <p class="mkt-pos-max">Position ceiling <b>$${max}</b> — scales with PoA confidence, evidence and contract risk. No universal cap.</p>
-        <div id="mktPosPrev">${posPreview(c, 25)}</div>
+        <div class="mkt-amt"><span class="cur">$</span><input id="mktAmt" type="number" min="1" max="${n}" value="25" inputmode="numeric" aria-label="Simulated amount in dollars"/></div>
+        <div class="mkt-fgroup">${[1,5,25,100].map(o=>`<button class="mkt-fchip ${o===25?"on":""}" data-amt-quick="${o}">$${o}</button>`).join("")}</div>
+        <p class="mkt-pos-max">Position ceiling <b>$${n}</b> — scales with PoA confidence, evidence and contract risk. No universal cap.</p>
+        <div id="mktPosPrev">${B(t,25)}</div>
         <p class="mkt-sim">Simulated position · no real money moves. You can lose the full simulated stake if the milestone misses.</p>
       </div>
-      <div class="mkt-drawer-f"><button class="mkt-btn ghost" data-close-pos>Cancel</button><button class="mkt-btn accent" data-confirm-pos="${c.id}">Confirm simulated position</button></div>
-    </div>`;
-    $('.mkt-x', d).focus();
-  }
-  function confirmPosition(c) {
-    const inp = $('#mktAmt', root);
-    const amt = Math.round(parseFloat(inp && inp.value) || 0);
-    const max = maxFor(c);
-    if (!(amt >= 1) || amt > max) {
-      analyticsTrack('market_position_blocked', {
-        market_id: c.id,
-        creator_id: c.id,
-        instrument: 'milestone',
-        reason: !(amt >= 1) ? 'below-minimum' : 'above-ceiling',
-        source: 'market'
-      });
-      const pv = $('#mktPosPrev', root);
-      if (pv) pv.innerHTML = posPreview(c, amt);
-      return;
-    }
-    try {
-      const raw = getPositions();
-      const ex = raw.find(p => p.id === c.id);
-      if (ex) ex.invested += amt; else raw.push({ id: c.id, invested: amt, when: 'Jul 2026' });
-      localStorage.setItem(PKEY, JSON.stringify(raw));
-    } catch (error) {
-      analyticsTrack('market_position_blocked', {
-        market_id: c.id,
-        creator_id: c.id,
-        instrument: 'milestone',
-        reason: 'storage-failed',
-        source: 'market'
-      });
-      const pv = $('#mktPosPrev', root);
-      if (pv) {
-        pv.innerHTML = posPreview(c, amt)
-          + '<p class="mkt-pos-err" role="alert">The simulated position was not saved. Check browser storage and try again.</p>';
-      }
-      toast('Position not saved — browser storage is unavailable');
-      return;
-    }
-    sessionAdds[c.id] = (sessionAdds[c.id] || 0) + amt;
-    analyticsTrack('market_position_completed', { market_id: c.id, creator_id: c.id, instrument: 'milestone', source: 'market' });
-    const d = $('#mktPos', root);
-    $('.mkt-drawer-panel', d).innerHTML = `<div class="mkt-drawer-h"><div class="mkt-poa-t"><h3>Position recorded</h3><small>${esc(c.name)} · ${esc(c.contract.title)}</small></div><button class="mkt-x" data-close-pos aria-label="Close"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+      <div class="mkt-drawer-f"><button class="mkt-btn ghost" data-close-pos>Cancel</button><button class="mkt-btn accent" data-confirm-pos="${t.id}">Confirm simulated position</button></div>
+    </div>`,u(".mkt-x",l).focus()}function Ct(t){const e=u("#mktAmt",v),s=Math.round(parseFloat(e&&e.value)||0),n=K(t);if(!(s>=1)||s>n){w("market_position_blocked",{market_id:t.id,creator_id:t.id,instrument:"milestone",reason:s>=1?"above-ceiling":"below-minimum",source:"market"});const o=u("#mktPosPrev",v);o&&(o.innerHTML=B(t,s));return}try{const o=tt(),i=o.find(r=>r.id===t.id);i?i.invested+=s:o.push({id:t.id,invested:s,when:"Jul 2026"}),localStorage.setItem(X,JSON.stringify(o))}catch{w("market_position_blocked",{market_id:t.id,creator_id:t.id,instrument:"milestone",reason:"storage-failed",source:"market"});const i=u("#mktPosPrev",v);i&&(i.innerHTML=B(t,s)+'<p class="mkt-pos-err" role="alert">The simulated position was not saved. Check browser storage and try again.</p>'),M("Position not saved — browser storage is unavailable");return}x[t.id]=(x[t.id]||0)+s,w("market_position_completed",{market_id:t.id,creator_id:t.id,instrument:"milestone",source:"market"});const l=u("#mktPos",v);u(".mkt-drawer-panel",l).innerHTML=`<div class="mkt-drawer-h"><div class="mkt-poa-t"><h3>Position recorded</h3><small>${m(t.name)} · ${m(t.contract.title)}</small></div><button class="mkt-x" data-close-pos aria-label="Close"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
       <div class="mkt-drawer-b">
-        <p class="mkt-pos-ok" role="status">Your <b>${B.money(amt)}</b> simulated position is recorded against ${c.contract.id} · ${c.contract.version}.</p>
-        <div class="mkt-kv"><span>If milestone hits</span><b class="pos">${B.money(Math.round(amt * c.contract.mult * 100) / 100)} simulated payout</b></div>
+        <p class="mkt-pos-ok" role="status">Your <b>${h.money(s)}</b> simulated position is recorded against ${t.contract.id} · ${t.contract.version}.</p>
+        <div class="mkt-kv"><span>If milestone hits</span><b class="pos">${h.money(Math.round(s*t.contract.mult*100)/100)} simulated payout</b></div>
         <div class="mkt-kv"><span>If milestone misses</span><b class="neg">$0</b></div>
         <p class="mkt-sim">Simulated · no real money moves.</p>
       </div>
-      <div class="mkt-drawer-f"><button class="mkt-btn ghost" data-close-pos>Keep browsing</button><button class="mkt-btn accent" data-go-portfolio>View portfolio</button></div>`;
-    refreshCanvas();
-    toast('Simulated position recorded — view it in your portfolio');
-  }
-  function closePosition() { const d = $('#mktPos', root); if (!d) return; d.classList.remove('open'); d.setAttribute('aria-hidden', 'true'); d.innerHTML = ''; if (lastTrigger) { try { lastTrigger.focus(); } catch (e) {} lastTrigger = null; } }
-
-  /* ---------------- PoA evidence panel ---------------- */
-  function openPoa(c) {
-    const m = c.mkt, p = m.poa;
-    const leads = {
-      strong: 'Broad, fresh evidence supports this underwriting estimate.',
-      mixed: 'Evidence points to a mixed underwriting profile — read the risk line.',
-      risk: 'Public evidence shows material anomalies or structural weakness.',
-      insufficient: 'Backer does not have enough evidence for a calibrated estimate.'
-    };
-    const compRow = (label, v, inv) => {
-      const grade = inv ? (v < 25 ? 'Low' : v < 50 ? 'Medium' : 'High') : (v >= 75 ? 'High' : v >= 50 ? 'Medium' : 'Low');
-      return `<div class="mkt-kv"><span>${label}</span><b>${v} · ${grade}</b></div>`;
-    };
-    const platEv = m.profiles.map(pr => {
-      const plat = M.platById(pr.plat);
-      return `<div class="mkt-kv"><span>${plat ? plat.name : pr.plat} <em class="${pr.fresh.state === 'PROVIDER_DELAYED' ? 'neg' : ''}">${pr.fresh.label} ${pr.fresh.ago}</em></span><b>${pr.reachLabel} · ${pr.engRate}% eng</b></div>`;
-    }).join('');
-    const missing = [
-      'True watch-time and retention are unavailable without creator authorization.',
-      m.profiles.some(x => x.fresh.state === 'PROVIDER_DELAYED') ? 'Instagram evidence is provider-delayed; last-good snapshot in use.' : null,
-      'Public-data inference; platform-private fraud signals are unavailable.'
-    ].filter(Boolean).map(x => `<li>${x}</li>`).join('');
-    const d = $('#mktPoa', root);
-    d.classList.add('open'); d.setAttribute('aria-hidden', 'false');
-    d.innerHTML = `<div class="mkt-drawer-panel mkt-poa-panel" role="dialog" aria-label="Proof of Attention evidence">
-      <div class="mkt-drawer-h"><div>${avatar(c, 34)}</div><div class="mkt-poa-t"><h3>Proof of Attention</h3><small>${esc(c.name)} · underwriting, not success odds</small></div><button class="mkt-x" data-close-poa aria-label="Close evidence panel"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+      <div class="mkt-drawer-f"><button class="mkt-btn ghost" data-close-pos>Keep browsing</button><button class="mkt-btn accent" data-go-portfolio>View portfolio</button></div>`,g(),M("Simulated position recorded — view it in your portfolio")}function I(){const t=u("#mktPos",v);if(t&&(t.classList.remove("open"),t.setAttribute("aria-hidden","true"),t.innerHTML="",E)){try{E.focus()}catch{}E=null}}function pt(t){const e=t.mkt,s=e.poa,n={strong:"Broad, fresh evidence supports this underwriting estimate.",mixed:"Evidence points to a mixed underwriting profile — read the risk line.",risk:"Public evidence shows material anomalies or structural weakness.",insufficient:"Backer does not have enough evidence for a calibrated estimate."},l=(c,k,b)=>{const p=b?k<25?"Low":k<50?"Medium":"High":k>=75?"High":k>=50?"Medium":"Low";return`<div class="mkt-kv"><span>${c}</span><b>${k} · ${p}</b></div>`},o=e.profiles.map(c=>{const k=d.platById(c.plat);return`<div class="mkt-kv"><span>${k?k.name:c.plat} <em class="${c.fresh.state==="PROVIDER_DELAYED"?"neg":""}">${c.fresh.label} ${c.fresh.ago}</em></span><b>${c.reachLabel} · ${c.engRate}% eng</b></div>`}).join(""),i=["True watch-time and retention are unavailable without creator authorization.",e.profiles.some(c=>c.fresh.state==="PROVIDER_DELAYED")?"Instagram evidence is provider-delayed; last-good snapshot in use.":null,"Public-data inference; platform-private fraud signals are unavailable."].filter(Boolean).map(c=>`<li>${c}</li>`).join(""),r=u("#mktPoa",v);r.classList.add("open"),r.setAttribute("aria-hidden","false"),r.innerHTML=`<div class="mkt-drawer-panel mkt-poa-panel" role="dialog" aria-label="Proof of Attention evidence">
+      <div class="mkt-drawer-h"><div>${A(t,34)}</div><div class="mkt-poa-t"><h3>Proof of Attention</h3><small>${m(t.name)} · underwriting, not success odds</small></div><button class="mkt-x" data-close-poa aria-label="Close evidence panel"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
       <div class="mkt-drawer-b">
-        <div class="mkt-poa-hero ${p.band}">
-          <div><small>Underwriting score</small><b>${p.band === 'insufficient' ? '—' : p.score}</b></div>
-          <div><small>Evidence Confidence</small><b>${m.evidence.grade} ${m.evidence.score}</b></div>
-          ${p.band !== 'insufficient' ? `<div><small>Est. authentic attention</small><b>${p.range[0]}–${p.range[1]}%</b></div>` : ''}
-          <div><small>Risk</small><b class="${m.risk.level}">${m.risk.level === 'none' ? 'None material' : m.risk.level[0].toUpperCase() + m.risk.level.slice(1)} ${p.components.risk}</b></div>
+        <div class="mkt-poa-hero ${s.band}">
+          <div><small>Underwriting score</small><b>${s.band==="insufficient"?"—":s.score}</b></div>
+          <div><small>Evidence Confidence</small><b>${e.evidence.grade} ${e.evidence.score}</b></div>
+          ${s.band!=="insufficient"?`<div><small>Est. authentic attention</small><b>${s.range[0]}–${s.range[1]}%</b></div>`:""}
+          <div><small>Risk</small><b class="${e.risk.level}">${e.risk.level==="none"?"None material":e.risk.level[0].toUpperCase()+e.risk.level.slice(1)} ${s.components.risk}</b></div>
         </div>
-        <p class="mkt-poa-lead">${leads[p.band]}</p>
+        <p class="mkt-poa-lead">${n[s.band]}</p>
         <h5>Primary evidence</h5>
-        <p class="mkt-ev pos">+ ${esc(p.positive)}</p>
-        <p class="mkt-ev ${m.risk.level === 'none' ? '' : 'neg'}">! ${esc(p.riskNote)}</p>
+        <p class="mkt-ev pos">+ ${m(s.positive)}</p>
+        <p class="mkt-ev ${e.risk.level==="none"?"":"neg"}">! ${m(s.riskNote)}</p>
         <h5>Components</h5>
-        ${compRow('Attention Authenticity', p.components.authenticity)}
-        ${compRow('Attention Durability', p.components.durability)}
-        ${compRow('Engagement Quality', p.components.engagementQuality)}
-        ${compRow('Monetization Readiness', p.components.monetization)}
-        ${compRow('Manipulation / Platform Risk', p.components.risk, true)}
-        <div class="mkt-kv"><span>Data Coverage</span><b>${p.coverage}</b></div>
-        <h5>Evidence by platform</h5>${platEv}
-        <h5>Missing data &amp; limitations</h5><ul class="mkt-limits">${missing}</ul>
-        <small class="mkt-vers">Public-data score · demo snapshot ${M.DEMO_SNAP_LABEL} · ${M.VERSIONS.poa}</small>
+        ${l("Attention Authenticity",s.components.authenticity)}
+        ${l("Attention Durability",s.components.durability)}
+        ${l("Engagement Quality",s.components.engagementQuality)}
+        ${l("Monetization Readiness",s.components.monetization)}
+        ${l("Manipulation / Platform Risk",s.components.risk,!0)}
+        <div class="mkt-kv"><span>Data Coverage</span><b>${s.coverage}</b></div>
+        <h5>Evidence by platform</h5>${o}
+        <h5>Missing data &amp; limitations</h5><ul class="mkt-limits">${i}</ul>
+        <small class="mkt-vers">Public-data score · demo snapshot ${d.DEMO_SNAP_LABEL} · ${d.VERSIONS.poa}</small>
       </div>
-      <div class="mkt-drawer-f"><button class="mkt-btn ghost" data-correction>Report a correction</button><button class="mkt-btn" data-mkt-poa-open="${c.id}">Full underwriting profile →</button></div>
-    </div>`;
-    $('.mkt-x', d).focus();
-  }
-  function closePoa() { const d = $('#mktPoa', root); if (!d) return; d.classList.remove('open'); d.setAttribute('aria-hidden', 'true'); d.innerHTML = ''; }
-
-  /* ---------------- main canvas ---------------- */
-  function activeFilterChips() {
-    const chips = [];
-    const add = (label, fn) => chips.push({ label, fn });
-    if (state.genre) add(M.catById(state.genre).name, () => { state.genre = null; });
-    state.platforms.forEach(p => add(M.platById(p).name, () => { state.platforms = state.platforms.filter(x => x !== p); }));
-    state.scale.forEach(s => add(M.TIERS.find(t => t.id === s).label, () => { state.scale = state.scale.filter(x => x !== s); }));
-    state.poa.forEach(s => add('PoA: ' + s, () => { state.poa = state.poa.filter(x => x !== s); }));
-    state.multiple.forEach(s => add('Multiple: ' + (s === '2x' ? '2.0×+' : s === '15x' ? '1.5–1.99×' : '1.0–1.49×'), () => { state.multiple = state.multiple.filter(x => x !== s); }));
-    if (state.evidence !== 'all') add('Evidence: ' + state.evidence, () => { state.evidence = 'all'; });
-    if (state.risk !== 'all') add('Risk ≤ ' + state.risk, () => { state.risk = 'all'; });
-    if (state.u100) add('Under 100K', () => { state.u100 = false; });
-    if (state.ending) add('Ending <30d', () => { state.ending = false; });
-    return chips;
-  }
-  window.__mktChipRemove = [];
-
-  function emptyState(n) {
-    const chips = activeFilterChips();
-    return `<div class="mkt-empty">
-      <b>No ${state.view === 'radar' ? 'creators' : 'markets'} match the current constraints.</b>
-      ${chips.length ? `<p>Active filters: ${chips.map(c => esc(c.label)).join(' · ')}.</p>` : ''}
-      <div class="rm-btns">${chips.length ? '<button class="mkt-btn sm" data-clear-filters>Clear filters</button>' : ''}${state.view === 'markets' ? '<button class="mkt-btn ghost sm" data-tab="radar">Browse Creator Radar</button>' : ''}</div>
-    </div>`;
-  }
-
-  function canvasHTML() {
-    const w = state.window;
-    if (state.view === 'radar') {
-      const list = radarList(), slice = list.slice(0, state.shown);
-      return `<div class="mkt-gridwrap">
-        <p class="mkt-tab-lead">Creators worth monitoring before a contract opens — ranked by Attention Pulse ${w.toUpperCase()}, Evidence Confidence tie-break. Radar profiles never show contract terms.</p>
-        ${list.length ? `<div class="mkt-grid radar">${slice.map(radarCard).join('')}</div>` : emptyState()}
-        ${list.length > state.shown ? `<div class="mkt-more"><button class="mkt-btn" data-load-more>Show ${Math.min(12, list.length - state.shown)} more</button><span>${slice.length} of ${list.length}</span></div>` : `<div class="mkt-more"><span>${list.length} creators on radar</span></div>`}
-      </div>`;
-    }
-    if (state.view === 'resolved') {
-      const list = resolvedList(), slice = list.slice(0, state.shown);
-      return `<div class="mkt-gridwrap">
+      <div class="mkt-drawer-f"><button class="mkt-btn ghost" data-correction>Report a correction</button><button class="mkt-btn" data-mkt-poa-open="${t.id}">Full underwriting profile →</button></div>
+    </div>`,u(".mkt-x",r).focus()}function O(){const t=u("#mktPoa",v);t&&(t.classList.remove("open"),t.setAttribute("aria-hidden","true"),t.innerHTML="")}function ut(){const t=[],e=(s,n)=>t.push({label:s,fn:n});return a.genre&&e(d.catById(a.genre).name,()=>{a.genre=null}),a.platforms.forEach(s=>e(d.platById(s).name,()=>{a.platforms=a.platforms.filter(n=>n!==s)})),a.scale.forEach(s=>e(d.TIERS.find(n=>n.id===s).label,()=>{a.scale=a.scale.filter(n=>n!==s)})),a.poa.forEach(s=>e("PoA: "+s,()=>{a.poa=a.poa.filter(n=>n!==s)})),a.multiple.forEach(s=>e("Multiple: "+(s==="2x"?"2.0×+":s==="15x"?"1.5–1.99×":"1.0–1.49×"),()=>{a.multiple=a.multiple.filter(n=>n!==s)})),a.evidence!=="all"&&e("Evidence: "+a.evidence,()=>{a.evidence="all"}),a.risk!=="all"&&e("Risk ≤ "+a.risk,()=>{a.risk="all"}),a.u100&&e("Under 100K",()=>{a.u100=!1}),a.ending&&e("Ending <30d",()=>{a.ending=!1}),t}window.__mktChipRemove=[];function G(t){const e=ut();return`<div class="mkt-empty">
+      <b>No ${a.view==="radar"?"creators":"markets"} match the current constraints.</b>
+      ${e.length?`<p>Active filters: ${e.map(s=>m(s.label)).join(" · ")}.</p>`:""}
+      <div class="rm-btns">${e.length?'<button class="mkt-btn sm" data-clear-filters>Clear filters</button>':""}${a.view==="markets"?'<button class="mkt-btn ghost sm" data-tab="radar">Browse Creator Radar</button>':""}</div>
+    </div>`}function kt(){const t=a.window;if(a.view==="radar"){const r=C(),c=r.slice(0,a.shown);return`<div class="mkt-gridwrap">
+        <p class="mkt-tab-lead">Creators worth monitoring before a contract opens — ranked by Attention Pulse ${t.toUpperCase()}, Evidence Confidence tie-break. Radar profiles never show contract terms.</p>
+        ${r.length?`<div class="mkt-grid radar">${c.map(lt).join("")}</div>`:G()}
+        ${r.length>a.shown?`<div class="mkt-more"><button class="mkt-btn" data-load-more>Show ${Math.min(12,r.length-a.shown)} more</button><span>${c.length} of ${r.length}</span></div>`:`<div class="mkt-more"><span>${r.length} creators on radar</span></div>`}
+      </div>`}if(a.view==="resolved"){const r=j(),c=r.slice(0,a.shown);return`<div class="mkt-gridwrap">
         <p class="mkt-tab-lead">Resolved milestone contracts — outcome recorded from the independent resolution source. PoA never settles a contract.</p>
-        ${list.length ? `<div class="mkt-grid">${slice.map(card).join('')}</div>` : emptyState()}
-        ${list.length > state.shown ? `<div class="mkt-more"><button class="mkt-btn" data-load-more>Show ${Math.min(12, list.length - state.shown)} more</button></div>` : ''}
-      </div>`;
-    }
-    /* markets */
-    const feats = M.featuredList(w);
-    const featured = feats.length ? feats[Math.max(0, Math.min(state.featIdx, feats.length - 1))] : null;
-    let list = marketList();
-    if (featured) list = list.filter(c => c.id !== featured.id);
-    const gridItems = list;
-    const slice = gridItems.slice(0, state.shown);
-    const cardsHTML = slice.map((c, i) => card(c) + (i === 3 ? inlinePulse() : '')).join('');
-    return `<div class="mkt-gridwrap">
-      ${featured ? `<div class="mkt-featrow">${featuredHTML()}</div>` : ''}
-      <div class="mkt-grid-h"><h2>All markets</h2><span>${list.length} contract${list.length === 1 ? '' : 's'}${state.browse ? ' · ' + BROWSE.find(b => b[0] === state.browse)[1] : ''} · sorted by ${SORTS.find(s => s[0] === state.sort)[1]}</span></div>
-      ${gridItems.length ? `<div class="mkt-grid">${cardsHTML}</div>` : list.length ? '' : emptyState()}
-      ${gridItems.length > state.shown ? `<div class="mkt-more"><button class="mkt-btn" data-load-more>Show ${Math.min(12, gridItems.length - state.shown)} more</button><span>${slice.length} of ${gridItems.length} eligible</span></div>` : list.length ? `<div class="mkt-more"><span>All ${list.length + (featured ? 1 : 0)} eligible contracts shown — empty inventory is honest inventory.</span></div>` : ''}
-      ${radarPreview()}
-    </div>`;
-  }
-
-  function radarPreview() {
-    if (state.view !== 'markets') return '';
-    const list = radarList().slice(0, 3);
-    if (!list.length) return '';
-    return `<section class="mkt-radar-prev">
+        ${r.length?`<div class="mkt-grid">${c.map(rt).join("")}</div>`:G()}
+        ${r.length>a.shown?`<div class="mkt-more"><button class="mkt-btn" data-load-more>Show ${Math.min(12,r.length-a.shown)} more</button></div>`:""}
+      </div>`}const e=d.featuredList(t),s=e.length?e[Math.max(0,Math.min(a.featIdx,e.length-1))]:null;let n=q();s&&(n=n.filter(r=>r.id!==s.id));const l=n,o=l.slice(0,a.shown),i=o.map((r,c)=>rt(r)+(c===3?Tt():"")).join("");return`<div class="mkt-gridwrap">
+      ${s?`<div class="mkt-featrow">${_t()}</div>`:""}
+      <div class="mkt-grid-h"><h2>All markets</h2><span>${n.length} contract${n.length===1?"":"s"}${a.browse?" · "+N.find(r=>r[0]===a.browse)[1]:""} · sorted by ${F.find(r=>r[0]===a.sort)[1]}</span></div>
+      ${l.length?`<div class="mkt-grid">${i}</div>`:n.length?"":G()}
+      ${l.length>a.shown?`<div class="mkt-more"><button class="mkt-btn" data-load-more>Show ${Math.min(12,l.length-a.shown)} more</button><span>${o.length} of ${l.length} eligible</span></div>`:n.length?`<div class="mkt-more"><span>All ${n.length+(s?1:0)} eligible contracts shown — empty inventory is honest inventory.</span></div>`:""}
+      ${Nt()}
+    </div>`}function Nt(){if(a.view!=="markets")return"";const t=C().slice(0,3);return t.length?`<section class="mkt-radar-prev">
       <div class="mkt-grid-h"><h2>Creator Radar</h2><span>watch-only research — no terms synthesized</span><button class="mkt-link" data-tab="radar">Open Radar →</button></div>
-      <div class="mkt-grid radar">${list.map(radarCard).join('')}</div>
-    </section>`;
-  }
-
-  /* ---------------- page chrome ---------------- */
-  function tickerHTML() {
-    return `<div class="mkt-ticker" role="status" aria-label="Market status">${M.tickerStats().map(s =>
-      `<span class="mkt-tick ${s.warn ? 'warn' : ''}" title="${esc(s.tip)}">${esc(s.v)}</span>`).join('<i>·</i>')}</div>`;
-  }
-  function browseRailHTML() {
-    return `<div class="mkt-browse" role="navigation" aria-label="Browse modes and categories">
+      <div class="mkt-grid radar">${t.map(lt).join("")}</div>
+    </section>`:""}function ft(){return`<div class="mkt-ticker" role="status" aria-label="Market status">${d.tickerStats().map(t=>`<span class="mkt-tick ${t.warn?"warn":""}" title="${m(t.tip)}">${m(t.v)}</span>`).join("<i>·</i>")}</div>`}function vt(){return`<div class="mkt-browse" role="navigation" aria-label="Browse modes and categories">
       <div class="mkt-browse-in">
-        ${BROWSE.map(b => `<button class="bchip ${state.browse === b[0] ? 'on' : ''}" data-browse="${b[0]}">${b[1]}</button>`).join('')}
+        ${N.map(t=>`<button class="bchip ${a.browse===t[0]?"on":""}" data-browse="${t[0]}">${t[1]}</button>`).join("")}
         <span class="bsep" aria-hidden="true"></span>
-        ${['all', ...M.TAXONOMY.map(t => t.id)].map(id => `<button class="bchip cat ${(!state.genre && id === 'all') || state.genre === id ? 'on' : ''}" data-cat="${id === 'all' ? '' : id}">${id === 'all' ? 'All' : M.catById(id).name}</button>`).join('')}
+        ${["all",...d.TAXONOMY.map(t=>t.id)].map(t=>`<button class="bchip cat ${!a.genre&&t==="all"||a.genre===t?"on":""}" data-cat="${t==="all"?"":t}">${t==="all"?"All":d.catById(t).name}</button>`).join("")}
       </div>
-    </div>`;
-  }
-  function controlsHTML() {
-    const counts = { markets: marketList().length, radar: radarList().length, resolved: resolvedList().length };
-    const chips = activeFilterChips();
-    window.__mktChipRemove = chips.map(c => c.fn);
-    return `
+    </div>`}function bt(){const t={markets:q().length,radar:C().length,resolved:j().length},e=ut();return window.__mktChipRemove=e.map(s=>s.fn),`
       <div class="mkt-controls">
         <div class="mkt-tabs" role="tablist" aria-label="Market view">
-          ${[['markets', 'Markets'], ['radar', 'Creator Radar'], ['resolved', 'Resolved']].map(t =>
-            `<button role="tab" aria-selected="${state.view === t[0]}" class="${state.view === t[0] ? 'on' : ''}" data-tab="${t[0]}">${t[1]} <em>${counts[t[0]]}</em></button>`).join('')}
+          ${[["markets","Markets"],["radar","Creator Radar"],["resolved","Resolved"]].map(s=>`<button role="tab" aria-selected="${a.view===s[0]}" class="${a.view===s[0]?"on":""}" data-tab="${s[0]}">${s[1]} <em>${t[s[0]]}</em></button>`).join("")}
         </div>
         <div class="mkt-tools">
-          <div class="mkt-windows" role="tablist" aria-label="Time window">${M.WINDOWS.map(x => `<button role="tab" aria-selected="${x === state.window}" class="${x === state.window ? 'on' : ''}" data-window="${x}">${x.toUpperCase()}</button>`).join('')}</div>
-          ${state.view === 'markets' ? `
+          <div class="mkt-windows" role="tablist" aria-label="Time window">${d.WINDOWS.map(s=>`<button role="tab" aria-selected="${s===a.window}" class="${s===a.window?"on":""}" data-window="${s}">${s.toUpperCase()}</button>`).join("")}</div>
+          ${a.view==="markets"?`
           <div class="mkt-quick">
-            <button class="qchip ${state.quickOpen ? 'on' : ''}" data-quick="open">Open</button>
-            <button class="qchip ${state.ending ? 'on' : ''}" data-quick="ending">Ending &lt;30d</button>
-            <button class="qchip ${state.platforms.includes('youtube') ? 'on' : ''}" data-quick="yt">YouTube</button>
-            <button class="qchip ${state.u100 ? 'on' : ''}" data-quick="u100">Under 100K</button>
-            <button class="qchip ${state.evidence === 'medium' ? 'on' : ''}" data-quick="ev">Medium+ evidence</button>
-          </div>` : ''}
-          <button class="mkt-btn ghost sm" data-open-drawer>Filters${chips.length ? ` <b>${chips.length}</b>` : ''}</button>
-          <label class="mkt-sort">Sort <select id="mktSort" aria-label="Sort markets">${SORTS.map(s => `<option value="${s[0]}" ${s[0] === state.sort ? 'selected' : ''}>${s[1]}</option>`).join('')}</select></label>
+            <button class="qchip ${a.quickOpen?"on":""}" data-quick="open">Open</button>
+            <button class="qchip ${a.ending?"on":""}" data-quick="ending">Ending &lt;30d</button>
+            <button class="qchip ${a.platforms.includes("youtube")?"on":""}" data-quick="yt">YouTube</button>
+            <button class="qchip ${a.u100?"on":""}" data-quick="u100">Under 100K</button>
+            <button class="qchip ${a.evidence==="medium"?"on":""}" data-quick="ev">Medium+ evidence</button>
+          </div>`:""}
+          <button class="mkt-btn ghost sm" data-open-drawer>Filters${e.length?` <b>${e.length}</b>`:""}</button>
+          <label class="mkt-sort">Sort <select id="mktSort" aria-label="Sort markets">${F.map(s=>`<option value="${s[0]}" ${s[0]===a.sort?"selected":""}>${s[1]}</option>`).join("")}</select></label>
           <button class="mkt-btn ghost sm" data-share-board title="Copy a link that restores tab, browse mode, filters, sort and window">Share</button>
         </div>
       </div>
-      ${chips.length ? `<div class="mkt-active-chips">${chips.map((c, i) => `<span class="mkt-achip">${esc(c.label)}<button data-chip-x="${i}" aria-label="Remove filter ${esc(c.label)}">×</button></span>`).join('')}<button class="mkt-clear" data-clear-filters>Clear all</button></div>` : ''}`;
-  }
-  function footerHTML() {
-    return `<footer class="mkt-foot" id="mktMethod">
+      ${e.length?`<div class="mkt-active-chips">${e.map((s,n)=>`<span class="mkt-achip">${m(s.label)}<button data-chip-x="${n}" aria-label="Remove filter ${m(s.label)}">×</button></span>`).join("")}<button class="mkt-clear" data-clear-filters>Clear all</button></div>`:""}`}function Dt(){return`<footer class="mkt-foot" id="mktMethod">
       <div class="mkt-foot-grid">
         <div><h4>How contracts work</h4><p>A milestone contract fixes a <b>target, deadline and payout multiple</b> against an independent resolution source. Hit the milestone by the deadline and the simulated payout follows the contract multiple; miss it and the simulated stake is lost. The multiple is a fixed contract term — <b>not market odds or a probability</b>.</p></div>
         <div><h4>Underwriting, separately</h4><p><b>Attention Pulse</b> is a cohort-normalized attention index — never a price. <b>Proof of Attention</b> is a versioned underwriting estimate shown beside its <b>Evidence Confidence</b>; it is advisory and never settles a contract. Milestone progress measures completion toward the target, not chance of success.</p></div>
         <div><h4>Simulation disclosure</h4><p><b>Simulated markets · no real money moves.</b> Every volume figure is labeled <code>sim. vol.</code> and sums recorded simulated positions. This page is a demo on a fixture catalog (<code>isFixture=true</code>) at a fixed snapshot — production requires source-backed data with provenance, and fixtures never enter production responses.</p></div>
       </div>
-      <div class="mkt-foot-vers"><span>${M.VERSIONS.ranking}</span><span>${M.VERSIONS.pulse}</span><span>${M.VERSIONS.poa}</span><span>${M.VERSIONS.taxonomy}</span><span>Demo snapshot ${M.DEMO_SNAP_LABEL}</span></div>
-    </footer>`;
-  }
-
-  function refreshCanvas() {
-    $('#mktControls', root).innerHTML = controlsHTML();
-    $('#mktCanvas', root).innerHTML = canvasHTML();
-    $('#mktRailBox', root).innerHTML = state.view === 'markets' ? railHTML() : '';
-    $('#mktStage', root).classList.toggle('has-rail', state.view === 'markets');
-    writeURL();
-  }
-  function refreshAll() {
-    $('#mktBrowse', root).innerHTML = browseRailHTML();
-    $('#mktTicker', root).innerHTML = tickerHTML();
-    refreshCanvas();
-  }
-
-  function render(app) {
-    root = app;
-    // The archive is unmounted between routes. Rehydrate from the current URL
-    // on every mount so a later deep link never inherits a prior tab/filter.
-    resetState();
-    readURL();
-    watch = getWatch();
-    app.innerHTML = `
+      <div class="mkt-foot-vers"><span>${d.VERSIONS.ranking}</span><span>${d.VERSIONS.pulse}</span><span>${d.VERSIONS.poa}</span><span>${d.VERSIONS.taxonomy}</span><span>Demo snapshot ${d.DEMO_SNAP_LABEL}</span></div>
+    </footer>`}function g(){u("#mktControls",v).innerHTML=bt(),u("#mktCanvas",v).innerHTML=kt(),u("#mktRailBox",v).innerHTML=a.view==="markets"?dt():"",u("#mktStage",v).classList.toggle("has-rail",a.view==="markets"),at()}function S(){u("#mktBrowse",v).innerHTML=vt(),u("#mktTicker",v).innerHTML=ft(),g()}function Bt(t){v=t,Pt(),yt(),P=Z(),t.innerHTML=`
     <div class="mkt" id="mktRoot">
       <div class="mkt-framing">
         <div class="mkt-framing-l">
@@ -780,163 +230,15 @@ window.BackerLegacyMarket = (function () {
           </form>
         </div>
       </div>
-      <div id="mktBrowse">${browseRailHTML()}</div>
-      <div id="mktTicker">${tickerHTML()}</div>
-      <div id="mktControls" class="mkt-controls-wrap">${controlsHTML()}</div>
-      <div id="mktStage" class="mkt-stage ${state.view === 'markets' ? 'has-rail' : ''}">
-        <section id="mktCanvas" class="mkt-canvas" aria-live="polite">${canvasHTML()}</section>
-        <div id="mktRailBox">${state.view === 'markets' ? railHTML() : ''}</div>
+      <div id="mktBrowse">${vt()}</div>
+      <div id="mktTicker">${ft()}</div>
+      <div id="mktControls" class="mkt-controls-wrap">${bt()}</div>
+      <div id="mktStage" class="mkt-stage ${a.view==="markets"?"has-rail":""}">
+        <section id="mktCanvas" class="mkt-canvas" aria-live="polite">${kt()}</section>
+        <div id="mktRailBox">${a.view==="markets"?dt():""}</div>
       </div>
-      ${footerHTML()}
+      ${Dt()}
       <div class="mkt-drawer" id="mktDrawer" aria-hidden="true"></div>
       <div class="mkt-drawer" id="mktPoa" aria-hidden="true"></div>
       <div class="mkt-drawer" id="mktPos" aria-hidden="true"></div>
-    </div>`;
-    bind(app);
-    writeURL();
-  }
-
-  /* ---------------- events ---------------- */
-  function setBrowse(b) {
-    if (state.browse === b) { state.browse = null; state.sort = 'pulse'; }
-    else { state.browse = b; const def = BROWSE.find(x => x[0] === b); state.sort = def ? def[2] : 'pulse'; if (state.view !== 'markets') state.view = 'markets'; }
-    state.shown = 12; state.featIdx = 0;
-    analyticsTrack('market_filter_changed', { filter: 'browse', value: state.browse || 'all', source: 'market' });
-  }
-  function bind(app) {
-    const rootEl = $('#mktRoot', app);
-    rootEl.addEventListener('click', e => {
-      const t = e.target;
-      const has = sel => t.closest(sel);
-      let el;
-
-      if ((el = has('[data-watch]'))) {
-        e.stopPropagation(); e.preventDefault();
-        const id = el.dataset.watch;
-        if (watch.has(id)) { watch.delete(id); toast('Removed from watchlist'); }
-        else { watch.add(id); toast('Watching — updates appear in Your Market and your portfolio'); }
-        setWatch(watch);
-        $$(`[data-watch="${id}"]`, rootEl).forEach(b => {
-          const on = watch.has(id);
-          b.classList.toggle('on', on); b.setAttribute('aria-pressed', on);
-          const sp = b.querySelector('span'); if (sp) sp.textContent = on ? 'Watching' : 'Watch';
-        });
-        return;
-      }
-      if ((el = has('[data-mkt-poa-open]'))) { e.stopPropagation(); e.preventDefault(); openPoaTerminal(B.byId(el.dataset.mktPoaOpen), el); return; }
-      if ((el = has('[data-market-open]'))) { e.stopPropagation(); e.preventDefault(); openMarketTerminal(B.byId(el.dataset.marketOpen), el); return; }
-      if ((el = has('[data-poa]'))) { e.stopPropagation(); e.preventDefault(); lastTrigger = el; openPoa(B.byId(el.dataset.poa)); return; }
-      if ((el = has('[data-close-poa]'))) { e.stopPropagation(); closePoa(); return; }
-      if ((el = has('[data-correction]'))) { e.stopPropagation(); closePoa(); toast('Correction request recorded — reviewed with source evidence'); return; }
-      if ((el = has('[data-position]'))) { e.stopPropagation(); e.preventDefault(); lastTrigger = el; openPosition(B.byId(el.dataset.position)); return; }
-      if ((el = has('[data-close-pos]'))) { e.stopPropagation(); closePosition(); return; }
-      if ((el = has('[data-confirm-pos]'))) { e.stopPropagation(); confirmPosition(B.byId(el.dataset.confirmPos)); return; }
-      if ((el = has('[data-amt-quick]'))) {
-        e.stopPropagation();
-        const v = el.dataset.amtQuick, inp = $('#mktAmt', rootEl);
-        if (inp) { inp.value = v; inp.dispatchEvent(new Event('input', { bubbles: true })); }
-        $$('[data-amt-quick]', rootEl).forEach(b => b.classList.toggle('on', b === el));
-        return;
-      }
-      if ((el = has('[data-go-portfolio]'))) { e.stopPropagation(); window.location.href = 'portfolio.html'; return; }
-      if ((el = has('[data-profile]'))) { e.stopPropagation(); e.preventDefault(); closePoa(); closeDrawer(); closePosition(); window.__backerGo('creator', el.dataset.profile); return; }
-      if ((el = has('[data-tab]'))) { e.stopPropagation(); state.view = el.dataset.tab; state.shown = 12; analyticsTrack('market_filter_changed', { filter: 'tab', value: state.view, source: 'market' }); refreshCanvas(); return; }
-      if ((el = has('[data-tab-open-soon]'))) { e.stopPropagation(); state.view = 'markets'; state.quickOpen = false; state.browse = null; state.sort = 'newest'; state.shown = 12; refreshCanvas(); toast('Showing all contract states — opening-soon markets included'); return; }
-      if ((el = has('[data-browse]'))) { e.stopPropagation(); setBrowse(el.dataset.browse); refreshAll(); return; }
-      if ((el = has('[data-viewall]'))) { e.stopPropagation(); state.view = 'markets'; setBrowse(el.dataset.viewall); if (!state.browse) setBrowse(el.dataset.viewall); refreshAll(); $('#mktCanvas', rootEl).scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
-      if ((el = has('[data-window]'))) { e.stopPropagation(); state.window = el.dataset.window; analyticsTrack('market_filter_changed', { filter: 'window', value: state.window, source: 'market' }); refreshAll(); return; }
-      if ((el = has('[data-cat]')) && el.dataset.cat !== undefined) {
-        e.stopPropagation();
-        state.genre = el.dataset.cat || null; state.shown = 12; state.featIdx = 0;
-        analyticsTrack('market_filter_changed', { filter: 'genre', value: state.genre || 'all', source: 'market' });
-        refreshAll(); return;
-      }
-      if ((el = has('[data-quick]'))) {
-        e.stopPropagation();
-        const q = el.dataset.quick;
-        if (q === 'open') state.quickOpen = !state.quickOpen;
-        else if (q === 'ending') state.ending = !state.ending;
-        else if (q === 'yt') state.platforms = state.platforms.includes('youtube') ? state.platforms.filter(x => x !== 'youtube') : state.platforms.concat('youtube');
-        else if (q === 'u100') state.u100 = !state.u100;
-        else if (q === 'ev') state.evidence = state.evidence === 'medium' ? 'all' : 'medium';
-        analyticsTrack('market_filter_changed', { filter: 'quick', value: q, source: 'market' });
-        state.shown = 12; refreshCanvas(); return;
-      }
-      if ((el = has('[data-feat-prev]'))) { e.stopPropagation(); state.featIdx = Math.max(0, state.featIdx - 1); refreshCanvas(); return; }
-      if ((el = has('[data-feat-next]'))) { e.stopPropagation(); state.featIdx += 1; refreshCanvas(); return; }
-      if ((el = has('[data-scroll-method]'))) { e.stopPropagation(); const f = $('#mktMethod', rootEl); if (f) f.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
-      if ((el = has('[data-open-drawer]'))) { e.stopPropagation(); lastTrigger = el; openDrawer(); return; }
-      if ((el = has('[data-close-drawer]'))) { e.stopPropagation(); closeDrawer(); refreshCanvas(); return; }
-      if ((el = has('[data-reset-filters]')) || (el = has('[data-clear-filters]'))) {
-        e.stopPropagation();
-        state.genre = null; state.platforms = []; state.scale = []; state.poa = []; state.multiple = [];
-        state.evidence = 'all'; state.risk = 'all'; state.u100 = false; state.ending = false; state.quickOpen = true;
-        state.browse = null; state.sort = 'pulse'; state.shown = 12;
-        analyticsTrack('market_filter_changed', { filter: 'all', value: 'reset', source: 'market' });
-        refreshDrawer(); refreshAll(); return;
-      }
-      if ((el = has('[data-chip-x]'))) { e.stopPropagation(); const fn = window.__mktChipRemove[+el.dataset.chipX]; if (fn) fn(); state.shown = 12; refreshCanvas(); return; }
-      if ((el = has('[data-f]'))) {
-        e.stopPropagation();
-        const g = el.dataset.f, v = el.dataset.v;
-        const toggleIn = arr => arr.includes(v) ? arr.filter(x => x !== v) : arr.concat(v);
-        if (g === 'plat') state.platforms = toggleIn(state.platforms);
-        else if (g === 'scale') state.scale = toggleIn(state.scale);
-        else if (g === 'poa') state.poa = toggleIn(state.poa);
-        else if (g === 'mult') state.multiple = toggleIn(state.multiple);
-        else if (g === 'ev') state.evidence = v;
-        else if (g === 'risk') state.risk = v;
-        else if (g === 'open') state.quickOpen = !state.quickOpen;
-        else if (g === 'ending') state.ending = !state.ending;
-        analyticsTrack('market_filter_changed', { filter: g, value: v, source: 'market' });
-        state.shown = 12;
-        refreshDrawer(); refreshCanvas(); return;
-      }
-      if ((el = has('[data-load-more]'))) { e.stopPropagation(); state.shown += 12; refreshCanvas(); return; }
-      if ((el = has('[data-share-board]'))) {
-        e.stopPropagation();
-        try { navigator.clipboard && navigator.clipboard.writeText(location.href); } catch (x) {}
-        toast('Link copied — restores tab, browse mode, filters, sort and window'); return;
-      }
-      if (t.id === 'mktDrawer') { closeDrawer(); refreshCanvas(); return; }
-      if (t.id === 'mktPoa') { closePoa(); return; }
-      if (t.id === 'mktPos') { closePosition(); return; }
-    });
-    rootEl.addEventListener('change', e => {
-      if (e.target.id === 'mktSort') {
-        state.sort = e.target.value;
-        state.browse = null;
-        state.shown = 12;
-        analyticsTrack('market_sort_changed', { sort: state.sort, source: 'market' });
-        refreshAll();
-      }
-    });
-    rootEl.addEventListener('input', e => {
-      if (e.target.id === 'mktAmt') {
-        const panel = e.target.closest('.mkt-pos-panel');
-        const idBtn = panel && panel.querySelector('[data-confirm-pos]');
-        if (!idBtn) return;
-        const c = B.byId(idBtn.dataset.confirmPos);
-        const pv = $('#mktPosPrev', rootEl);
-        if (c && pv) pv.innerHTML = posPreview(c, Math.round(parseFloat(e.target.value) || 0));
-      }
-    });
-    rootEl.addEventListener('keydown', e => {
-      if (e.key === 'Escape') { closePoa(); closeDrawer(); closePosition(); }
-    });
-    const nl = $('#mktNL', rootEl);
-    nl.addEventListener('submit', e => {
-      e.preventDefault();
-      const q = $('#mktNLInput', rootEl).value.trim();
-      window.__backerGo('search', q || 'high-confidence AI educators under 50K');
-    });
-    if (!window.__mktEscBound) { document.addEventListener('keydown', escGlobal); window.__mktEscBound = true; }
-  }
-  function escGlobal(e) {
-    if (e.key === 'Escape' && root && root.querySelector('.mkt[data-market-surface="archive"]')) {
-      closePoa(); closeDrawer(); closePosition();
-    }
-  }
-
-  return { render };
-})();
+    </div>`,Ht(t),at()}function z(t){if(a.browse===t)a.browse=null,a.sort="pulse";else{a.browse=t;const e=N.find(s=>s[0]===t);a.sort=e?e[2]:"pulse",a.view!=="markets"&&(a.view="markets")}a.shown=12,a.featIdx=0,w("market_filter_changed",{filter:"browse",value:a.browse||"all",source:"market"})}function Ht(t){const e=u("#mktRoot",t);e.addEventListener("click",n=>{const l=n.target,o=r=>l.closest(r);let i;if(i=o("[data-watch]")){n.stopPropagation(),n.preventDefault();const r=i.dataset.watch;P.has(r)?(P.delete(r),M("Removed from watchlist")):(P.add(r),M("Watching — updates appear in Your Market and your portfolio")),wt(P),J(`[data-watch="${r}"]`,e).forEach(c=>{const k=P.has(r);c.classList.toggle("on",k),c.setAttribute("aria-pressed",k);const b=c.querySelector("span");b&&(b.textContent=k?"Watching":"Watch")});return}if(i=o("[data-mkt-poa-open]")){n.stopPropagation(),n.preventDefault(),$t(h.byId(i.dataset.mktPoaOpen),i);return}if(i=o("[data-market-open]")){n.stopPropagation(),n.preventDefault(),gt(h.byId(i.dataset.marketOpen),i);return}if(i=o("[data-poa]")){n.stopPropagation(),n.preventDefault(),E=i,pt(h.byId(i.dataset.poa));return}if(i=o("[data-close-poa]")){n.stopPropagation(),O();return}if(i=o("[data-correction]")){n.stopPropagation(),O(),M("Correction request recorded — reviewed with source evidence");return}if(i=o("[data-position]")){n.stopPropagation(),n.preventDefault(),E=i,Rt(h.byId(i.dataset.position));return}if(i=o("[data-close-pos]")){n.stopPropagation(),I();return}if(i=o("[data-confirm-pos]")){n.stopPropagation(),Ct(h.byId(i.dataset.confirmPos));return}if(i=o("[data-amt-quick]")){n.stopPropagation();const r=i.dataset.amtQuick,c=u("#mktAmt",e);c&&(c.value=r,c.dispatchEvent(new Event("input",{bubbles:!0}))),J("[data-amt-quick]",e).forEach(k=>k.classList.toggle("on",k===i));return}if(i=o("[data-go-portfolio]")){n.stopPropagation(),window.location.href="portfolio.html";return}if(i=o("[data-profile]")){n.stopPropagation(),n.preventDefault(),O(),T(),I(),window.__backerGo("creator",i.dataset.profile);return}if(i=o("[data-tab]")){n.stopPropagation(),a.view=i.dataset.tab,a.shown=12,w("market_filter_changed",{filter:"tab",value:a.view,source:"market"}),g();return}if(i=o("[data-tab-open-soon]")){n.stopPropagation(),a.view="markets",a.quickOpen=!1,a.browse=null,a.sort="newest",a.shown=12,g(),M("Showing all contract states — opening-soon markets included");return}if(i=o("[data-browse]")){n.stopPropagation(),z(i.dataset.browse),S();return}if(i=o("[data-viewall]")){n.stopPropagation(),a.view="markets",z(i.dataset.viewall),a.browse||z(i.dataset.viewall),S(),u("#mktCanvas",e).scrollIntoView({behavior:"smooth",block:"start"});return}if(i=o("[data-window]")){n.stopPropagation(),a.window=i.dataset.window,w("market_filter_changed",{filter:"window",value:a.window,source:"market"}),S();return}if((i=o("[data-cat]"))&&i.dataset.cat!==void 0){n.stopPropagation(),a.genre=i.dataset.cat||null,a.shown=12,a.featIdx=0,w("market_filter_changed",{filter:"genre",value:a.genre||"all",source:"market"}),S();return}if(i=o("[data-quick]")){n.stopPropagation();const r=i.dataset.quick;r==="open"?a.quickOpen=!a.quickOpen:r==="ending"?a.ending=!a.ending:r==="yt"?a.platforms=a.platforms.includes("youtube")?a.platforms.filter(c=>c!=="youtube"):a.platforms.concat("youtube"):r==="u100"?a.u100=!a.u100:r==="ev"&&(a.evidence=a.evidence==="medium"?"all":"medium"),w("market_filter_changed",{filter:"quick",value:r,source:"market"}),a.shown=12,g();return}if(i=o("[data-feat-prev]")){n.stopPropagation(),a.featIdx=Math.max(0,a.featIdx-1),g();return}if(i=o("[data-feat-next]")){n.stopPropagation(),a.featIdx+=1,g();return}if(i=o("[data-scroll-method]")){n.stopPropagation();const r=u("#mktMethod",e);r&&r.scrollIntoView({behavior:"smooth",block:"start"});return}if(i=o("[data-open-drawer]")){n.stopPropagation(),E=i,It();return}if(i=o("[data-close-drawer]")){n.stopPropagation(),T(),g();return}if((i=o("[data-reset-filters]"))||(i=o("[data-clear-filters]"))){n.stopPropagation(),a.genre=null,a.platforms=[],a.scale=[],a.poa=[],a.multiple=[],a.evidence="all",a.risk="all",a.u100=!1,a.ending=!1,a.quickOpen=!0,a.browse=null,a.sort="pulse",a.shown=12,w("market_filter_changed",{filter:"all",value:"reset",source:"market"}),mt(),S();return}if(i=o("[data-chip-x]")){n.stopPropagation();const r=window.__mktChipRemove[+i.dataset.chipX];r&&r(),a.shown=12,g();return}if(i=o("[data-f]")){n.stopPropagation();const r=i.dataset.f,c=i.dataset.v,k=b=>b.includes(c)?b.filter(p=>p!==c):b.concat(c);r==="plat"?a.platforms=k(a.platforms):r==="scale"?a.scale=k(a.scale):r==="poa"?a.poa=k(a.poa):r==="mult"?a.multiple=k(a.multiple):r==="ev"?a.evidence=c:r==="risk"?a.risk=c:r==="open"?a.quickOpen=!a.quickOpen:r==="ending"&&(a.ending=!a.ending),w("market_filter_changed",{filter:r,value:c,source:"market"}),a.shown=12,mt(),g();return}if(i=o("[data-load-more]")){n.stopPropagation(),a.shown+=12,g();return}if(i=o("[data-share-board]")){n.stopPropagation();try{navigator.clipboard&&navigator.clipboard.writeText(location.href)}catch{}M("Link copied — restores tab, browse mode, filters, sort and window");return}if(l.id==="mktDrawer"){T(),g();return}if(l.id==="mktPoa"){O();return}if(l.id==="mktPos"){I();return}}),e.addEventListener("change",n=>{n.target.id==="mktSort"&&(a.sort=n.target.value,a.browse=null,a.shown=12,w("market_sort_changed",{sort:a.sort,source:"market"}),S())}),e.addEventListener("input",n=>{if(n.target.id==="mktAmt"){const l=n.target.closest(".mkt-pos-panel"),o=l&&l.querySelector("[data-confirm-pos]");if(!o)return;const i=h.byId(o.dataset.confirmPos),r=u("#mktPosPrev",e);i&&r&&(r.innerHTML=B(i,Math.round(parseFloat(n.target.value)||0)))}}),e.addEventListener("keydown",n=>{n.key==="Escape"&&(O(),T(),I())}),u("#mktNL",e).addEventListener("submit",n=>{n.preventDefault();const l=u("#mktNLInput",e).value.trim();window.__backerGo("search",l||"high-confidence AI educators under 50K")}),window.__mktEscBound||(document.addEventListener("keydown",qt),window.__mktEscBound=!0)}function qt(t){t.key==="Escape"&&v&&v.querySelector('.mkt[data-market-surface="archive"]')&&(O(),T(),I())}return{render:Bt}})();
