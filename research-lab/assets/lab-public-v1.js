@@ -72,7 +72,7 @@ const REPLAY_END = 24;
 const state = {
   scenario: 'baseline', mode: 'field', marketSource: 'all', markets: [FALLBACK_MARKET],
   selectedMarket: FALLBACK_MARKET, points: [], selectedPoint: null, hoveredPoint: null,
-  focusedStage: null, tick: REPLAY_END, playing: false, speed: 1, lastStep: 0,
+  focusedStage: null, tick: 1, playing: true, speed: 1, lastStep: 0, motionTime: 0, loopCount: 0,
   camera: { ...DEFAULT_CAMERA }, stageTransitionStart: 0, stageTransitionDuration: 720,
   reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
 };
@@ -158,8 +158,9 @@ function transitionPointsToScenario() {
     point.previousStage = point.stage;
     point.stage = stageForIndex(index);
   }
-  state.tick = REPLAY_END;
-  state.playing = false;
+  state.tick = 1;
+  state.playing = true;
+  state.motionTime = 0;
   state.lastStep = 0;
   state.stageTransitionStart = state.reducedMotion ? 0 : performance.now();
   updatePlaybackButton();
@@ -213,9 +214,10 @@ function pointWorldPosition(point, width, height, time) {
   const vertical = isVerticalField(width, height);
   const stage = visibleStage(point, time);
   const radial = Math.sqrt(point.a);
-  const angle = point.b * Math.PI * 2 + (point.c - 0.5) * 0.3;
+  const motion = state.motionTime * (0.00012 + point.c * 0.00007);
+  const angle = point.b * Math.PI * 2 + (point.c - 0.5) * 0.3 + motion;
   const axial = (point.c - 0.5) * 82;
-  const drift = state.playing ? Math.sin(state.tick * 0.2 + point.c * Math.PI * 2) * 5 : 0;
+  const drift = Math.sin(state.motionTime * 0.0011 + point.c * Math.PI * 2) * 7;
   const center = stageWorldCenter(stage, vertical);
   if (vertical) {
     return {
@@ -329,6 +331,8 @@ function drawStageVolumes(width, height) {
 function drawConnectors(width, height) {
   const vertical = isVerticalField(width, height);
   context.save();
+  context.setLineDash([1.5, 7]);
+  context.lineDashOffset = -state.motionTime * 0.012;
   for (let stage = 0; stage < STAGES.length - 1; stage += 1) {
     const startCenter = stageWorldCenter(stage, vertical);
     const endCenter = stageWorldCenter(stage + 1, vertical);
@@ -369,6 +373,7 @@ function drawConnectors(width, height) {
       context.fill();
     }
   }
+  context.setLineDash([]);
   context.restore();
 }
 
@@ -410,6 +415,7 @@ function drawField(time = performance.now()) {
   }
   projectedPoints.sort((first, second) => second.cameraDepth - first.cameraDepth);
   context.save();
+  const loopFade = clamp(Math.min(state.tick / 0.7, (REPLAY_END - state.tick) / 0.7), 0.12, 1);
   for (const point of projectedPoints) {
     const selected = state.selectedPoint?.id === point.id;
     const hovered = state.hoveredPoint?.id === point.id;
@@ -428,7 +434,7 @@ function drawField(time = performance.now()) {
     context.beginPath();
     context.arc(point.screenX, point.screenY, radius, 0, Math.PI * 2);
     context.fillStyle = selected ? '#fff6e8' : STAGES[stageIndex].color;
-    context.globalAlpha = selected ? 1 : dimmed ? 0.17 : clamp(0.42 + depthFactor * 0.28 + (stageIndex >= 3 ? 0.18 : 0), 0.34, 0.96);
+    context.globalAlpha = selected ? loopFade : (dimmed ? 0.17 : clamp(0.42 + depthFactor * 0.28 + (stageIndex >= 3 ? 0.18 : 0), 0.34, 0.96)) * loopFade;
     context.fill();
   }
   context.restore();
@@ -700,10 +706,10 @@ function setMode(mode) {
   Object.assign(state.camera, DEFAULT_CAMERA);
   state.focusedStage = null;
   field.classList.toggle('is-flow-mode', mode === 'field');
-  $('#field-mode-label').textContent = mode === 'field' ? 'ATTENTION GRAPH' : mode === 'cascade' ? 'FULL ATTENTION NETWORK' : 'MARKET SIGNAL FIELD';
   $$('[data-scene-mode]').forEach((button) => button.classList.toggle('is-active', button.dataset.sceneMode === mode));
   $('#mobile-controls-toggle').setAttribute('aria-expanded', 'false');
   $('.control-rail').classList.remove('is-open');
+  updatePlaybackButton();
   requestAnimationFrame(applyCamera);
 }
 
@@ -712,6 +718,10 @@ function updatePlaybackButton() {
   button.textContent = state.playing ? 'PAUSE' : 'PLAY';
   button.setAttribute('aria-pressed', String(state.playing));
   button.setAttribute('aria-label', state.playing ? 'Pause public projection replay' : 'Play public projection replay');
+  canvas.dataset.motion = state.playing ? 'running' : 'paused';
+  field.classList.toggle('is-simulating', state.playing);
+  const baseLabel = state.mode === 'field' ? 'Attention Field' : state.mode === 'cascade' ? 'Full Attention Network' : 'Market Signal Field';
+  $('#field-mode-label').textContent = baseLabel;
 }
 
 function updatePlaybackMetrics() {
@@ -745,14 +755,18 @@ function animate(time) {
   if (state.playing) {
     if (!state.lastStep) state.lastStep = time;
     const elapsed = Math.min(80, time - state.lastStep);
-    state.tick = Math.min(REPLAY_END, state.tick + elapsed * state.speed * 0.002);
+    state.motionTime += elapsed * state.speed;
+    state.tick += elapsed * state.speed * 0.002;
+    if (state.tick >= REPLAY_END) {
+      state.tick %= REPLAY_END;
+      state.loopCount += 1;
+    }
     state.lastStep = time;
     drawField(time);
     updateTimeline();
-    if (state.tick >= REPLAY_END) {
-      state.playing = false;
-      state.lastStep = 0;
-      updatePlaybackButton();
+    if (state.stageTransitionStart && time - state.stageTransitionStart >= state.stageTransitionDuration) {
+      state.stageTransitionStart = 0;
+      for (const point of state.points) point.previousStage = null;
     }
   } else if (state.stageTransitionStart) {
     drawField(time);
@@ -952,7 +966,7 @@ function wireControls() {
       state.playing = false;
       state.lastStep = 0;
     } else {
-      if (state.tick >= REPLAY_END) state.tick = 0;
+      if (state.tick >= REPLAY_END) state.tick = 1;
       state.playing = true;
       state.lastStep = 0;
     }
@@ -969,8 +983,10 @@ function wireControls() {
     updateTimeline();
   });
   $('#reset-run').addEventListener('click', () => {
-    state.tick = 0;
-    state.playing = false;
+    state.tick = 1;
+    state.playing = true;
+    state.motionTime = 0;
+    state.loopCount = 0;
     state.lastStep = 0;
     updatePlaybackButton();
     drawField();

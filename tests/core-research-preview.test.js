@@ -101,7 +101,7 @@ test('Published Lab carries the Backer mark and the bounded PMXT layer', () => {
   assert.match(labStyles, /font-size:10\.5px/);
   for (const clarityMarker of [
     'FORECAST WORKBENCH',
-    'ATTENTION GRAPH',
+    'Attention Field',
     'OBSERVED',
     'SIMULATED',
     'NOT A REAL-WORLD OUTCOME',
@@ -126,11 +126,16 @@ test('Published Lab carries the Backer mark and the bounded PMXT layer', () => {
   assert.match(labScript, /cameraDepth/);
   assert.match(labScript, /sort\(\(first, second\) => second\.cameraDepth - first\.cameraDepth\)/);
   assert.match(labScript, /mode: event\.shiftKey[^\n]+\? 'pan' : 'orbit'/);
+  assert.match(labScript, /tick: 1, playing: true/);
+  assert.match(labScript, /state\.motionTime \+= elapsed \* state\.speed/);
+  assert.match(labScript, /state\.tick %= REPLAY_END/);
+  assert.match(labScript, /context\.lineDashOffset = -state\.motionTime/);
+  assert.match(labScript, /canvas\.dataset\.motion = state\.playing \? 'running' : 'paused'/);
   assert.match(labScript, /addEventListener\('wheel'/);
   assert.match(labScript, /addEventListener\('pointerdown'/);
   assert.match(labScript, /beginPinch/);
   assert.match(labScript, /data-focus-stage/);
-  assert.match(labScript, /if \(state\.tick >= REPLAY_END\) state\.tick = 0/);
+  assert.match(labScript, /if \(state\.tick >= REPLAY_END\) state\.tick = 1/);
   assert.match(labScript, /state\.tick = state\.tick >= REPLAY_END \? 1/);
   for (const reviewedPublicArtifact of [
     'research-lab/index.html',

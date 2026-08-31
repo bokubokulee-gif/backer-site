@@ -12,6 +12,29 @@
   cursor: grabbing;
 }
 
+#field-mode-label::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  display: inline-block;
+  margin-right: 7px;
+  border: 1px solid rgba(233, 189, 134, 0.5);
+  border-radius: 50%;
+  background: rgba(233, 189, 134, 0.18);
+  vertical-align: 1px;
+}
+
+.field-stage.is-simulating #field-mode-label::before {
+  background: var(--amber-hot);
+  box-shadow: 0 0 0 0 rgba(233, 189, 134, 0.5);
+  animation: public-field-pulse 1.5s ease-out infinite;
+}
+
+@keyframes public-field-pulse {
+  70% { box-shadow: 0 0 0 7px rgba(233, 189, 134, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(233, 189, 134, 0); }
+}
+
 .graph-camera-controls {
   position: absolute;
   top: 44px;
@@ -224,5 +247,9 @@
   .graph-gesture-hint,
   .causal-stage-grid .causal-stage {
     transition: none;
+  }
+
+  .field-stage.is-simulating #field-mode-label::before {
+    animation: none;
   }
 }

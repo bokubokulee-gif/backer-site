@@ -38,7 +38,7 @@ const REVIEWED_PUBLIC_DATA = Object.freeze({
 const REVIEWED_RESEARCH_SCRIPTS = Object.freeze({
   'research-lab/assets/lab-public-v1.js': {
     classification: 'reviewed spatial aggregate field presenter with anonymous visual markers',
-    sha256: '6920b1442536c804a279b6983b01a9e9a9177e0434834d4f97e5203c97ca122c'
+    sha256: 'e459aecab1c6e95383d4196062c9b16ff20c7d8d16d736ebc794185113eb0302'
   },
   'research-lab/assets/method-public-v1.js': {
     classification: 'public method navigation and declared-condition explainer without model formulas',
