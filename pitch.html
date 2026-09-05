@@ -129,7 +129,7 @@
 .way-ex{margin-top:18px;border:1px dashed var(--lg-bd,var(--line));border-radius:14px;padding:15px 18px;font-size:15px;font-weight:500;color:#cdcac3;line-height:1.65;background:rgba(10,10,14,.38)}
 .way-ex b{color:var(--ink);font-weight:700}
 .duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
-.duo-cell{border:1px solid var(--lg-bd,var(--line));border-radius:14px;padding:17px 19px;background:rgba(10,10,14,.38)}
+.duo-cell{min-width:0;border:1px solid var(--lg-bd,var(--line));border-radius:14px;padding:17px 19px;background:rgba(10,10,14,.38)}
 .duo-k{font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.16em;display:block;margin-bottom:10px;text-transform:uppercase}
 .duo-inv .duo-k{color:var(--pos)}
 .duo-cre .duo-k{color:var(--accent)}
@@ -137,7 +137,7 @@
 .duo-cell p b{color:var(--ink);font-weight:700}
 .duo-f{display:block;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--ink);background:rgba(86,211,154,.1);border:1px solid rgba(86,211,154,.32);border-radius:8px;padding:10px 12px;margin-bottom:10px;overflow-x:auto;white-space:nowrap}
 .way-insight{margin-top:18px;font-family:var(--serif);font-style:italic;font-size:clamp(17.5px,2vw,20.5px);color:var(--ink);line-height:1.5}
-@media(max-width:760px){.duo{grid-template-columns:1fr}}
+@media(max-width:760px){.duo{grid-template-columns:1fr}.duo-f{white-space:normal;overflow-wrap:anywhere}}
 .ladder{margin-top:clamp(36px,5vh,54px);text-align:center}
 .ladder .bigline{margin:0 auto}
 
@@ -229,6 +229,43 @@
 @media(prefers-reduced-motion: reduce){
   .attn.lit .attn-stream .sdot,.attn.lit .attn-chips span,.pix-signal{animation:none}
   .attn-stream .sdot{opacity:.7}
+}
+
+/* sourced mechanism evidence — restores the earlier quantitative pitch beat */
+.pitch-market-bars{gap:clamp(24px,5vw,64px);padding-inline:clamp(12px,4vw,48px);height:230px;margin-top:40px}
+.pitch-market-bars .val-bar{min-height:12px}
+.pitch-market-bars .val-bar span{display:block!important;font-size:12px;color:#ccc8bf}
+.pitch-market-years{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(24px,5vw,64px);padding-inline:clamp(12px,4vw,48px);
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--muted);
+  text-align:center;margin-top:10px;
+}
+.pitch-source{
+  display:inline-flex;align-items:center;gap:5px;width:fit-content;margin-top:14px;
+  color:var(--accent);font-size:11.5px;font-weight:650;line-height:1.35;
+  text-decoration:underline;text-decoration-color:rgba(233,189,134,.46);text-underline-offset:4px;
+}
+.pitch-source:hover{color:#ffd5a5;text-decoration-color:currentColor}
+.pitch-source:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:2px}
+.val-fact .pitch-source{margin-top:auto;padding-top:12px}
+.evidence-boundary{
+  display:grid;grid-template-columns:.78fr 1.22fr;gap:1px;margin-top:clamp(16px,2vw,24px);
+  overflow:hidden;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--line);
+}
+.evidence-boundary > div{padding:clamp(22px,3vw,32px);background:rgba(11,11,14,.96)}
+.evidence-boundary span{
+  display:block;font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:11px;
+}
+.evidence-boundary strong{display:block;font-size:clamp(20px,2.5vw,27px);line-height:1.22;letter-spacing:-.025em}
+.evidence-boundary p{color:#bbb7af;font-size:15px;line-height:1.62;text-wrap:pretty}
+@media(max-width:760px){
+  .pitch-market-bars{gap:28px;height:190px}
+  .pitch-market-years{gap:28px;font-size:9.5px}
+  .evidence-boundary{grid-template-columns:1fr}
+  .calc-grid > *{min-width:0}
+  .mini-card{min-width:0}
+  .mini-name{overflow-wrap:anywhere}
 }
 </style>
 <link rel="stylesheet" href="css/backer-dock.css?v=20260821-2" />
@@ -417,7 +454,7 @@
       </article>
       <article class="claim reveal">
         <span class="claim-no">02</span>
-        <h3>People funding others knowing there is no economical return is a proven behavior.</h3>
+        <h3>People funding others without a financial return is a proven behavior.</h3>
         <p>The attention economy proved the other half: fans pour money into creators knowing there is no aligned return. Backer sits exactly where those two proven behaviors meet.</p>
       </article>
     </div>
@@ -474,52 +511,146 @@
       <div class="val-chart reveal" id="valChartCard">
         <div class="val-chart-head">
           <div class="val-chart-title">
-            <h3>Attention needs an evidence trail.</h3>
-            <p>Backer keeps each provider fact attached to its source, time, window, methodology, and access state.</p>
+            <h3>The behavior is proven.</h3>
+            <p>Kalshi + Polymarket International · monthly global trading volume</p>
           </div>
           <div class="val-chart-now">
-            <span class="val-now-num mono">SOURCE-NATIVE</span>
-            <span class="val-now-cap">evidence, not a universal score</span>
+            <span class="val-now-num mono">~$24B</span>
+            <span class="val-now-cap">April 2026 · monthly notional taker volume</span>
           </div>
         </div>
-        <p class="val-chart-note">Public creator discovery is research-only. Evidence does not create consent, tradability, or a real-money market.</p>
+        <div class="val-bars pitch-market-bars" role="img" aria-label="Combined monthly global notional taker volume on Kalshi and Polymarket International rose from less than 5 billion dollars in September 2025 to about 24 billion dollars in April 2026. The first bar uses 5 billion dollars as an upper bound.">
+          <div class="val-bar" style="--h:20.83;--i:0"><span>&lt;$5B</span></div>
+          <div class="val-bar" style="--h:100;--i:1"><span>~$24B</span></div>
+        </div>
+        <div class="pitch-market-years" aria-hidden="true"><span>SEP 2025</span><span>APR 2026</span></div>
+        <p class="val-chart-note">Notional taker volume counts each contract at its $1 face value. Polymarket US is excluded. September is shown at its reported upper bound.</p>
+        <a class="pitch-source" href="https://www.pewresearch.org/short-reads/2026/05/27/trading-volume-on-prediction-markets-has-soared-in-recent-months/" target="_blank" rel="noopener">Pew Research Center · May 2026 <span aria-hidden="true">↗</span></a>
       </div>
       <div class="val-proof-side">
         <div class="val-fact reveal">
-          <b>Records</b>
-          <span>Creators, linked identities, unique works, and source records stay distinct and countable.</span>
+          <b>91% / 90%</b>
+          <span>of volume on Kalshi / Polymarket International came from sports, politics, and crypto. Capital follows subjects people already care about.</span>
+          <a class="pitch-source" href="https://www.pewresearch.org/short-reads/2026/05/27/trading-volume-on-prediction-markets-has-soared-in-recent-months/" target="_blank" rel="noopener">Pew · July 2024–early May 2026 data <span aria-hidden="true">↗</span></a>
         </div>
         <div class="val-fact reveal">
-          <b>Signals</b>
-          <span>Reach, traction, momentum, coverage, and confidence remain separate evidence dimensions.</span>
+          <b>$37.1B</b>
+          <span>in projected U.S. creator ad spend in 2025, up 26% year over year. Creator attention already commands measurable budgets.</span>
+          <a class="pitch-source" href="https://www.iab.com/insights/2025-creator-economy-ad-spend-strategy-report/" target="_blank" rel="noopener">IAB Creator Economy Report · 2025 <span aria-hidden="true">↗</span></a>
         </div>
         <div class="val-fact reveal">
-          <b>Limits</b>
-          <span>Unavailable and permission-gated facts remain unavailable. Missing evidence is never presented as zero.</span>
+          <b>Creator milestone</b>
+          <span>Kalshi filed a YouTube subscriber-threshold contract in August 2025—a concrete precedent for pricing a measurable creator outcome.</span>
+          <a class="pitch-source" href="https://www.cftc.gov/sites/default/files/filings/ptc/25/08/ptc08122528289.pdf" target="_blank" rel="noopener">Kalshi CFTC filing · August 2025 <span aria-hidden="true">↗</span></a>
         </div>
       </div>
     </div>
 
     <div class="val-asset reveal">
       <div class="val-asset-head">
-        <h3>Support already follows people. Backer makes the evidence inspectable.</h3>
-        <p>Tips, memberships, subscriptions, and public engagement all describe different relationships. Backer keeps those meanings separate.</p>
+        <span class="val-asset-kicker"><i></i>And the asset base is already funded</span>
+        <h3>Capital already flows to people on the internet.</h3>
       </div>
-      <div class="val-asset-grid">
-        <div class="val-big">
-          <b>Direct support</b>
-          <span>Tips, memberships, subscriptions, and purchases are support signals—not promises of financial return.</span>
-        </div>
-        <div class="val-big">
-          <b>Public evidence</b>
-          <span>Source-native metrics, timestamps, methods, freshness, and confidence remain reviewable.</span>
-        </div>
-        <div class="val-big">
-          <b>Creator graph</b>
-          <span>Platform identities link only through reviewed evidence—never because two people share a name.</span>
-        </div>
+      <div class="val-asset-network">
+        <svg class="val-branch-map" viewBox="0 0 1140 520" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="branch-left" x1="100%" x2="0%"><stop offset="0%" stop-color="#f5f3ee" stop-opacity=".5"/><stop offset="100%" stop-color="#e9bd86" stop-opacity=".12"/></linearGradient>
+            <linearGradient id="branch-right" x1="0%" x2="100%"><stop offset="0%" stop-color="#f5f3ee" stop-opacity=".5"/><stop offset="100%" stop-color="#e9bd86" stop-opacity=".12"/></linearGradient>
+            <marker id="branch-arrow" viewBox="0 0 9 9" refX="7.4" refY="4.5" markerWidth="8.5" markerHeight="8.5" orient="auto" markerUnits="strokeWidth">
+              <path d="M 0 0 L 9 4.5 L 0 9 Z" fill="#e9bd86"/>
+            </marker>
+          </defs>
+          <path class="val-branch-line" pathLength="1" d="M 398 220 C 384 218 374 204 365 195" stroke="url(#branch-left)" marker-end="url(#branch-arrow)"/>
+          <path class="val-branch-line" pathLength="1" d="M 692 148 C 724 126 748 76 776 58" stroke="url(#branch-right)" marker-end="url(#branch-arrow)"/>
+          <path class="val-branch-line" pathLength="1" d="M 694 354 C 726 349 748 338 776 332" stroke="url(#branch-right)" marker-end="url(#branch-arrow)"/>
+          <path class="val-branch-pulse" pathLength="1" d="M 398 220 C 384 218 374 204 365 195"/>
+          <path class="val-branch-pulse" pathLength="1" d="M 692 148 C 724 126 748 76 776 58"/>
+          <path class="val-branch-pulse" pathLength="1" d="M 694 354 C 726 349 748 338 776 332"/>
+          <circle cx="398" cy="220" r="3"/>
+          <circle cx="692" cy="148" r="3"/>
+          <circle cx="694" cy="354" r="3"/>
+        </svg>
+
+        <article class="val-branch-stat val-branch-stat-funding">
+          <div class="val-branch-stat-core">
+            <b class="val-branch-figure" aria-label="60 billion dollars">$60B</b>
+            <p>Citi estimated the creator economy generated about $60B in 2022 across ad-funded video, subscriptions, donations, purchases, and sponsorships.</p>
+            <a class="val-branch-source" href="https://ir.citi.com/gps/7PUfiT7fJPblL%2FqpQla8YnPTu1opFVW5Qb5fu0LPwJGLKt4p0HcsDxN87TOJ%2F6kA%2FbMcrnTJTn8SFOdAlpoihg%3D%3D" target="_blank" rel="noopener">Citi GPS report · 2023 <span aria-hidden="true">↗</span></a>
+          </div>
+        </article>
+
+        <figure class="val-globe-shell" data-globe-live aria-label="Illustrative global creator source map">
+          <div class="val-globe-bezel" aria-hidden="true">
+            <div class="val-globe-stage">
+              <svg class="val-globe-poster" viewBox="0 0 340 340" aria-hidden="true" focusable="false">
+                <defs>
+                  <radialGradient id="valPosterSphere" cx="34%" cy="27%" r="76%">
+                    <stop offset="0" stop-color="#202024"/>
+                    <stop offset=".64" stop-color="#121215"/>
+                    <stop offset="1" stop-color="#070709"/>
+                  </radialGradient>
+                  <radialGradient id="valPosterRim" cx="50%" cy="50%" r="50%">
+                    <stop offset=".93" stop-color="#fff" stop-opacity="0"/>
+                    <stop offset=".982" stop-color="#fff" stop-opacity=".28"/>
+                    <stop offset="1" stop-color="#fff" stop-opacity=".82"/>
+                  </radialGradient>
+                  <pattern id="valPosterDots" width="3.25" height="3.25" patternUnits="userSpaceOnUse">
+                    <circle cx=".8" cy=".8" r=".58" fill="#f7f5f0"/>
+                  </pattern>
+                  <clipPath id="valPosterClip"><circle cx="170" cy="170" r="148"/></clipPath>
+                </defs>
+                <circle cx="170" cy="170" r="150" fill="url(#valPosterSphere)"/>
+                <g clip-path="url(#valPosterClip)" fill="url(#valPosterDots)" opacity=".9">
+                  <path d="M49 92l18-17 28-11 31-2 28 9 20 15 7 17-13 10-16-5-13 12-17 4-8 17-14 7-9-12-15-5-9-13-12-4-8-11z"/>
+                  <path d="M102 133l14 5 10 12 15 3 11 12-9 9-15-8-12-10-11-2z"/>
+                  <path d="M138 158l21-2 21 11 16 20 5 22-9 26-12 27-16 22-10-9-1-23 3-19-10-20-11-23z"/>
+                  <path d="M77 71l14-12 21-4 13 6-12 8-20 6z"/>
+                  <path d="M176 77l13-9 13 4 2 10-14 6z"/>
+                  <path d="M213 87l12-6 9 4-7 8z"/>
+                  <path d="M134 147l8-2 6 3-7 3z"/>
+                  <path d="M154 153l5-2 5 3-4 4z"/>
+                </g>
+                <circle cx="170" cy="170" r="150" fill="url(#valPosterRim)"/>
+                <circle cx="170" cy="170" r="149" fill="none" stroke="#fff" stroke-opacity=".42" stroke-width=".8"/>
+              </svg>
+              <canvas class="val-globe-canvas" data-globe-canvas></canvas>
+              <div class="val-globe-labels" data-globe-labels></div>
+            </div>
+          </div>
+          <figcaption class="val-globe-status">
+            <span class="mono">GLOBAL CREATOR FLOW</span>
+            <span>illustrative map</span>
+          </figcaption>
+        </figure>
+
+        <article class="val-branch-stat val-branch-stat-market">
+          <div class="val-branch-stat-core">
+            <b class="val-branch-figure" aria-label="250 billion dollars growing to a projected 480 billion dollars">$250B <span class="val-branch-arrow" aria-hidden="true">→</span> $480B</b>
+            <p>Goldman Sachs Research estimated a $250B creator economy in 2023 and projected it could approach $480B by 2027.</p>
+            <a class="val-branch-source" href="https://www.goldmansachs.com/insights/articles/the-creator-economy-could-approach-half-a-trillion-dollars-by-2027" target="_blank" rel="noopener">Goldman Sachs Research · 2023 <span aria-hidden="true">↗</span></a>
+          </div>
+        </article>
+
+        <article class="val-branch-stat val-branch-stat-creators">
+          <div class="val-branch-stat-core">
+            <b class="val-branch-figure" aria-label="approximately 207 million creators">~207M</b>
+            <p>Approximately 207M people worldwide identify as creators, according to Visa's 2025 report citing Linktree's 2022 creator research.</p>
+            <a class="val-branch-source" href="https://corporate.visa.com/en/solutions/commercial-solutions/knowledge-hub/2025-visa-creators-report.html" target="_blank" rel="noopener">Visa Creator Report · 2025 <span aria-hidden="true">↗</span></a>
+          </div>
+        </article>
       </div>
     </div>
+
+    <aside class="evidence-boundary reveal" aria-label="What the evidence supports and what Backer still needs to prove">
+      <div>
+        <span>What the data supports</span>
+        <strong>Value, uncertainty, measurable outcomes, and capital already coexist around creator attention.</strong>
+      </div>
+      <div>
+        <span>The Backer pilot test</span>
+        <p>These figures establish demand in adjacent markets. Backer's pilot must demonstrate two-sided liquidity, repeat trading after settlement, and reliable resolution of creator milestones.</p>
+      </div>
+    </aside>
   </section>
 
   <!-- 4 · PROOF OF ATTENTION -->
@@ -1055,6 +1186,7 @@
 <script src="js/poa-terminal.js?v=14"></script>
 <script src="js/poa-preview.js?v=1"></script>
 <script src="js/sections.js?v=2"></script>
+<script type="module" src="js/globe-live.mjs?v=20260821-1"></script>
 <script src="js/flickering-footer.js?v=20260731-2"></script>
 <div data-backer-dock></div>
 <script src="js/backer-dock.js?v=20260826-perf-1"></script>
