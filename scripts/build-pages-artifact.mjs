@@ -107,6 +107,10 @@ const PUBLIC_FILES = Object.freeze([
   'img/pitch/polymarket.png',
   'licenses/cobe-MIT.txt',
   'research-lab/assets/content-CYtyA-wJ.css',
+  'research-lab/assets/attention-flow-public-v1.css',
+  'research-lab/assets/attention-flow-public-v1.js',
+  'research-lab/assets/validation-public-v1.css',
+  'research-lab/assets/research-links-v1.css',
   'research-lab/assets/dm-mono-latin-400-normal--0xN8mdc.woff',
   'research-lab/assets/dm-mono-latin-400-normal-4GdczIuU.woff2',
   'research-lab/assets/dm-mono-latin-ext-400-normal-1aZr6b2b.woff',
@@ -155,7 +159,9 @@ const PUBLIC_FILES = Object.freeze([
   'research-lab/img/sources/polymarket.png',
   'research-lab/index.html',
   'research-lab/method.html',
-  'research-lab/thesis.html'
+  'research-lab/thesis.html',
+  'research-lab/validation.html',
+  'research-lab/attention-flow.html'
 ]);
 
 if (!process.argv[2] || destination === ROOT || destination === path.parse(destination).root) {

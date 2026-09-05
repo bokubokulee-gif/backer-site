@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="The Backer Research validation protocol: the evidence required to move from a modeled-agent sandbox to a consented human study."
+    />
+    <meta name="theme-color" content="#08080a" />
+    <title>Validation Protocol | Backer Research Lab</title>
+    <link rel="icon" type="image/png" href="./img/backer-mark.png" />
+    <link rel="stylesheet" href="./assets/styles-D6FYb-UD.css" />
+    <link rel="stylesheet" href="./assets/content-CYtyA-wJ.css" />
+    <link rel="stylesheet" href="./assets/validation-public-v1.css" />
+  </head>
+  <body class="content-page validation-body">
+    <a class="skip-link content-skip" href="#validation-main">Skip to validation protocol</a>
+
+    <header class="topbar content-topbar">
+      <a class="brand" href="./" aria-label="Backer Research Lab home">
+        <span class="content-brand-mark" aria-hidden="true"><img src="./img/backer-mark.png" alt="" /></span>
+        <span class="content-brand-copy">
+          <strong>Backer</strong>
+          <small>Research Lab</small>
+        </span>
+      </a>
+
+      <nav class="topnav" aria-label="Research Lab pages">
+        <a href="./">Attention field</a>
+        <a href="./method.html">Method</a>
+        <a href="./thesis.html">Thesis</a>
+        <a class="backer-home-link" href="../">
+          <span class="backer-home-full">Back to Backer</span>
+          <span class="backer-home-short">Backer home</span>
+          <span aria-hidden="true">&#8599;</span>
+        </a>
+      </nav>
+
+      <span class="signal-chip boundary-chip">
+        <span aria-hidden="true"></span>
+        Validation protocol
+      </span>
+    </header>
+
+    <main class="content-shell validation-page" id="validation-main">
+      <section class="validation-hero" aria-labelledby="validation-title">
+        <div class="validation-hero-copy">
+          <p class="content-eyebrow"><span>Validation protocol / draft</span> Research design</p>
+          <h1 id="validation-title">From modeled traders to consented evidence.</h1>
+          <p class="validation-deck">
+            Today: 5,000 modeled agents. Next: a consented trader study, not yet started. This protocol defines the evidence required before a scenario can support a claim about real human behavior.
+          </p>
+          <div class="validation-hero-actions">
+            <a class="content-button is-primary" href="#protocol">Inspect the seven stages <span aria-hidden="true">&#8595;</span></a>
+            <a class="validation-text-link" href="./method.html">Return to Method <span aria-hidden="true">&#8594;</span></a>
+          </div>
+        </div>
+
+        <aside class="validation-status" aria-label="Protocol status">
+          <div class="validation-status-head">
+            <span>Study state</span>
+            <strong>Designed, not started</strong>
+          </div>
+          <dl>
+            <div><dt>Participants recruited</dt><dd>0</dd></div>
+            <div><dt>Consented histories</dt><dd>0</dd></div>
+            <div><dt>Prospective forecasts scored</dt><dd>0</dd></div>
+            <div><dt>Human-validity claim</dt><dd>None</dd></div>
+          </dl>
+          <p>Backer is publishing the test before publishing a stronger claim.</p>
+        </aside>
+      </section>
+
+      <section class="boundary-ledger" aria-labelledby="boundary-title">
+        <header class="boundary-ledger-head">
+          <div>
+            <p class="content-eyebrow">Evidence boundary</p>
+            <h2 id="boundary-title">Two populations. Two claim states.</h2>
+          </div>
+          <p>Aggregate market traces may seed an environment. They do not turn generated profiles into observed people.</p>
+        </header>
+
+        <div class="boundary-comparison">
+          <article class="boundary-population is-current">
+            <div class="population-state">
+              <span>Current instrument</span>
+              <b>Modeled scenario</b>
+            </div>
+            <div class="population-title">
+              <strong>5,000</strong>
+              <h3>reproducible modeled agents</h3>
+            </div>
+            <dl>
+              <div><dt>People represented</dt><dd>None</dd></div>
+              <div><dt>Grounding</dt><dd>Explicit priors + dated aggregate market observations</dd></div>
+              <div><dt>Historical trades</dt><dd>No participant-linked histories; aggregate market context only</dd></div>
+              <div><dt>Consent</dt><dd>Not applicable to generated profiles</dd></div>
+              <div><dt>Purpose</dt><dd>Debug mechanics, interfaces, interventions, and replay</dd></div>
+              <div><dt>Validation passed</dt><dd>Deterministic replay only</dd></div>
+            </dl>
+            <p class="claim-permission"><span>Permitted claim</span> “This is a modeled scenario.”</p>
+          </article>
+
+          <div class="boundary-divider" aria-label="No inference across this line">
+            <span></span><strong>No inference across this line</strong><span></span>
+          </div>
+
+          <article class="boundary-population is-future">
+            <div class="population-state">
+              <span>Future human study</span>
+              <b>Consented evidence</b>
+            </div>
+            <div class="population-title">
+              <strong>TBD</strong>
+              <h3>participants set by power analysis</h3>
+            </div>
+            <dl>
+              <div><dt>People represented</dt><dd>Recruited participants and declared comparison cohorts</dd></div>
+              <div><dt>Grounding</dt><dd>Consented interviews, tasks, diaries, and authorized histories</dd></div>
+              <div><dt>Historical trades</dt><dd>Opt-in, minimized, scoped, and revocable</dd></div>
+              <div><dt>Consent</dt><dd>Explicit withdrawal, deletion, retention, and access terms</dd></div>
+              <div><dt>Purpose</dt><dd>Test behavioral fidelity and treatment-effect prediction</dd></div>
+              <div><dt>Validation required</dt><dd>All prospective gates below</dd></div>
+            </dl>
+            <p class="claim-permission"><span>Permitted claim</span> None until the declared gates pass.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="validation-manifest" aria-label="Validation protocol manifest">
+        <div><span>Protocol</span><strong>BRL-V01</strong></div>
+        <div><span>Study state</span><strong>Future / not recruiting</strong></div>
+        <div><span>Participant target</span><strong>Power analysis required</strong></div>
+        <div><span>Preregistration</span><strong>Required before collection</strong></div>
+        <div><span>Current claim</span><strong>Scenario only</strong></div>
+      </section>
+
+      <div class="validation-layout" id="protocol">
+        <aside class="method-rail protocol-rail" aria-label="Validation stages">
+          <div class="method-rail-label">Validation sequence</div>
+          <nav>
+            <a href="#sampling"><span>01</span>Sampling + consent</a>
+            <a href="#interviews"><span>02</span>Interviews</a>
+            <a href="#repeat"><span>03</span>Repeat measures</a>
+            <a href="#holdouts"><span>04</span>Holdouts</a>
+            <a href="#randomized"><span>05</span>Randomized tests</a>
+            <a href="#calibration"><span>06</span>Calibration</a>
+            <a href="#subgroups"><span>07</span>Subgroup audits</a>
+          </nav>
+          <a class="rail-return" href="./method.html">Back to Method <span aria-hidden="true">&#8599;</span></a>
+        </aside>
+
+        <div class="protocol-stages">
+          <section class="protocol-intro" aria-labelledby="protocol-intro-title">
+            <div>
+              <p class="content-eyebrow">Prospective program</p>
+              <h2 id="protocol-intro-title">A chain of evidence, not one benchmark.</h2>
+            </div>
+            <p>Every stage produces a reviewable record. A failed stage stops the claim from advancing; scale, realism, and polished agent dialogue cannot substitute for the missing evidence.</p>
+          </section>
+
+          <section class="method-stage protocol-stage" id="sampling" aria-labelledby="sampling-title">
+            <header class="stage-header">
+              <div class="stage-number">01</div>
+              <div><p>Future study</p><h2 id="sampling-title">Sampling and consent</h2></div>
+              <span class="stage-state is-pending">Not started</span>
+            </header>
+            <p class="stage-intro">Recruit the people whose behavior the study intends to describe—including those who saw an opportunity and chose not to act.</p>
+            <div class="protocol-contract">
+              <div><span>Input</span><p>Active and infrequent traders, creator supporters, purchasers, scouts, lurkers, non-buyers, and non-adopters.</p></div>
+              <div><span>Procedure</span><p>Keep trader and web-audience recruitment frames separate. Preregister strata, recruitment channels, inclusion rules, exclusions, power analysis, compensation, retention, withdrawal, deletion, and controlled-access terms.</p></div>
+              <div><span>Advance only if</span><p>The achieved sample covers the declared target population, consent is comprehensible and revocable, and small cohorts have enough audit power.</p></div>
+              <div><span>Failure condition</span><p>Convenience recruitment, actor-only sampling, inferred sensitive traits, or a fixed target of 5,000 chosen to match the demo.</p></div>
+            </div>
+            <p class="protocol-record"><span>Record produced</span> Recruitment, consent, and withdrawal ledger</p>
+          </section>
+
+          <section class="method-stage protocol-stage" id="interviews" aria-labelledby="interviews-title">
+            <header class="stage-header">
+              <div class="stage-number">02</div>
+              <div><p>Human grounding</p><h2 id="interviews-title">Interview collection</h2></div>
+              <span class="stage-state is-pending">Future phase</span>
+            </header>
+            <p class="stage-intro">Use broad semi-structured interviews to ground context without placing the exact benchmark answers inside the interview.</p>
+            <div class="protocol-contract">
+              <div><span>Input</span><p>Consented voice or text interviews, post-interview surveys, behavioral tasks, forecast diaries, and narrowly scoped opt-in histories.</p></div>
+              <div><span>Procedure</span><p>Compare an approximately two-hour condition with shorter ablations. Preserve question provenance, interviewer version, transcript edits, and participant review.</p></div>
+              <div><span>Advance only if</span><p>Interview-conditioned agents improve held-out decisions or distributions beyond demographic, persona, survey-only, and simple statistical baselines.</p></div>
+              <div><span>Failure condition</span><p>Benchmark leakage, unreviewable sensitive inferences, or model-generated reflections presented as participant testimony.</p></div>
+            </div>
+            <p class="protocol-record"><span>Record produced</span> Versioned, access-controlled interview corpus and ablation report</p>
+          </section>
+
+          <section class="method-stage protocol-stage" id="repeat" aria-labelledby="repeat-title">
+            <header class="stage-header">
+              <div class="stage-number">03</div>
+              <div><p>Human noise ceiling</p><h2 id="repeat-title">Repeat measures</h2></div>
+              <span class="stage-state is-pending">Future phase</span>
+            </header>
+            <p class="stage-intro">Measure each participant against their own later response before interpreting model error as stable human behavior.</p>
+            <div class="protocol-contract">
+              <div><span>Input</span><p>The same core choices, confidence judgments, and attention tasks repeated after a fixed delay.</p></div>
+              <div><span>Procedure</span><p>Begin with a two-week retest as a design reference. Use longer follow-ups separately to distinguish inconsistency from genuine preference change.</p></div>
+              <div><span>Advance only if</span><p>Model performance is reported both raw and relative to measured human self-consistency, with uncertainty around the comparison.</p></div>
+              <div><span>Failure condition</span><p>A single measurement is treated as ground truth, or retest disagreement is silently counted as model failure.</p></div>
+            </div>
+            <p class="protocol-record"><span>Record produced</span> Retest reliability and raw-versus-normalized performance report</p>
+          </section>
+
+          <section class="method-stage protocol-stage" id="holdouts" aria-labelledby="holdouts-title">
+            <header class="stage-header">
+              <div class="stage-number">04</div>
+              <div><p>Backer addition</p><h2 id="holdouts-title">Prospective holdouts</h2></div>
+              <span class="stage-state is-pending">Not preregistered</span>
+            </header>
+            <p class="stage-intro">Freeze the information set and prediction before a genuinely unseen future is allowed to resolve.</p>
+            <div class="protocol-contract">
+              <div><span>Input</span><p>Unseen people, markets, creators, topics, campaigns, platforms, time windows, and exogenous shocks.</p></div>
+              <div><span>Procedure</span><p>Timestamp the model version, source cutoff, exclusions, forecast distribution, horizon, endpoints, abstentions, and failure conditions at <code>t0</code>.</p></div>
+              <div><span>Advance only if</span><p>Whole-event and out-of-time holdouts beat persistence, recent-trend, market-only, and non-agent baselines after resolution.</p></div>
+              <div><span>Failure condition</span><p>Random-row splits from the same episode, post-outcome tuning, unlogged source updates, or selective publication.</p></div>
+            </div>
+            <p class="protocol-record"><span>Record produced</span> Timestamped forecast registry, including misses and abstentions</p>
+          </section>
+
+          <section class="method-stage protocol-stage" id="randomized" aria-labelledby="randomized-title">
+            <header class="stage-header">
+              <div class="stage-number">05</div>
+              <div><p>Causal phase</p><h2 id="randomized-title">Randomized intervention tests</h2></div>
+              <span class="stage-state is-pending">Future phase</span>
+            </header>
+            <p class="stage-intro">A model can forecast an outcome and still be wrong about how to change it. Intervention effects require their own test.</p>
+            <div class="protocol-contract">
+              <div><span>Input</span><p>Consented, low-risk experiments on information quality, recommendation diversity, creator response, social-proof visibility, timing, or action friction.</p></div>
+              <div><span>Procedure</span><p>Preregister the human randomization unit, assignment, spillover assumptions, primary estimand, sample size, and acceptance tolerances. Hold the simulated population and seed constant; predict effect direction and magnitude before opening the human result.</p></div>
+              <div><span>Advance only if</span><p>Observed average and heterogeneous treatment effects agree with the preregistered simulated estimates within declared tolerances.</p></div>
+              <div><span>Failure condition</span><p>The same model invents the treatment, simulates it, and judges its own success—or observational self-selection is described as causality.</p></div>
+            </div>
+            <p class="protocol-record"><span>Record produced</span> Randomization log and preregistered treatment-effect report</p>
+          </section>
+
+          <section class="method-stage protocol-stage" id="calibration" aria-labelledby="calibration-title">
+            <header class="stage-header">
+              <div class="stage-number">06</div>
+              <div><p>Uncertainty discipline</p><h2 id="calibration-title">Calibration</h2></div>
+              <span class="stage-state is-pending">Pending outcomes</span>
+            </header>
+            <p class="stage-intro">A useful system must know how often its confidence is warranted, not only how often its top choice is right.</p>
+            <div class="protocol-contract">
+              <div><span>Input</span><p>Frozen probability forecasts, numeric trajectories, prediction intervals, abstentions, treatment-effect forecasts, and resolved outcomes.</p></div>
+              <div><span>Procedure</span><p>Use Brier and log score for events; MAE, RMSE, or CRPS for trajectories; reliability curves, ECE, and interval coverage for uncertainty.</p></div>
+              <div><span>Advance only if</span><p>Ordinary forecasts and intervention forecasts are separately calibrated, stable across time, and incrementally better than simpler baselines.</p></div>
+              <div><span>Failure condition</span><p>One accuracy number hides distribution collapse, confidence inflation, poor interval coverage, or a weak baseline.</p></div>
+            </div>
+            <p class="protocol-record"><span>Record produced</span> Calibration curves, proper scores, coverage, and baseline comparisons</p>
+          </section>
+
+          <section class="method-stage protocol-stage" id="subgroups" aria-labelledby="subgroups-title">
+            <header class="stage-header">
+              <div class="stage-number">07</div>
+              <div><p>Failure distribution</p><h2 id="subgroups-title">Subgroup audits</h2></div>
+              <span class="stage-state is-pending">Pending study</span>
+            </header>
+            <p class="stage-intro">Aggregate performance is incomplete if the model is systematically uncertain or wrong for specific cohorts.</p>
+            <div class="protocol-contract">
+              <div><span>Input</span><p>Consented cohort attributes, predefined intersections, missingness, sample sizes, errors, calibration, coverage, abstention, and treatment effects.</p></div>
+              <div><span>Procedure</span><p>Report gaps with confidence intervals and low-power warnings. Audit inferred/synthetic fields separately from participant-provided attributes.</p></div>
+              <div><span>Advance only if</span><p>Material gaps are bounded, published, and governed by correction, restricted-use, or retirement thresholds.</p></div>
+              <div><span>Failure condition</span><p>A parity statistic is presented as proof of fairness, small cells are hidden, or sensitive attributes are scraped or guessed.</p></div>
+            </div>
+            <p class="protocol-record"><span>Record produced</span> Disclosure-safe subgroup audit and restrictions on use</p>
+          </section>
+
+          <section class="behavioral-routes" aria-labelledby="behavioral-routes-title">
+            <header>
+              <p class="content-eyebrow">Proposed collection routes</p>
+              <h2 id="behavioral-routes-title">More ways to observe behavior—without pretending a click is a person.</h2>
+              <p>Each route is optional, consented where person-linked, minimized to the forecast question, and versioned by evidence strength.</p>
+            </header>
+            <div class="behavioral-route-list">
+              <article><span>01</span><div><strong>Forecast diaries</strong><p>Record belief, confidence, reasoning, and intended action before resolution.</p></div><b>Longitudinal</b></article>
+              <article><span>02</span><div><strong>Experience sampling</strong><p>Ask what was noticed, ignored, or trusted shortly after a declared exposure window.</p></div><b>Self-report</b></article>
+              <article><span>03</span><div><strong>Randomized feed tasks</strong><p>Measure dwell, skip, return, recall, and choice under controlled ranking conditions.</p></div><b>Experimental</b></article>
+              <article><span>04</span><div><strong>Delayed recall and revisit</strong><p>Separate momentary exposure from durable attention and voluntary return.</p></div><b>Repeat measure</b></article>
+              <article><span>05</span><div><strong>Participant-selected data donation</strong><p>Import only approved fields from platform exports or creator-authorized analytics.</p></div><b>Opt-in trace</b></article>
+              <article><span>06</span><div><strong>Costly-action histories</strong><p>Use opt-in purchases, subscriptions, collaborations, preorders, or trades only where the domain fits.</p></div><b>Revealed choice</b></article>
+              <article><span>07</span><div><strong>Referral-chain experiments</strong><p>Observe propagation paths through consented invitation or recommendation chains.</p></div><b>Network test</b></article>
+              <article><span>08</span><div><strong>Non-actor panels</strong><p>Include lurkers, non-buyers, and non-adopters so visible action does not define the population.</p></div><b>Sampling control</b></article>
+              <article><span>09</span><div><strong>Participant review</strong><p>Let participants inspect, correct, or contest generated profile summaries and sensitive inferences.</p></div><b>Governance</b></article>
+              <article><span>10</span><div><strong>Shadow trials</strong><p>Forecast without changing allocation until prospective performance and safety are established.</p></div><b>Pre-deployment</b></article>
+            </div>
+          </section>
+
+          <section class="lineage-notes" aria-labelledby="lineage-title">
+            <header>
+              <p class="content-eyebrow">Method lineage</p>
+              <h2 id="lineage-title">Borrow the discipline. Re-test the claim.</h2>
+            </header>
+            <div class="lineage-grid">
+              <article>
+                <span>Study reference</span>
+                <h3>Simile research lineage / 1,052 participants</h3>
+                <p>Stratified recruitment, broad interviews, a two-week retest, experiments, ablations, and subgroup analysis inform this protocol.</p>
+                <a href="https://arxiv.org/abs/2411.10109v1" target="_blank" rel="noopener">Park et al. / archived 2024 v1 <span aria-hidden="true">&#8599;</span></a>
+              </article>
+              <article>
+                <span>Environment reference</span>
+                <h3>MiroFish / OASIS</h3>
+                <p>Document-to-graph construction, explicit social environments, event injection, action logs, and inspectable scenarios inform the broader preview.</p>
+                <a href="https://github.com/666ghj/MiroFish" target="_blank" rel="noopener">Source repository <span aria-hidden="true">&#8599;</span></a>
+                <a href="https://github.com/camel-ai/oasis" target="_blank" rel="noopener">OASIS engine <span aria-hidden="true">&#8599;</span></a>
+              </article>
+              <article>
+                <span>Collection reference</span>
+                <h3>Agent Reach</h3>
+                <p>Platform-specific source routing informs discovery; Backer must record collection provenance. Routing does not establish representative sampling or behavioral validity.</p>
+                <a href="https://github.com/Panniantong/Agent-Reach" target="_blank" rel="noopener">Source repository <span aria-hidden="true">&#8599;</span></a>
+              </article>
+            </div>
+            <p class="lineage-boundary">The Simile study did not validate open-world attention flow, live trading, or Backer's future study. MiroFish and Agent Reach do not validate the predictions shown by this Lab.</p>
+          </section>
+
+          <section class="method-conclusion validation-conclusion" aria-labelledby="graduation-title">
+            <p class="content-eyebrow">Graduation rule</p>
+            <blockquote id="graduation-title">
+              The sandbox does not become human-validated because it grows. It advances only when frozen predictions and intervention effects survive prospective human outcomes.
+            </blockquote>
+            <div class="validation-conclusion-actions">
+              <a class="content-button is-paper" href="./method.html">Return to Method <span aria-hidden="true">&#8594;</span></a>
+              <a class="content-button is-paper" href="./attention-flow.html">Open Attention Flow 02 <span aria-hidden="true">&#8594;</span></a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer class="content-footer">
+      <div><strong>Backer Research Lab</strong><span>Predict attention. Test action. Learn from outcomes.</span></div>
+      <p>Protocol draft. No participants are being recruited and no human-validity claim is made.</p>
+    </footer>
+  </body>
+</html>

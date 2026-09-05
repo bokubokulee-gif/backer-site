@@ -36,6 +36,10 @@ const REVIEWED_PUBLIC_DATA = Object.freeze({
 });
 
 const REVIEWED_RESEARCH_SCRIPTS = Object.freeze({
+  'research-lab/assets/attention-flow-public-v1.js': {
+    classification: 'authored attention examples and anonymous marker animation; no human corpus, source connectors, fitted parameters, or forecast engine',
+    sha256: '5af1b9a3426c8fbded2ba99bcccaa7a7e1cc7ab3d6ecddb193f9ac8788b63fca'
+  },
   'research-lab/assets/lab-public-v1.js': {
     classification: 'reviewed spatial aggregate field presenter with anonymous visual markers',
     sha256: 'e459aecab1c6e95383d4196062c9b16ff20c7d8d16d736ebc794185113eb0302'
