@@ -7,6 +7,15 @@ const test = require('node:test');
 const ROOT = path.join(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(ROOT, file), 'utf8');
 
+test('Reading styles are delivered after page styles on every refined Lab surface', () => {
+  for (const file of ['validation.html', 'attention-flow.html', 'method.html']) {
+    const page = read(`research-lab/${file}`);
+    const styles = [...page.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*>/g)].map(match => match[0]);
+    assert.match(styles.at(-1), /assets\/readability-v1\.css/);
+  }
+  assert.match(read('scripts/build-pages-artifact.mjs'), /'research-lab\/assets\/readability-v1\.css'/);
+});
+
 test('Validation protocol separates the current population from the unstarted study', () => {
   const page = read('research-lab/validation.html');
   assert.match(page, /Today: 5,000 modeled agents/);

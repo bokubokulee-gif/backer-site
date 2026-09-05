@@ -111,6 +111,7 @@ const PUBLIC_FILES = Object.freeze([
   'research-lab/assets/attention-flow-public-v1.js',
   'research-lab/assets/validation-public-v1.css',
   'research-lab/assets/research-links-v1.css',
+  'research-lab/assets/readability-v1.css',
   'research-lab/assets/dm-mono-latin-400-normal--0xN8mdc.woff',
   'research-lab/assets/dm-mono-latin-400-normal-4GdczIuU.woff2',
   'research-lab/assets/dm-mono-latin-ext-400-normal-1aZr6b2b.woff',
