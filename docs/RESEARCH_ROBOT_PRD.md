@@ -8,7 +8,7 @@ Requested September 6, 2026. Publish to the existing GitHub Pages research.html 
 - Apply the requested palette redesign: warm ivory body, graphite face, champagne details, gold eyes and muted green attention mode.
 - Keep the Backer mark, existing black dotted field, Instrument Serif heading and amber/green palette.
 - Center the supplied procedural robot between the heading and the two preview selectors. Adapt its Three.js geometry to the static site rather than adopting unrelated navbar, commerce copy or framework instructions from the attachment.
-- Show the exact labels: `01 / Trading Behavior Research Preview` and `02 / Human Attention Attention Prediction Preview`.
+- Show the exact labels: `01 / Trading Behavior Research Preview` and `02 / Attention Prediction Preview`.
 - Selecting a preview changes the active state, a short bounded description, the entry link and the robot accent. The trading destination remains research-lab/; attention remains research-lab/attention-flow.html.
 - Preserve modeled-preview boundaries and the validation protocol link.
 
