@@ -11,12 +11,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/styles.css?v=20260826-perf-1" />
 <link rel="stylesheet" href="css/site-menu.css?v=3" />
-<link rel="stylesheet" href="css/research.css?v=4" />
-<script src="js/site-menu.js?v=20260821-trades-1" defer></script>
+<link rel="stylesheet" href="css/research.css?v=20260906-robot-1" />
+<script src="js/site-menu.js?v=20260906-research-robot-1" defer></script>
 <link rel="stylesheet" href="css/backer-dock.css?v=20260821-2" />
 </head>
 <body class="page-product page-research">
-<canvas id="bg" aria-hidden="true"></canvas>
 <div class="vignette" aria-hidden="true"></div>
 
 <header class="nav" id="nav">
@@ -30,7 +29,7 @@
   </div>
 </header>
 
-<main class="research-main">
+<main class="research-main" id="main">
   <section class="research-stage" aria-labelledby="research-title">
     <div class="research-orbit" aria-hidden="true">
       <span class="research-orbit__runner research-orbit__runner--amber" data-orbit-runner><b></b></span>
@@ -38,25 +37,37 @@
     </div>
     <p class="research-kicker"><span aria-hidden="true"></span> Backer Research</p>
     <h1 id="research-title">Backer Research</h1>
-    <div class="research-preview-options">
-      <a class="research-preview" href="research-lab/" data-research-preview>
-        <small>01 / Trader behavior</small>
-        <span>Research Preview</span>
-        <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    <div class="research-robot-wrap">
+      <div id="research-robot" class="research-robot" tabindex="0" role="button" aria-label="Say hello to the Backer research robot" aria-describedby="robot-hint">
+        <img class="robot-fallback" src="img/backer-mark.png?v=2" alt="" width="140" height="140" />
+      </div>
+      <p class="robot-status" id="robot-hint">Move to explore. Tap to say hello.</p>
+    </div>
+    <div class="research-preview-options" aria-label="Research previews">
+      <a id="preview-tab-trading" class="research-preview is-selected" href="research-lab/" data-research-tab="trading">
+        <small>01 /</small><span>Trading Behavior<br />Research Preview</span>
+        <span class="research-preview-marker" aria-hidden="true"></span>
       </a>
-      <a class="research-preview" href="research-lab/attention-flow.html" data-research-preview>
-        <small>02 / Web attention</small>
-        <span>Attention Flow</span>
-        <svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      <a id="preview-tab-attention" class="research-preview" href="research-lab/attention-flow.html" data-research-tab="attention">
+        <small>02 /</small><span>Human Attention Attention<br />Prediction Preview</span>
+        <span class="research-preview-marker" aria-hidden="true"></span>
       </a>
     </div>
-    <p class="research-copy">Two modeled environments. One attention thesis.</p>
+    <div class="research-preview-detail" id="preview-panel-trading" aria-labelledby="preview-tab-trading">
+      <p>Explore how modeled traders respond to information, conviction, and one another.</p>
+      <a class="research-enter" href="research-lab/" data-research-preview>Open trading preview <span aria-hidden="true">&#8599;</span></a>
+    </div>
+    <div class="research-preview-detail" id="preview-panel-attention" aria-labelledby="preview-tab-attention" hidden>
+      <p>Explore how attention moves, gathers, and fades across a modeled web environment.</p>
+      <a class="research-enter" href="research-lab/attention-flow.html" data-research-preview>Open attention preview <span aria-hidden="true">&#8599;</span></a>
+    </div>
+    <p class="research-copy">Modeled research previews. Human validation is the next step.</p>
     <a class="research-protocol" href="research-lab/validation.html">Read the validation protocol &#8594;</a>
   </section>
 </main>
 
-<script src="js/shader.js?v=20260826-perf-1"></script>
-<script src="js/research.js?v=3"></script>
+<script src="js/research.js?v=20260906-robot-1"></script>
+<script type="module" src="js/research-robot.mjs?v=20260906-robot-1"></script>
 <div data-backer-dock></div>
 <script src="js/backer-dock.js?v=20260826-perf-1"></script>
 </body>
