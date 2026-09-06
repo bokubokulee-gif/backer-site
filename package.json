@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build:globe": "node scripts/vendor-cobe.js",
-    "build:public": "node scripts/build-pages-artifact.mjs .public-artifact",
+    "build:public": "pnpm build:robot && node scripts/build-pages-artifact.mjs .public-artifact",
     "audit:public": "node scripts/build-pages-artifact.mjs .public-artifact",
     "lint": "node scripts/lint.js",
     "test": "node --test tests/core*.test.js tests/backend*.test.js tests/market2-v21-release.test.js",
@@ -19,11 +19,13 @@
     "sync:github": "node scripts/sync-github-momentum.mjs",
     "sync:market2": "node scripts/sync-market2-people.mjs",
     "catalog:discovery": "node scripts/generate-discovery-catalog.mjs",
-    "hash:admin-password": "node scripts/hash-admin-password.js"
+    "hash:admin-password": "node scripts/hash-admin-password.js",
+    "build:robot": "node scripts/build-research-robot.mjs"
   },
   "dependencies": {
     "cobe": "2.0.1",
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "three": "0.179.1"
   },
   "devDependencies": {
     "esbuild": "0.28.2",

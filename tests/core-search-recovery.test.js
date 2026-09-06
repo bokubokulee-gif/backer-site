@@ -231,7 +231,7 @@ test('every changed public Search asset is allowlisted and uses its current cach
     'js/market2.js': '20260826-perf-1',
     'js/search-engine.js': '20260826-perf-1',
     'js/trades-catalog-model.js': '20260826-perf-1',
-    'js/site-menu.js': '20260821-trades-1'
+    'js/site-menu.js': '20260906-research-robot-1'
   };
   const artifact = fs.readFileSync(path.join(root, 'scripts/build-pages-artifact.mjs'), 'utf8');
   const pages = fs.readdirSync(root).filter((file) => file.endsWith('.html'));

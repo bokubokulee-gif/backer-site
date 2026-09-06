@@ -12,9 +12,7 @@
       ]
     },
     {
-      key: 'research', label: 'Backer Research', items: [
-        { label: 'The Attention Observatory', description: 'Proof of Attention Protocol', href: BASE + 'research.html', icon: 'proof' }
-      ]
+      key: 'research', label: 'Backer Research', href: BASE + 'research.html'
     },
     {
       key: 'company', label: 'Company', items: [
@@ -55,6 +53,7 @@
     var currentFile = window.location.pathname.split('/').pop() || 'backerdemo.html';
     var targetFile = target.pathname.split('/').pop() || 'backerdemo.html';
     if (currentFile !== targetFile) return false;
+    if (targetFile === 'research.html') return true;
     var targetView = target.searchParams.get('view');
     if (targetView) return new URLSearchParams(window.location.search).get('view') === targetView;
     if (target.hash) return window.location.hash === target.hash || window.location.hash.indexOf(target.hash + '?') === 0;
@@ -72,6 +71,10 @@
   }
 
   function groupMarkup(group, id, mobile) {
+    if (group.href) {
+      if (!mobile) return '';
+      return '<div class="backer-menu__accordion-section"><a class="backer-menu__accordion-trigger" href="' + group.href + '"' + (isCurrent(group.href) ? ' aria-current="page"' : '') + '><span>' + group.label + '</span>' + arrow() + '</a></div>';
+    }
     var list = group.items.map(linkMarkup).join('');
     if (mobile) {
       return '<section class="backer-menu__accordion-section" data-mobile-group="' + group.key + '">' +
@@ -85,6 +88,7 @@
   function build(root, index) {
     var id = 'backer-site-menu-' + index;
     var triggers = NAV.map(function (group) {
+      if (group.href) return '<a class="backer-menu__trigger backer-menu__direct' + (isCurrent(group.href) ? ' is-current' : '') + '" data-menu-direct="' + group.key + '" href="' + group.href + '"' + (isCurrent(group.href) ? ' aria-current="page"' : '') + '>' + group.label + '</a>';
       var current = group.items.some(function (item) { return isCurrent(item.href); }) ? ' is-current' : '';
       return '<button class="backer-menu__trigger' + current + '" type="button" data-menu-trigger="' + group.key + '" aria-label="' + group.label + '" aria-haspopup="true" aria-expanded="false" aria-controls="' + id + '-panel">' +
         '<span class="backer-menu__label" data-swap-label aria-hidden="true">' + group.label + '</span>' + chevron() + '</button>';
@@ -110,7 +114,7 @@
     var root = host.querySelector('[data-backer-menu-root]');
     var header = host.closest('header');
     var panel = root.querySelector('.backer-menu__panel');
-    var triggers = Array.prototype.slice.call(root.querySelectorAll('[data-menu-trigger]'));
+    var triggers = Array.prototype.slice.call(root.querySelectorAll('[data-menu-trigger], [data-menu-direct]'));
     var panelLabel = root.querySelector('[data-panel-label]');
     var mobileTrigger = root.querySelector('.backer-menu__mobile-trigger');
     var sheet = root.querySelector('.backer-menu__sheet');
@@ -124,7 +128,7 @@
     function setDesktop(key, focusFirst) {
       desktopOpen = key;
       triggers.forEach(function (button) {
-        button.setAttribute('aria-expanded', String(button.dataset.menuTrigger === key));
+        if (button.dataset.menuTrigger) button.setAttribute('aria-expanded', String(button.dataset.menuTrigger === key));
       });
       root.querySelectorAll('[data-desktop-group]').forEach(function (group) {
         group.hidden = group.dataset.desktopGroup !== key;
@@ -147,7 +151,7 @@
     }
 
     function swapLetters(button) {
-      if (mobileQuery.matches || button.dataset.swapping === 'true' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (button.dataset.menuDirect || mobileQuery.matches || button.dataset.swapping === 'true' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       var span = button.querySelector('[data-swap-label]');
       var label = button.getAttribute('aria-label');
       var wordLetters = label.split('');
@@ -179,6 +183,7 @@
       button.addEventListener('pointerenter', function () { swapLetters(button); });
       button.addEventListener('focus', function () { swapLetters(button); });
       button.addEventListener('click', function () {
+        if (button.dataset.menuDirect) { setDesktop(null, false); return; }
         setDesktop(desktopOpen === button.dataset.menuTrigger ? null : button.dataset.menuTrigger, false);
       });
       button.addEventListener('keydown', function (event) {
@@ -186,7 +191,7 @@
           event.preventDefault();
           var delta = event.key === 'ArrowRight' ? 1 : -1;
           triggers[(index + delta + triggers.length) % triggers.length].focus();
-        } else if (event.key === 'ArrowDown') {
+        } else if (event.key === 'ArrowDown' && button.dataset.menuTrigger) {
           event.preventDefault();
           setDesktop(button.dataset.menuTrigger, true);
         } else if (event.key === 'Escape' && desktopOpen) {
@@ -240,7 +245,7 @@
     mobileTrigger.addEventListener('click', function () { mobileOpen ? closeMobile(true) : openMobile(); });
     closeButton.addEventListener('click', function () { closeMobile(true); });
     scrim.addEventListener('click', function () { closeMobile(true); });
-    root.querySelectorAll('.backer-menu__accordion-trigger').forEach(function (button) {
+    root.querySelectorAll('button.backer-menu__accordion-trigger').forEach(function (button) {
       button.addEventListener('click', function () { setAccordion(button.closest('[data-mobile-group]').dataset.mobileGroup); });
     });
 
@@ -256,7 +261,7 @@
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault();first.focus(); }
     });
 
-    root.querySelectorAll('.backer-menu__link,.backer-menu__launch').forEach(function (link) {
+    root.querySelectorAll('.backer-menu__link,.backer-menu__launch,a.backer-menu__accordion-trigger').forEach(function (link) {
       link.addEventListener('click', function () { setDesktop(null, false);closeMobile(false); });
     });
 

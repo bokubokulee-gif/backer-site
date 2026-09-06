@@ -17,7 +17,7 @@ test('Research entry opens the dedicated preview with Backer interaction states'
   const behavior = read('js/research.js');
 
   assert.match(page, /href="research-lab\/"/);
-  assert.match(page, />\s*Research Preview\s*</);
+  assert.match(page, /Trading Behavior<br \/>Research Preview/);
   assert.doesNotMatch(page, /coming soon/i);
   assert.match(page, /img\/backer-mark\.png/);
   assert.match(styles, /\.research-preview:focus-visible/);
