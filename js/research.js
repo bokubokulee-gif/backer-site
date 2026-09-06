@@ -6,19 +6,14 @@
   var tabs = Array.prototype.slice.call(document.querySelectorAll('[data-research-tab]'));
   var robot = document.getElementById('research-robot');
   if (tablist && tabs.length) {
-    tablist.setAttribute('role', 'tablist');
     function selectPreview(key, focus, updateHash) {
       stage.dataset.preview = key;
       tabs.forEach(function (tab) {
         var selected = tab.dataset.researchTab === key;
-        tab.setAttribute('role', 'tab');
-        tab.setAttribute('aria-selected', String(selected));
-        tab.setAttribute('aria-controls', 'preview-panel-' + tab.dataset.researchTab);
-        tab.tabIndex = selected ? 0 : -1;
+        tab.setAttribute('aria-describedby', 'preview-description-' + tab.dataset.researchTab);
+        tab.tabIndex = 0;
         tab.classList.toggle('is-selected', selected);
         var panel = document.getElementById('preview-panel-' + tab.dataset.researchTab);
-        panel.setAttribute('role', 'tabpanel');
-        panel.tabIndex = 0;
         panel.hidden = !selected;
         if (selected && focus) tab.focus();
       });
@@ -26,15 +21,12 @@
       if (updateHash) history.replaceState(null, '', '#' + key);
     }
     tabs.forEach(function (tab, index) {
-      tab.addEventListener('click', function (event) {
-        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-        event.preventDefault();
-        selectPreview(tab.dataset.researchTab, false, true);
-      });
+      tab.addEventListener('pointerenter', function () { selectPreview(tab.dataset.researchTab, false, false); });
+      tab.addEventListener('focus', function () { selectPreview(tab.dataset.researchTab, false, false); });
       tab.addEventListener('keydown', function (event) {
-        if (['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp', 'Home', 'End', ' '].indexOf(event.key) < 0) return;
+        if (['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp', 'Home', 'End'].indexOf(event.key) < 0) return;
         event.preventDefault();
-        var next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : event.key === ' ' ? index : (index + 1) % tabs.length;
+        var next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + 1) % tabs.length;
         selectPreview(tabs[next].dataset.researchTab, true, true);
       });
     });
