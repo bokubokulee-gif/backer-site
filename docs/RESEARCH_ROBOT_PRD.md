@@ -15,7 +15,9 @@ Requested September 6, 2026. Publish to the existing GitHub Pages research.html 
 
 ## Acceptance
 
-- The cursor controls the head across the entire visible page, including outside the robot and over navigation controls. The robot body remains centered. A tap, Enter or Space toggles heart eyes on and off; hearts persist until toggled. Remove the visible instruction paragraph while retaining accessible keyboard guidance. Touch scrolling must not toggle the eyes. Reduced-motion and unavailable WebGL retain working preview navigation.
+- The cursor controls the head across the entire visible page, including outside the robot and over navigation controls. The robot body remains centered. A tap, Enter or Space toggles heart eyes on and off; hearts persist until toggled. Remove the idle instruction paragraph while retaining accessible keyboard guidance. Show “Hello, curious human.” while heart eyes are on, clearing it when toggled off without shifting the preview cards. Touch scrolling must not toggle the eyes. Reduced-motion and unavailable WebGL retain working preview navigation.
 - Both research card titles stay on one line at desktop and mobile sizes, using smaller type and tighter spacing on narrow screens. Desktop and mobile show readable labels, clear focus/selection states and no horizontal overflow.
 - Local bundles contain no remote environment assets, secrets, private research data or source maps.
 - Run relevant checks, build the allowlisted public artifact, publish main and gh-pages, and verify the exact live URL, menu behavior, preview toggle and destination routes.
+
+September 7 follow-up: double both orbiting dots from 2px/s to 4px/s at every viewport size, preserving reduced-motion behavior.

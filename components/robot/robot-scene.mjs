@@ -7,6 +7,7 @@ export function mountResearchRobot(host) {
 
   const GOLD = '#e9bd86';
   const GREEN = '#56d39a';
+  const greeting = host.closest('.research-robot-wrap')?.querySelector('.robot-greeting');
   const media = window.matchMedia('(prefers-reduced-motion: reduce)');
   const disposables = new Set();
   const removeListeners = [];
@@ -53,6 +54,7 @@ export function mountResearchRobot(host) {
   function stop() {
     if (stopped) return;
     stopped = true;
+    if (greeting) greeting.textContent = '';
     cancelAnimationFrame(frame);
     frame = 0;
     resizeObserver?.disconnect();
@@ -150,6 +152,7 @@ export function mountResearchRobot(host) {
     if (stopped) return;
     loved = !loved;
     host.setAttribute('aria-pressed', String(loved));
+    if (greeting) greeting.textContent = loved ? 'Hello, curious human.' : '';
     requestFrame();
   }
 

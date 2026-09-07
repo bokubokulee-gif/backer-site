@@ -13,3 +13,9 @@ Scope: research.html robot interaction, single-line preview titles, and shared B
 
 Final local validation: 146 core tests passed, zero failures; lint and whitespace checks passed. The release artifact contains 155 allowlisted files with zero critical exposure findings. Live verification follows the source and Pages pushes.
 Release target: https://bokubokulee-gif.github.io/backer-site/research.html
+
+## Greeting and orbit-speed follow-up
+
+- Restored “Hello, curious human.” when heart eyes are on, clearing it on the next activation. The idle instruction remains absent. A polite status region announces the greeting.
+- Both dots now run at 4px/s (previously 2px/s), with the CSS fallback period also halved. Responsive radius-based duration calculation is unchanged.
+- At 350px, browser inspection confirmed the greeting toggles with the eyes and the cards retain the same top position. The greeting occupies the existing gap below the robot.
