@@ -88,7 +88,7 @@
   function build(root, index) {
     var id = 'backer-site-menu-' + index;
     var triggers = NAV.map(function (group) {
-      if (group.href) return '<a class="backer-menu__trigger backer-menu__direct' + (isCurrent(group.href) ? ' is-current' : '') + '" data-menu-direct="' + group.key + '" href="' + group.href + '"' + (isCurrent(group.href) ? ' aria-current="page"' : '') + '>' + group.label + '</a>';
+      if (group.href) return '<a class="backer-menu__trigger backer-menu__direct' + (isCurrent(group.href) ? ' is-current' : '') + '" data-menu-direct="' + group.key + '" href="' + group.href + '" aria-label="' + group.label + '"' + (isCurrent(group.href) ? ' aria-current="page"' : '') + '><span class="backer-menu__label" data-swap-label aria-hidden="true">' + group.label + '</span></a>';
       var current = group.items.some(function (item) { return isCurrent(item.href); }) ? ' is-current' : '';
       return '<button class="backer-menu__trigger' + current + '" type="button" data-menu-trigger="' + group.key + '" aria-label="' + group.label + '" aria-haspopup="true" aria-expanded="false" aria-controls="' + id + '-panel">' +
         '<span class="backer-menu__label" data-swap-label aria-hidden="true">' + group.label + '</span>' + chevron() + '</button>';
@@ -151,7 +151,7 @@
     }
 
     function swapLetters(button) {
-      if (button.dataset.menuDirect || mobileQuery.matches || button.dataset.swapping === 'true' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (mobileQuery.matches || button.dataset.swapping === 'true' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       var span = button.querySelector('[data-swap-label]');
       var label = button.getAttribute('aria-label');
       var wordLetters = label.split('');

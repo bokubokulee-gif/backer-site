@@ -7,10 +7,7 @@ export function mountResearchRobot(host) {
 
   const GOLD = '#e9bd86';
   const GREEN = '#56d39a';
-  const status = host.querySelector('.robot-status') || host.closest('.research-robot-wrap')?.querySelector('.robot-status');
-  const originalStatus = status?.textContent || '';
   const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const coarse = window.matchMedia('(pointer: coarse)');
   const disposables = new Set();
   const removeListeners = [];
   let renderer;
@@ -25,7 +22,6 @@ export function mountResearchRobot(host) {
   let resizeObserver;
   let intersectionObserver;
   let frame = 0;
-  let heartTimer = 0;
   let stopped = false;
   let inView = true;
   let ready = false;
@@ -34,7 +30,8 @@ export function mountResearchRobot(host) {
   let height = 0;
   let previousFrame = 0;
   let frameGate = 0;
-  let lovedUntil = 0;
+  let loved = false;
+  let lastPointer = null;
   let pointerDown = null;
   const look = { x: 0, y: 0 };
   const eyes = [];
@@ -53,20 +50,10 @@ export function mountResearchRobot(host) {
     removeListeners.push(() => target.removeEventListener(event, handler, options));
   }
 
-  function setStatus(message) {
-    if (status) status.textContent = message;
-  }
-
-  function hint() {
-    if (reduced) return 'Use arrow keys to look · Press Enter to say hello';
-    return coarse.matches ? 'Touch to look · Tap to say hello' : 'Move your cursor · Tap to say hello';
-  }
-
   function stop() {
     if (stopped) return;
     stopped = true;
     cancelAnimationFrame(frame);
-    clearTimeout(heartTimer);
     frame = 0;
     resizeObserver?.disconnect();
     intersectionObserver?.disconnect();
@@ -84,7 +71,6 @@ export function mountResearchRobot(host) {
     host.dataset.robotState = 'unavailable';
     host.setAttribute('aria-disabled', 'true');
     host.tabIndex = -1;
-    setStatus('Choose a research preview below');
     stop();
   }
 
@@ -118,7 +104,6 @@ export function mountResearchRobot(host) {
     head.rotation.y = THREE.MathUtils.lerp(head.rotation.y, look.x * 0.39, headDamping);
     head.rotation.x = THREE.MathUtils.lerp(head.rotation.x, -look.y * 0.19, headDamping);
 
-    const loved = now < lovedUntil;
     const blinkPhase = (elapsed + 1.1) % 4.1;
     const blink = !reduced && !loved && blinkPhase < 0.25
       ? Math.max(0.075, 1 - Math.sin((blinkPhase / 0.25) * Math.PI)) : 1;
@@ -153,7 +138,6 @@ export function mountResearchRobot(host) {
       if (!ready) {
         ready = true;
         host.dataset.robotState = 'ready';
-        setStatus(hint());
       }
     } catch {
       unavailable();
@@ -164,24 +148,43 @@ export function mountResearchRobot(host) {
 
   function react() {
     if (stopped) return;
-    lovedUntil = performance.now() + 1900;
-    setStatus('Hello, curious human.');
-    clearTimeout(heartTimer);
-    heartTimer = window.setTimeout(() => {
-      lovedUntil = 0;
-      setStatus(hint());
-      requestFrame();
-    }, 1900);
+    loved = !loved;
+    host.setAttribute('aria-pressed', String(loved));
+    requestFrame();
+  }
+
+  function resetLook() {
+    lastPointer = null;
+    pointerDown = null;
+    look.x = look.y = 0;
+    requestFrame();
+  }
+
+  function updateLook() {
+    if (!lastPointer || stopped) return;
+    const bounds = host.getBoundingClientRect();
+    if (!bounds.width || !bounds.height) return;
+    const centerX = bounds.left + bounds.width / 2;
+    const centerY = bounds.top + bounds.height / 2;
+    const dx = lastPointer.x - centerX;
+    const dy = lastPointer.y - centerY;
+    // Map each side of the robot to the viewport edge, not the canvas edge.
+    // This keeps the head responsive after the pointer leaves the robot area.
+    look.x = THREE.MathUtils.clamp(dx / Math.max(1, dx < 0 ? centerX : window.innerWidth - centerX), -1, 1);
+    look.y = THREE.MathUtils.clamp(-dy / Math.max(1, dy < 0 ? centerY : window.innerHeight - centerY), -1, 1);
     requestFrame();
   }
 
   function updatePointer(event) {
-    if (stopped || event.target.closest?.('a, button, input, select')) return;
-    const bounds = host.getBoundingClientRect();
-    if (!bounds.width || !bounds.height) return;
-    look.x = THREE.MathUtils.clamp(((event.clientX - bounds.left) / bounds.width) * 2 - 1, -1, 1);
-    look.y = THREE.MathUtils.clamp(1 - ((event.clientY - bounds.top) / bounds.height) * 2, -1, 1);
-    requestFrame();
+    if (stopped || event.isPrimary === false) return;
+    if (pointerDown && event.pointerId === pointerDown.id &&
+        Math.hypot(event.clientX - pointerDown.x, event.clientY - pointerDown.y) >= 12) {
+      pointerDown.moved = true;
+    }
+    // Mouse and pen hover track pagewide. Touch only controls the robot itself.
+    if (event.pointerType === 'touch' && !host.contains(event.target)) return;
+    lastPointer = { x: event.clientX, y: event.clientY };
+    updateLook();
   }
 
   function resize() {
@@ -194,6 +197,7 @@ export function mountResearchRobot(host) {
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
+    updateLook();
     requestFrame();
   }
 
@@ -305,6 +309,7 @@ export function mountResearchRobot(host) {
 
   try {
     host.dataset.robotState = 'loading';
+    host.setAttribute('aria-pressed', 'false');
     renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' });
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -413,21 +418,23 @@ export function mountResearchRobot(host) {
     mesh(scene, new THREE.RingGeometry(0.37, 0.375, 72), haloMaterial, [0, -0.741, 0], [-Math.PI / 2, 0, 0]);
     makeShadow();
 
-    listen(host, 'pointermove', updatePointer, { passive: true });
-    listen(host, 'pointerleave', () => {
-      look.x = look.y = 0;
-      pointerDown = null;
-      requestFrame();
-    }, { passive: true });
+    listen(document, 'pointermove', updatePointer, { passive: true, capture: true });
+    listen(document, 'pointerleave', resetLook, { passive: true });
+    listen(window, 'blur', resetLook);
+    listen(window, 'scroll', updateLook, { passive: true, capture: true });
+    listen(host, 'pointerleave', () => { pointerDown = null; }, { passive: true });
     listen(host, 'pointerdown', event => {
-      if (event.button !== 0 || event.target.closest?.('a, button, input, select')) return;
+      if (event.button !== 0 || event.isPrimary === false || event.target.closest?.('a, button, input, select')) return;
       updatePointer(event);
-      pointerDown = { id: event.pointerId, x: event.clientX, y: event.clientY, at: performance.now() };
+      pointerDown = { id: event.pointerId, x: event.clientX, y: event.clientY, at: performance.now(), moved: false };
     }, { passive: true });
     listen(host, 'pointerup', event => {
       if (!pointerDown || pointerDown.id !== event.pointerId) return;
+      const bounds = host.getBoundingClientRect();
+      const inside = event.clientX >= bounds.left && event.clientX <= bounds.right &&
+        event.clientY >= bounds.top && event.clientY <= bounds.bottom;
       const distance = Math.hypot(event.clientX - pointerDown.x, event.clientY - pointerDown.y);
-      if (distance < 12 && performance.now() - pointerDown.at < 700) react();
+      if (inside && !pointerDown.moved && distance < 12 && performance.now() - pointerDown.at < 700) react();
       pointerDown = null;
     }, { passive: true });
     listen(host, 'pointercancel', () => { pointerDown = null; }, { passive: true });
@@ -448,14 +455,12 @@ export function mountResearchRobot(host) {
         requestFrame();
       }
     });
-    listen(host, 'blur', () => { look.x = look.y = 0; requestFrame(); });
     listen(host, 'research-preview-change', event => {
       accentTarget.set(event.detail?.preview === 'attention' ? GREEN : GOLD);
       requestFrame();
     });
     listen(media, 'change', () => {
       reduced = media.matches;
-      if (!lovedUntil) setStatus(hint());
       previousFrame = 0;
       requestFrame();
     });
@@ -480,6 +485,5 @@ export function mountResearchRobot(host) {
   return () => {
     stop();
     host.dataset.robotState = 'unavailable';
-    if (status) status.textContent = originalStatus;
   };
 }
