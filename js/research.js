@@ -26,11 +26,15 @@
       tab.addEventListener('keydown', function (event) {
         if (['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp', 'Home', 'End'].indexOf(event.key) < 0) return;
         event.preventDefault();
-        var next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + 1) % tabs.length;
+        var next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowLeft' || event.key === 'ArrowUp' ? -1 : 1) + tabs.length) % tabs.length;
         selectPreview(tabs[next].dataset.researchTab, true, true);
       });
     });
-    function fromHash() { selectPreview(location.hash === '#attention' ? 'attention' : 'trading', false, false); }
+    function fromHash() {
+      var key = location.hash.slice(1);
+      var known = tabs.some(function (tab) { return tab.dataset.researchTab === key; });
+      selectPreview(known ? key : 'trading', false, false);
+    }
     fromHash();
     window.addEventListener('hashchange', fromHash);
   }

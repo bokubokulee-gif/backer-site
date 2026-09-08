@@ -4,14 +4,14 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Backer Research — Preview</title>
-<meta name="description" content="Explore Backer’s trader-behavior and web-attention research previews, and the protocol for validating them." />
+<meta name="description" content="Explore Backer’s trader-behavior research, attention prediction, interactive Attention Simulation, and validation protocol." />
 <link rel="icon" type="image/png" href="img/backer-mark.png?v=2" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/styles.css?v=20260826-perf-1" />
 <link rel="stylesheet" href="css/site-menu.css?v=20260907-hover-1" />
-<link rel="stylesheet" href="css/research.css?v=20260907-greeting-1" />
+<link rel="stylesheet" href="css/research.css?v=20260908-simulation-1" />
 <script src="js/site-menu.js?v=20260907-hover-1" defer></script>
 <link rel="stylesheet" href="css/backer-dock.css?v=20260821-2" />
 </head>
@@ -52,6 +52,10 @@
         <small>02 /</small> <span class="research-preview-title">Human Attention Prediction Research</span>
         <span class="research-preview-marker" aria-hidden="true"></span>
       </a>
+      <a id="preview-tab-simulation" class="research-preview" href="https://backer-attention-simulation.nzhang425.chatgpt.site/" data-research-tab="simulation" data-research-preview>
+        <small>03 /</small> <span class="research-preview-title">Attention Simulation</span>
+        <span class="research-preview-marker" aria-hidden="true"></span>
+      </a>
     </div>
     <div class="research-preview-detail" id="preview-panel-trading" aria-labelledby="preview-tab-trading">
       <p id="preview-description-trading">Explore how simulated traders respond to information, conviction, and one another.</p>
@@ -59,11 +63,14 @@
     <div class="research-preview-detail" id="preview-panel-attention" aria-labelledby="preview-tab-attention" hidden>
       <p id="preview-description-attention">Explore how attention moves, gathers, and fades across simulated web environments.</p>
     </div>
+    <div class="research-preview-detail" id="preview-panel-simulation" aria-labelledby="preview-tab-simulation" hidden>
+      <p id="preview-description-simulation">Watch 50 fictional people react to real public content across social platforms and prediction markets. All behavior is simulated.</p>
+    </div>
     <a class="research-protocol" href="research-lab/validation.html">Read the validation protocol &#8594;</a>
   </section>
 </main>
 
-<script src="js/research.js?v=20260907-greeting-1"></script>
+<script src="js/research.js?v=20260908-simulation-1"></script>
 <script type="module" src="js/research-robot.mjs?v=20260907-greeting-1"></script>
 <div data-backer-dock></div>
 <script src="js/backer-dock.js?v=20260826-perf-1"></script>
