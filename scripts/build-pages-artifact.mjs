@@ -164,7 +164,9 @@ const PUBLIC_FILES = Object.freeze([
   'research-lab/method.html',
   'research-lab/thesis.html',
   'research-lab/validation.html',
-  'research-lab/attention-flow.html'
+  'research-lab/attention-flow.html',
+  'research-lab/attention-simulation.html',
+  'research-lab/attention-simulatoin.html'
 ]);
 
 if (!process.argv[2] || destination === ROOT || destination === path.parse(destination).root) {
