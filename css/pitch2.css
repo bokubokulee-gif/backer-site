@@ -10,6 +10,12 @@
 .page-pitch2 .section-head h2 em{display:inline-block;padding-bottom:.08em}
 .page-pitch2 .section-lead{font-size:18px;max-width:690px;line-height:1.7;color:#b8b4ac;margin-top:24px}
 .page-pitch2 .kicker{font-size:10px;letter-spacing:.16em;margin-bottom:20px}
+/* Keep complete Shift sentences together at every container width. */
+.page-pitch2 .p2-shift{container-type:inline-size}
+.page-pitch2 .p2-shift>.section-head{max-width:none;text-align:center;container-type:inline-size}
+.page-pitch2 .p2-shift>.section-head h2{font-size:min(59px,5.4cqw);white-space:nowrap}
+.page-pitch2 .p2-shift .section-lead{max-width:none;margin-inline:auto;font-size:min(18px,1.78cqw);white-space:nowrap;text-align:center}
+.page-pitch2 .p2-shift>.bigline{max-width:none;margin-inline:auto;text-align:center;font-size:min(40px,3.85cqw);white-space:nowrap}
 /* A full opening viewport; content can grow naturally when zoomed. */
 .page-pitch2 .p2-hero{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;justify-content:center;padding:120px 24px 72px;text-align:center;gap:44px}
 .page-pitch2 .p2-hero .hero-inner{max-width:1200px;container-type:inline-size}
@@ -56,9 +62,12 @@
 .p2-market-story li b{font-weight:500;color:var(--accent)}
 .p2-market-story li span{color:var(--muted)}
 .p2-market-mission{margin:21px auto 0;font-size:clamp(9px,2.75cqw,25px);line-height:1.4;letter-spacing:-.025em;white-space:nowrap;text-align:center}
-.page-pitch2 .p2-market .p2-market-intro{width:min(100%,900px);max-width:none;margin:26px auto 0;padding:clamp(18px,3cqw,30px) clamp(10px,2cqw,24px);border:1px solid var(--p2-rule);border-radius:18px;background:linear-gradient(135deg,rgba(233,189,134,.07),transparent 65%),#101013;font-size:clamp(6px,2.2cqw,18px);line-height:1.6;text-align:center}
+.page-pitch2 .p2-market .p2-market-intro{width:min(100%,900px);max-width:none;margin:26px auto 0;padding:clamp(18px,3cqw,30px) clamp(10px,2cqw,24px);border:1px solid var(--lg-bd-warm);border-radius:18px;background:var(--lg-fg-warm),var(--lg-fg-dark);box-shadow:var(--lg-rim);-webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat));backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) url(#liquid-glass);color:var(--ink);font-size:min(18px,2.18cqw);font-weight:700;line-height:1.6;text-align:center}
 .p2-market-intro>span{display:block;white-space:nowrap}
-.p2-market-intro>span+span{margin-top:12px}
+.p2-market-intro>span+span{margin-top:12px;font-size:clamp(10px,3cqw,20px)}
+@media(prefers-reduced-transparency:reduce){
+ .page-pitch2 .p2-market .p2-market-intro{background:#101013;-webkit-backdrop-filter:none;backdrop-filter:none}
+}
 .p2-back-word{color:var(--accent);font-weight:700}
 .p2-creator-points{padding-left:19px;display:grid;gap:9px;color:#bdb8ae;font-size:15px;line-height:1.65}
 .p2-creator-points li::marker{color:var(--accent)}

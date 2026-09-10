@@ -107,7 +107,7 @@
 ];
   const ROWS_VISIBLE = 5;
   const ROWS_RENDERED = ROWS_VISIBLE + 1;
-  const MS_PER_ROW = 9000;
+  const MS_PER_ROW = 7000;
   const track = root.querySelector('[data-question-track]');
   const viewport = root.querySelector('[data-question-window]');
   if (!track || !viewport) return;
