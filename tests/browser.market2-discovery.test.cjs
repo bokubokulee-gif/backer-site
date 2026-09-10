@@ -1119,7 +1119,7 @@ test('Trades owns its canonical route, the #market alias, and the legacy market 
       await tab.goto(`${origin}/backerdemo.html${route}`);
       await tab.waitForSelector('.mkt');
       assert.equal(await tab.locator('.market2-shell, .m2-local-archive').count(), 0);
-      assert.match(await tab.locator('.mkt-header').innerText(), /Backer Trades[\s\S]*Trade future growth in creator accounts and work[\s\S]*Source-backed creator accounts and original content from Discovery/i);
+      assert.equal(await tab.locator('.mkt-header h1').innerText(), 'Bet on anyone, anything before the world catches on.');
       assert.equal(await tab.locator('.mkt-news-line').count(), 1);
       assert.match(await tab.locator('.mkt-news-line').innerText(), /LATEST/i);
       assert.match(await tab.locator('[data-mkt-news-link]').getAttribute('href'), /^https?:\/\//);

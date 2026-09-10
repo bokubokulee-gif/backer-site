@@ -34,12 +34,9 @@
       .flow-time{flex:1 0 100%!important;min-width:0!important;display:flex!important;font-size:7px!important}
       .marker-inspector{max-width:calc(100% - 24px)!important;right:12px!important;top:52px!important;font-size:10px!important}
     `,
-    simulation: `${sharedEmbedCSS}
-      main{height:100%!important;overflow:hidden!important;position:relative!important}
-      /* The hosted world's mobile layout places activity below the scene. Crop the
-         wrapper around its native canvas; the hosted page remains fully interactive. */
-      main>iframe{position:absolute!important;left:-52px!important;top:-50px!important;width:calc(100% + 52px)!important;height:calc(100% + 300px)!important;max-width:none!important}
-    `,
+    // The native world centers on its viewport and owns drag/touch panning.
+    // Keep its wrapper at the card's real dimensions, without cropping its canvas.
+    simulation: sharedEmbedCSS,
     trading: `${sharedEmbedCSS}
       :root{--topbar-h:0px!important;--dock-h:0px!important}
       .lab-app,.lab-grid{height:100%!important;min-height:0!important}

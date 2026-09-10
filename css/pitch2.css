@@ -55,16 +55,17 @@
 .p2-market-story li{display:grid;grid-template-columns:130px 1fr;gap:12px;font-size:13px}
 .p2-market-story li b{font-weight:500;color:var(--accent)}
 .p2-market-story li span{color:var(--muted)}
-.p2-market-mission{max-width:770px;margin-top:21px;font-size:clamp(23px,3vw,35px);line-height:1.35;letter-spacing:-.025em;text-wrap:pretty}
-.p2-market-intro>span{display:block}
-.p2-market-intro>span+span{margin-top:22px}
+.p2-market-mission{margin:21px auto 0;font-size:clamp(9px,2.75cqw,25px);line-height:1.4;letter-spacing:-.025em;white-space:nowrap;text-align:center}
+.page-pitch2 .p2-market .p2-market-intro{width:min(100%,900px);max-width:none;margin:26px auto 0;padding:clamp(18px,3cqw,30px) clamp(10px,2cqw,24px);border:1px solid var(--p2-rule);border-radius:18px;background:linear-gradient(135deg,rgba(233,189,134,.07),transparent 65%),#101013;font-size:clamp(6px,2.2cqw,18px);line-height:1.6;text-align:center}
+.p2-market-intro>span{display:block;white-space:nowrap}
+.p2-market-intro>span+span{margin-top:12px}
 .p2-back-word{color:var(--accent);font-weight:700}
 .p2-creator-points{padding-left:19px;display:grid;gap:9px;color:#bdb8ae;font-size:15px;line-height:1.65}
 .p2-creator-points li::marker{color:var(--accent)}
 .p2-creator-share{display:grid;grid-template-columns:55px 1fr;gap:25px;border:1px solid var(--p2-rule);border-radius:20px;padding:36px;margin-top:40px;background:linear-gradient(120deg,rgba(233,189,134,.10),rgba(233,189,134,.025))}
 .p2-share-symbol{font-size:43px;line-height:1;color:var(--accent)}
 .p2-share-symbol svg{display:block;width:48px;height:48px}
-.page-pitch2 .p2-market>.section-head{max-width:none}
+.page-pitch2 .p2-market>.section-head{max-width:none;container-type:inline-size}
 .page-pitch2 .p2-market>.section-head h2{text-align:center}
 .p2-word-effect{display:inline-block;overflow:visible}
 .p2-creator-share h3{font-size:23px;letter-spacing:-.025em;margin-bottom:12px}

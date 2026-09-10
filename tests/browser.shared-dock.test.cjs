@@ -1010,7 +1010,7 @@ test('canonical Trades and the #market alias render the public source-backed Tra
     for (const hash of ['#trades', '#market']) {
       await page.goto(`${origin}/backerdemo.html${hash}`);
       await page.waitForSelector('.mkt-header h1', { state: 'visible' });
-      assert.equal(await page.locator('.mkt-header h1').innerText(), 'Trade future growth in creator accounts and work', `${hash} should render Trades`);
+      assert.equal(await page.locator('.mkt-header h1').innerText(), 'Bet on anyone, anything before the world catches on.', `${hash} should render Trades`);
       assert.equal(await page.locator('.backer-dock-trades').getAttribute('aria-current'), 'page', `${hash} should mark Trades active`);
       assert.equal(await page.locator('.mkt-news-line').count(), 1, `${hash} should show one compact source-news line`);
       assert.match(await page.locator('.mkt-news-line').innerText(), /LATEST/i);
@@ -1070,7 +1070,7 @@ test('archived fixture styles and source-backed Trades styles stay isolated acro
     await page.waitForSelector('.mkt[data-market-surface="archive"]', { state: 'visible' });
     await page.evaluate(() => { location.hash = '#trades'; });
     await page.waitForSelector('.mkt-header h1', { state: 'visible' });
-    assert.equal((await page.locator('.mkt-header h1').innerText()).trim(), 'Trade future growth in creator accounts and work');
+    assert.equal((await page.locator('.mkt-header h1').innerText()).trim(), 'Bet on anyone, anything before the world catches on.');
     assert.deepEqual(await page.evaluate(() => ({
       archiveDisabled: document.querySelector('link[data-backer-legacy-market]').disabled,
       tradesDisabled: document.querySelector('link[data-backer-trades]').disabled

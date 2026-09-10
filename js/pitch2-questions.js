@@ -110,11 +110,7 @@
   const MS_PER_ROW = 9000;
   const track = root.querySelector('[data-question-track]');
   const viewport = root.querySelector('[data-question-window]');
-  const controls = root.querySelector('[data-question-controls]');
-  const toggle = root.querySelector('[data-question-toggle]');
-  const toggleLabel = toggle.querySelector('[data-question-toggle-label]');
-  const toggleIcon = toggle.querySelector('[data-question-toggle-icon]');
-  const next = root.querySelector('[data-question-next]');
+  if (!track || !viewport) return;
   const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
   let firstQuestion = 0;
   let progress = 0;
@@ -202,25 +198,33 @@
     } else stopAnimation();
   }
 
-  function syncControls() {
-    toggle.hidden = motionPreference.matches;
-    toggleLabel.textContent = manuallyPaused ? 'Resume' : 'Pause';
-    toggleIcon.textContent = manuallyPaused ? '▶' : 'Ⅱ';
-    toggle.setAttribute('aria-label', manuallyPaused ? 'Resume automatic question scrolling' : 'Pause automatic question scrolling');
-    toggle.setAttribute('aria-pressed', String(manuallyPaused));
-  }
-
-  toggle.addEventListener('click', () => {
-    manuallyPaused = !manuallyPaused;
-    syncControls();
-    syncAnimation();
-  });
-  next.addEventListener('click', () => {
+  function browseQuestions(index) {
     stopAnimation();
-    firstQuestion = (firstQuestion + ROWS_VISIBLE) % questions.length;
+    firstQuestion = (index % questions.length + questions.length) % questions.length;
     progress = 0;
     render();
     syncAnimation();
+  }
+
+  viewport.setAttribute('aria-keyshortcuts', 'ArrowDown ArrowUp PageDown PageUp Home End Space');
+  viewport.addEventListener('keydown', event => {
+    if (event.target !== viewport || event.altKey || event.ctrlKey || event.metaKey) return;
+    let target;
+    if (event.key === 'ArrowDown') target = firstQuestion + 1;
+    else if (event.key === 'ArrowUp') target = firstQuestion - 1;
+    else if (event.key === 'PageDown') target = firstQuestion + ROWS_VISIBLE;
+    else if (event.key === 'PageUp') target = firstQuestion - ROWS_VISIBLE;
+    else if (event.key === 'Home') target = 0;
+    else if (event.key === 'End') target = Math.max(0, questions.length - ROWS_VISIBLE);
+    else if (event.key === ' ') {
+      event.preventDefault();
+      if (event.repeat) return;
+      manuallyPaused = !manuallyPaused;
+      syncAnimation();
+      return;
+    } else return;
+    event.preventDefault();
+    browseQuestions(target);
   });
   viewport.addEventListener('pointerenter', event => {
     if (event.pointerType === 'touch') return;
@@ -241,7 +245,11 @@
   });
   document.addEventListener('visibilitychange', syncAnimation);
   motionPreference.addEventListener('change', () => {
-    syncControls();
+    if (motionPreference.matches) {
+      stopAnimation();
+      progress = 0;
+      render();
+    }
     syncAnimation();
   });
   if ('IntersectionObserver' in window) {
@@ -252,7 +260,5 @@
     observer.observe(viewport);
   }
   render();
-  controls.hidden = false;
-  syncControls();
   syncAnimation();
 })();

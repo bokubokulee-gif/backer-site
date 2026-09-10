@@ -1,6 +1,6 @@
 /* The complete desktop Market, uniformly scaled inside a scrollable preview. */
 .p2m-preview{width:100%;max-width:1440px;margin:40px auto 0}
-.p2m-preview-title{margin:0 0 22px;text-align:center;font-size:clamp(21px,2.5vw,29px);font-weight:600;letter-spacing:-.035em;line-height:1.25}
+.p2m-preview-title{margin:0 0 22px;text-align:center;font-size:12px;font-weight:600;letter-spacing:-.035em;line-height:1.25}
 .p2m-preview-title a{display:inline-block;padding:8px 4px;color:var(--ink,#f5f3ee);transition:color .2s}
 .p2m-preview-title a:hover{color:var(--accent,#e9bd86)}
 .p2m-preview :is(a,iframe):focus-visible{outline:2px solid var(--accent,#e9bd86);outline-offset:5px}

@@ -605,10 +605,8 @@
     link.rel = link.target ? 'noopener noreferrer' : '';
     link.setAttribute('aria-label', 'Open original: ' + item.title);
     var kind = link.querySelector('[data-mkt-news-kind]'), title = link.querySelector('[data-mkt-news-title]');
-    var count = mountedRoot.querySelector('[data-mkt-news-count]');
     if (kind) kind.textContent = item.kind + ' · ' + item.provider;
     if (title) title.textContent = item.title;
-    if (count) count.textContent = String((newsIndex % active.count) + 1).padStart(2, '0') + ' / ' + String(active.count).padStart(2, '0');
   }
   function scheduleNewsRotation() {
     if (newsTimer) root.clearInterval(newsTimer);
@@ -622,14 +620,14 @@
   function newsTickerHTML() {
     var active = activeNewsItem(), item = active.item;
     var internal = item.url.indexOf('backerdemo.html#') === 0;
-    return '<div class="mkt-news-line" aria-label="Latest source-backed work and profiles"><span class="mkt-news-label"><i></i>LATEST</span><a href="' + esc(item.url) + '"' + (internal ? '' : ' target="_blank" rel="noopener noreferrer"') + ' data-mkt-news-link aria-label="Open original: ' + esc(item.title) + '"><span data-mkt-news-kind>' + esc(item.kind + ' · ' + item.provider) + '</span><b data-mkt-news-title>' + esc(item.title) + '</b><i aria-hidden="true">↗</i></a><span class="mkt-news-count" data-mkt-news-count>' + esc(String((newsIndex % active.count) + 1).padStart(2, '0') + ' / ' + String(active.count).padStart(2, '0')) + '</span></div>';
+    return '<div class="mkt-news-line" aria-label="Latest source-backed work and profiles"><span class="mkt-news-label"><i></i>LATEST</span><a href="' + esc(item.url) + '"' + (internal ? '' : ' target="_blank" rel="noopener noreferrer"') + ' data-mkt-news-link aria-label="Open original: ' + esc(item.title) + '"><span data-mkt-news-kind>' + esc(item.kind + ' · ' + item.provider) + '</span><b data-mkt-news-title>' + esc(item.title) + '</b></a></div>';
   }
   function tabButton(view, label, count) {
     return '<button type="button" role="tab" aria-selected="' + (state.view === view) + '" class="' + (state.view === view ? 'is-active' : '') + '" data-trades-view="' + view + '"><span>' + esc(label) + '</span><b>' + esc(formatExactCount(count)) + '</b></button>';
   }
   function headerHTML() {
     var counts = catalogCounts();
-    return '<header class="mkt-header"><div><span class="mkt-kicker">Backer Trades</span><h1>Trade future growth in creator accounts and work</h1><p>Source-backed creator accounts and original content from Discovery. Back, fade, or draft exact market rules around what grows next.</p></div></header>' + newsTickerHTML() + '<nav class="mkt-tabs" role="tablist" aria-label="Trades views">' + tabButton('feed', 'For you', counts.people + counts.contents) + tabButton('profiles', 'Profiles', counts.people) + tabButton('contents', 'Contents', counts.contents) + tabButton('positions', 'Your trades', listPositions().length) + tabButton('proposals', 'Proposals', proposalRows().length) + '</nav>';
+    return '<header class="mkt-header"><div><span class="mkt-kicker">Backer Trades</span><h1>Bet on anyone, anything before the world catches on.</h1></div></header>' + newsTickerHTML() + '<nav class="mkt-tabs" role="tablist" aria-label="Trades views">' + tabButton('feed', 'For you', counts.people + counts.contents) + tabButton('profiles', 'Profiles', counts.people) + tabButton('contents', 'Contents', counts.contents) + tabButton('positions', 'Your trades', listPositions().length) + tabButton('proposals', 'Proposals', proposalRows().length) + '</nav>';
   }
   function facetOptions(view, facet) {
     var map = Object.create(null);

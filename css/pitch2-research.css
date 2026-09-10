@@ -30,8 +30,7 @@
 .p2r-snapshot{position:absolute;inset:-7% auto auto -16%;z-index:-2;width:141%;height:115%;max-width:none;object-fit:cover;object-position:46% 60%}
 .p2r-loading--snapshot::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(transparent 35%,rgba(9,9,11,.95))}
 .p2r-loading--snapshot p{color:#e4dfd5}
-.p2r-card-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 20px}
-.p2r-card-footer>span{font-size:9px;line-height:1.4;color:var(--muted,#a6a39c)}
+.p2r-card-footer{display:flex;align-items:center;justify-content:center;gap:12px;padding:15px 20px}
 .p2r-open{display:inline-flex;align-items:center;gap:9px;min-height:32px;color:var(--accent,#e9bd86);font-size:11px;font-weight:600;white-space:nowrap;transition:color .2s}
 .p2r-open:hover{color:var(--ink,#f5f3ee)}
 .p2r-open span{font-size:18px;line-height:1}

@@ -11,6 +11,15 @@
   const viewportWidth = 1440;
   let previewScale = 1;
   let started = false;
+  const enter = event => {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    try { window.top.location.assign(target); }
+    catch { window.location.assign(target); }
+  };
+  // Also cover the window border and loading/fallback area. Events inside the
+  // iframe have their own capture listener and never bubble to this element.
+  windowEl.addEventListener('click', enter, true);
 
   // Keep the iframe's desktop viewport fixed. Only its complete rendered surface
   // scales, so responsive breakpoints, native text, navigation and cards stay exact.
@@ -43,12 +52,6 @@
       windowEl.setAttribute('aria-busy', 'false');
       loadingCopy.textContent = 'The market preview could not load. Open Backer Market directly.';
     };
-    const enter = event => {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      window.location.assign(target);
-    };
-
     frame.addEventListener('error', fail);
     frame.addEventListener('load', () => {
       let doc;
@@ -63,31 +66,40 @@
         `;
         doc.head.appendChild(style);
 
+        const frameWindow = frame.contentWindow;
         let gesture = null;
         let moved = false;
-        doc.addEventListener('pointerdown', event => {
-          gesture = { x: event.clientX, y: event.clientY, id: event.pointerId, scale: previewScale };
+        frameWindow.addEventListener('pointerdown', event => {
+          gesture = {
+            x: event.clientX, y: event.clientY, id: event.pointerId,
+            scale: previewScale, selection: doc.getSelection()?.toString() || ''
+          };
           moved = false;
         }, { capture: true, passive: true });
-        doc.addEventListener('pointermove', event => {
+        frameWindow.addEventListener('pointermove', event => {
           if (!gesture || gesture.id !== event.pointerId) return;
           // Pointer coordinates are in the fixed iframe viewport. Convert movement
           // back to visible CSS pixels so drag tolerance stays stable at every size.
           if (Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y) * gesture.scale > 9) moved = true;
         }, { capture: true, passive: true });
-        doc.addEventListener('pointercancel', () => { moved = true; gesture = null; }, { capture: true, passive: true });
-        doc.addEventListener('click', event => {
+        frameWindow.addEventListener('pointercancel', () => { moved = true; gesture = null; }, { capture: true, passive: true });
+        frameWindow.addEventListener('click', event => {
           // Native wheel and touch scrolling are untouched. Drag selection is not a click-through.
           event.preventDefault();
           event.stopImmediatePropagation();
           const selection = doc.getSelection();
-          if (moved || (selection && !selection.isCollapsed)) { gesture = null; return; }
+          const selectedByGesture = gesture && selection && !selection.isCollapsed && selection.toString() !== gesture.selection;
+          const dragged = event.detail !== 0 && (moved || selectedByGesture);
           gesture = null;
-          window.location.assign(target);
+          moved = false;
+          if (!dragged) enter(event);
         }, true);
-        doc.addEventListener('submit', enter, true);
-        doc.addEventListener('keydown', event => {
-          if (event.key === 'Enter' || (event.key === ' ' && event.target.closest('button,a,input,select,textarea'))) enter(event);
+        // Window capture precedes document and native control handlers, including
+        // the header, dock and links to other destinations in the embedded page.
+        frameWindow.addEventListener('auxclick', event => { if (event.button === 1) enter(event); }, true);
+        frameWindow.addEventListener('submit', enter, true);
+        frameWindow.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || (event.key === ' ' && event.target.closest?.('button,a,input,select,textarea'))) enter(event);
         }, true);
 
         const check = () => {
@@ -107,7 +119,11 @@
       } catch { fail(); if (observer) observer.disconnect(); }
     });
     timer = window.setTimeout(fail, 25000);
-    frame.src = target;
+    // Refresh the native HTML together with this preview release; an already
+    // cached iframe document otherwise keeps the previous Market asset versions.
+    const source = new URL(target);
+    source.searchParams.set('v', '20260910-market-copy-1');
+    frame.src = source.href;
     mount.appendChild(frame);
   }
 

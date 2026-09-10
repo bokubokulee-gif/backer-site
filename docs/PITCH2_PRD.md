@@ -66,3 +66,16 @@ Market scroll acceptance: the iframe root owns scrolling; body overflow stays vi
 - Decisions: “Before committing your budget.” Preserve evidence figures, originalpitch.html, and full preview routes. Verify at320/390/578anddesktop, including hover clipping, scale, scrolling, pause/resume and wraparound.
 
 Latest acceptance: verified all100questions fit at320CSSpx and20Nextactions return to the starting question; desktop/578/390 layouts preserve5-rowheight. Motion measured~9secondsperrow; reducedmotionmanualnavigation works. Hover/focus pausing applies only to the reading window so the Resume button can restart immediately. Marketiframe uses1440×900 atall widths, withfullnativechrome andcontents preserved.
+
+## Shift copy revision
+Use the three exact new paragraphs on attention accumulation, attention flow, and spending, each as a separate paragraph using the existing section-lead typography and spacing. Change the gradient closing phrase to “human attention accumulates.” No new breakpoint or style token is needed.
+
+Research preview follow-up: center the Attention Simulation scene and retain native drag/pan interaction. Remove “Illustrative simulation” from all three card footers; each footer shows only “Open Research Preview ↗”.
+
+Market copy follow-up: center the mission on one line and place the introduction in a compact centered card, with one sentence per line. Scale those lines with the section container so sentence wrapping does not return at the annotated width. Keep the preview title at 12px and make every preview click enter the full Market while preserving native scrolling.
+
+Simulation implementation: remove the artificial negative offsets and extra 300px height. The wrapper now gives the hosted world the actual card viewport; native resize centering, mouse dragging, touch pan and camera controls remain in charge. No hosted app changes or pointer overlay.
+
+Question card follow-up: remove the visible count/pause/next toolbar; reduce and center question typography, using 61.8% reading width with equal 19.1% side margins. Keep the 100-question loop and five rows. Keyboard navigation and hover/focus pause maintain readable access without the toolbar. Decisions becomes “From prediction to action” and “Know what to do.” Remove the team names.
+
+Acceptance recheck: all requested removals and latest copy verified against source. The research homepage retains the exact earlier descriptions, with the superseding third-card copy on pitch2. Original pitch and the entire validation section are unchanged. All 100 questions fit at 578 and 320px with zero overflow; keyboard wrap works without a toolbar. Desktop and mobile Market copy fits each sentence on one line. The native Simulation at 536 × 378 recenters and pans with the mouse; wrapper bounds match 536 × 378 at 0,0. Hosted iframe loading is blocked by the test browser, so embedded verification uses wrapper geometry plus direct native interaction; the fallback remains available.

@@ -68,7 +68,7 @@ body.trades-ticket-open #app{z-index:70}
 .mkt-news-line{
   min-height:50px;
   display:grid;
-  grid-template-columns:auto minmax(0,1fr) auto;
+  grid-template-columns:auto minmax(0,1fr);
   align-items:center;
   gap:14px;
   overflow:hidden;
@@ -77,12 +77,10 @@ body.trades-ticket-open #app{z-index:70}
 }
 .mkt-news-label{display:inline-flex;align-items:center;gap:8px;color:var(--accent,#e9bd86);font-family:var(--mono,ui-monospace,monospace);font-size:11px;font-weight:800;letter-spacing:.1em}
 .mkt-news-label i{width:7px;height:7px;border-radius:50%;background:var(--mkt-up);box-shadow:0 0 0 4px color-mix(in srgb,var(--mkt-up) 14%,transparent);animation:mkt-live 2s ease-in-out infinite}
-.mkt-news-line>a{min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;color:var(--ink,#f7f4ed);text-decoration:none}
+.mkt-news-line>a{min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px;color:var(--ink,#f7f4ed);text-decoration:none}
 .mkt-news-line>a>span{color:var(--mkt-muted);font-family:var(--mono,ui-monospace,monospace);font-size:11px;font-weight:700;letter-spacing:.06em}
 .mkt-news-line>a>b{overflow:hidden;color:var(--ink,#f7f4ed);font-size:14px;font-weight:730;text-overflow:ellipsis;white-space:nowrap}
-.mkt-news-line>a>i{color:var(--accent,#e9bd86);font-style:normal}
 .mkt-news-line>a:hover b{text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--accent,#e9bd86) 65%,transparent);text-underline-offset:4px}
-.mkt-news-count{color:var(--mkt-muted);font-family:var(--mono,ui-monospace,monospace);font-size:11px;font-variant-numeric:tabular-nums;letter-spacing:.06em}
 
 .mkt-tabs{
   display:flex;
@@ -419,8 +417,8 @@ html[data-theme="light"] .mkt-open-source{background:rgba(255,253,248,.9);color:
 @media (max-width:520px){
   .mkt-catalog-grid,.mkt-skeleton-grid{grid-template-columns:1fr}
   .mkt-news-line{grid-template-columns:auto minmax(0,1fr);min-height:46px}
-  .mkt-news-line>a{grid-template-columns:minmax(0,1fr) auto}
-  .mkt-news-line>a>span,.mkt-news-count{display:none}
+  .mkt-news-line>a{grid-template-columns:minmax(0,1fr)}
+  .mkt-news-line>a>span{display:none}
 }
 @media (max-width:440px){
   .mkt-header h1{font-size:38px}

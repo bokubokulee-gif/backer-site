@@ -117,7 +117,7 @@ for (const viewport of VIEWPORTS) {
       assert.ok(result.measures['backer-trades:first-card-render'] < 3000);
       assert.ok(result.maxLongTask < 1500, `longest main-thread task was ${Math.round(result.maxLongTask)}ms`);
       assert.equal(result.cards, 12, 'first render stays DOM-bounded while full inventory remains searchable');
-      assert.equal(result.heading, 'Trade future growth in creator accounts and work');
+      assert.equal(result.heading, 'Bet on anyone, anything before the world catches on.');
       assert.match(result.body, /[\d,]+\s+creator-account markets/);
       assert.match(result.body, /[\d,]+\s+work markets/);
       assert.deepEqual(result.requestCounts, { catalog: 1, eligibility: 1 });
@@ -331,7 +331,7 @@ test('an aborted connected Discovery request cannot repaint over Trades', async 
     }));
     assert.ok(result.trades > 0);
     assert.equal(result.discovery, 0);
-    assert.equal(result.heading, 'Trade future growth in creator accounts and work');
+    assert.equal(result.heading, 'Bet on anyone, anything before the world catches on.');
   } finally {
     await context.close();
   }
