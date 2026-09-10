@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>Backer AI | Predict where attention goes next</title>
+<title>Backer AI | Predict where attention flows</title>
 <meta name="description" content="Backer AI connects simulation science with prediction markets to anticipate where attention goes next and help people act before the world catches on." />
 <meta name="robots" content="index,follow" />
 <meta property="og:title" content="Backer AI | Before the world catches on" />
@@ -110,14 +110,6 @@
 @media(prefers-reduced-motion:reduce){
   .people-orbit .person{transition:none}
 }
-
-/* problem 02 — Dorsey */
-.dorsey{display:grid;grid-template-columns:220px 1fr;gap:clamp(18px,3vw,34px);align-items:center;margin-top:38px}
-.dorsey-photo{position:relative}
-.dorsey-photo img{width:100%;aspect-ratio:1/1.15;object-fit:cover;object-position:center top;border-radius:18px;border:1px solid var(--line);filter:grayscale(.35) contrast(1.04);display:block}
-.dorsey-photo span{position:absolute;left:10px;bottom:10px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--muted);background:rgba(8,8,10,.72);padding:4px 8px;border-radius:6px}
-.dorsey .quote{margin:0}
-@media(max-width:700px){.dorsey{grid-template-columns:1fr}.dorsey-photo img{aspect-ratio:16/10}}
 
 /* three ways to make money */
 .ways{display:flex;flex-direction:column;gap:18px;margin-top:42px}
@@ -269,8 +261,9 @@
 }
 </style>
 <link rel="stylesheet" href="css/backer-dock.css?v=20260821-2" />
-<link rel="stylesheet" href="css/pitch2.css?v=20260910-1" />
-<link rel="stylesheet" href="css/pitch2-research.css?v=20260910-1" />
+<link rel="stylesheet" href="css/pitch2.css?v=20260910-6" />
+<link rel="stylesheet" href="css/pitch2-research.css?v=20260910-7" />
+<link rel="stylesheet" href="css/pitch2-market.css?v=20260910-1" />
 <link rel="canonical" href="https://bokubokulee-gif.github.io/backer-site/pitch2.html" />
 </head>
 <body class="page-product page-pitch2">
@@ -293,13 +286,15 @@
 <main id="site">
 <section class="hero p2-hero" id="home">
   <div class="hero-inner reveal">
-    <p class="p2-wordmark">Backer <span>AI</span></p>
-    <h1 class="hero-title">Predict where<br /><em class="grad-text">attention goes next.</em></h1>
-    <p class="p2-hero-line">Act before the world catches on.</p>
-    <p class="hero-sub">AI to anticipate what people will care about.<br class="p2-desktop-break" /> A market to act on what you see coming.</p>
-    <div class="pitch-cta"><a class="btn btn-primary btn-lg" href="#research">Explore the research <span aria-hidden="true">↗</span></a><a class="p2-text-link" href="#market">Meet Backer Market <span aria-hidden="true">→</span></a></div>
+    <h1 class="hero-title">Predict <span class="p2-headline-effect" data-bubble-text><span class="p2-title-where">where</span> <em class="grad-text">attention flows</em></span></h1>
+    <p class="p2-hero-line">Act before everyone else catches on.</p>
+    <p class="p2-hero-thesis">We’re building AI models of how people allocate attention—and a market where people can take positions on who and what will attract it next.</p>
   </div>
-  <div class="p2-hero-foundation"><a href="#research"><span>Backer AI Lab</span><p>Model how attention becomes decisions.</p></a><div class="p2-join" aria-hidden="true">×</div><a href="#market"><span>Backer Market</span><p>Take positions on future attention.</p></a></div>
+  <div class="p2-hero-foundation">
+    <a href="research.html"><span>Backer AI Lab</span></a>
+    <div class="p2-join" aria-hidden="true">+</div>
+    <a href="backerdemo.html"><span>Backer Market</span><p>Invest in where you believe attention flows.</p></a>
+  </div>
 </section>
 <section class="section" id="shift">
   <div class="section-head reveal"><span class="kicker">The shift</span><h2>Views are becoming<br /><em> a form of currency.</em></h2><p class="section-lead">Human attention shapes which ideas spread, which products sell, and which businesses grow. People already spend money on what they pay attention to.</p></div>
@@ -347,98 +342,125 @@
     </div>
 
 
-  <p class="bigline reveal">Attention moves culture.<br /><span class="grad-text">Culture moves capital.</span></p>
-  <p class="p2-section-note reveal">Subscriptions, purchases, sponsorships, and ad spend turn attention into economic value. The opportunity begins with seeing where that attention will go next.</p>
+  <p class="bigline reveal">Capital flows to where <span class="grad-text">human attention converges.</span></p>
 </section>
-<section class="section p2-problem" id="problems">
-  <div class="section-head reveal"><h2>The expensive decisions<br />come <em>before the numbers.</em></h2><p class="section-lead">A business commits a budget. A customer chooses a product. Someone spots the next breakout creator. Each is acting on a view of the future.</p></div>
-  <div class="p2-problem-grid">
-    <article class="p2-problem-item reveal"><span class="p2-label">The prediction gap</span><h3>Where will<br />attention go?</h3><p>Businesses need to understand customers, audiences, and creators before deciding where their next dollar goes.</p></article>
-    <article class="p2-problem-item reveal"><span class="p2-label">The participation gap</span><h3>What is being<br />early worth?</h3><p>People discover, support, and spend on emerging talent. Backer gives that early conviction a way to earn financial upside.</p></article>
-  </div>
-  <aside class="p2-algorithm reveal"><img src="img/pitch/dorsey.jpg" alt="Jack Dorsey" loading="lazy" /><div><p>Recommendation systems influence what gets seen, and what happens next. Dorsey's call for greater choice makes the stakes clear: attention is shaped by the systems around us.</p><a href="https://www.lynalden.com/the-power-of-nostr/" target="_blank" rel="noopener">Jack Dorsey at the Oslo Freedom Forum <span aria-hidden="true">↗</span></a></div></aside>
-  <p class="p2-bridge reveal">Recognizing where attention moves next<br /><em>should have value too.</em></p>
+<section class="section p2-attention-bridge" aria-label="The value of foresight">
+  <p class="p2-bridge reveal"><span>Human attention already dictates capital flows.</span><span>Recognizing where it moves next <em>should have value too.</em></span></p>
 </section>
   <section class="section p2r" id="research" aria-labelledby="research-heading">
     <div class="p2r-heading reveal">
       <span class="p2r-kicker">Backer AI Lab</span>
       <h2 id="research-heading">Rehearse the future.<br><em>Understand the decision.</em></h2>
-      <p>We use multi-agent simulations to study how attention moves, how people and AI agents influence one another, and what makes them act. Explore the research behind the ambition.</p>
+      <p>We use multi-agent simulations to model how people and AI agents respond to information, influence one another, and decide what deserves their time or resources.</p>
     </div>
-
-    <div class="p2r-theater reveal" data-research-theater>
-      <div class="p2r-tabs" role="tablist" aria-label="Explore Backer research">
-        <button class="p2r-tab" id="research-tab-flow" type="button" role="tab" aria-selected="true" aria-controls="research-panel" tabindex="0" data-research-tab="flow">
-          <span class="p2r-tab-index">01</span>
-          <span><strong>Attention flow</strong><small>Across communities</small></span>
-        </button>
-        <button class="p2r-tab" id="research-tab-simulation" type="button" role="tab" aria-selected="false" aria-controls="research-panel" tabindex="-1" data-research-tab="simulation">
-          <span class="p2r-tab-index">02</span>
-          <span><strong>Attention simulation</strong><small>Inside the decision</small></span>
-        </button>
-        <button class="p2r-tab" id="research-tab-trading" type="button" role="tab" aria-selected="false" aria-controls="research-panel" tabindex="-1" data-research-tab="trading">
-          <span class="p2r-tab-index">03</span>
-          <span><strong>Trading behavior</strong><small>From belief to action</small></span>
-        </button>
-      </div>
-
-      <div id="research-panel" role="tabpanel" aria-labelledby="research-tab-flow" tabindex="0">
-        <div class="p2r-panel-head">
-          <div class="p2r-panel-copy">
-            <h3 data-research-title>Where does attention move next?</h3>
-            <p data-research-description>Follow attention across communities. Change how content is distributed and watch the authored scenario unfold.</p>
-          </div>
-          <a class="p2r-open" href="research-lab/attention-flow.html" target="_blank" rel="noopener" data-research-open>Open research preview <span aria-hidden="true">↗</span></a>
+    <a class="p2r-explore reveal" href="#research-previews">Explore Backer Research Preview <span aria-hidden="true">↓</span></a>
+    <div class="p2r-cards" id="research-previews" data-research-cards>
+      <article class="p2r-card reveal" data-research-card="trading" aria-labelledby="research-trading-title">
+        <div class="p2r-card-copy">
+          <h3 id="research-trading-title"><a href="research-lab/" target="_blank" rel="noopener">Trading behavior <span class="p2r-card-index" aria-hidden="true">01</span></a></h3>
+          <p>Explore how simulated traders respond to information, conviction, and one another.</p>
         </div>
-        <div class="p2r-controls">
-          <div class="p2r-scenarios" role="group" aria-label="Compare research scenarios" data-research-scenarios></div>
-          <p class="p2r-interaction-hint" data-research-hint>Change a scenario. Select a marker to inspect its path.</p>
-        </div>
-        <div class="p2r-frame-wrap" data-research-frame-wrap data-research="flow">
+        <div class="p2r-window" data-research-window aria-busy="true">
           <div class="p2r-frame-mount" data-research-mount></div>
           <div class="p2r-loading" data-research-loading>
             <span class="p2r-loading-line" aria-hidden="true"></span>
-            <strong data-research-loading-title>Explore the research</strong>
-            <p data-research-loading-copy>The interactive scene loads as you reach this section.</p>
-            <a href="research-lab/attention-flow.html" target="_blank" rel="noopener" data-research-open>Open the full preview ↗</a>
+            <p data-research-loading-copy>Opening the interactive preview…</p>
+            <a href="research-lab/" target="_blank" rel="noopener">Open full preview ↗</a>
           </div>
         </div>
-        <div class="p2r-readout">
-          <div class="p2r-readout-copy">
-            <span data-research-evidence>Illustrative scenario</span>
-            <p data-research-boundary>5,000 modeled markers. The readouts below come directly from this authored preview.</p>
-          </div>
-          <dl class="p2r-metrics" aria-label="Current research readouts" data-research-metrics></dl>
+        <div class="p2r-card-footer"><span>Illustrative simulation</span><a class="p2r-open" href="research-lab/" target="_blank" rel="noopener" aria-label="Open Trading behavior preview">Open preview <span aria-hidden="true">↗</span></a></div>
+      </article>
+      <article class="p2r-card reveal" data-research-card="flow" aria-labelledby="research-flow-title">
+        <div class="p2r-card-copy">
+          <h3 id="research-flow-title"><a href="research-lab/attention-flow.html" target="_blank" rel="noopener">Attention flow <span class="p2r-card-index" aria-hidden="true">02</span></a></h3>
+          <p>Explore how attention moves, gathers, and fades across simulated web environments.</p>
         </div>
-      </div>
-      <p class="p2r-sr-only" role="status" aria-live="polite" data-research-status></p>
-      <noscript><p class="p2r-research-note">Explore <a href="research-lab/attention-flow.html">Attention Flow</a>, <a href="research-lab/attention-simulation.html">Attention Simulation</a>, or <a href="research-lab/">Trading Behavior</a> in the Research Lab.</p></noscript>
+        <div class="p2r-window" data-research-window aria-busy="true">
+          <div class="p2r-frame-mount" data-research-mount></div>
+          <div class="p2r-loading" data-research-loading>
+            <span class="p2r-loading-line" aria-hidden="true"></span>
+            <p data-research-loading-copy>Opening the interactive preview…</p>
+            <a href="research-lab/attention-flow.html" target="_blank" rel="noopener">Open full preview ↗</a>
+          </div>
+        </div>
+        <div class="p2r-card-footer"><span>Illustrative simulation</span><a class="p2r-open" href="research-lab/attention-flow.html" target="_blank" rel="noopener" aria-label="Open Attention flow preview">Open preview <span aria-hidden="true">↗</span></a></div>
+      </article>
+      <article class="p2r-card reveal" data-research-card="simulation" aria-labelledby="research-simulation-title">
+        <div class="p2r-card-copy">
+          <h3 id="research-simulation-title"><a href="research-lab/attention-simulation.html" target="_blank" rel="noopener">Attention simulation <span class="p2r-card-index" aria-hidden="true">03</span></a></h3>
+          <p>Watch 50 fictional people react to real public content across social platforms and prediction markets.</p>
+        </div>
+        <div class="p2r-window" data-research-window aria-busy="true">
+          <div class="p2r-frame-mount" data-research-mount></div>
+          <div class="p2r-loading p2r-loading--snapshot" data-research-loading>
+            <img class="p2r-snapshot" src="img/attention-simulation-preview.png" alt="Snapshot of fictional people moving among social platforms in Backer World." loading="lazy" width="1280" height="720">
+            <span class="p2r-loading-line" aria-hidden="true"></span>
+            <p data-research-loading-copy>Opening the interactive preview…</p>
+            <a href="https://backer-attention-simulation.nzhang425.chatgpt.site/" target="_blank" rel="noopener">Open full preview ↗</a>
+          </div>
+        </div>
+        <div class="p2r-card-footer"><span>Illustrative simulation</span><a class="p2r-open" href="research-lab/attention-simulation.html" target="_blank" rel="noopener" aria-label="Open Attention simulation preview">Open preview <span aria-hidden="true">↗</span></a></div>
+      </article>
     </div>
-    <p class="p2r-research-note">Current research previews demonstrate the methods we are exploring. Predictive accuracy remains to be established against future outcomes.</p>
+    <p class="p2r-sr-only" role="status" aria-live="polite" data-research-status></p>
   </section>
 
 <section class="section p2-market" id="market">
-  <div class="section-head reveal"><span class="kicker kicker-accent">Backer Market</span><h2>Put your conviction<br /><em>on what happens next.</em></h2><p class="section-lead">A financial market where people can take positions on who and what will attract attention. Spot emerging momentum. Form a view. Back it before the outcome is obvious.</p></div>
-  <div class="p2-market-layout">
-    <div class="p2-contract reveal"><div class="p2-contract-meta"><span>Illustrative market</span><span>Attention milestone</span></div><h3>Will this release reach 100K views this month?</h3><p>The target and deadline are fixed before the market opens. The published source determines the result.</p><div class="p2-position-choices"><span>YES <small>Back the momentum</small></span><span>NO <small>Take the other view</small></span></div><a class="p2-contract-link" href="backerdemo.html#trades">Explore the Market demo <span aria-hidden="true">↗</span></a><small class="p2-disclosure">Current demo uses simulated credits.</small></div>
-    <div class="p2-market-story reveal"><h3>Early belief becomes<br /><em>a position.</em></h3><p>The Lab can help a business decide where to spend. The Market gives people a way to act on their own expectations.</p><ol><li><b>Discover</b><span>Find people, content, and emerging attention.</span></li><li><b>Form a view</b><span>Examine evidence and take a side.</span></li><li><b>Follow the outcome</b><span>See how your conviction holds up.</span></li></ol></div>
+  <div class="section-head reveal">
+    <h2>Backer Market</h2>
+    <p class="p2-market-mission">Gives you a way to act on what you see coming on the internet.</p>
+    <p class="section-lead p2-market-intro">
+      <span>A financial market where people can take positions on who and what will attract attention.</span>
+      <span>Spot emerging momentum.<br />Form a view.</span>
+      <span>And <strong class="p2-back-word" data-bubble-text>Back</strong> it before the outcome is obvious.</span>
+    </p>
   </div>
-  <div class="p2-creator-share reveal"><div class="p2-share-symbol" aria-hidden="true">↗</div><div><h3>The creator earns from the market they attract.</h3><p>As a creator draws attention, their market can draw participation. Our proposed model pays the creator a share of the fees generated by that activity, whether their milestone hits or misses.</p><div class="p2-revenue-path"><span>Attention gathers</span><i aria-hidden="true">→</i><span>People take positions</span><i aria-hidden="true">→</i><strong>Creator shares in fees</strong></div><small>Creator revenue sharing is proposed. Rates and terms are to be determined.</small></div></div>
-  <div class="p2-walkthrough reveal" aria-label="The Backer product journey">
-    <a href="backerdemo.html#search"><span>AI Search</span><h3>Find the signal.</h3><p>Describe the people, content, or momentum you want to discover.</p><b>Explore Search ↗</b></a>
-    <a href="backerdemo.html#market2"><span>Discovery</span><h3>Examine the evidence.</h3><p>Follow the source material and form your own view of emerging attention.</p><b>Explore Discovery ↗</b></a>
-    <a href="portfolio.html"><span>Portfolio</span><h3>Follow your conviction.</h3><p>Track positions and revisit how your expectations compare with outcomes.</p><b>Explore Portfolio ↗</b></a>
+  <div class="p2m-preview reveal" data-market-preview>
+    <h3 class="p2m-preview-title"><a href="backerdemo.html#trades">Click to Enter Backer Market</a></h3>
+    <div class="p2m-window" data-market-window aria-busy="false">
+      <div class="p2m-mount" data-market-mount></div>
+      <div class="p2m-loading" data-market-loading>
+        <p data-market-loading-copy>Loading Backer Market…</p>
+        <a href="backerdemo.html#trades">Open Backer Market</a>
+      </div>
+      <noscript><a class="p2m-noscript" href="backerdemo.html#trades">Open Backer Market</a></noscript>
+    </div>
   </div>
-  <details class="p2-market-detail reveal"><summary>What makes an attention market possible? <span aria-hidden="true">+</span></summary><div><p>Attention worth following. An uncertain future. A measurable outcome. Different views on what comes next.</p><p>We begin with defined attention milestones. Head-to-head markets and continuous attention instruments remain future directions to evaluate.</p><a href="faq.html">Read about the market design ↗</a></div></details>
+  <div class="p2-creator-share reveal">
+    <div class="p2-share-symbol" aria-hidden="true">↗</div>
+    <div>
+      <h3>The creator earns directly from the market they attract.</h3>
+      <ul class="p2-creator-points">
+        <li>Attention brings people into your market.</li>
+        <li>We plan to share those trading fees with you.</li>
+        <li>Your share comes from activity—even if the milestone misses.</li>
+      </ul>
+    </div>
+  </div>
 
 </section>
 <section class="section p2-learning" id="codesign">
-  <div class="section-head reveal"><span class="kicker kicker-accent">Research × Market co-design</span><h2>What the model predicts.<br />What people believe.<br /><em>What actually happens.</em></h2><p class="section-lead">One question, answered in three ways. We're building the connection so every resolved outcome creates a test of our forecasts.</p></div>
-  <div class="p2-loop reveal"><p class="p2-loop-question"><span>One illustrative question</span> Will this release reach 100K views this month?</p><div class="p2-loop-tabs" role="tablist" aria-label="How Research and Market learn"><button type="button" role="tab" id="loop-tab-forecast" aria-selected="true" aria-controls="loop-panel" data-loop="forecast"><span>01</span>Lab forecast</button><span aria-hidden="true">→</span><button type="button" role="tab" id="loop-tab-market" aria-selected="false" aria-controls="loop-panel" tabindex="-1" data-loop="market"><span>02</span>Market conviction</button><span aria-hidden="true">→</span><button type="button" role="tab" id="loop-tab-outcome" aria-selected="false" aria-controls="loop-panel" tabindex="-1" data-loop="outcome"><span>03</span>Observed outcome</button></div>
-    <div id="loop-panel" class="p2-loop-panel" role="tabpanel" aria-labelledby="loop-tab-forecast" tabindex="0"><div class="p2-loop-icon" aria-hidden="true">01</div><div><h3 data-loop-title>A view of the future, recorded before it arrives.</h3><p data-loop-copy>Before the release reaches its deadline, the Lab records a forecast of whether it will reach 100K views. The target, time window, and outcome source are fixed in advance.</p><span data-loop-result>Output: a forecast that can be tested.</span></div></div>
-    <div class="p2-loop-return"><span aria-hidden="true">↶</span><p>The differences inform the next forecast, the next market, and the next decision.</p></div>
+  <div class="section-head reveal">
+    <span class="kicker kicker-accent">Research × Market co-design</span>
+    <h2>What the model predicts.<br />What people believe.<br /><em>What actually happens.</em></h2>
+    <p class="section-lead">Every business decision starts with a question about what people will do next.</p>
   </div>
-  <p class="p2-section-note reveal">Market prices express beliefs. Independently measured outcomes test them. We will compare model forecasts, market forecasts, and their combination across repeated outcomes.</p>
+  <div class="p2-business-questions reveal">
+    <ul>
+      <li>How will the upcoming product release drive revenue?</li>
+      <li>Which audiences will respond to our next campaign?</li>
+      <li>Which creators will turn attention into purchases?</li>
+      <li>How will a price change affect customer demand?</li>
+      <li>Where will our next dollar of ad spend have the greatest impact?</li>
+    </ul>
+    <p>We can simulate each scenario for you.</p>
+  </div>
+</section>
+<section class="section p2-decisions" id="decisions">
+  <div class="section-head reveal"><span class="kicker">From attention to action</span><h2>Know where to act.<br /><em>Before committing a budget.</em></h2><p class="section-lead">Our ambition reaches beyond forecasting popularity: help businesses anticipate how people allocate attention and make decisions.</p></div>
+  <div class="p2-decisions-layout reveal"><div class="p2-decision-tabs" role="tablist" aria-label="Business decisions" aria-orientation="vertical"><button type="button" role="tab" id="decision-tab-customers" aria-selected="true" aria-controls="decision-panel" data-decision="customers">Customers <span aria-hidden="true">↗</span></button><button type="button" role="tab" id="decision-tab-audiences" aria-selected="false" tabindex="-1" aria-controls="decision-panel" data-decision="audiences">Audiences <span aria-hidden="true">↗</span></button><button type="button" role="tab" id="decision-tab-creators" aria-selected="false" tabindex="-1" aria-controls="decision-panel" data-decision="creators">Creators <span aria-hidden="true">↗</span></button><button type="button" role="tab" id="decision-tab-adspend" aria-selected="false" tabindex="-1" aria-controls="decision-panel" data-decision="adspend">Ad spend <span aria-hidden="true">↗</span></button></div><div id="decision-panel" class="p2-decision-panel" role="tabpanel" aria-labelledby="decision-tab-customers" tabindex="0"><span class="p2-label" data-decision-kicker>The next customer</span><h3 data-decision-title>What will move someone from interest to purchase?</h3><p data-decision-copy>Explore how different customer groups may respond to an offer, message, or product before committing to a launch.</p><div class="p2-decision-question"><span>Research question</span><p data-decision-question>Who is likely to act, under which conditions?</p></div><small>Proposed applications. Each outcome requires its own real-world evaluation.</small></div></div>
+  <div class="p2-business-model reveal"><div><span>Backer AI Lab</span><h3>Intelligence for decisions.</h3></div><div><span>Backer Market</span><h3>A share of market activity.</h3></div></div>
+
 </section>
 <section class="section p2-evidence" id="market-evidence">
     <!-- kept exactly from the demo site -->
@@ -635,18 +657,12 @@
     </aside>
 
 </section>
-<section class="section p2-decisions" id="decisions">
-  <div class="section-head reveal"><span class="kicker">From attention to action</span><h2>Know where to act.<br /><em>Before committing a budget.</em></h2><p class="section-lead">Our ambition reaches beyond forecasting popularity: help businesses anticipate how people allocate attention and make decisions.</p></div>
-  <div class="p2-decisions-layout reveal"><div class="p2-decision-tabs" role="tablist" aria-label="Business decisions" aria-orientation="vertical"><button type="button" role="tab" id="decision-tab-customers" aria-selected="true" aria-controls="decision-panel" data-decision="customers">Customers <span aria-hidden="true">↗</span></button><button type="button" role="tab" id="decision-tab-audiences" aria-selected="false" tabindex="-1" aria-controls="decision-panel" data-decision="audiences">Audiences <span aria-hidden="true">↗</span></button><button type="button" role="tab" id="decision-tab-creators" aria-selected="false" tabindex="-1" aria-controls="decision-panel" data-decision="creators">Creators <span aria-hidden="true">↗</span></button><button type="button" role="tab" id="decision-tab-adspend" aria-selected="false" tabindex="-1" aria-controls="decision-panel" data-decision="adspend">Ad spend <span aria-hidden="true">↗</span></button></div><div id="decision-panel" class="p2-decision-panel" role="tabpanel" aria-labelledby="decision-tab-customers" tabindex="0"><span class="p2-label" data-decision-kicker>The next customer</span><h3 data-decision-title>What will move someone from interest to purchase?</h3><p data-decision-copy>Explore how different customer groups may respond to an offer, message, or product before committing to a launch.</p><div class="p2-decision-question"><span>Research question</span><p data-decision-question>Who is likely to act, under which conditions?</p></div><small>Proposed applications. Each outcome requires its own real-world evaluation.</small></div></div>
-  <div class="p2-business-model reveal"><div><span>Backer AI Lab</span><h3>Intelligence for decisions.</h3><p>Proposed research subscriptions, business studies, and decision tools.</p></div><div><span>Backer Market</span><h3>A share of market activity.</h3><p>Proposed fees on participation, shared with the creators whose markets attract it.</p></div></div>
-  <div class="p2-next-step reveal"><span class="p2-label">The next milestone</span><h3>Take the forecast into the real world.</h3><p>Record predictions before outcomes arrive. Compare the model, the market, and their combination. Test business decisions against measured results.</p><a class="p2-text-link" href="research-lab/validation.html">Explore the validation approach <span aria-hidden="true">↗</span></a></div>
 
-</section>
 <section class="section p2-positioning" id="why-backer">
   <div class="section-head reveal"><h2>Simulation science.<br />Prediction markets.<br /><em>Built together.</em></h2><p class="section-lead">Backer connects both around the attention economy. We are designing the research and the product together, so each can ask better questions of the other.</p><p class="p2-team-signature">Boxu · Gavin · Kevin</p></div>
   <div class="p2-record reveal"><span>What we aim to build over time</span><h3>A record of attention<br /><em>before the answer was known.</em></h3><div><p>What was observable.</p><p>What the model predicted.</p><p>What people committed to.</p><p>What actually happened.</p></div><p class="p2-record-note">The value grows through measured outcomes and tested improvements in prediction.</p></div>
 </section>
-<section class="finale p2-finale reveal"><p>Backer AI</p><h2 class="finale-line">See where attention goes.</h2><h2 class="finale-line grad-text">Before the world catches on.</h2><div class="finale-cta"><a class="btn btn-primary btn-lg" href="research.html">Enter Backer AI Lab <span aria-hidden="true">↗</span></a><a class="btn btn-ghost btn-lg" href="backerdemo.html#trades">Explore Backer Market</a></div></section>
+<section class="finale p2-finale reveal"><p>Backer AI</p><h2 class="finale-line">See where attention goes.</h2><h2 class="finale-line grad-text">Before the world catches on.</h2><div class="finale-cta"><a class="btn btn-primary btn-lg" href="backerdemo.html">Enter Backer</a></div></section>
   <!-- SHARED FLICKERING FOOTER -->
   <footer class="backer-footer">
     <div class="backer-footer__inner">
@@ -694,8 +710,10 @@
 <script src="js/analytics-core.js?v=20260822-archive-1"></script>
 <script src="js/analytics.js?v=20260826-perf-1"></script>
 <script src="js/sections.js?v=2"></script>
-<script src="js/pitch2.js?v=20260910-1"></script>
-<script src="js/pitch2-research.js?v=20260910-2"></script>
+<script src="js/bubble-text.js?v=1"></script>
+<script src="js/pitch2.js?v=20260910-6"></script>
+<script src="js/pitch2-research.js?v=20260910-6"></script>
+<script src="js/pitch2-market.js?v=20260910-3"></script>
 <script type="module" src="js/globe-live.mjs?v=20260821-1"></script>
 <script src="js/flickering-footer.js?v=20260731-2"></script>
 </body>
