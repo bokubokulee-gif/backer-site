@@ -291,7 +291,7 @@
       visible = true;
       loadPreview();
       observer.disconnect();
-    }, { threshold: 0.08 });
+    }, { threshold: 0.01, rootMargin: '300px 0px' });
     observer.observe(frameWrap);
   } else {
     visible = true;
