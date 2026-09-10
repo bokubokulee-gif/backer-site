@@ -9,7 +9,9 @@
       if (!letters.length) return;
       const measure = () => {
         const gradientStart = letters[6].offsetLeft;
-        headline.style.setProperty('--p2-bubble-width', `${headline.offsetWidth - gradientStart}px`);
+        const lastLetter = letters[letters.length - 1];
+        // Include the italic ink overhang inside each padded glyph's paint box.
+        headline.style.setProperty('--p2-bubble-width', `${lastLetter.offsetLeft + lastLetter.offsetWidth - gradientStart}px`);
         letters.forEach(letter => letter.style.setProperty('--p2-bubble-x', `${letter.offsetLeft - gradientStart}px`));
         headline.parentElement.classList.add('p2-bubble-ready');
       };

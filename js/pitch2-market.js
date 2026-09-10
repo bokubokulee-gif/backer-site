@@ -8,7 +8,24 @@
   const loading = preview.querySelector('[data-market-loading]');
   const loadingCopy = preview.querySelector('[data-market-loading-copy]');
   const target = new URL('backerdemo.html#trades', document.baseURI).href;
+  const viewportWidth = 1440;
+  let previewScale = 1;
   let started = false;
+
+  // Keep the iframe's desktop viewport fixed. Only its complete rendered surface
+  // scales, so responsive breakpoints, native text, navigation and cards stay exact.
+  const resizePreview = width => {
+    if (!(width > 0)) return;
+    previewScale = Math.min(1, width / viewportWidth);
+    mount.style.setProperty('--p2m-scale', String(previewScale));
+  };
+  resizePreview(mount.getBoundingClientRect().width);
+  if ('ResizeObserver' in window) {
+    const observer = new ResizeObserver(entries => {
+      entries.forEach(entry => resizePreview(entry.contentRect.width));
+    });
+    observer.observe(mount);
+  } else window.addEventListener('resize', () => resizePreview(mount.getBoundingClientRect().width), { passive: true });
 
   function load() {
     if (started) return;
@@ -38,28 +55,25 @@
       try { doc = frame.contentDocument; } catch { fail(); return; }
       if (!doc || !doc.body) { fail(); return; }
       try {
-        // The public app stays intact. Hide its duplicate outer chrome in this window.
+        // Preserve the complete native UI. Only correct its iframe scroll root.
         const style = doc.createElement('style');
         style.textContent = `
           html{height:100%!important;overflow-y:auto!important;overscroll-behavior-y:contain;scroll-behavior:auto!important}
-          body{min-height:100%!important;overflow:visible!important;cursor:pointer!important}
-          .nav,.dock,[data-backer-dock],.backer-dock{display:none!important}
-          .app{padding-top:18px!important;padding-bottom:35px!important}
-          .mkt{padding:0 0 30px!important}
-          .mkt-header{display:none!important}
-          @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+          body{min-height:100%!important;overflow:visible!important}
         `;
         doc.head.appendChild(style);
 
         let gesture = null;
         let moved = false;
         doc.addEventListener('pointerdown', event => {
-          gesture = { x: event.clientX, y: event.clientY, id: event.pointerId };
+          gesture = { x: event.clientX, y: event.clientY, id: event.pointerId, scale: previewScale };
           moved = false;
         }, { capture: true, passive: true });
         doc.addEventListener('pointermove', event => {
           if (!gesture || gesture.id !== event.pointerId) return;
-          if (Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y) > 9) moved = true;
+          // Pointer coordinates are in the fixed iframe viewport. Convert movement
+          // back to visible CSS pixels so drag tolerance stays stable at every size.
+          if (Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y) * gesture.scale > 9) moved = true;
         }, { capture: true, passive: true });
         doc.addEventListener('pointercancel', () => { moved = true; gesture = null; }, { capture: true, passive: true });
         doc.addEventListener('click', event => {

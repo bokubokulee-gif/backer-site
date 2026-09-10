@@ -57,3 +57,12 @@ Move the decisions section immediately before market validation/figures. Remove 
 
 Research embed fallback: when the hosted Attention Simulation cannot embed, show an actual captured public World snapshot with a direct full-preview link. The native embed still loads when permitted. The screenshot contains only the public fictional simulation, captured on 2026-09-10.
 Market scroll acceptance: the iframe root owns scrolling; body overflow stays visible so the body does not trap wheel input. A 240 px wheel scroll moved the embedded page from 420 to 660 px while parent scroll stayed fixed. Click-through enters the full Market.
+
+## Latest annotated revision
+- Fix italic letter clipping in the hero, including the hover expansion, while preserving the one-line headline and existing white/warm palette. Pair bold sans and italic serif in the smaller second line. Remove the hero thesis paragraph.
+- Add Lab description “Simulate the future for better decision making.” Research heading becomes “Simulates the future. / For better decision making.” The third pitch card uses the latest exact annotation: “Watch how 50 simulated agents reacting to real world events on the web.”
+- Center the Market heading. Render its full native desktop UI at1440×900 and uniformly scale that viewport to the card; keep scrolling and click-through. Replace the creator arrow with an earnings/coins icon.
+- Apply the shared bubble hover to “predicts” and “believe.” Remove the co-design lead sentence. Move “We can simulate each scenario for you.” to the question-card title; replace the5questions with100specific hypothetical business questions in an automatic slow loop,5readable rows, faded edges, pause/focus/reduced-motion controls.
+- Decisions: “Before committing your budget.” Preserve evidence figures, originalpitch.html, and full preview routes. Verify at320/390/578anddesktop, including hover clipping, scale, scrolling, pause/resume and wraparound.
+
+Latest acceptance: verified all100questions fit at320CSSpx and20Nextactions return to the starting question; desktop/578/390 layouts preserve5-rowheight. Motion measured~9secondsperrow; reducedmotionmanualnavigation works. Hover/focus pausing applies only to the reading window so the Resume button can restart immediately. Marketiframe uses1440×900 atall widths, withfullnativechrome andcontents preserved.

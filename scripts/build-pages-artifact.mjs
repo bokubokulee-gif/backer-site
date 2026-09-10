@@ -27,6 +27,8 @@ const PUBLIC_FILES = Object.freeze([
   'js/pitch2-research.js',
   'css/pitch2-market.css',
   'js/pitch2-market.js',
+  'css/pitch2-questions.css',
+  'js/pitch2-questions.js',
   'portfolio.html',
   'privacy.html',
   'research.html',
