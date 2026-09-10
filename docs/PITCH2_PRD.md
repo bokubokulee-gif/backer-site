@@ -107,3 +107,5 @@ Acceptance: all 100 questions are unique, the initial HTML fallback matches the 
 
 ## Promote the current pitch to the primary route — 2026-09-11
 Replace pitch.html with the complete current pitch2.html page, including all copy, styling, previews and interactions. Keep the shared pitch2 assets and change only the copied page's canonical URL and current-page footer link to pitch.html. The latest explicit request supersedes earlier instructions to retain the original pitch page. Verify source equivalence apart from those two self-links, render the primary route at mobile and desktop sizes, audit the public artifact, publish and verify the exact live deployment.
+
+Research navigation follow-up: on both pitch routes, rename the link above the preview cards to “Explore Backer Research” and navigate to research.html in the same tab. Use the existing outward-arrow convention and matching hover direction instead of the previous scroll-down arrow; preserve typography and responsive spacing.
