@@ -1,11 +1,28 @@
 /* Presentation state only. No forecast model, market execution, or private data. */
 (() => {
   'use strict';
-  const loopCopy = {
-    forecast: ['01', 'A view of the future, recorded before it arrives.', 'Before the release reaches its deadline, the Lab records a forecast of whether it will reach 100K views. The target, time window, and outcome source are fixed in advance.', 'Output: a forecast that can be tested.'],
-    market: ['02', 'People bring their own view of the same outcome.', 'Participants weigh the evidence and take positions on that same 100K-view target. The Market records conviction, disagreement, and changing expectations before the deadline.', 'Output: a record of beliefs before the answer is known.'],
-    outcome: ['03', 'The outcome tests the model and the market.', 'At month-end, the published source establishes whether the release reached 100K views. Comparing forecasts with this result creates one observation in a growing record of tests.', 'Output: measured performance, across repeated outcomes.']
-  };
+  // Shared homepage interaction; keep the warm gradient continuous per glyph.
+  const headline = document.querySelector('.hero-title [data-bubble-text]');
+  if (headline) {
+    const prepareGradient = () => {
+      const letters = [...headline.querySelectorAll('.bubble-letter')];
+      if (!letters.length) return;
+      const measure = () => {
+        const gradientStart = letters[6].offsetLeft;
+        headline.style.setProperty('--p2-bubble-width', `${headline.offsetWidth - gradientStart}px`);
+        letters.forEach(letter => letter.style.setProperty('--p2-bubble-x', `${letter.offsetLeft - gradientStart}px`));
+        headline.parentElement.classList.add('p2-bubble-ready');
+      };
+      measure();
+      if (document.fonts) document.fonts.ready.then(measure);
+      if ('ResizeObserver' in window) new ResizeObserver(measure).observe(headline);
+      else window.addEventListener('resize', measure, { passive: true });
+    };
+    // bubble-text.js registers its splitter before this listener.
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', prepareGradient, { once: true });
+    else prepareGradient();
+  }
+
   const decisionCopy = {
     customers: ['The next customer', 'What will move someone from interest to purchase?', 'Explore how different customer groups may respond to an offer, message, or product before committing to a launch.', 'Who is likely to act, under which conditions?'],
     audiences: ['The next audience', 'Where will the next wave of attention come from?', 'Study how interest can move between communities, which audiences may respond, and where attention is more likely to persist.', 'Which communities will care, share, and return?'],
@@ -31,14 +48,6 @@
       });
     });
   }
-  wireTabs('[data-loop]', 'loop', (key, id) => {
-    const [number, title, copy, result] = loopCopy[key];
-    document.querySelector('.p2-loop-icon').textContent = number;
-    document.querySelector('[data-loop-title]').textContent = title;
-    document.querySelector('[data-loop-copy]').textContent = copy;
-    document.querySelector('[data-loop-result]').textContent = result;
-    document.querySelector('#loop-panel').setAttribute('aria-labelledby', id);
-  });
   wireTabs('[data-decision]', 'decision', (key, id) => {
     ['kicker', 'title', 'copy', 'question'].forEach((field, index) => { document.querySelector(`[data-decision-${field}]`).textContent = decisionCopy[key][index]; });
     document.querySelector('#decision-panel').setAttribute('aria-labelledby', id);
