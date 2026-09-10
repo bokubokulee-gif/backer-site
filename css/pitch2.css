@@ -24,6 +24,9 @@
 .p2-hero-line{font-size:clamp(20px,3.9cqw,46px);line-height:1.25;letter-spacing:-.03em;margin:18px 0 0;text-wrap:balance}
 .p2-hero-line strong{font-family:var(--sans);font-weight:700}
 .p2-hero-line em{font-family:var(--serif);font-weight:400;font-style:italic;letter-spacing:-.015em}
+/* Reuse the homepage letter interaction without changing the subtitle's ink. */
+.page-pitch2 .p2-hero-line em[data-bubble-text]{display:inline-block;padding:.16em .18em .12em;margin:-.16em -.18em -.12em;overflow:visible;color:var(--ink);-webkit-text-fill-color:currentColor}
+.page-pitch2 .p2-hero-line em[data-bubble-text] .bubble-letter{padding-inline:.12em;margin-inline:-.12em;overflow:visible}
 .p2-hero-foundation{position:relative;z-index:2;width:min(780px,100%);display:grid;grid-template-columns:1fr 40px 1fr;align-items:stretch;gap:30px;border-top:1px solid var(--p2-rule);padding-top:26px}
 .p2-hero-foundation a{display:flex;flex-direction:column;justify-content:flex-start;min-height:66px;transition:transform .2s}
 .p2-hero-foundation a:hover{transform:translateY(-3px)}

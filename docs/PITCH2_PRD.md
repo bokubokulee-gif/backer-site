@@ -95,3 +95,12 @@ Recording provenance: captured the existing public Trading behavior and Attentio
 Acceptance completed: desktop and 415px rendered checks show centered complete scenes with zero horizontal overflow. No research iframes or hosted-app requests appear on the pitch. Visible recordings play; offscreen recordings pause. Keyboard play/pause, reduced-motion default pause plus explicit play, and blocked-video poster fallback pass. Six public-exposure tests pass; the 173-file allowlisted build has zero critical findings.
 
 Research label follow-up: remove the visible “Recorded preview” badge from all three cards. Keep playback controls, media, accessible descriptions and full research links.
+
+## Enterprise foresight and headline follow-up
+Rewrite all 100 business questions around decisions large global companies make: demand and pricing, competitive response, supply and inventory, capital allocation, enterprise accounts, workforce and AI adoption, reputation, market entry, and channel partners. Use concise hypothetical scenarios with concrete stakes, time horizons and numbers where they clarify the decision. Avoid implying proven forecasting capability. Retain the existing five-row centered stream, seven-second pace and accessible navigation.
+
+Closing copy becomes “Predict where attention goes.” / “Before the world knows.” Add the existing letter-hover effect to the white italic hero phrase “everyone else catches on.” Keep Backer's existing sans/serif hierarchy, warm palette and page structure. Verify all 100 questions fit at relevant mobile widths, hover letters do not clip, reduced motion remains supported, and the exact live deployment contains all three changes.
+
+Update only the hero Lab description to “Simulate the future for optimal decision making.”
+
+Acceptance: all 100 questions are unique, the initial HTML fallback matches the first five, and keyboard navigation cycles through the full set. Checked all questions at 320, 415, 511, 601 and 900px; text stays within its row without horizontal overflow. Keep the 61.8% reading column and existing font sizes. Row heights now allow up to five wrapped lines on narrow phones; the 480px and 900px boundaries preserve compact spacing where fewer lines are needed. The 1440px desktop text still fits the original 66px rows. The hero effect preserves white italic lettering and fits at 320px; the shared reduced-motion rule remains in force. Lint and diff checks pass.
