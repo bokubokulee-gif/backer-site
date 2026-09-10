@@ -1,0 +1,50 @@
+(()=>{"use strict";const a=document.querySelector("[data-research-theater]");if(!a)return;const k={flow:{title:"Where does attention move next?",description:"Follow attention across communities. Change how content is distributed and watch the authored scenario unfold.",url:"research-lab/attention-flow.html",iframeTitle:"Attention Flow: interactive illustrative attention field",hint:"Change a scenario. Select a marker to inspect its path.",evidence:"Illustrative scenario",boundary:"5,000 modeled markers. The readouts below come directly from this authored preview.",scenarios:[["baseline","Baseline"],["diverse-ranking","Diverse ranking"],["bridge-boost","Bridge-node boost"]],metrics:[["Notice share","#metric-notice"],["Return share","#metric-return"],["Commit share","#metric-commit"]]},simulation:{title:"Why does someone choose to act?",description:"Enter a shared world of 50 fictional people. Inspect how content, memory, and social influence shape their next decision.",url:"research-lab/attention-simulation.html",iframeTitle:"Attention Simulation: 50 fictional people in interactive Backer World",hint:"Select a person in the world to inspect their simulated decisions.",evidence:"Fictional people · simulated behavior",boundary:"A behavioral sandbox using public content. All decisions and trading activity are simulated.",scenarios:[],metrics:[]},trading:{title:"When does conviction become a position?",description:"Explore the path from exposure to commitment. Compare how social influence and friction change the published model projection.",url:"research-lab/",iframeTitle:"Trading Behavior: interactive modeled attention and commitment field",hint:"Change a scenario. Drag the field or select a modeled trader.",evidence:"Published model projection",boundary:"Observed market signals and simulated behavior are separate layers. Outcomes have not been validated.",scenarios:[["baseline","Baseline"],["social-proof","Social proof"],["lower-friction","Lower friction"]],metrics:[["Expected fills","#forecast-expected"],["Model book","#simulated-book-probability"]]}},C=`
+    html,body{height:100%!important;min-height:0!important;overflow:hidden!important}
+    .skip-link,.topbar{display:none!important}
+  `,q={flow:`${C}
+      .flow-app,.flow-layout{height:100%!important;min-height:0!important}
+      .flow-layout{display:block!important}
+      .flow-setup,.flow-readout,.flow-study,.flow-question-bar{display:none!important}
+      .flow-field{height:100%!important;min-height:0!important;grid-template-rows:minmax(0,1fr) auto!important}
+      .flow-canvas-wrap,#attention-canvas{min-height:0!important}
+      .flow-playback{padding:13px 18px!important;gap:15px!important}
+      .flow-stage-labels{top:23px!important;font-size:9px!important}
+      .field-boundary-label{display:none!important}
+      .field-boundary-label strong{display:none!important}
+      .flow-count{display:none!important}
+      .flow-time{flex-basis:auto!important;min-width:120px!important;flex:1!important}
+      .flow-legend{bottom:15px!important}
+      .marker-inspector{max-width:calc(100% - 28px)!important}
+      @media(max-width:520px){
+        .flow-stage-labels{top:20px!important;font-size:7px!important;letter-spacing:0!important}
+        .flow-stage-labels b{display:block!important;margin:0 0 4px!important}
+        .field-boundary-label{top:59px!important;left:12px!important;font-size:6px!important}
+        .flow-legend{gap:10px!important;font-size:6px!important;left:12px!important}
+        .flow-playback{padding:10px 12px!important;gap:10px!important;flex-wrap:wrap!important}
+        .flow-playback-controls{gap:9px!important}
+        .flow-playback-controls button{font-size:8px!important}
+        .flow-playback-controls label{display:none!important}
+        .flow-time{flex-basis:100%!important;display:flex!important}
+      }
+    `,trading:`${C}
+      :root{--topbar-h:0px!important;--dock-h:0px!important}
+      .lab-app,.lab-grid{height:100%!important;min-height:0!important}
+      .lab-grid{display:block!important}
+      .control-rail,.run-dock,.forecast-surface,.mobile-profile-button{display:none!important}
+      .field-stage{height:100%!important;--workbench-w:0px!important}
+      .field-stage.is-flow-mode .scene-mount{display:block!important;inset:0!important;width:100%!important;height:100%!important}
+      .field-stage.is-flow-mode .field-vignette,.field-stage.is-flow-mode .event-labels{display:block!important;inset:0!important}
+      .field-stage.is-flow-mode .field-caption{display:flex!important;right:17px!important}
+      .field-stage.is-flow-mode .field-key{display:flex!important;left:50%!important;transform:translateX(-50%)!important;bottom:12px!important;white-space:nowrap!important}
+      .field-stage.is-flow-mode .loading-state{right:0!important}
+      .field-stage.is-flow-mode .simulation-watermark{display:block!important;right:16px!important}
+      .field-stage.is-flow-mode .graph-stage-labels{display:grid!important;right:0!important;bottom:48px!important;font-size:8px!important}
+      .profile-panel{inset:0 0 0 auto!important;height:100%!important;max-width:100%!important}
+      @media(max-width:520px){
+        .field-caption{font-size:6px!important;left:12px!important;right:12px!important}
+        .field-caption #field-source-line{max-width:155px!important;text-align:right!important}
+        .field-stage.is-flow-mode .field-key{gap:8px!important;font-size:5px!important;max-width:calc(100% - 12px)!important;padding:7px!important}
+        .field-stage.is-flow-mode .graph-stage-labels{font-size:6px!important;letter-spacing:0!important}
+        .field-stage.is-flow-mode .graph-stage-labels b{display:none!important}
+      }
+    `},d=Array.from(a.querySelectorAll('[role="tab"]')),m=a.querySelector('[role="tabpanel"]'),I=a.querySelector("[data-research-title]"),D=a.querySelector("[data-research-description]"),N=a.querySelectorAll("[data-research-open]"),f=a.querySelector("[data-research-scenarios]"),W=a.querySelector("[data-research-hint]"),$=a.querySelector("[data-research-evidence]"),R=a.querySelector("[data-research-boundary]"),b=a.querySelector("[data-research-metrics]"),u=a.querySelector("[data-research-frame-wrap]"),E=a.querySelector("[data-research-mount]"),w=a.querySelector("[data-research-loading]"),A=a.querySelector("[data-research-loading-title]"),T=a.querySelector("[data-research-loading-copy]"),z=a.querySelector("[data-research-status]");let p="flow",g=!1,r=null,h=null,y=0,L=0;function P(){window.clearTimeout(y),h&&h.disconnect(),h=null,E.replaceChildren(),r=null,u.classList.remove("is-ready")}function F(e,n){n.metrics.forEach(([,i],o)=>{const t=e.querySelector(i),s=b.querySelector(`[data-metric-index="${o}"]`);t&&s&&(s.textContent=t.textContent.trim()||"—")})}function O(){if(r)try{const e=r.contentWindow;e.dispatchEvent(new e.Event("resize"))}catch{}}function x(){A.textContent="The preview is taking longer to load.",T.textContent="You can open the full research experience directly.",m.setAttribute("aria-busy","false")}function v(){if(!g||r)return;const e=k[p],n=p;w.hidden=!1,A.textContent="Opening the research preview",T.textContent="The interactive scene will appear here.",m.setAttribute("aria-busy","true"),r=document.createElement("iframe");const i=r;r.className="p2r-frame",r.title=e.iframeTitle,r.allow="fullscreen",r.setAttribute("referrerpolicy","strict-origin-when-cross-origin"),r.addEventListener("error",x),r.addEventListener("load",()=>{if(i!==r||n!==p)return;window.clearTimeout(y);let o=!1;try{const t=r.contentDocument;if(t&&t.body&&q[n]){const s=t.createElement("style");s.textContent=q[n],t.head.appendChild(s),F(t,e),h=new MutationObserver(()=>F(t,e)),e.metrics.forEach(([,l])=>{const c=t.querySelector(l);c&&h.observe(c,{childList:!0,characterData:!0,subtree:!0})}),o=!!t.querySelector(n==="flow"?"#attention-canvas":"#scene-mount")}else n==="simulation"&&(o=!!(t&&t.querySelector("iframe")))}catch{}if(!o){x(),m.setAttribute("aria-busy","false");return}f.querySelectorAll("button").forEach(t=>{t.disabled=!1}),u.classList.add("is-ready"),w.hidden=!0,m.setAttribute("aria-busy","false"),z.textContent=`${e.iframeTitle} loaded.`,window.requestAnimationFrame(O)}),r.src=e.url,E.append(r),y=window.setTimeout(x,16e3)}function S(e,n=!1){const i=k[e];i&&(p=e,P(),d.forEach(o=>{const t=o.dataset.researchTab===e;o.setAttribute("aria-selected",String(t)),o.tabIndex=t?0:-1,t&&(m.setAttribute("aria-labelledby",o.id),n&&o.focus())}),I.textContent=i.title,D.textContent=i.description,W.textContent=i.hint,$.textContent=i.evidence,R.textContent=i.boundary,N.forEach(o=>{o.href=i.url}),u.dataset.research=e,b.replaceChildren(),i.metrics.forEach(([o],t)=>{const s=document.createElement("div");s.className="p2r-metric";const l=document.createElement("dt");l.textContent=o;const c=document.createElement("dd");c.dataset.metricIndex=t,c.textContent="—",s.append(l,c),b.append(s)}),b.hidden=!i.metrics.length,f.replaceChildren(),f.hidden=!i.scenarios.length,i.scenarios.forEach(([o,t],s)=>{const l=document.createElement("button");l.type="button",l.className="p2r-scenario",l.textContent=t,l.disabled=!0,l.setAttribute("aria-pressed",String(s===0)),l.addEventListener("click",()=>{try{const c=r.contentDocument.querySelector(`[data-scenario="${o}"]`);if(!c)return;c.click(),f.querySelectorAll("button").forEach(B=>B.setAttribute("aria-pressed",String(B===l))),z.textContent=`${t} scenario selected.`}catch{}}),f.append(l)}),w.hidden=!1,v())}if(d.forEach((e,n)=>{e.addEventListener("click",()=>{e.dataset.researchTab!==p&&S(e.dataset.researchTab)}),e.addEventListener("keydown",i=>{let o;if(i.key==="ArrowRight")o=(n+1)%d.length;else if(i.key==="ArrowLeft")o=(n+d.length-1)%d.length;else if(i.key==="Home")o=0;else if(i.key==="End")o=d.length-1;else return;i.preventDefault(),S(d[o].dataset.researchTab,!0)})}),"ResizeObserver"in window&&new ResizeObserver(()=>{window.cancelAnimationFrame(L),L=window.requestAnimationFrame(O)}).observe(u),S(p),"IntersectionObserver"in window){const e=new IntersectionObserver(n=>{n.some(i=>i.isIntersecting)&&(g=!0,v(),e.disconnect())},{threshold:.08});e.observe(u)}else g=!0,v()})();
