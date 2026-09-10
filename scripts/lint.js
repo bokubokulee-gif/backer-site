@@ -13,6 +13,7 @@ const CANONICAL_PAGES = [
   'backermarket.html',
   'backerthesis.html',
   'pitch.html',
+  'pitch2.html',
   'faq.html',
   'waitlist.html',
   'onboarding.html',
