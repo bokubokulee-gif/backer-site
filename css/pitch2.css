@@ -7,8 +7,11 @@
 .page-pitch2 .section{padding-top:100px;padding-bottom:100px}
 .page-pitch2 .section-head{max-width:860px;margin-bottom:44px}
 .page-pitch2 .section-head h2{font-size:clamp(36px,4.7vw,59px);line-height:1.09;letter-spacing:-.04em;text-wrap:balance}
-.page-pitch2 .p2-positioning>.section-head{margin-bottom:0}
-.page-pitch2 .p2-positioning .section-lead{font-weight:700;color:var(--ink)}
+.page-pitch2 .p2-positioning>.section-head{max-width:none;margin:0 auto;text-align:center}
+.page-pitch2 .p2-positioning h2{text-wrap:wrap}
+.page-pitch2 .p2-positioning h2>span{display:inline-block}
+@media(min-width:621px){.page-pitch2 .p2-positioning h2{font-size:clamp(36px,4.7vw,56px)}}
+.page-pitch2 .p2-positioning .section-lead{max-width:960px;margin:28px auto 0;font-size:clamp(17px,1.65vw,20px);font-weight:700;line-height:1.65;color:var(--ink);text-wrap:pretty}
 .page-pitch2 .section-head h2 em{display:inline-block;padding-bottom:.08em}
 /* Shared Lab and Market identity; retain heading semantics without headline sizing. */
 .p2-brand-mark{display:block;width:clamp(38px,4vw,48px);height:auto;aspect-ratio:1;object-fit:contain;margin:0 auto 14px}
