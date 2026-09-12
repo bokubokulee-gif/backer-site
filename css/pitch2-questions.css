@@ -1,6 +1,6 @@
 /* A centered stream: the reading column occupies 61.8% of the card. */
 .p2-business-questions.p2-questions{--p2q-row-height:88px;max-width:930px;margin:0 auto;padding:clamp(25px,3.8vw,40px) 0 28px;border:1px solid var(--p2-rule,rgba(233,189,134,.23));border-radius:24px;background:linear-gradient(120deg,rgba(233,189,134,.065),transparent 75%),#101012}
-.p2q-heading{width:84%;margin:0 auto 24px;color:var(--accent,#e9bd86);font:italic clamp(26px,3vw,36px)/1.25 var(--serif,'Instrument Serif',Georgia,serif);letter-spacing:-.015em;text-align:center;text-wrap:balance}
+.p2q-heading{width:84%;margin:0 auto 24px;color:var(--accent,#e9bd86);font:700 clamp(26px,3vw,36px)/1.25 var(--sans,'Inter',system-ui,sans-serif);letter-spacing:-.015em;text-align:center;text-wrap:balance}
 .p2q-window{position:relative;width:100%;height:calc(var(--p2q-row-height) * 5);overflow:hidden;mask-image:linear-gradient(to bottom,transparent,#000 16px,#000 calc(100% - 16px),transparent);-webkit-mask-image:linear-gradient(to bottom,transparent,#000 16px,#000 calc(100% - 16px),transparent)}
 .p2q-track{display:flex;flex-direction:column;width:100%;margin:0;padding:0;will-change:transform}
 .p2q-row{position:relative;display:flex;align-items:center;justify-content:center;flex:0 0 var(--p2q-row-height);height:var(--p2q-row-height);box-sizing:border-box;padding:10px 0}

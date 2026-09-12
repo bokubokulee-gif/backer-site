@@ -20,10 +20,10 @@
 .page-pitch2 .p2-hero{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;justify-content:center;padding:120px 24px 72px;text-align:center;gap:44px}
 .page-pitch2 .p2-hero .hero-inner{max-width:1200px;container-type:inline-size}
 .page-pitch2 .p2-hero .hero-title{display:block;font-size:clamp(20px,7vw,88px);font-size:clamp(20px,7cqw,88px);line-height:1.12;letter-spacing:-.05em;max-width:none;margin:0 auto;white-space:nowrap}
-.page-pitch2 .p2-hero .hero-title em{display:inline-block;padding:0 .05em .09em;line-height:1.13;letter-spacing:-.045em}
-.p2-hero-line{font-size:clamp(20px,3.9cqw,46px);line-height:1.25;letter-spacing:-.03em;margin:18px 0 0;text-wrap:balance}
+.page-pitch2 .p2-hero .hero-title em{display:inline-block;padding:0 .05em .09em;line-height:1.13;letter-spacing:inherit}
+.p2-hero-line{font-size:clamp(20px,3.9cqw,46px);line-height:1.25;letter-spacing:-.03em;margin:18px 0 0;text-wrap:balance;font-weight:700}
 .p2-hero-line strong{font-family:var(--sans);font-weight:700}
-.p2-hero-line em{font-family:var(--serif);font-weight:400;font-style:italic;letter-spacing:-.015em}
+.p2-hero-line em{font-family:inherit;font-weight:inherit;font-style:normal;letter-spacing:inherit}
 /* Reuse the homepage letter interaction without changing the subtitle's ink. */
 .page-pitch2 .p2-hero-line em[data-bubble-text]{display:inline-block;padding:.16em .18em .12em;margin:-.16em -.18em -.12em;overflow:visible;color:var(--ink);-webkit-text-fill-color:currentColor}
 .page-pitch2 .p2-hero-line em[data-bubble-text] .bubble-letter{padding-inline:.12em;margin-inline:-.12em;overflow:visible}
@@ -34,7 +34,7 @@
 .p2-hero-foundation p{font-size:13px;line-height:1.5;color:var(--muted);margin:7px auto 0;max-width:245px}
 .p2-join{display:grid;place-items:center;font:30px var(--serif);color:var(--accent)}
 /* Map the existing gradient across animated letters, keeping their colors. */
-.page-pitch2 .hero-title [data-bubble-text]{position:relative;display:inline-block;padding:.16em .18em .12em;margin:-.16em -.18em -.12em;overflow:visible;font-family:var(--serif);font-weight:400;font-style:italic;letter-spacing:-.045em}
+.page-pitch2 .hero-title [data-bubble-text]{position:relative;display:inline-block;padding:.16em .18em .12em;margin:-.16em -.18em -.12em;overflow:visible;font-family:inherit;font-weight:inherit;font-style:normal;letter-spacing:inherit}
 .page-pitch2 .hero-title .p2-headline-effect em{padding:0}
 .page-pitch2 .hero-title .bubble-letter:nth-child(n+7){padding-inline:.15em;margin-inline:-.15em;overflow:visible}
 .page-pitch2 .hero-title.p2-bubble-ready .bubble-letter{background-image:var(--grad);background-size:var(--p2-bubble-width) 100%;background-position:calc(-1 * var(--p2-bubble-x)) 0;background-repeat:no-repeat;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
@@ -45,7 +45,7 @@
 .p2-bridge{max-width:980px;margin:0 auto;font-size:clamp(25px,3.6vw,44px);line-height:1.27;letter-spacing:-.035em;text-align:center;text-wrap:balance}
 .p2-bridge>span{display:block}
 .p2-bridge>span+span{margin-top:18px}
-.p2-bridge em,.p2-market-story em,.p2-record em{font-family:var(--serif);font-weight:400;font-style:italic;color:var(--accent)}
+.p2-bridge em,.p2-market-story em,.p2-record em{font-family:inherit;font-weight:inherit;font-style:normal;color:var(--accent)}
 .p2-market-layout{display:grid;grid-template-columns:1.05fr 1fr;gap:70px;align-items:center}
 .p2-contract{border:1px solid rgba(233,189,134,.32);background:radial-gradient(ellipse at 5% 0,rgba(233,189,134,.10),transparent 60%),#101012;border-radius:24px;padding:32px;box-shadow:0 24px 60px rgba(0,0,0,.25)}
 .p2-contract-meta{display:flex;justify-content:space-between;gap:12px;font:9px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
@@ -154,7 +154,7 @@
 .p2-finale{padding:100px 24px 120px!important}
 .p2-finale>p{font-size:15px;color:var(--accent);margin-bottom:30px}
 .page-pitch2 .p2-finale .finale-line{font-size:clamp(34px,5vw,65px);letter-spacing:-.035em;line-height:1.14}
-.page-pitch2 .p2-finale .finale-line+.finale-line{font-family:var(--serif);font-style:italic;font-weight:400;padding-bottom:.12em}
+.page-pitch2 .p2-finale .finale-line+.finale-line{font-family:var(--sans);font-style:normal;font-weight:700;padding-bottom:.12em}
 @media(max-width:800px){
  .page-pitch2 .section{padding-top:75px;padding-bottom:75px}.p2-market-layout{gap:32px}.p2-market-story h3{font-size:32px}.p2-market-story li{grid-template-columns:1fr;gap:4px}.p2-contract{padding:25px}.p2-contract h3{font-size:25px}.p2-contract-meta{font-size:8px}.p2-decisions-layout{gap:30px}.p2-decision-panel{padding:26px}.p2-decision-panel h3{font-size:25px}
 }
@@ -168,5 +168,7 @@
 
  .p2-decisions-layout{grid-template-columns:1fr;gap:24px}.p2-decision-tabs{display:grid;grid-template-columns:1fr 1fr;gap:0 22px}.p2-decision-tabs button{font-size:22px;padding:14px 0}.p2-decision-tabs button>span{font-size:14px}.p2-decision-panel{min-height:400px;padding:26px}.p2-business-model{grid-template-columns:1fr;gap:28px;margin-top:40px}.p2-record{padding:26px}.p2-record>span{font-size:9px}.p2-record h3{margin:22px 0 29px}.p2-record>div{grid-template-columns:1fr;gap:14px}.p2-record>div p{font-size:13px}.p2-record-note{font-size:12px;line-height:1.7}.p2-finale{padding:60px 20px 85px!important}.page-pitch2 .p2-finale .finale-line{font-size:36px}.p2-finale .finale-cta{flex-direction:column;align-items:center;gap:14px}
 }
+/* Keep the complete hero subline together in the wider sans face. */
+@media(max-width:420px){.p2-hero-line{font-size:min(20px,5.8cqw)}}
 @media(max-width:360px){.page-pitch2 .section-head h2{font-size:32px}.p2-contract{padding:20px}.p2-position-choices{gap:8px}.p2-position-choices>span{padding:13px}.p2-position-choices small{font-size:9px}.p2-decision-panel{padding:22px}.page-pitch2 .p2-finale .finale-line{font-size:32px}}
 @media(prefers-reduced-motion:reduce){.page-pitch2 *,.page-pitch2 *::before,.page-pitch2 *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.page-pitch2 .reveal{opacity:1;transform:none}.page-pitch2 [data-bubble-text] .bubble-letter{transform:none!important;transition:none!important}}

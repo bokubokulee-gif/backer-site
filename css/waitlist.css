@@ -274,7 +274,8 @@ button {
 
 .waitlist-intro h1 {
   margin: 0;
-  font-family: var(--serif);
+  font-family: var(--sans);
+  font-style: normal;
   font-size: clamp(45px, 8.2vw, 66px);
   font-weight: 400;
   letter-spacing: -0.035em;
@@ -305,7 +306,8 @@ button {
   gap: 2px;
   margin: 26px 0 0;
   color: var(--muted-soft);
-  font-family: var(--serif);
+  font-family: var(--sans);
+  font-style: normal;
   font-size: clamp(18px, 3vw, 22px);
   line-height: 1.25;
 }

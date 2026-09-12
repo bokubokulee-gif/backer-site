@@ -63,9 +63,9 @@
 .section-kicker{display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:14px}
 .section-kicker span{width:7px;height:7px;border-radius:50%;background:var(--pos);box-shadow:0 0 14px rgba(86,211,154,.8)}
 .footprint-panel h1{
-  max-width:24ch;margin:0 auto;font-family:var(--serif);font-size:clamp(38px,5vw,50px);font-weight:400;line-height:1.02;letter-spacing:-.028em;text-wrap:balance;
+  max-width:24ch;margin:0 auto;font-family:var(--sans);font-size:clamp(38px,5vw,50px);font-weight:400;line-height:1.02;letter-spacing:-.028em;text-wrap:balance;
 }
-.footprint-panel h1 em{color:var(--accent);font-style:italic}
+.footprint-panel h1 em{color:var(--accent);font-family:inherit;font-style:normal;font-weight:inherit;letter-spacing:inherit}
 .footprint-intro{max-width:64ch;margin:14px auto 0;color:var(--muted);font-size:13.5px;line-height:1.6;text-wrap:balance}
 
 .attention-map{display:none}
@@ -108,7 +108,7 @@
 .privacy-note strong{color:var(--muted);font-weight:600}
 
 .panel-kicker{margin-bottom:10px;color:var(--accent)}
-.role-screen h2,.question-screen h2{font-family:var(--serif);font-size:clamp(31px,3.3vw,43px);font-weight:400;line-height:1.06;letter-spacing:-.022em}
+.role-screen h2,.question-screen h2{font-family:var(--sans);font-size:clamp(31px,3.3vw,43px);font-weight:400;line-height:1.06;letter-spacing:-.022em}
 .screen-intro{max-width:54ch;margin-top:11px;color:var(--muted);font-size:13.5px;line-height:1.6}
 .role-options{display:grid;gap:12px;margin-top:26px}
 .role-option{

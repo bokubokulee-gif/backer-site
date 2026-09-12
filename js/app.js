@@ -80,7 +80,7 @@
     return new Promise((resolve, reject) => {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
-      link.href = 'css/market-archive.css?v=20260822-1';
+      link.href = 'css/market-archive.css?v=20260912-type-1';
       link.dataset.backerLegacyMarket = 'true';
       // A route can change while this lazy stylesheet is in flight. Keep it
       // non-applicable until load completes, then enable it only for the route

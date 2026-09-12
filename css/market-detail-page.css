@@ -163,7 +163,7 @@ body.mdp-page::before{
 .mdp-status-card h1{
   margin:12px 0 10px;
   color:#f4f2ec;
-  font-family:'Instrument Serif',Georgia,serif;
+  font-family:var(--sans,'Inter',system-ui,-apple-system,sans-serif);
   font-size:clamp(32px,5vw,52px);
   font-weight:400;
   line-height:1.02;

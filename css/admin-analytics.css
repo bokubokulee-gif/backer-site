@@ -340,8 +340,10 @@ button:disabled {
 .auth-card h1 em,
 .page-intro h1 em {
   color: var(--accent);
-  font-family: var(--serif);
-  font-weight: 400;
+  font-family: inherit;
+  font-style: normal;
+  font-weight: inherit;
+  letter-spacing: inherit;
 }
 
 .auth-copy {

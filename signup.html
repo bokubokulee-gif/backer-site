@@ -30,8 +30,8 @@
   }
   .auth-left .ring circle{fill:none;stroke-linecap:round}
   .al-brand{display:inline-flex;align-items:center;gap:11px;position:relative;z-index:1}
-  .al-head{position:relative;z-index:1;font-family:var(--serif);font-size:clamp(36px,5vw,58px);line-height:1.02;letter-spacing:-.02em;font-weight:400}
-  .al-head em{font-style:italic;color:var(--accent)}
+  .al-head{position:relative;z-index:1;font-family:var(--sans);font-size:clamp(36px,5vw,58px);line-height:1.02;letter-spacing:-.02em;font-weight:400}
+  .al-head em{font-family:inherit;font-style:normal;font-weight:inherit;letter-spacing:inherit;color:var(--accent)}
   .al-sub{position:relative;z-index:1;color:var(--muted);font-size:clamp(15px,1.6vw,17px);max-width:30ch}
   .al-proof{position:relative;z-index:1;display:flex;flex-direction:column;gap:12px;margin-top:6px}
   .al-proof li{display:flex;align-items:center;gap:11px;font-size:13.5px;color:var(--muted)}
@@ -47,7 +47,7 @@
   .ar-login a{color:var(--accent);font-weight:600}
 
   /* role chooser */
-  .role-q{font-family:var(--serif);font-size:26px;letter-spacing:-.01em;margin-bottom:5px}
+  .role-q{font-family:var(--sans);font-size:26px;letter-spacing:-.01em;margin-bottom:5px}
   .role-help{color:var(--muted);font-size:13.5px;margin-bottom:20px}
   .role-grid{display:grid;gap:12px}
   /* .role-card glass comes from the shared css/liquid-glass.css */
@@ -78,7 +78,7 @@
   @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
   .pane-head{margin-bottom:18px}
-  .pane-head h3{font-family:var(--serif);font-size:25px;letter-spacing:-.01em}
+  .pane-head h3{font-family:var(--sans);font-size:25px;letter-spacing:-.01em}
   .pane-head p{color:var(--muted);font-size:13.5px;margin-top:4px}
 
   /* form fields */
@@ -125,7 +125,7 @@
   .ipo-card{border:1px solid var(--line);border-radius:var(--r);background:var(--card);padding:26px 24px;text-align:center}
   .ipo-ic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;margin:0 auto 16px;background:var(--grad);color:#23120a;box-shadow:0 8px 26px rgba(227,113,63,.3)}
   .ipo-ic .ic{width:24px;height:24px;stroke:#23120a;stroke-width:2}
-  .ipo-card h3{font-family:var(--serif);font-size:27px;letter-spacing:-.01em;margin-bottom:10px}
+  .ipo-card h3{font-family:var(--sans);font-size:27px;letter-spacing:-.01em;margin-bottom:10px}
   .ipo-card p{color:var(--muted);font-size:14px;max-width:34ch;margin:0 auto 20px}
   .ipo-meta{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:18px}
 
@@ -134,7 +134,7 @@
   .csuccess.is-on{display:block;animation:fade .3s var(--ease)}
   .csuccess .ok{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;margin:0 auto 16px;background:var(--pos-dim);border:1px solid rgba(86,211,154,.4)}
   .csuccess .ok .ic{width:26px;height:26px;stroke:var(--pos);stroke-width:2.2}
-  .csuccess h3{font-family:var(--serif);font-size:24px;margin-bottom:10px}
+  .csuccess h3{font-family:var(--sans);font-size:24px;margin-bottom:10px}
   .csuccess p{color:var(--muted);font-size:14px;max-width:38ch;margin:0 auto 8px}
   .url-recap{display:flex;flex-direction:column;gap:6px;margin:18px auto;max-width:340px;text-align:left}
   .url-recap span{font-family:var(--mono);font-size:11.5px;color:var(--muted);padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -147,7 +147,7 @@
   .modal-x:hover{color:var(--ink);background:var(--card-2)}
   .modal-ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--grad);color:#23120a;margin-bottom:16px;box-shadow:0 8px 24px rgba(227,113,63,.3)}
   .modal-ic .ic{width:21px;height:21px;stroke:#23120a;stroke-width:2}
-  .modal h3{font-family:var(--serif);font-size:24px;letter-spacing:-.01em;margin-bottom:8px}
+  .modal h3{font-family:var(--sans);font-size:24px;letter-spacing:-.01em;margin-bottom:8px}
   .modal .modal-body{color:var(--muted);font-size:13.5px;margin-bottom:18px;max-width:42ch}
   .chips{display:flex;flex-direction:column;gap:7px;margin:12px 0}
   .chip{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);animation:fade .2s var(--ease)}
@@ -161,7 +161,7 @@
   .modal-msg.err{color:var(--neg)} .modal-msg.warn{color:var(--warn)} .modal-msg.ok{color:var(--pos)}
 </style>
 <link rel="stylesheet" href="css/liquid-glass.css?v=20260731-2" />
-<link rel="stylesheet" href="css/signup-refine.css?v=2" />
+<link rel="stylesheet" href="css/signup-refine.css?v=20260912-type-1" />
 <link rel="stylesheet" href="css/analytics.css?v=20260820-3" />
 <link rel="stylesheet" href="css/backer-dock.css?v=20260821-2" />
 </head>

@@ -60,8 +60,8 @@
   line-height:.92;letter-spacing:-.055em;text-wrap:balance;
 }
 .faq-masthead h1 em{
-  display:block;font-family:var(--serif);font-weight:400;font-style:italic;
-  letter-spacing:-.025em;color:rgba(245,243,238,.88);
+  display:block;font-family:inherit;font-weight:inherit;font-style:normal;
+  letter-spacing:inherit;color:rgba(245,243,238,.88);
 }
 .faq-masthead-copy>p{
   max-width:620px;margin-top:24px;color:var(--muted);

@@ -199,7 +199,7 @@ ul,ol{list-style:none}
 .chap-head h2{
   font-size:clamp(30px,5.2vw,60px);line-height:1.02;font-weight:700;letter-spacing:-.035em;
 }
-.chap-head h2 em{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.01em}
+.chap-head h2 em,.chap-head h2 i{font-family:inherit;font-style:normal;font-weight:inherit;letter-spacing:inherit}
 .chap-lead{margin-top:22px;color:var(--muted);font-size:clamp(15px,1.7vw,18px);max-width:620px}
 .chap-lead strong{color:var(--ink);font-weight:600}
 
@@ -208,7 +208,7 @@ ul,ol{list-style:none}
   margin-top:clamp(34px,5vh,56px);font-size:clamp(22px,3.4vw,40px);font-weight:600;
   letter-spacing:-.03em;line-height:1.12;max-width:900px;
 }
-.bigline em{font-family:var(--serif);font-style:italic;font-weight:400}
+.bigline em,.bigline i{font-family:inherit;font-style:normal;font-weight:inherit;letter-spacing:inherit}
 .disclaimer{margin-top:30px;font-family:var(--mono);font-size:11px;color:var(--muted-2);letter-spacing:.03em}
 
 /* reveal */
@@ -257,7 +257,7 @@ body.deck-snap .chapter{scroll-snap-align:start;scroll-snap-stop:always}
   font-size:clamp(46px,9vw,104px);line-height:.96;font-weight:700;letter-spacing:-.045em;
   text-shadow:0 2px 50px rgba(0,0,0,.6);
 }
-.cold-h em{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.01em}
+.cold-h em,.cold-h i{font-family:inherit;font-style:normal;font-weight:inherit;letter-spacing:inherit}
 .cold-sub{
   max-width:600px;margin:28px auto 0;color:var(--muted);font-size:clamp(15px,1.8vw,19px);
   text-shadow:0 1px 20px rgba(0,0,0,.6);
@@ -499,7 +499,7 @@ body.deck-snap .chapter{scroll-snap-align:start;scroll-snap-stop:always}
 .opener-sym{display:inline-block;margin-bottom:12px;border-color:rgba(233,189,134,.4);color:var(--accent)}
 .opener-name{font-size:clamp(26px,4vw,44px);font-weight:700;letter-spacing:-.03em;line-height:1.04}
 .opener-prices{display:block;font-weight:500;color:var(--muted)}
-.opener-prices em{font-family:var(--serif);font-style:italic;color:var(--ink)}
+.opener-prices em,.opener-prices i{font-family:inherit;font-style:normal;font-weight:inherit;letter-spacing:inherit;color:var(--ink)}
 .opener-text{margin-top:18px;color:var(--muted);font-size:clamp(15px,1.8vw,18px);max-width:760px}
 .opener-text strong{color:var(--ink);font-weight:600}
 
@@ -642,7 +642,7 @@ body.deck-snap .chapter{scroll-snap-align:start;scroll-snap-stop:always}
 .poa{border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(24px,3.4vw,40px);background:linear-gradient(180deg,rgba(86,211,154,.03),rgba(255,255,255,0))}
 .poa-head{margin-bottom:24px}
 .poa-questions{margin-top:16px;display:flex;gap:14px;flex-wrap:wrap}
-.poa-q{font-family:var(--serif);font-style:italic;font-size:clamp(22px,3.2vw,34px);color:var(--ink)}
+.poa-q{font-family:var(--sans);font-style:normal;font-size:clamp(22px,3.2vw,34px);color:var(--ink)}
 .poa-q:first-child{color:var(--pos)}
 .poa-q:last-child{color:var(--accent)}
 .poa-bands{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}

@@ -90,8 +90,8 @@ body.search-full .sx-hero-stage{min-height:100svh}
 }
 .sx-hero-title-main{display:block;white-space:nowrap}
 .sx-hero-title-sub{
-  display:block;white-space:nowrap;font-family:var(--serif);font-size:.8em;
-  font-weight:400;font-style:italic;line-height:1;letter-spacing:-.025em;
+  display:block;white-space:nowrap;font-family:inherit;font-size:.8em;
+  font-weight:inherit;font-style:normal;line-height:1;letter-spacing:inherit;
 }
 .sx-lede{font-weight:600;color:var(--muted);font-size:clamp(15px,1.7vw,18px);margin:16px 0 0}
 .sx-hero-content .big-search{

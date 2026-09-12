@@ -76,8 +76,9 @@
   text-wrap:balance;
 }
 
-.page-signup .al-head strong{font-weight:500;white-space:nowrap}
-.page-signup .al-head em{display:inline-block;margin-top:.08em;font-weight:400;white-space:nowrap}
+.page-signup .al-head strong,
+.page-signup .al-head em{font-family:inherit;font-style:normal;font-weight:inherit;letter-spacing:inherit;white-space:nowrap}
+.page-signup .al-head em{display:inline-block;margin-top:.08em}
 
 .page-signup .al-sub{
   max-width:48ch;
