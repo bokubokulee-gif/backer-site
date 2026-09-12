@@ -261,7 +261,8 @@
 }
 </style>
 <link rel="stylesheet" href="css/backer-dock.css?v=20260912-coverage-1" />
-<link rel="stylesheet" href="css/pitch2.css?v=20260912-brand-headings-1" />
+<link rel="stylesheet" href="css/pitch2.css?v=20260912-hero-eye-1" />
+<link rel="stylesheet" href="css/pitch2-eye.css?v=20260912-eye-1" />
 <link rel="stylesheet" href="css/pitch2-attention.css?v=20260912-eyes-2" />
 <link rel="stylesheet" href="css/pitch2-research.css?v=20260912-brand-headings-1" />
 <link rel="stylesheet" href="css/pitch2-market.css?v=20260910-5" />
@@ -288,6 +289,7 @@
 <main id="site">
 <section class="hero p2-hero" id="home">
   <div class="hero-inner reveal">
+    <img class="p2-brand-mark p2-hero-mark" src="img/backer-mark.png?v=2" alt="" width="88" height="88" fetchpriority="high">
     <h1 class="hero-title">Predict <span class="p2-headline-effect" data-bubble-text><span class="p2-title-where">where</span> <em class="grad-text">attention flows</em></span></h1>
     <p class="p2-hero-line"><strong>Act before</strong> <em data-bubble-text>everyone else catches on.</em></p>
   </div>
@@ -556,7 +558,12 @@
 
     <div class="val-asset reveal">
       <div class="val-asset-head">
-        <span class="val-asset-kicker"><i></i>And the asset base is already funded</span>
+        <span class="p2-asset-eye" data-p2-eye aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+            <path class="p2-asset-eye__outline" d="M21.544 11.045C21.848 11.4713 22 11.6845 22 12C22 12.3155 21.848 12.5287 21.544 12.955C20.1779 14.8706 16.6892 19 12 19C7.31078 19 3.8221 14.8706 2.45604 12.955C2.15201 12.5287 2 12.3155 2 12C2 11.6845 2.15201 11.4713 2.45604 11.045C3.8221 9.12944 7.31078 5 12 5C16.6892 5 20.1779 9.12944 21.544 11.045Z"/>
+            <circle class="p2-asset-eye__pupil" cx="12" cy="12" r="3"/>
+          </svg>
+        </span>
         <h3>Capital already flows to people on the internet.</h3>
       </div>
       <div class="val-asset-network">
@@ -625,10 +632,6 @@
               <div class="val-globe-labels" data-globe-labels></div>
             </div>
           </div>
-          <figcaption class="val-globe-status">
-            <span class="mono">GLOBAL CREATOR FLOW</span>
-            <span>illustrative map</span>
-          </figcaption>
         </figure>
 
         <article class="val-branch-stat val-branch-stat-market">
@@ -716,6 +719,7 @@
 <script src="js/sections.js?v=2"></script>
 <script src="js/bubble-text.js?v=1"></script>
 <script src="js/pitch2.js?v=20260912-polish-1"></script>
+<script src="js/pitch2-eye.js?v=20260912-eye-1" defer></script>
 <script src="js/pitch2-attention.js?v=20260912-polish-1" defer></script>
 <script src="js/pitch2-research.js?v=20260912-polish-1"></script>
 <script src="js/pitch2-market.js?v=20260910-5"></script>
