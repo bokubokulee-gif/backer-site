@@ -120,3 +120,5 @@ Shift readability follow-up: bold the three attention paragraphs with a scoped 7
 - Use the same font and font size on every line of the Market intro card. Preserve its sentence-per-line layout and use more transparent, scoped glass fills.
 - Rewrite all four decision cards around specific commercial decisions and measurable tradeoffs. Keep their proposed research status clear without repetitive promotional phrasing.
 - Verify both pitch pages at mobile and desktop sizes, each decision tab, playback rate/controls and the complete hero interaction before publishing.
+
+Emoji alignment follow-up: enlarge the attention replacement to 1.25 times its original size and center it vertically within the preserved word box. Keep the original hover sequence, rotation timing, surrounding headline layout and accessible text on both pitch routes.
