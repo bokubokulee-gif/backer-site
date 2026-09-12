@@ -122,3 +122,5 @@ Shift readability follow-up: bold the three attention paragraphs with a scoped 7
 - Verify both pitch pages at mobile and desktop sizes, each decision tab, playback rate/controls and the complete hero interaction before publishing.
 
 Emoji alignment follow-up: enlarge the attention replacement to 1.25 times its original size and center it vertically within the preserved word box. Keep the original hover sequence, rotation timing, surrounding headline layout and accessible text on both pitch routes.
+
+Section identity follow-up: give Backer Market the same centered Backer mark and gold uppercase label as Backer AI Lab. Share the 38–48px logo, 14px logo-to-label gap and label typography across both sections and pitch routes. Keep Market's semantic h2 and existing content sizing; match the 17px spacing below its label. Verify mobile and desktop appearance before publication.

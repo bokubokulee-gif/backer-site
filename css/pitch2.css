@@ -8,6 +8,9 @@
 .page-pitch2 .section-head{max-width:860px;margin-bottom:44px}
 .page-pitch2 .section-head h2{font-size:clamp(36px,4.7vw,59px);line-height:1.09;letter-spacing:-.04em;text-wrap:balance}
 .page-pitch2 .section-head h2 em{display:inline-block;padding-bottom:.08em}
+/* Shared Lab and Market identity; retain heading semantics without headline sizing. */
+.p2-brand-mark{display:block;width:clamp(38px,4vw,48px);height:auto;aspect-ratio:1;object-fit:contain;margin:0 auto 14px}
+.page-pitch2 .p2-brand-label,.page-pitch2 .section-head .p2-brand-label{display:block;margin:0 0 17px;color:var(--accent,#e9bd86);font-family:var(--sans);font-size:11px;font-weight:600;font-style:normal;line-height:1.55;letter-spacing:.16em;text-transform:uppercase;text-align:center}
 .page-pitch2 .section-lead{font-size:18px;max-width:690px;line-height:1.7;color:#b8b4ac;margin-top:24px}
 .page-pitch2 .kicker{font-size:10px;letter-spacing:.16em;margin-bottom:20px}
 /* Keep complete Shift sentences together at every container width. */
@@ -64,7 +67,7 @@
 .p2-market-story li{display:grid;grid-template-columns:130px 1fr;gap:12px;font-size:13px}
 .p2-market-story li b{font-weight:500;color:var(--accent)}
 .p2-market-story li span{color:var(--muted)}
-.p2-market-mission{margin:21px auto 0;font-size:clamp(9px,2.75cqw,25px);line-height:1.4;letter-spacing:-.025em;white-space:nowrap;text-align:center}
+.p2-market-mission{margin:0 auto;font-size:clamp(9px,2.75cqw,25px);line-height:1.4;letter-spacing:-.025em;white-space:nowrap;text-align:center}
 .page-pitch2 .p2-market .p2-market-intro{--lg-fg-warm:linear-gradient(135deg,rgba(244,171,99,.065),rgba(244,171,99,.015));--lg-fg-dark:linear-gradient(135deg,rgba(22,22,27,.32),rgba(12,12,15,.20));--lg-blur:8px;--lg-sat:125%;font-family:var(--sans);width:min(100%,900px);max-width:none;margin:26px auto 0;padding:clamp(18px,3cqw,30px) clamp(10px,2cqw,24px);border:1px solid var(--lg-bd-warm);border-radius:18px;background:var(--lg-fg-warm),var(--lg-fg-dark);box-shadow:var(--lg-rim);-webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat));backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) url(#liquid-glass);color:var(--ink);font-size:min(18px,2.18cqw);font-weight:700;line-height:1.6;text-align:center}
 .p2-market-intro>span{display:block;white-space:nowrap}
 .p2-market-intro>span+span{margin-top:12px}
