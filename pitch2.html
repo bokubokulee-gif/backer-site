@@ -261,8 +261,9 @@
 }
 </style>
 <link rel="stylesheet" href="css/backer-dock.css?v=20260912-coverage-1" />
-<link rel="stylesheet" href="css/pitch2.css?v=20260912-shift-bold-1" />
-<link rel="stylesheet" href="css/pitch2-research.css?v=20260912-type-1" />
+<link rel="stylesheet" href="css/pitch2.css?v=20260912-polish-1" />
+<link rel="stylesheet" href="css/pitch2-attention.css?v=20260912-polish-1" />
+<link rel="stylesheet" href="css/pitch2-research.css?v=20260912-polish-1" />
 <link rel="stylesheet" href="css/pitch2-market.css?v=20260910-5" />
 <link rel="stylesheet" href="css/pitch2-questions.css?v=20260912-type-1" />
 <link rel="canonical" href="https://bokubokulee-gif.github.io/backer-site/pitch2.html" />
@@ -351,6 +352,7 @@
 </section>
   <section class="section p2r" id="research" aria-labelledby="research-heading">
     <div class="p2r-heading reveal">
+      <img class="p2r-mark" src="img/backer-mark.png?v=2" alt="" width="48" height="48">
       <span class="p2r-kicker">Backer AI Lab</span>
       <h2 id="research-heading">Simulates the future.<br><em>For better decision making.</em></h2>
       <p>We use multi-agent simulations to model how people and AI agents respond to information, influence one another, and decide what deserves their time or resources.</p>
@@ -360,7 +362,7 @@
       <article class="p2r-card reveal" data-research-card="trading" aria-labelledby="research-trading-title">
         <div class="p2r-card-copy">
           <h3 id="research-trading-title"><a href="research-lab/" target="_blank" rel="noopener">Trading behavior <span class="p2r-card-index" aria-hidden="true">01</span></a></h3>
-          <p>Explore how simulated traders respond to information, conviction, and one another.</p>
+          <p>Explore how simulated traders respond to real world information, conviction, and one another.</p>
         </div>
         <div class="p2r-window" data-research-window>
           <a class="p2r-preview-link" href="research-lab/" target="_blank" rel="noopener" aria-label="Open interactive Trading behavior research preview">
@@ -374,12 +376,12 @@
       <article class="p2r-card reveal" data-research-card="flow" aria-labelledby="research-flow-title">
         <div class="p2r-card-copy">
           <h3 id="research-flow-title"><a href="research-lab/attention-flow.html" target="_blank" rel="noopener">Attention flow <span class="p2r-card-index" aria-hidden="true">02</span></a></h3>
-          <p>Explore how attention moves, gathers, and fades across simulated web environments.</p>
+          <p>Explore how attention moves, gathers, and fades across the web.</p>
         </div>
         <div class="p2r-window" data-research-window>
           <a class="p2r-preview-link" href="research-lab/attention-flow.html" target="_blank" rel="noopener" aria-label="Open interactive Attention flow research preview">
             <img class="p2r-poster" src="media/research/flow.webp" alt="Recorded view of attention gathering and moving across a simulated web environment." loading="lazy" decoding="async" width="720" height="480">
-            <video class="p2r-video" id="research-recording-flow" data-research-video data-title="Attention flow" data-src="media/research/flow.mp4" preload="none" muted loop playsinline aria-hidden="true" tabindex="-1"></video>
+            <video class="p2r-video" id="research-recording-flow" data-research-video data-playback-rate="1.4" data-title="Attention flow" data-src="media/research/flow.mp4" preload="none" muted loop playsinline aria-hidden="true" tabindex="-1"></video>
           </a>
           <button class="p2r-playback" type="button" aria-label="Play recorded Attention flow preview" aria-controls="research-recording-flow" data-research-playback hidden><span aria-hidden="true" data-research-playback-icon>▶</span></button>
         </div>
@@ -459,7 +461,7 @@
 </section>
 <section class="section p2-decisions" id="decisions">
   <div class="section-head reveal"><span class="kicker">From prediction to action</span><h2>Businesses will know what to do<br /><em>Before spending a dime.</em></h2><p class="section-lead">Our ambition reaches beyond forecasting popularity: help businesses anticipate how people allocate attention and make decisions.</p></div>
-  <div class="p2-decisions-layout reveal"><div class="p2-decision-tabs" role="tablist" aria-label="Business decisions" aria-orientation="vertical"><button type="button" role="tab" id="decision-tab-customers" aria-selected="true" aria-controls="decision-panel" data-decision="customers">Customers <span aria-hidden="true">↗</span></button><button type="button" role="tab" id="decision-tab-audiences" aria-selected="false" tabindex="-1" aria-controls="decision-panel" data-decision="audiences">Audiences <span aria-hidden="true">↗</span></button><button type="button" role="tab" id="decision-tab-creators" aria-selected="false" tabindex="-1" aria-controls="decision-panel" data-decision="creators">Creators <span aria-hidden="true">↗</span></button><button type="button" role="tab" id="decision-tab-adspend" aria-selected="false" tabindex="-1" aria-controls="decision-panel" data-decision="adspend">Ad spend <span aria-hidden="true">↗</span></button></div><div id="decision-panel" class="p2-decision-panel" role="tabpanel" aria-labelledby="decision-tab-customers" tabindex="0"><span class="p2-label" data-decision-kicker>The next customer</span><h3 data-decision-title>What will move someone from interest to purchase?</h3><p data-decision-copy>Explore how different customer groups may respond to an offer, message, or product before committing to a launch.</p><div class="p2-decision-question"><span>Research question</span><p data-decision-question>Who is likely to act, under which conditions?</p></div><small>Proposed applications. Each outcome requires its own real-world evaluation.</small></div></div>
+  <div class="p2-decisions-layout reveal"><div class="p2-decision-tabs" role="tablist" aria-label="Business decisions" aria-orientation="vertical"><button type="button" role="tab" id="decision-tab-customers" aria-selected="true" aria-controls="decision-panel" data-decision="customers">Customers <span aria-hidden="true">↗</span></button><button type="button" role="tab" id="decision-tab-audiences" aria-selected="false" tabindex="-1" aria-controls="decision-panel" data-decision="audiences">Audiences <span aria-hidden="true">↗</span></button><button type="button" role="tab" id="decision-tab-creators" aria-selected="false" tabindex="-1" aria-controls="decision-panel" data-decision="creators">Creators <span aria-hidden="true">↗</span></button><button type="button" role="tab" id="decision-tab-adspend" aria-selected="false" tabindex="-1" aria-controls="decision-panel" data-decision="adspend">Ad spend <span aria-hidden="true">↗</span></button></div><div id="decision-panel" class="p2-decision-panel" role="tabpanel" aria-labelledby="decision-tab-customers" tabindex="0"><span class="p2-label" data-decision-kicker>Pricing and demand</span><h3 data-decision-title>How much pricing power do we have?</h3><p data-decision-copy>Assess how buyers trade down, delay purchases or switch suppliers as prices rise, and what those responses mean for revenue, margins and market share.</p><div class="p2-decision-question"><span>Decision to test</span><p data-decision-question>Would passing higher costs through to customers protect margins after accounting for lost sales?</p></div><small>Proposed applications. Each needs validation against observed business outcomes.</small></div></div>
   <div class="p2-business-model reveal"><div><span>Backer AI Lab</span><h3>Intelligence for decisions.</h3></div><div><span>Backer Market</span><h3>A share of market activity.</h3></div></div>
 
 </section>
@@ -712,8 +714,9 @@
 <script src="js/analytics.js?v=20260826-perf-1"></script>
 <script src="js/sections.js?v=2"></script>
 <script src="js/bubble-text.js?v=1"></script>
-<script src="js/pitch2.js?v=20260910-8"></script>
-<script src="js/pitch2-research.js?v=20260910-8"></script>
+<script src="js/pitch2.js?v=20260912-polish-1"></script>
+<script src="js/pitch2-attention.js?v=20260912-polish-1" defer></script>
+<script src="js/pitch2-research.js?v=20260912-polish-1"></script>
 <script src="js/pitch2-market.js?v=20260910-5"></script>
 <script src="js/pitch2-questions.js?v=20260910-5" defer></script>
 <script type="module" src="js/globe-live.mjs?v=20260821-1"></script>

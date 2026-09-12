@@ -111,3 +111,12 @@ Replace pitch.html with the complete current pitch2.html page, including all cop
 Research navigation follow-up: on both pitch routes, rename the link above the preview cards to “Explore Backer Research” and navigate to research.html in the same tab. Use the existing outward-arrow convention and matching hover direction instead of the previous scroll-down arrow; preserve typography and responsive spacing.
 
 Shift readability follow-up: bold the three attention paragraphs with a scoped 700 font weight on both pitch routes. Preserve the existing wording, alignment and one-sentence-per-line behavior. The Andrej Karpathy sentence supplied with the annotation is the image alt description and remains accessible alt text.
+
+## September 12 annotation polish
+
+- Preserve the hero's gradient and letter hover response. After that response, animate only the word “attention” into 👀 and back with a smooth rotation; retain the word's layout space and accessible text. Hover/tap repeats the sequence; pointer exit and reduced motion must restore a stable heading.
+- Center the existing Backer mark above the Backer AI Lab kicker, at a restrained responsive size.
+- Play the Attention Flow recording at 1.4× while preserving visible-only playback and pause/resume. Apply the exact new Trading behavior and Attention flow descriptions on both pitch routes.
+- Use the same font and font size on every line of the Market intro card. Preserve its sentence-per-line layout and use more transparent, scoped glass fills.
+- Rewrite all four decision cards around specific commercial decisions and measurable tradeoffs. Keep their proposed research status clear without repetitive promotional phrasing.
+- Verify both pitch pages at mobile and desktop sizes, each decision tab, playback rate/controls and the complete hero interaction before publishing.

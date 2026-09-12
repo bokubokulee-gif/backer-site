@@ -26,11 +26,31 @@
   }
 
   const decisionCopy = {
-    customers: ['The next customer', 'What will move someone from interest to purchase?', 'Explore how different customer groups may respond to an offer, message, or product before committing to a launch.', 'Who is likely to act, under which conditions?'],
-    audiences: ['The next audience', 'Where will the next wave of attention come from?', 'Study how interest can move between communities, which audiences may respond, and where attention is more likely to persist.', 'Which communities will care, share, and return?'],
-    creators: ['The next partnership', 'Which creators will earn the attention that matters?', 'Assess how a creator, their content, and an audience fit together before choosing a partnership or sponsorship.', 'Whose audience is likely to respond to this message?'],
-    adspend: ['The next dollar', 'Where should the next dollar of ad spend go?', 'Compare audiences, messages, and distribution scenarios before allocating budget, then test the predictions against campaign outcomes.', 'Which allocation is worth testing before scaling spend?']
-  };
+    "customers": [
+        "Pricing and demand",
+        "How much pricing power do we have?",
+        "Assess how buyers trade down, delay purchases or switch suppliers as prices rise, and what those responses mean for revenue, margins and market share.",
+        "Would passing higher costs through to customers protect margins after accounting for lost sales?"
+    ],
+    "audiences": [
+        "Emerging demand",
+        "Will growing attention expand the market?",
+        "Test whether growing attention signals new demand, a shift from an existing category, or a passing spike. Compare how each spreads across customer groups and regions.",
+        "Will rising interest in a new category expand the market or draw spending away from existing products?"
+    ],
+    "creators": [
+        "Partnership economics",
+        "How much new demand does each partnership bring?",
+        "Evaluate creator partnerships as a portfolio: audience overlap, customer fit and the purchases each partnership could add beyond existing campaigns.",
+        "Would adding another creator reach new customers, or pay again to influence the same audience?"
+    ],
+    "adspend": [
+        "Budget allocation",
+        "Which channels deserve more budget?",
+        "Compare reallocating spend with holding the current mix. Account for audience saturation, delayed purchases and sales that would happen without advertising.",
+        "Which channel gains incremental profit from more spend, and which has reached diminishing returns?"
+    ]
+};
   function wireTabs(selector, key, onChange) {
     const tabs = [...document.querySelectorAll(selector)];
     const select = (tab, focus = false) => {

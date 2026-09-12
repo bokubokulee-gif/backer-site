@@ -83,6 +83,9 @@
     states.push(state);
     video.muted = true;
     video.defaultMuted = true;
+    const playbackRate = Number(video.dataset.playbackRate) || 1;
+    video.defaultPlaybackRate = playbackRate;
+    video.playbackRate = playbackRate;
     video.addEventListener('loadeddata', () => {
       if (!state.failed) windowEl.classList.add('has-frame');
     });
