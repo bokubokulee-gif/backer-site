@@ -3,6 +3,7 @@
 (function () {
   'use strict';
 
+  var siteRoot = new URL('../', document.currentScript.src);
   var STORAGE_KEY = 'backer_shared_dock_v1';
   var MARGIN = 12;
   var DRAG_THRESHOLD = 7;
@@ -49,6 +50,8 @@
     if (/backermarket\.html$/.test(path) && query.get('source') === 'market-archive') return '';
     if (/backermarket\.html$/.test(path)) return 'trades';
     if (/backercreate\.html$/.test(path)) return 'discovery';
+    if ([siteRoot.pathname, new URL('index.html', siteRoot).pathname, new URL('backerdemo.html', siteRoot).pathname]
+      .map(function (route) { return route.toLowerCase(); }).indexOf(path) < 0) return '';
     if (/^#market-archive(?:\?|$)/.test(hash)) return '';
     if (/^#trades(?:\?|$)/.test(hash) || /^#market(?:\?|$)/.test(hash)) return 'trades';
     if (/^#search(?:\?|$)/.test(hash)) return 'search';
@@ -59,6 +62,7 @@
   }
 
   function linkHTML(key, href, label, icon, extraClass) {
+    href = new URL(href, siteRoot).href;
     return '<a class="backer-dock-link backer-dock-' + key + (extraClass ? ' ' + extraClass : '') + '" href="' + href + '" data-route="' + key + '" data-label="' + label + '" aria-label="' + label + '">' + icon + '</a>';
   }
 
@@ -82,6 +86,8 @@
   }
 
   function start() {
+    // An embedded preview uses the surrounding page's navigation.
+    if (window.self !== window.top) return;
     if (!document.body || document.querySelector('.backer-float-dock')) return;
     var state = readState();
     var dock = buildDock();
