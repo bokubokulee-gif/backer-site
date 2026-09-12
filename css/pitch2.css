@@ -22,6 +22,7 @@
 /* A full opening viewport; content can grow naturally when zoomed. */
 .page-pitch2 .p2-hero{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;justify-content:center;padding:120px 24px 72px;text-align:center;gap:44px}
 .page-pitch2 .p2-hero .hero-inner{max-width:1200px;container-type:inline-size}
+.p2-hero-mark{width:clamp(64px,7cqw,88px);margin-bottom:clamp(24px,3cqw,36px)}
 .page-pitch2 .p2-hero .hero-title{display:block;font-size:clamp(20px,7vw,88px);font-size:clamp(20px,7cqw,88px);line-height:1.12;letter-spacing:-.05em;max-width:none;margin:0 auto;white-space:nowrap}
 .page-pitch2 .p2-hero .hero-title em{display:inline-block;padding:0 .05em .09em;line-height:1.13;letter-spacing:inherit}
 .p2-hero-line{font-size:clamp(20px,3.9cqw,46px);line-height:1.25;letter-spacing:-.03em;margin:18px 0 0;text-wrap:balance;font-weight:700}
