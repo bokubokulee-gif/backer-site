@@ -95,11 +95,13 @@
 .p2-creator-points li{position:relative;padding:18px 0 18px 22px;border-top:1px solid rgba(233,189,134,.16);text-wrap:pretty}
 .p2-creator-points li:last-child{padding-bottom:0}
 .p2-creator-points li::before{content:"";position:absolute;left:0;top:calc(18px + .58em);width:5px;height:5px;border-radius:50%;background:var(--accent)}
-.p2-creator-share{display:grid;grid-template-columns:64px minmax(0,1fr);gap:28px;border:1px solid rgba(233,189,134,.32);border-radius:24px;padding:clamp(32px,4vw,48px);margin-top:40px;background:radial-gradient(ellipse at 0 0,rgba(233,189,134,.12),transparent 65%),#101013;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 20px 50px rgba(0,0,0,.18)}
+.p2-creator-share{display:grid;grid-template-columns:minmax(0,1fr);container-type:inline-size;gap:22px;border:1px solid rgba(233,189,134,.32);border-radius:24px;padding:clamp(32px,4vw,48px);margin-top:40px;background:radial-gradient(ellipse at 0 0,rgba(233,189,134,.12),transparent 65%),#101013;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 20px 50px rgba(0,0,0,.18)}
 .p2-share-symbol{display:grid;place-items:center;width:64px;height:64px;border:1px solid rgba(233,189,134,.2);border-radius:18px;background:rgba(233,189,134,.06);color:var(--accent)}
 .p2-share-symbol svg{display:block;width:48px;height:48px}
 .p2-word-effect{display:inline-block;overflow:visible}
-.p2-creator-share h3{max-width:800px;font-size:clamp(28px,3.8vw,38px);font-weight:700;line-height:1.16;letter-spacing:-.035em;margin-bottom:26px;text-wrap:balance}
+.p2-creator-share h3{max-width:none;font-size:clamp(28px,3.8vw,38px);font-weight:700;line-height:1.16;letter-spacing:-.035em;margin-bottom:26px;text-wrap:balance}
+/* Use the full card width for a single-line title; phones retain readable wrapping. */
+@media(min-width:701px){.p2-creator-share h3{font-size:min(38px,3.9cqw);white-space:nowrap;text-wrap:nowrap}}
 .p2-creator-share h3 span{color:var(--accent)}
 .p2-creator-share p{color:#bdb8ae;font-size:15px;line-height:1.75;max-width:780px}
 .p2-revenue-path{display:flex;align-items:center;flex-wrap:wrap;gap:16px;font-size:12px;margin-top:24px}
