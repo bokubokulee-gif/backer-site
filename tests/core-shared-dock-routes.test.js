@@ -18,13 +18,25 @@ function occurrences(source, expression) {
   return Array.from(source.matchAll(expression)).length;
 }
 
-test('every public Backer HTML page mounts exactly one shared dock and no legacy dock', () => {
+test('public pages mount one shared dock; locked Portfolio is only a waitlist redirect', () => {
   assert.ok(PUBLIC_HTML.includes('research-lab/index.html'), 'the inventory must include nested research pages');
   assert.ok(PUBLIC_HTML.includes('admin/analytics/index.html'), 'the inventory must include the published admin entry');
   assert.ok(PUBLIC_HTML.includes('research-lab/attention-simulatoin.html'), 'the inventory must include published redirect aliases');
 
   for (const file of PUBLIC_HTML) {
     const source = fs.readFileSync(path.join(ROOT, file), 'utf8');
+    if (file === 'portfolio.html') {
+      const gate = source.match(/<script\b[^>]*src="js\/access-gate\.js(?:\?[^"<>]+)?"[^>]*><\/script>/);
+      assert.ok(gate, 'Portfolio redirect must load the shared access policy');
+      assert.doesNotMatch(gate[0], /\b(?:async|defer)\b/, 'Portfolio guard must run before body rendering');
+      assert.ok(source.indexOf(gate[0]) < source.indexOf('<body'), 'Portfolio guard must be in the head');
+      assert.match(source, /<meta\s+http-equiv="refresh"\s+content="0;url=waitlist\.html\?source=portfolio"\s*\/>/);
+      assert.match(source, /<a\s+href="waitlist\.html\?source=portfolio">Join the waitlist<\/a>/);
+      assert.doesNotMatch(source, /id="(?:tradesPortfolio|investorMode|creatorMode|mTrades|mInvestor)"/);
+      assert.doesNotMatch(source, /(?:trades-portfolio|trades-position-store|poa-terminal)\.js/);
+      assert.doesNotMatch(source, /data-backer-dock|backer-dock\.(?:js|css)/, 'redirects do not mount transient navigation');
+      continue;
+    }
     const styles = Array.from(source.matchAll(/<link\b[^>]*\bhref=["']([^"']*css\/backer-dock\.css(?:\?[^"']*)?)["'][^>]*>/g));
     const scripts = Array.from(source.matchAll(/<script\b[^>]*\bsrc=["']([^"']*js\/backer-dock\.js(?:\?[^"']*)?)["'][^>]*>/g));
     assert.equal(styles.length, 1, `${file} must load the shared dock stylesheet exactly once`);
@@ -131,7 +143,7 @@ test('shared dock links resolve from the deployment root on public and nested ro
         discovery: new URL('backerdemo.html#market2', siteURL).href,
         home: new URL('backerdemo.html', siteURL).href,
         trades: new URL('backerdemo.html#trades', siteURL).href,
-        portfolio: new URL('portfolio.html', siteURL).href
+        portfolio: new URL('waitlist.html?source=portfolio', siteURL).href
       }, `${route} must not send navigation into its own nested directory`);
     }
   }

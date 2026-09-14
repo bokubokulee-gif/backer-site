@@ -11,6 +11,9 @@ const destination = path.resolve(process.argv[2] || '');
 
 const PUBLIC_FILES = Object.freeze([
   '.nojekyll',
+  'js/card-glow.js',
+  'css/card-glow.css',
+  'js/access-gate.js',
   'index.html',
   'admin/analytics/index.html',
   'backercreate.html',

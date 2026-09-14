@@ -83,6 +83,9 @@ function makeHarness({ hash = '#trades', account = null, initial = {}, model = s
     querySelector() { return null; }, querySelectorAll() { return []; }
   };
   const windowObject = {
+    // Isolate the retained paper-model math from the launch access policy.
+    // core-access-gate.test.js exercises the real always-closed public gate.
+    BackerAccessGate: { requireWaitlist: () => false },
     BACKER: { fmt: String },
     BackerTradeCatalog: { load: async () => model },
     BackerMarketDraftStore: { list: () => [] },
@@ -219,9 +222,9 @@ test('public Trades loader requests the real catalog model before the view and n
   const catalogIndex = app.indexOf("loadTradesScript('js/trades-catalog-model.js");
   const viewIndex = app.indexOf("loadTradesScript('js/market.js");
   assert.ok(catalogIndex >= 0 && viewIndex > catalogIndex, 'the catalog projection must initialize before the Trades view');
-  assert.match(app, /css\/market\.css\?v=20260831-trades-news-2/);
+  assert.match(app, /css\/market\.css\?v=[\w.-]+/);
   assert.match(app, /js\/trades-catalog-model\.js\?v=20260826-perf-1/);
-  assert.match(app, /js\/market\.js\?v=20260831-trades-news-2/);
+  assert.match(app, /js\/market\.js\?v=[\w.-]+/);
   assert.match(market, /js\/trades-catalog-model\.js\?v=20260826-perf-1/);
   assert.match(market, /Latest source-backed work and profiles/);
   assert.match(market, /Open original:/);

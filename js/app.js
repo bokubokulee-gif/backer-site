@@ -132,7 +132,7 @@
         loadTradesScript('js/trades-catalog-model.js?v=20260826-perf-1', 'catalog')
       ]);
       tradesAssets = Promise.all([loadTradesStyle(), dependencies])
-        .then(() => loadTradesScript('js/market.js?v=20260910-market-copy-1', 'view'))
+        .then(() => loadTradesScript('js/market.js?v=20260914-access-1', 'view'))
         .then(() => { tradesAssetError = null; })
         .catch((error) => {
           document.querySelectorAll('link[data-backer-trades]:not([data-backer-style-ready="true"])').forEach((node) => node.remove());
@@ -149,7 +149,7 @@
       legacyArchiveAssets = ensureLegacyData()
         .then(() => loadLegacyArchiveStyle())
         .then(() => loadLegacyArchiveScript('js/market-data.js?v=3', 'data'))
-        .then(() => loadLegacyArchiveScript('js/market-archive.js?v=20260822-1', 'view'))
+        .then(() => loadLegacyArchiveScript('js/market-archive.js?v=20260914-access-1', 'view'))
         .then(() => { legacyArchiveError = null; })
         .catch((error) => {
           document.querySelectorAll('link[data-backer-legacy-market]:not([data-backer-style-ready="true"])').forEach((node) => node.remove());
@@ -278,7 +278,7 @@
   const PKEY = 'backer_portfolio_v1';
   function getPortfolio() {
     try { const raw = localStorage.getItem(PKEY); if (raw) return JSON.parse(raw); } catch (e) {}
-    const seed = B.seedPortfolio.slice(); savePortfolio(seed); return seed;
+    return B.seedPortfolio.slice();
   }
   function savePortfolio(p) { try { localStorage.setItem(PKEY, JSON.stringify(p)); } catch (e) {} }
   function markValue(pos) {
@@ -288,6 +288,7 @@
     return pos.invested * f;
   }
   function addPosition(id, amount) {
+    if (!window.BackerAccessGate || window.BackerAccessGate.requireWaitlist('trade')) return;
     const p = getPortfolio();
     const existing = p.find(x => x.id === id && !x.value);
     if (existing) existing.invested += amount;
@@ -342,6 +343,11 @@
   }
 
   async function go(view, arg) {
+    if (view === 'portfolio') {
+      if (window.BackerAccessGate) window.BackerAccessGate.requireWaitlist('portfolio');
+      else window.location.href = 'waitlist.html?source=portfolio';
+      return;
+    }
     if (view === 'market') view = 'trades';
     const routeEpoch = ++navigationEpoch;
     let legacyMarketingError = null;
@@ -373,7 +379,6 @@
     // synchronously so no mixed or unstyled market frame can paint.
     committedRouteView = view;
     setMarketStyles(view);
-    if (view === 'portfolio') { window.location.href = 'portfolio.html'; return; }
     if (view === 'home') {
       if (legacyMarketingError) console.error(legacyMarketingError);
       document.body.classList.remove('body-app', 'mkt-full', 'mkt2-full', 'search-full');
@@ -594,6 +599,7 @@
 
   /* ---------- INVEST MODAL ---------- */
   function openInvestModal(c) {
+    if (!window.BackerAccessGate || window.BackerAccessGate.requireWaitlist('trade')) return;
     const amt = parseFloat($('#investAmt') ? $('#investAmt').value : 25) || 0;
     if (amt < 1) {
       analyticsTrack('market_position_blocked', { creator_id: c.id, instrument: 'milestone', reason: 'below-minimum', source: 'creator' });
@@ -638,6 +644,7 @@
 
   /* ---------- PORTFOLIO ---------- */
   function renderPortfolio(mode) {
+    if (!window.BackerAccessGate || window.BackerAccessGate.requireWaitlist('portfolio')) return;
     const s = portfolioStats();
     const toggle = `<div class="toggle"><button class="${mode === 'investor' ? 'active' : ''}" data-port-mode="investor">Investor</button><button class="${mode === 'creator' ? 'active' : ''}" data-port-mode="creator">Creator</button></div>`;
 
@@ -691,6 +698,7 @@
   }
 
   function openRaiseModal() {
+    if (!window.BackerAccessGate || window.BackerAccessGate.requireWaitlist('create')) return;
     openModal(`
       <button class="modal-x" data-close aria-label="Close"><svg viewBox="0 0 24 24" class="ic"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       <div class="modal-ic" style="background:rgba(244,171,99,.14);color:var(--accent)"><svg viewBox="0 0 24 24" class="ic"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
@@ -755,6 +763,7 @@
     const shareEl = t.closest('[data-share]');
 
     if (confirmBtn) {
+      if (!window.BackerAccessGate || window.BackerAccessGate.requireWaitlist('trade')) return;
       const c = B.byId(confirmBtn.dataset.confirm);
       const amt = parseFloat(confirmBtn.dataset.amt);
       addPosition(c.id, amt);
@@ -763,7 +772,9 @@
       toast(`Position opened in ${c.name.split(' ')[0]}`);
       return;
     }
-    if (raiseSubmit) { closeModal(); toast('Application received — we’ll be in touch'); return; }
+    if (raiseSubmit) {
+      if (!window.BackerAccessGate || window.BackerAccessGate.requireWaitlist('create')) return;
+    }
     if (backBtn) { openInvestModal(B.byId(backBtn.dataset.backCreator)); return; }
     if (shareEl) { toast('Share link copied to clipboard'); try { navigator.clipboard && navigator.clipboard.writeText(location.href); } catch (x) {} return; }
 

@@ -1702,6 +1702,7 @@
 
   /* ---- order ---- */
   function openOrderReview() {
+    if (!window.BackerAccessGate || window.BackerAccessGate.requireWaitlist('trade')) return;
     if (S.asOf !== NDAYS - 1) {
       replay('reset');
       setLive('Returned to the latest market snapshot. Review the current quote before placing a simulated order.');
@@ -1756,6 +1757,7 @@
   }
 
   function placeOrder(confirmed) {
+    if (!window.BackerAccessGate || window.BackerAccessGate.requireWaitlist('trade')) return;
     if (!confirmed) { openOrderReview(); return; }
     if (S.asOf !== NDAYS - 1) {
       replay('reset');

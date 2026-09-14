@@ -487,6 +487,7 @@ window.BackerLegacyMarket = (function () {
       ${bad ? `<p class="mkt-pos-err" role="alert">${bad}</p>` : ''}`;
   }
   function openPosition(c) {
+    if (!window.BackerAccessGate || window.BackerAccessGate.requireWaitlist('trade')) return;
     if (c.mkt.state !== 'OPEN') {
       analyticsTrack('market_position_blocked', { market_id: c.id, creator_id: c.id, instrument: 'milestone', reason: 'market-closed', source: 'market' });
       return;
@@ -518,6 +519,7 @@ window.BackerLegacyMarket = (function () {
     $('.mkt-x', d).focus();
   }
   function confirmPosition(c) {
+    if (!window.BackerAccessGate || window.BackerAccessGate.requireWaitlist('trade')) return;
     const inp = $('#mktAmt', root);
     const amt = Math.round(parseFloat(inp && inp.value) || 0);
     const max = maxFor(c);

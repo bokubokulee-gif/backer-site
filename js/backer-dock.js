@@ -78,7 +78,7 @@
       linkHTML('discovery', 'backerdemo.html#market2', 'Discovery', ICONS.discovery, 'backer-dock-expanded') +
       linkHTML('home', 'backerdemo.html', 'Home', '<span class="backer-dock-orb" aria-hidden="true"></span>', 'backer-dock-home backer-dock-expanded') +
       linkHTML('trades', 'backerdemo.html#trades', 'Trades', ICONS.trades, 'backer-dock-expanded') +
-      linkHTML('portfolio', 'portfolio.html', 'Portfolio', ICONS.portfolio, 'backer-dock-expanded') +
+      linkHTML('portfolio', 'waitlist.html?source=portfolio', 'Portfolio', ICONS.portfolio, 'backer-dock-expanded') +
       '<button class="backer-dock-minimize backer-dock-expanded" type="button" data-label="Minimize" aria-label="Minimize navigation">' + ICONS.minimize + '</button>' +
       '<button class="backer-dock-restore" type="button" aria-label="Restore Backer navigation"><span class="backer-dock-orb" aria-hidden="true"></span></button>';
     (mount || document.body).appendChild(dock);

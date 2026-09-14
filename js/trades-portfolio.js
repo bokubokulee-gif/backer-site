@@ -1,6 +1,9 @@
 /* Standalone Portfolio integration for real-subject paper positions. */
 (function (root) {
   'use strict';
+  if (root.BackerAccessGate) root.BackerAccessGate.requireWaitlist('portfolio', true);
+  else root.location.replace('waitlist.html?source=portfolio');
+  return;
 
   var store = root.BackerTradesPositionStore;
   var catalog = null;

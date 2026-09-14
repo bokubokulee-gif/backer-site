@@ -345,6 +345,7 @@
     state.page = 1;
     var handle = [kind, state.routeSubjectId, state.routeSide].join(':');
     if (state.routeSide && state.routeHandled !== handle) {
+      if (!root.BackerAccessGate || root.BackerAccessGate.requireWaitlist('trade')) return;
       var row = rows[index], sim = subjectSimulation(row), contract = validContract(row);
       if (sim && contract && clean(sim.contractId) === clean(contract.id)) {
         state.ticket = { kind: kind, id: state.routeSubjectId, side: state.routeSide, amount: 25, ack: false };
@@ -878,6 +879,7 @@
     ensureCatalog(true).catch(function () {});
   }
   function openTicket(kind, id, side) {
+    if (!root.BackerAccessGate || root.BackerAccessGate.requireWaitlist('trade')) return;
     var row = lookupSubject(kind, id), sim = row && subjectSimulation(row), contract = row && validContract(row);
     if (!row || !sim || !contract || clean(sim.contractId) !== clean(contract.id)) { toast('This paper contract is not ready'); return; }
     ticketReturnFocus = { kind: kind, id: id, side: side };
@@ -917,6 +919,7 @@
     });
   }
   function persistTrade(position, nextAccount) {
+    if (!root.BackerAccessGate || root.BackerAccessGate.requireWaitlist('trade')) return false;
     var previousPositions = null, previousAccount = null;
     try {
       previousPositions = root.localStorage.getItem(POSITION_KEY);
@@ -935,6 +938,7 @@
     }
   }
   function recordPosition() {
+    if (!root.BackerAccessGate || root.BackerAccessGate.requireWaitlist('trade')) return;
     var math = ticketMath();
     if (!math || !state.ticket || !state.ticket.ack) return;
     var account = readAccount();
@@ -998,6 +1002,7 @@
     } catch (error) { toast('Proposal was not deleted'); }
   }
   function switchView(view) {
+    if ((view === 'positions' || view === 'proposals') && (!root.BackerAccessGate || root.BackerAccessGate.requireWaitlist(view === 'positions' ? 'portfolio' : 'create'))) return;
     if (VIEW_VALUES.indexOf(view) < 0) return;
     state.view = view; state.proposalId = ''; state.pendingDeleteId = ''; state.query = ''; state.provider = 'all'; state.metric = 'all'; state.sort = 'personalized'; state.page = 1; state.ticket = null; state.receipt = null; state.routeSubjectId = ''; state.routeSide = ''; state.routeHandled = ''; state.routeFocusHandled = ''; state.routeMissing = false;
     writeURL(); renderContent();
@@ -1010,6 +1015,7 @@
     state.routeMissing = false;
   }
   function openDraft(kind, id) {
+    if (!root.BackerAccessGate || root.BackerAccessGate.requireWaitlist('create')) return;
     var row = lookupSubject(kind, id);
     if (!row) return;
     rememberInterest(kind, row, 'drafted');
@@ -1122,6 +1128,7 @@
     timing.renderRequestedAt = performanceNow();
     performanceMark('backer-trades:render-requested');
     readURL();
+    if ((state.view === 'positions' || state.view === 'proposals') && (!root.BackerAccessGate || root.BackerAccessGate.requireWaitlist(state.view === 'positions' ? 'portfolio' : 'create', true))) return;
     state.routeFocusHandled = '';
     if (!mountedRoot.dataset.tradesBound) {
       mountedRoot.dataset.tradesBound = 'true';

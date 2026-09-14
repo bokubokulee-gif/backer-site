@@ -116,26 +116,15 @@ test('paper cash uses a dedicated validated account and defaults to 10,000', () 
   assert.equal(store.accountStorageKey, 'backer_trades_account_v1');
 });
 
-test('Portfolio defaults to the real Trades ledger and keeps fixture examples behind a separate mode', () => {
-  assert.match(html, /id="tradesPortfolio"/);
-  assert.match(html, /id="mTrades"[^>]*>Your trades</);
-  assert.match(html, /id="mInvestor"[^>]*>Legacy examples</);
-  assert.match(html, /id="investorMode" class="hidden"/);
-  assert.match(html, /css\/trades-portfolio\.css\?v=20260821-scale-1/);
-  assert.match(html, /js\/trades-position-store\.js\?v=20260821-scale-1/);
-  assert.match(html, /js\/trades-catalog-model\.js\?v=20260826-perf-1/);
-  assert.match(html, /js\/trades-portfolio\.js\?v=20260821-scale-1/);
-  assert.match(portfolio, /backerdemo\.html#market2\?/);
-  assert.match(portfolio, /backerdemo\.html#trades\?view=positions/);
-  assert.match(portfolio, /Profiles and work come from the Discovery catalog/);
-  assert.match(portfolio, /Available paper cash/);
-  assert.match(portfolio, /Paper equity/);
-  assert.match(portfolio, /Resolution source/);
-  assert.match(portfolio, /Estimated payout if correct/);
-  assert.match(portfolio, /Profit if correct/);
-  assert.match(portfolio, /source-backed creator account/);
-  assert.match(portfolio, /contract\.question/);
-  assert.doesNotMatch(portfolio, /backer_portfolio_v1/);
+test('Portfolio startup redirects to waitlist without reading or changing saved positions', () => {
+  const routes = [];
+  const window = {
+    location: { replace(url) { routes.push(url); } },
+    get localStorage() { throw new Error('Locked Portfolio must not read or write saved positions'); },
+    get BackerTradesPositionStore() { throw new Error('Locked Portfolio must not mount its ledger'); }
+  };
+  require('node:vm').runInNewContext(portfolio, { window });
+  assert.deepEqual(routes, ['waitlist.html?source=portfolio']);
 });
 
 test('Pages artifact includes every Portfolio integration dependency', () => {

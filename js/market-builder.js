@@ -708,6 +708,7 @@
   }
 
   function saveDraft() {
+    if (!window.BackerAccessGate || window.BackerAccessGate.requireWaitlist('create')) return;
     var errors = validateAll();
     if (errors.length) {
       setErrors(errors);

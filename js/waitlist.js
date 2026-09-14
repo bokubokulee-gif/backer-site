@@ -1,7 +1,6 @@
 (function () {
   'use strict';
 
-  var PREVIEW_STORAGE_KEY = 'backer_waitlist_preview_v1';
   var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var background = document.getElementById('bg');
 
@@ -52,18 +51,6 @@
       }
     }
 
-    function savePreviewRecord(email, submittedAt) {
-      var storage = window.localStorage;
-      if (!storage || typeof storage.setItem !== 'function') throw new Error('storage unavailable');
-      storage.setItem(PREVIEW_STORAGE_KEY, JSON.stringify({
-        version: 1,
-        email: email,
-        submittedAt: submittedAt,
-        source: 'waitlist-preview',
-        sent: false
-      }));
-    }
-
     function postToEndpoint(endpoint, email, submittedAt) {
       var controller = typeof AbortController === 'function' ? new AbortController() : null;
       var timeout = controller ? window.setTimeout(function () { controller.abort(); }, 12000) : null;
@@ -83,7 +70,9 @@
         signal: controller ? controller.signal : undefined
       }).then(function (response) {
         if (!response.ok) throw new Error('waitlist request failed');
-        return response;
+        return response.json();
+      }).then(function (result) {
+        if (!result || result.ok !== true) throw new Error('waitlist not accepted');
       }).finally(function () {
         if (timeout) window.clearTimeout(timeout);
       });
@@ -113,8 +102,8 @@
       }
 
       var endpoint = endpointFromMeta();
-      if (endpoint === null) {
-        setStatus('The waitlist connection is not configured correctly yet. Please try again later.', 'error', true);
+      if (!endpoint) {
+        setStatus('Waitlist registration is temporarily unavailable. Please try again later.', 'error', true);
         return;
       }
 
@@ -122,22 +111,11 @@
       setStatus('', '', false);
       setBusy(true);
 
-      if (!endpoint) {
-        try {
-          savePreviewRecord(email, submittedAt);
-          complete('We will send you an email when Backer is ready!');
-        } catch (error) {
-          setBusy(false);
-          setStatus('Your browser blocked private preview storage, so this email was not saved or sent.', 'error', true);
-        }
-        return;
-      }
-
       postToEndpoint(endpoint, email, submittedAt).then(function () {
         complete('You’re on the list. We’ll notify you when Backer is ready.');
       }).catch(function () {
         setBusy(false);
-        setStatus('We couldn’t reach the waitlist. Your email was not saved—please try again.', 'error', true);
+        setStatus('We couldn’t confirm your registration. Please try again.', 'error', true);
       });
     });
   }
