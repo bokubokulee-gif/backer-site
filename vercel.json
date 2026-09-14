@@ -2,7 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "node scripts/build-pages-artifact.mjs .vercel-public",
   "outputDirectory": ".vercel-public",
-  "public": false,
   "trailingSlash": false,
   "env": {
     "PUBLIC_VIEW_COUNTS_ENABLED": "false"
@@ -19,7 +18,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https://github.com https://avatars.githubusercontent.com https://*.githubusercontent.com https://i.ytimg.com https://*.ytimg.com https://*.ggpht.com https://yt3.googleusercontent.com https://*.dev.to https://*.hdslb.com https://*.medium.com https://*.spotifycdn.com https://*.sndcdn.com https://*.tiktokcdn-us.com https://*.patreonusercontent.com https://www.patreon.com https://github.blog https://substackcdn.com https://*.substackcdn.com https://substack-post-media.s3.amazonaws.com https://substack-video.s3.amazonaws.com https://storage.ghost.io https://static-cdn.jtvnw.net https://vod-secure.twitch.tv https://pbs.twimg.com https://www.platformer.news https://*.fbcdn.net https://media.licdn.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com; upgrade-insecure-requests"
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; frame-src 'self' https://backer-attention-simulation.nzhang425.chatgpt.site; form-action 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https://lsvp.com https://github.com https://avatars.githubusercontent.com https://*.githubusercontent.com https://i.ytimg.com https://*.ytimg.com https://*.ggpht.com https://yt3.googleusercontent.com https://*.dev.to https://*.hdslb.com https://*.medium.com https://*.spotifycdn.com https://*.sndcdn.com https://*.tiktokcdn-us.com https://*.patreonusercontent.com https://www.patreon.com https://github.blog https://substackcdn.com https://*.substackcdn.com https://substack-post-media.s3.amazonaws.com https://substack-video.s3.amazonaws.com https://storage.ghost.io https://static-cdn.jtvnw.net https://vod-secure.twitch.tv https://pbs.twimg.com https://www.platformer.news https://*.fbcdn.net https://media.licdn.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com; upgrade-insecure-requests"
         },
         {
           "key": "Referrer-Policy",
@@ -31,7 +30,7 @@
         },
         {
           "key": "X-Frame-Options",
-          "value": "DENY"
+          "value": "SAMEORIGIN"
         },
         {
           "key": "Cross-Origin-Opener-Policy",

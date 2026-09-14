@@ -109,7 +109,7 @@ test('public build is explicit, minified, source-map-free, and used by Vercel', 
   assert.match(builder, /sourcemap:\s*false/);
   assert.match(builder, /mkdtemp/);
   assert.match(builder, /rm\(stagingDirectory, \{ recursive: true, force: true \}\)/);
-  assert.equal(vercel.public, false);
+  assert.equal(Object.hasOwn(vercel, 'public'), false, 'Vercel rejects the unsupported public configuration key');
   assert.equal(vercel.outputDirectory, '.vercel-public');
   assert.match(vercel.buildCommand, /build-pages-artifact\.mjs/);
   assert.doesNotMatch(ignored, /^scripts\/build-pages-artifact\.mjs$/m);
@@ -118,5 +118,24 @@ test('public build is explicit, minified, source-map-free, and used by Vercel', 
   assert.match(packageManifest.scripts['audit:public'], /build-pages-artifact\.mjs/);
   for (const publicFile of publicFiles) {
     assert.equal(ignoreRules.some((rule) => rule.endsWith('/') ? publicFile.startsWith(rule) : publicFile === rule), false, `${publicFile} must reach the Vercel build context`);
+  }
+});
+
+test('Vercel permits the shipped Market and simulation embeds while rejecting foreign framing', () => {
+  const vercel = JSON.parse(fs.readFileSync(path.join(ROOT, 'vercel.json'), 'utf8'));
+  const headers = new Map(vercel.headers.find((rule) => rule.source === '/(.*)').headers.map(({ key, value }) => [key.toLowerCase(), value]));
+  const directives = new Map(headers.get('content-security-policy').split(';').map((value) => value.trim().split(/\s+/)).map(([key, ...values]) => [key, values]));
+  const simulation = fs.readFileSync(path.join(ROOT, 'research-lab', 'attention-simulation.html'), 'utf8');
+  const simulationUrl = simulation.match(/<iframe\b[^>]*\bsrc="([^"]+)"/)[1];
+
+  assert.deepEqual(directives.get('frame-ancestors'), ["'self'"], 'the native Market preview must be allowed without opening foreign framing');
+  assert.equal(headers.get('x-frame-options'), 'SAMEORIGIN');
+  assert.deepEqual(directives.get('frame-src'), ["'self'", new URL(simulationUrl).origin]);
+
+  for (const filename of ['pitch.html', 'pitch2.html']) {
+    const html = fs.readFileSync(path.join(ROOT, filename), 'utf8');
+    for (const [, src] of html.matchAll(/<img\b[^>]*\bsrc="(https:\/\/[^\"]+)"/g)) {
+      assert.ok(directives.get('img-src').includes(new URL(src).origin), `${filename} image origin must be permitted: ${new URL(src).origin}`);
+    }
   }
 });
