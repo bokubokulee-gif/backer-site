@@ -21,7 +21,7 @@
     }
   ],
   "env": {
-    "PUBLIC_VIEW_COUNTS_ENABLED": "false"
+    "PUBLIC_VIEW_COUNTS_ENABLED": "true"
   },
   "rewrites": [
     {
