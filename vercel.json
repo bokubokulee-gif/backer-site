@@ -3,6 +3,23 @@
   "buildCommand": "node scripts/build-pages-artifact.mjs .vercel-public",
   "outputDirectory": ".vercel-public",
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/research-lab",
+      "destination": "/research-lab/index.html",
+      "permanent": true
+    },
+    {
+      "source": "/admin/analytics",
+      "destination": "/admin/analytics/index.html",
+      "permanent": true
+    },
+    {
+      "source": "/backer-site/:path*",
+      "destination": "/:path*",
+      "permanent": true
+    }
+  ],
   "env": {
     "PUBLIC_VIEW_COUNTS_ENABLED": "false"
   },

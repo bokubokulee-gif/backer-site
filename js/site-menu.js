@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  var BASE = 'https://bokubokulee-gif.github.io/backer-site/';
+  var BASE = new URL('../', document.currentScript.src).href;
   var NAV = [
     {
       key: 'product', label: 'Product', items: [
