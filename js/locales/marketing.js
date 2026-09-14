@@ -1,0 +1,5255 @@
+/* Native editorial translations. English source remains unchanged. */
+window.BackerLocalePacks = window.BackerLocalePacks || {};
+window.BackerLocalePacks.marketing = {
+  "messages": {
+    "Backer AI | Predict where attention flows": [
+      "Backer AI｜预测注意力流向",
+      "Backer AI｜注目の行方を予測する",
+      "Backer AI | 관심의 흐름을 예측하다"
+    ],
+    "Skip to pitch": [
+      "跳转至介绍正文",
+      "紹介本文へ移動",
+      "소개 본문으로 이동"
+    ],
+    "Backer home": [
+      "Backer 首页",
+      "Backer ホーム",
+      "Backer 홈"
+    ],
+    "Launch Demo": [
+      "体验演示",
+      "デモを見る",
+      "데모 보기"
+    ],
+    "Predict": [
+      "预测",
+      "予測する",
+      "예측하다"
+    ],
+    "where": [
+      "流向",
+      "その先を",
+      "향하는 곳을"
+    ],
+    "attention flows": [
+      "注意力流向",
+      "注目の流れ",
+      "관심의 흐름"
+    ],
+    "Act before": [
+      "先于共识，采取行动",
+      "誰もが気づく前に",
+      "모두가 알아보기 전에"
+    ],
+    "everyone else catches on.": [
+      "在众人察觉之前。",
+      "行動する。",
+      "먼저 움직이세요."
+    ],
+    "Simulate the future for optimal decision making.": [
+      "推演未来，优化决策。",
+      "未来をシミュレーションし、最善の判断へ。",
+      "미래를 시뮬레이션해 더 나은 결정을 내리세요."
+    ],
+    "Invest in where you believe attention flows.": [
+      "投资你看好的注意力流向。",
+      "注目が向かう先に、あなたの見立てで投資する。",
+      "관심이 향할 곳에 자신의 판단으로 투자하세요."
+    ],
+    "The shift": [
+      "正在发生的转变",
+      "変わり始めた価値",
+      "가치의 변화"
+    ],
+    "Views are becoming": [
+      "浏览量正在成为",
+      "視聴が変わる、",
+      "조회 수가"
+    ],
+    "a form of currency.": [
+      "一种货币。",
+      "新たな通貨へ。",
+      "하나의 통화가 됩니다."
+    ],
+    "The accumulation of human attention becomes the literal asset of profiles, brands, and businesses on the internet.": [
+      "持续积累的注意力，正在成为网络人物、品牌和企业实实在在的资产。",
+      "人々の注目の蓄積が、ネット上の個人、ブランド、企業にとって実質的な資産になっています。",
+      "사람들의 관심이 쌓이면 온라인의 개인, 브랜드, 기업에 실질적인 자산이 됩니다."
+    ],
+    "The flow of human attention shapes which ideas spread, which products sell, and which businesses grow.": [
+      "注意力的流向，决定了哪些观点被传播、哪些产品卖得动、哪些企业获得增长。",
+      "注目の向かう先が、広まるアイデア、売れる商品、成長する企業を左右します。",
+      "관심의 흐름은 어떤 생각이 퍼지고, 어떤 제품이 팔리고, 어떤 기업이 성장할지를 좌우합니다."
+    ],
+    "People already spend on what they pay attention to.": [
+      "人们早已在为自己关注的事物付费。",
+      "人はすでに、関心を向けるものにお金を使っています。",
+      "사람들은 이미 자신이 관심을 두는 것에 돈을 쓰고 있습니다."
+    ],
+    "Creators, companies, and investors becoming media": [
+      "创作者、企业与投资机构的媒体化",
+      "メディアになるクリエイター、企業、投資家",
+      "미디어가 되는 크리에이터, 기업, 투자자"
+    ],
+    "1 of 4: Andrej Karpathy": [
+      "第 1 项，共 4 项：Andrej Karpathy",
+      "4件中1件目：Andrej Karpathy",
+      "4개 중 1번째: Andrej Karpathy"
+    ],
+    "2 of 4: Technology meets media": [
+      "第 2 项，共 4 项：科技与媒体相遇",
+      "4件中2件目：テクノロジーとメディア",
+      "4개 중 2번째: 기술과 미디어의 만남"
+    ],
+    "3 of 4: a16z": [
+      "第 3 项，共 4 项：a16z",
+      "4件中3件目：a16z",
+      "4개 중 3번째: a16z"
+    ],
+    "4 of 4: Lightspeed": [
+      "第 4 项，共 4 项：Lightspeed",
+      "4件中4件目：Lightspeed",
+      "4개 중 4번째: Lightspeed"
+    ],
+    "Andrej Karpathy speaking into a studio microphone": [
+      "Andrej Karpathy 在录音室麦克风前讲话",
+      "スタジオのマイクに向かって話す Andrej Karpathy",
+      "스튜디오 마이크 앞에서 이야기하는 Andrej Karpathy"
+    ],
+    "Researcher → creator": [
+      "研究者 → 创作者",
+      "研究者からクリエイターへ",
+      "연구자에서 크리에이터로"
+    ],
+    "AI research reaches a global audience through long-form lectures, essays, and public conversation.": [
+      "长篇课程、文章与公开讨论，让 AI 研究触达全球受众。",
+      "長編の講義、論考、公開の対話を通じて、AI研究が世界の人々に届いています。",
+      "긴 강의와 에세이, 공개 대화를 통해 AI 연구가 전 세계 독자와 시청자에게 전달됩니다."
+    ],
+    "Sam Altman → show guest": [
+      "Sam Altman → 节目嘉宾",
+      "Sam Altman、番組ゲストへ",
+      "Sam Altman, 방송 게스트로"
+    ],
+    "Technology meets media": [
+      "科技与媒体相遇",
+      "テクノロジーとメディア",
+      "기술과 미디어의 만남"
+    ],
+    "Technology companies invest in the conversations and creators that shape how people understand their products.": [
+      "科技公司正在投资那些影响公众如何理解其产品的讨论与创作者。",
+      "テクノロジー企業は、自社製品への理解を形づくる対話やクリエイターに投資しています。",
+      "기술 기업은 사람들이 자사 제품을 이해하는 방식에 영향을 주는 대화와 크리에이터에 투자합니다."
+    ],
+    "VC → media network": [
+      "创投机构 → 媒体网络",
+      "VCからメディアネットワークへ",
+      "벤처캐피털에서 미디어 네트워크로"
+    ],
+    "Venture firms build media operations around podcasts, shows, and essays. Distribution is part of their business.": [
+      "创投机构围绕播客、节目与文章建立媒体业务。内容分发已成为其经营的一部分。",
+      "ベンチャー投資会社は、ポッドキャスト、番組、論考を軸にメディアを運営しています。発信力も事業の一部です。",
+      "벤처 투자사는 팟캐스트, 프로그램, 에세이를 중심으로 미디어를 운영합니다. 콘텐츠 유통도 사업의 일부입니다."
+    ],
+    "Creator → venture community": [
+      "创作者 → 创投社群",
+      "クリエイターからスタートアップコミュニティへ",
+      "크리에이터에서 벤처 커뮤니티로"
+    ],
+    "Creators connect emerging ideas with audiences, founders, and investment communities.": [
+      "创作者将新兴观点带给受众、创业者与投资社群。",
+      "クリエイターが、新しいアイデアと視聴者、起業家、投資コミュニティをつないでいます。",
+      "크리에이터는 새로운 아이디어를 독자와 시청자, 창업자, 투자 커뮤니티에 연결합니다."
+    ],
+    "Show previous example": [
+      "上一个案例",
+      "前の事例",
+      "이전 사례"
+    ],
+    "Show next example": [
+      "下一个案例",
+      "次の事例",
+      "다음 사례"
+    ],
+    "Capital flows to where": [
+      "资本流向",
+      "資本は集まる、",
+      "자본은"
+    ],
+    "human attention accumulates.": [
+      "注意力聚集之处。",
+      "人々の注目が集まる場所へ。",
+      "사람들의 관심이 모이는 곳으로 흐릅니다."
+    ],
+    "The value of foresight": [
+      "先见的价值",
+      "先を読むことの価値",
+      "앞을 내다보는 판단의 가치"
+    ],
+    "Human attention already dictates capital flows.": [
+      "注意力早已牵动资本流向。",
+      "人々の注目が、すでに資本の流れを動かしています。",
+      "사람들의 관심은 이미 자본의 흐름을 움직입니다."
+    ],
+    "Recognizing where it moves next": [
+      "看清注意力的下一站，",
+      "次に注目が向かう先を見抜くことにも、",
+      "관심이 다음으로 향할 곳을 알아보는 판단에도"
+    ],
+    "should have value too.": [
+      "也应获得相应的回报。",
+      "価値があっていい。",
+      "가치가 있어야 합니다."
+    ],
+    "Simulation science.": [
+      "仿真科学。",
+      "シミュレーション科学。",
+      "시뮬레이션 과학."
+    ],
+    "Prediction markets.": [
+      "预测市场。",
+      "予測市場。",
+      "예측 시장."
+    ],
+    "Built together.": [
+      "从一开始，共同构建。",
+      "ともにつくる。",
+      "처음부터 함께 설계합니다."
+    ],
+    "research": [
+      "研究",
+      "研究",
+      "연구"
+    ],
+    "product": [
+      "产品",
+      "プロダクト",
+      "제품"
+    ],
+    "Simulates the future.": [
+      "推演未来。",
+      "未来をシミュレーションする。",
+      "미래를 시뮬레이션합니다."
+    ],
+    "For better decision making.": [
+      "为更好的决策。",
+      "より良い意思決定のために。",
+      "더 나은 의사결정을 위해."
+    ],
+    "We use multi-agent simulations to model how people and AI agents respond to information, influence one another, and decide what deserves their time or resources.": [
+      "我们通过多智能体仿真，研究人与 AI 智能体如何回应信息、相互影响，以及如何分配时间和资源。",
+      "マルチエージェント・シミュレーションで、人とAIエージェントが情報に反応し、互いに影響を与え、時間や資源の配分を決める過程をモデル化します。",
+      "멀티에이전트 시뮬레이션으로 사람과 AI 에이전트가 정보에 반응하고, 서로 영향을 주고받으며, 시간과 자원을 어디에 쓸지 결정하는 과정을 모델링합니다."
+    ],
+    "Explore Backer Research": [
+      "探索 Backer 研究",
+      "Backerの研究を見る",
+      "Backer 연구 살펴보기"
+    ],
+    "Trading behavior": [
+      "交易行为",
+      "取引行動",
+      "거래 행동"
+    ],
+    "Explore how simulated traders respond to real world information, conviction, and one another.": [
+      "观察模拟交易者如何回应真实世界的信息、自身判断与其他参与者。",
+      "現実の情報、自らの確信、他の参加者に対して、シミュレーション内のトレーダーがどう反応するかを探ります。",
+      "시뮬레이션 속 거래자들이 현실의 정보, 자신의 확신, 다른 참여자에게 어떻게 반응하는지 살펴보세요."
+    ],
+    "Open interactive Trading behavior research preview": [
+      "打开交互式交易行为研究预览",
+      "取引行動の研究プレビューを開く",
+      "거래 행동 연구의 인터랙티브 프리뷰 열기"
+    ],
+    "Recorded view of simulated traders moving through an attention field.": [
+      "模拟交易者在注意力场中移动的录制画面。",
+      "注目の場を移動する模擬トレーダーの録画。",
+      "관심의 장 안에서 움직이는 모의 거래자들의 녹화 화면."
+    ],
+    "Play recorded Trading behavior preview": [
+      "播放交易行为预览录像",
+      "取引行動の録画を再生",
+      "거래 행동 프리뷰 영상 재생"
+    ],
+    "Open Research Preview: Trading behavior": [
+      "打开研究预览：交易行为",
+      "研究プレビュー：取引行動",
+      "연구 프리뷰 열기: 거래 행동"
+    ],
+    "Open Research Preview": [
+      "打开研究预览",
+      "研究プレビューを開く",
+      "연구 프리뷰 열기"
+    ],
+    "Attention flow": [
+      "注意力流向",
+      "注目の流れ",
+      "관심의 흐름"
+    ],
+    "Explore how attention moves, gathers, and fades across the web.": [
+      "观察注意力如何在网络中流动、汇聚与消退。",
+      "ネット上で注目が移り、集まり、薄れていく過程を探ります。",
+      "웹에서 관심이 이동하고, 모이고, 사그라드는 과정을 살펴보세요."
+    ],
+    "Open interactive Attention flow research preview": [
+      "打开交互式注意力流向研究预览",
+      "注目の流れの研究プレビューを開く",
+      "관심의 흐름 연구의 인터랙티브 프리뷰 열기"
+    ],
+    "Recorded view of attention gathering and moving across a simulated web environment.": [
+      "注意力在模拟网络环境中汇聚和流动的录制画面。",
+      "模擬ウェブ環境で注目が集まり、移動する様子の録画。",
+      "모의 웹 환경에서 관심이 모이고 이동하는 녹화 화면."
+    ],
+    "Play recorded Attention flow preview": [
+      "播放注意力流向预览录像",
+      "注目の流れの録画を再生",
+      "관심의 흐름 프리뷰 영상 재생"
+    ],
+    "Open Research Preview: Attention flow": [
+      "打开研究预览：注意力流向",
+      "研究プレビュー：注目の流れ",
+      "연구 프리뷰 열기: 관심의 흐름"
+    ],
+    "Attention simulation": [
+      "注意力仿真",
+      "注目のシミュレーション",
+      "관심 시뮬레이션"
+    ],
+    "Watch how 50 simulated agents reacting to real world events on the web.": [
+      "观察 50 个模拟智能体如何回应网络中的真实事件。",
+      "50体の模擬エージェントが、ネット上の実際の出来事にどう反応するかを観察します。",
+      "50개의 모의 에이전트가 웹에서 일어나는 실제 사건에 어떻게 반응하는지 관찰하세요."
+    ],
+    "Open interactive Attention simulation research preview": [
+      "打开交互式注意力仿真研究预览",
+      "注目のシミュレーションの研究プレビューを開く",
+      "관심 시뮬레이션 연구의 인터랙티브 프리뷰 열기"
+    ],
+    "Recorded view of simulated people exploring social platforms and prediction markets in Backer World.": [
+      "模拟人物在 Backer World 中浏览社交平台与预测市场的录制画面。",
+      "Backer Worldで模擬参加者がソーシャルプラットフォームや予測市場を巡る様子の録画。",
+      "Backer World에서 모의 참여자들이 소셜 플랫폼과 예측 시장을 탐색하는 녹화 화면."
+    ],
+    "Play recorded Attention simulation preview": [
+      "播放注意力仿真预览录像",
+      "注目のシミュレーションの録画を再生",
+      "관심 시뮬레이션 프리뷰 영상 재생"
+    ],
+    "Open Research Preview: Attention simulation": [
+      "打开研究预览：注意力仿真",
+      "研究プレビュー：注目のシミュレーション",
+      "연구 프리뷰 열기: 관심 시뮬레이션"
+    ],
+    "Spot emerging momentum.": [
+      "发现正在形成的势头。",
+      "勢いの芽を捉える。",
+      "새로운 성장세를 포착하세요."
+    ],
+    "it before it’s obvious.": [
+      "在众人察觉之前。",
+      "誰もが気づく前に。",
+      "모두에게 분명해지기 전에."
+    ],
+    "A financial market where people can take positions on who and what will attract attention.": [
+      "一个让你对谁、什么事物将吸引注意力建立头寸的金融市场。",
+      "誰に、何に注目が集まるか。その見立てでポジションを持てる金融市場です。",
+      "누구에게, 무엇에 관심이 모일지 판단하고 포지션을 취할 수 있는 금융 시장입니다."
+    ],
+    "Enter Backer Market": [
+      "进入 Backer Market",
+      "Backer Marketへ",
+      "Backer Market 시작하기"
+    ],
+    "Loading Backer Market…": [
+      "正在加载 Backer Market…",
+      "Backer Marketを読み込み中…",
+      "Backer Market 불러오는 중…"
+    ],
+    "Open Backer Market": [
+      "打开 Backer Market",
+      "Backer Marketを開く",
+      "Backer Market 열기"
+    ],
+    "The creator": [
+      "创作者",
+      "クリエイターは",
+      "크리에이터는"
+    ],
+    "earns directly": [
+      "直接获得收益",
+      "直接収益を得る",
+      "직접 수익을 얻습니다"
+    ],
+    "from the market they attract.": [
+      "收益来自自己吸引来的市场。",
+      "自らが人を集めた市場から。",
+      "자신이 사람들을 모은 시장에서."
+    ],
+    "Attention brings people into your market.": [
+      "你的关注度，为市场带来参与者。",
+      "あなたへの注目が、市場に人を呼び込みます。",
+      "당신을 향한 관심이 시장으로 사람들을 이끕니다."
+    ],
+    "We share those trading fees with you.": [
+      "我们与你分享这些交易手续费。",
+      "その取引手数料を、あなたに還元します。",
+      "그 거래 수수료를 당신과 나눕니다."
+    ],
+    "Your share comes from activity—even if the milestone misses.": [
+      "即使里程碑未达成，你仍可从交易活动中获得分成。",
+      "マイルストーンを達成しなくても、取引があれば分配を受けられます。",
+      "목표를 달성하지 못해도, 거래가 이루어지면 수익을 배분받습니다."
+    ],
+    "Research × Market co-design": [
+      "研究 × 市场，共同设计",
+      "研究と市場の共同設計",
+      "연구와 시장의 공동 설계"
+    ],
+    "What the model": [
+      "模型的",
+      "モデルの",
+      "모델의"
+    ],
+    "predicts": [
+      "预测",
+      "予測",
+      "예측"
+    ],
+    "What people": [
+      "人们的",
+      "人々の",
+      "사람들의"
+    ],
+    "believe": [
+      "判断",
+      "見立て",
+      "판단"
+    ],
+    "What actually happens.": [
+      "以及真实发生的结果。",
+      "そして、実際に起きたこと。",
+      "그리고 실제로 일어난 결과."
+    ],
+    "We can simulate each scenario for you.": [
+      "每一种情境，都可以先行推演。",
+      "一つひとつの状況を、事前にシミュレーションできます。",
+      "각 상황을 미리 시뮬레이션할 수 있습니다."
+    ],
+    "Automatic scrolling pauses while the questions are focused or hovered. Use the arrow keys to read more questions. Press Space to pause or resume.": [
+      "鼠标悬停或键盘焦点进入时，问题列表会暂停滚动。使用方向键浏览，按空格键暂停或继续。",
+      "質問にフォーカスするかカーソルを重ねると、自動スクロールが停止します。矢印キーで移動し、スペースキーで一時停止・再開できます。",
+      "질문에 포커스하거나 마우스를 올리면 자동 스크롤이 멈춥니다. 방향키로 탐색하고 스페이스키로 일시 정지하거나 다시 시작하세요."
+    ],
+    "Hypothetical business prediction questions": [
+      "假设性商业预测问题",
+      "ビジネス上の仮説を検証する質問",
+      "가상의 사업 예측 질문"
+    ],
+    "From prediction to action": [
+      "从预测到行动",
+      "予測から行動へ",
+      "예측에서 실행으로"
+    ],
+    "Businesses will know what to do": [
+      "让企业在投入之前",
+      "投資する前に、",
+      "기업이 지출하기 전에"
+    ],
+    "Before spending a dime.": [
+      "就明白该怎么做。",
+      "企業の次の一手を明確に。",
+      "다음 행동을 판단할 수 있도록."
+    ],
+    "Our ambition reaches beyond forecasting popularity: help businesses anticipate how people allocate attention and make decisions.": [
+      "我们不止希望预测热度，更希望帮助企业预判人们如何分配注意力、作出决策。",
+      "人気の予測にとどまらず、人々が何に注目し、どう判断するかを企業が先読みできるようにしたいと考えています。",
+      "인기를 예측하는 데서 더 나아가, 사람들이 어디에 관심을 두고 어떻게 결정하는지 기업이 미리 이해하도록 돕고자 합니다."
+    ],
+    "Business decisions": [
+      "商业决策",
+      "事業上の意思決定",
+      "사업 의사결정"
+    ],
+    "Customers": [
+      "客户",
+      "顧客",
+      "고객"
+    ],
+    "Audiences": [
+      "受众",
+      "オーディエンス",
+      "잠재 고객"
+    ],
+    "Creators": [
+      "创作者",
+      "クリエイター",
+      "크리에이터"
+    ],
+    "Ad spend": [
+      "广告支出",
+      "広告予算",
+      "광고 예산"
+    ],
+    "Pricing and demand": [
+      "定价与需求",
+      "価格設定と需要",
+      "가격 책정과 수요"
+    ],
+    "How much pricing power do we have?": [
+      "我们有多大的定价权？",
+      "どこまで価格を引き上げられるか。",
+      "우리에게 가격 결정력이 얼마나 있을까?"
+    ],
+    "Assess how buyers trade down, delay purchases or switch suppliers as prices rise, and what those responses mean for revenue, margins and market share.": [
+      "评估涨价后客户会如何选择降档消费、延后采购或更换供应商，以及这些行为对收入、利润率和市场份额的影响。",
+      "値上げに対する買い手の低価格品への移行、購入延期、仕入先変更を評価し、売上、利益率、シェアへの影響を検討します。",
+      "가격이 오를 때 고객이 저가 제품으로 옮기거나, 구매를 미루거나, 공급업체를 바꾸는 행동이 매출·마진·시장점유율에 미치는 영향을 평가합니다."
+    ],
+    "Decision to test": [
+      "待检验的决策",
+      "検証する意思決定",
+      "검증할 의사결정"
+    ],
+    "Would passing higher costs through to customers protect margins after accounting for lost sales?": [
+      "考虑销量损失后，将成本上涨转嫁给客户，是否仍能保住利润率？",
+      "販売減を織り込んでも、コスト上昇の価格転嫁で利益率を守れるか。",
+      "판매 감소까지 고려해도 비용 상승분을 가격에 반영하면 마진을 지킬 수 있을까?"
+    ],
+    "Proposed applications. Each needs validation against observed business outcomes.": [
+      "以上为拟议应用，均需结合实际经营结果验证。",
+      "想定する活用例です。それぞれ、実際の事業結果との照合が必要です。",
+      "제안 단계의 활용 사례입니다. 각각 실제 사업 결과를 통해 검증해야 합니다."
+    ],
+    "Emerging demand": [
+      "新兴需求",
+      "新たな需要",
+      "새로운 수요"
+    ],
+    "Will growing attention expand the market?": [
+      "关注度上升，会扩大市场吗？",
+      "注目の高まりは市場を広げるか。",
+      "관심의 증가가 시장 확대로 이어질까?"
+    ],
+    "Test whether growing attention signals new demand, a shift from an existing category, or a passing spike. Compare how each spreads across customer groups and regions.": [
+      "检验热度上升意味着新增需求、从既有品类转移的消费，还是短暂波动，并比较其在不同客群和地区的传播。",
+      "注目の高まりが、新規需要、既存カテゴリーからの移行、一時的な急増のどれを示すかを検証し、顧客層や地域への広がりを比較します。",
+      "관심의 증가가 신규 수요인지, 기존 카테고리에서의 이동인지, 일시적인 급등인지 검증하고 고객군과 지역별 확산을 비교합니다."
+    ],
+    "Will rising interest in a new category expand the market or draw spending away from existing products?": [
+      "新品类受到关注，是扩大整体市场，还是分走既有产品的消费？",
+      "新カテゴリーへの関心は市場全体を広げるのか、それとも既存商品の支出を奪うのか。",
+      "새로운 카테고리에 대한 관심이 전체 시장을 키울까, 기존 제품의 지출을 가져올까?"
+    ],
+    "Partnership economics": [
+      "合作的经济回报",
+      "提携の採算性",
+      "파트너십의 경제성"
+    ],
+    "How much new demand does each partnership bring?": [
+      "每项合作，能带来多少新增需求？",
+      "一つの提携が、どれだけ新たな需要を生むか。",
+      "각 파트너십이 신규 수요를 얼마나 만들까?"
+    ],
+    "Evaluate creator partnerships as a portfolio: audience overlap, customer fit and the purchases each partnership could add beyond existing campaigns.": [
+      "以组合视角评估创作者合作：受众重叠度、客群匹配度，以及相较现有营销活动可能增加的购买。",
+      "クリエイターとの提携をポートフォリオとして評価します。視聴者の重複、顧客との適合性、既存施策に上乗せできる購買を検討します。",
+      "크리에이터 파트너십을 포트폴리오로 평가합니다. 오디언스 중복, 고객 적합성, 기존 캠페인에 더해 발생할 수 있는 추가 구매를 살펴봅니다."
+    ],
+    "Would adding another creator reach new customers, or pay again to influence the same audience?": [
+      "增加一位合作创作者，能触达新客户，还是为影响同一批受众再次付费？",
+      "クリエイターを増やすことで新規顧客に届くのか、同じ視聴者への訴求に再び費用を払うだけなのか。",
+      "크리에이터를 한 명 더 추가하면 새 고객에게 도달할까, 같은 사람들에게 다시 비용을 쓰게 될까?"
+    ],
+    "Budget allocation": [
+      "预算配置",
+      "予算配分",
+      "예산 배분"
+    ],
+    "Which channels deserve more budget?": [
+      "哪些渠道值得追加预算？",
+      "どのチャネルに予算を増やすべきか。",
+      "어떤 채널에 예산을 더 배정해야 할까?"
+    ],
+    "Compare reallocating spend with holding the current mix. Account for audience saturation, delayed purchases and sales that would happen without advertising.": [
+      "比较重新分配预算与维持现有组合，纳入受众饱和、购买延迟，以及不投广告也会产生的销量。",
+      "配分の見直しと現状維持を比較します。視聴者への到達の飽和、購入の遅れ、広告がなくても発生する売上を考慮します。",
+      "예산 재배분과 현재 배분 유지를 비교합니다. 오디언스 포화, 구매 지연, 광고 없이도 발생했을 매출을 함께 고려합니다."
+    ],
+    "Which channel gains incremental profit from more spend, and which has reached diminishing returns?": [
+      "追加投入在哪些渠道仍能增加利润，哪些渠道的回报已开始递减？",
+      "追加投資で利益が増えるチャネルはどれか。すでに限界収益が低下しているのはどれか。",
+      "추가 지출로 이익을 더 얻는 채널은 어디이고, 수익 체감에 도달한 채널은 어디일까?"
+    ],
+    "Intelligence for decisions.": [
+      "为决策提供洞察。",
+      "意思決定に、知見を。",
+      "의사결정을 위한 인사이트."
+    ],
+    "A share of market activity.": [
+      "分享市场活动的收益。",
+      "市場の取引から、収益の分配を。",
+      "시장 활동에서 발생한 수익의 배분."
+    ],
+    "Why Backer Market?": [
+      "为什么是 Backer Market？",
+      "なぜBacker Marketなのか。",
+      "왜 Backer Market인가?"
+    ],
+    "People already pay to own a piece of": [
+      "人们早已愿意为未来的",
+      "人々はすでに投資している、",
+      "사람들은 이미 비용을 치릅니다,"
+    ],
+    "the future.": [
+      "一份可能性付费。",
+      "未来の一部を持つために。",
+      "미래의 가능성을 갖기 위해."
+    ],
+    "Wherever human attention concentrates, capital follows — and a market forms to price it. Prediction markets just proved that behavior at scale. Backer applies it to what attention actually orbits:": [
+      "注意力聚集，资本随之而来，市场由此形成，为其定价。预测市场已大规模证明了这一行为。Backer 将它应用于注意力真正围绕的主体：",
+      "人々の注目が集まると資本が流れ込み、それを価格にする市場が生まれます。予測市場は、その行動を大きな規模で実証しました。Backerが対象とするのは、注目の中心にいる存在、",
+      "사람들의 관심이 모이면 자본이 흐르고, 그 가치를 매기는 시장이 생깁니다. 예측 시장은 이 행동을 대규모로 보여주었습니다. Backer는 관심이 실제로 향하는 대상에 이를 적용합니다."
+    ],
+    "people.": [
+      "人。",
+      "人です。",
+      "바로 사람입니다."
+    ],
+    "PROVEN · EVENTS": [
+      "已获验证 · 事件",
+      "実証された市場・イベント",
+      "검증된 시장 · 사건"
+    ],
+    "Human Attention": [
+      "人们的注意力",
+      "人々の注目",
+      "사람들의 관심"
+    ],
+    "veers into eyeball-catching events": [
+      "流向引人关注的事件",
+      "注目を集める出来事へ向かう",
+      "이목을 끄는 사건으로 향합니다"
+    ],
+    "Capital follows": [
+      "资本随之流入",
+      "そこに資本が流れる",
+      "자본이 뒤따릅니다"
+    ],
+    "into priced positions on outcomes": [
+      "形成对结果有明确价格的头寸",
+      "結果に価格がつき、ポジションになる",
+      "결과에 가격이 매겨진 포지션으로"
+    ],
+    "Prediction markets": [
+      "预测市场",
+      "予測市場",
+      "예측 시장"
+    ],
+    "NEXT · PEOPLE": [
+      "下一步 · 人",
+      "次の市場・人",
+      "다음 시장 · 사람"
+    ],
+    "veers into eyeball-catching people": [
+      "流向引人关注的人",
+      "注目を集める人へ向かう",
+      "이목을 끄는 사람에게 향합니다"
+    ],
+    "into belief in who compounds next": [
+      "押注下一个持续成长的人",
+      "次に成長を重ねる人への見立てになる",
+      "다음으로 성장할 사람에 대한 판단으로"
+    ],
+    "where human attention gets priced": [
+      "为人们的注意力定价",
+      "人々の注目を価格にする",
+      "사람들의 관심에 가격을 매깁니다"
+    ],
+    "The behavior is proven.": [
+      "这一行为已获验证。",
+      "その行動は、すでに実証されています。",
+      "이 행동은 이미 입증되었습니다."
+    ],
+    "Kalshi + Polymarket International · monthly global trading volume": [
+      "Kalshi + Polymarket International · 全球月度交易量",
+      "Kalshi + Polymarket International・世界の月間取引高",
+      "Kalshi + Polymarket International · 글로벌 월간 거래량"
+    ],
+    "April 2026 · monthly notional taker volume": [
+      "2026 年 4 月 · 月度名义吃单交易量",
+      "2026年4月・月間テイカー想定元本取引高",
+      "2026년 4월 · 월간 테이커 명목 거래량"
+    ],
+    "Combined monthly global notional taker volume on Kalshi and Polymarket International rose from less than 5 billion dollars in September 2025 to about 24 billion dollars in April 2026. The first bar uses 5 billion dollars as an upper bound.": [
+      "Kalshi 与 Polymarket International 全球月度名义吃单交易量，从 2025 年 9 月的不足 50 亿美元升至 2026 年 4 月的约 240 亿美元。首个柱状值以上限 50 亿美元表示。",
+      "KalshiとPolymarket Internationalの世界月間テイカー想定元本取引高は、2025年9月の50億ドル未満から2026年4月の約240億ドルへ増加。最初の棒は上限の50億ドルで表示しています。",
+      "Kalshi와 Polymarket International의 글로벌 월간 테이커 명목 거래량은 2025년 9월 50억 달러 미만에서 2026년 4월 약 240억 달러로 증가했습니다. 첫 막대는 상한인 50억 달러로 표시됩니다."
+    ],
+    "SEP 2025": [
+      "2025 年 9 月",
+      "2025年9月",
+      "2025년 9월"
+    ],
+    "APR 2026": [
+      "2026 年 4 月",
+      "2026年4月",
+      "2026년 4월"
+    ],
+    "Notional taker volume counts each contract at its $1 face value. Polymarket US is excluded. September is shown at its reported upper bound.": [
+      "名义吃单交易量按每份合约 1 美元面值计算，不含 Polymarket US。9 月数据按所报告的上限显示。",
+      "テイカー想定元本取引高は、各契約を額面1ドルとして計算。Polymarket USは含みません。9月は公表された上限値で表示しています。",
+      "테이커 명목 거래량은 계약당 액면가 1달러로 계산합니다. Polymarket US는 제외하며 9월은 발표된 상한값으로 표시합니다."
+    ],
+    "Pew Research Center · May 2026": [
+      "Pew Research Center · 2026 年 5 月",
+      "Pew Research Center・2026年5月",
+      "Pew Research Center · 2026년 5월"
+    ],
+    "of volume on Kalshi / Polymarket International came from sports, politics, and crypto. Capital follows subjects people already care about.": [
+      "分别为 Kalshi / Polymarket International 来自体育、政治和加密资产的交易量占比。资本流向人们本来就在意的话题。",
+      "Kalshi / Polymarket Internationalで、スポーツ、政治、暗号資産が占める取引高の割合。資本は、人々がすでに関心を持つテーマへ向かっています。",
+      "각각 Kalshi / Polymarket International 거래량 중 스포츠·정치·암호화폐가 차지한 비중입니다. 자본은 사람들이 이미 관심을 가진 주제로 흐릅니다."
+    ],
+    "Pew · July 2024–early May 2026 data": [
+      "Pew · 2024 年 7 月至 2026 年 5 月初数据",
+      "Pew・2024年7月〜2026年5月上旬のデータ",
+      "Pew · 2024년 7월~2026년 5월 초 데이터"
+    ],
+    "in projected U.S. creator ad spend in 2025, up 26% year over year. Creator attention already commands measurable budgets.": [
+      "2025 年美国创作者广告支出的预测规模，同比增长 26%。创作者的关注度，已经对应着可衡量的预算。",
+      "2025年の米国クリエイター広告費の予測額。前年比26%増。クリエイターへの注目には、すでに測定可能な予算が投じられています。",
+      "2025년 미국 크리에이터 광고비 전망치로, 전년 대비 26% 증가했습니다. 크리에이터를 향한 관심에는 이미 측정 가능한 예산이 투입됩니다."
+    ],
+    "IAB Creator Economy Report · 2025": [
+      "IAB 创作者经济报告 · 2025",
+      "IAB Creator Economy Report・2025年",
+      "IAB Creator Economy Report · 2025년"
+    ],
+    "Creator milestone": [
+      "创作者里程碑",
+      "クリエイターのマイルストーン",
+      "크리에이터 마일스톤"
+    ],
+    "Kalshi filed a YouTube subscriber-threshold contract in August 2025—a concrete precedent for pricing a measurable creator outcome.": [
+      "Kalshi 于 2025 年 8 月提交了 YouTube 订阅人数门槛合约，为可衡量的创作者结果定价提供了具体先例。",
+      "Kalshiは2025年8月、YouTube登録者数の到達条件に関する契約を届け出ました。測定可能なクリエイターの成果を価格にする具体的な先例です。",
+      "Kalshi는 2025년 8월 YouTube 구독자 수 기준 계약을 신고했습니다. 측정 가능한 크리에이터 성과에 가격을 매긴 구체적인 선례입니다."
+    ],
+    "Kalshi CFTC filing · August 2025": [
+      "Kalshi 向 CFTC 提交的文件 · 2025 年 8 月",
+      "KalshiのCFTC届出・2025年8月",
+      "Kalshi CFTC 신고 문서 · 2025년 8월"
+    ],
+    "Capital already flows to people on the internet.": [
+      "资本早已流向互联网中的人。",
+      "ネット上の人々に、すでに資本が流れています。",
+      "자본은 이미 온라인의 사람들에게 흐르고 있습니다."
+    ],
+    "60 billion dollars": [
+      "600 亿美元",
+      "600億ドル",
+      "600억 달러"
+    ],
+    "Citi estimated the creator economy generated about $60B in 2022 across ad-funded video, subscriptions, donations, purchases, and sponsorships.": [
+      "Citi 估算，2022 年创作者经济通过广告视频、订阅、捐赠、购买与赞助，产生了约 600 亿美元收入。",
+      "Citiの推計では、2022年のクリエイターエコノミーは広告付き動画、購読、寄付、購入、スポンサー収入を合わせ、約600億ドルを生み出しました。",
+      "Citi는 2022년 크리에이터 경제가 광고 기반 영상, 구독, 후원, 구매, 협찬을 통해 약 600억 달러의 수익을 냈다고 추산했습니다."
+    ],
+    "Citi GPS report · 2023": [
+      "Citi GPS 报告 · 2023",
+      "Citi GPS report・2023年",
+      "Citi GPS report · 2023년"
+    ],
+    "Illustrative global creator source map": [
+      "全球创作者分布示意图",
+      "世界のクリエイター分布の概念図",
+      "전 세계 크리에이터 분포 예시 지도"
+    ],
+    "250 billion dollars growing to a projected 480 billion dollars": [
+      "从 2,500 亿美元增长至预测的 4,800 亿美元",
+      "2,500億ドルから予測値4,800億ドルへ",
+      "2,500억 달러에서 전망치 4,800억 달러로 증가"
+    ],
+    "Goldman Sachs Research estimated a $250B creator economy in 2023 and projected it could approach $480B by 2027.": [
+      "Goldman Sachs Research 估算，2023 年创作者经济规模为 2,500 亿美元，并预测到 2027 年可能接近 4,800 亿美元。",
+      "Goldman Sachs Researchは、2023年のクリエイターエコノミーを2,500億ドルと推計し、2027年には4,800億ドル近くに達する可能性を示しました。",
+      "Goldman Sachs Research는 2023년 크리에이터 경제 규모를 2,500억 달러로 추산하고, 2027년에는 4,800억 달러에 근접할 수 있다고 전망했습니다."
+    ],
+    "Goldman Sachs Research · 2023": [
+      "Goldman Sachs Research · 2023",
+      "Goldman Sachs Research・2023年",
+      "Goldman Sachs Research · 2023년"
+    ],
+    "approximately 207 million creators": [
+      "约 2.07 亿创作者",
+      "約2億700万人のクリエイター",
+      "약 2억 700만 명의 크리에이터"
+    ],
+    "Approximately 207M people worldwide identify as creators, according to Visa's 2025 report citing Linktree's 2022 creator research.": [
+      "Visa 2025 年报告援引 Linktree 2022 年创作者研究指出，全球约 2.07 亿人将自己视为创作者。",
+      "Linktreeの2022年の研究を引用したVisaの2025年報告によると、世界で約2億700万人が自分をクリエイターと認識しています。",
+      "Linktree의 2022년 연구를 인용한 Visa의 2025년 보고서에 따르면, 전 세계 약 2억 700만 명이 자신을 크리에이터로 여깁니다."
+    ],
+    "Visa Creator Report · 2025": [
+      "Visa 创作者报告 · 2025",
+      "Visa Creator Report・2025年",
+      "Visa Creator Report · 2025년"
+    ],
+    "Predict where attention goes.": [
+      "预测注意力的下一站。",
+      "注目の行方を予測する。",
+      "관심이 향할 곳을 예측하세요."
+    ],
+    "Before the world knows.": [
+      "先于众人，看见。",
+      "世界が気づく前に。",
+      "세상이 알아보기 전에."
+    ],
+    "Enter Backer": [
+      "进入 Backer",
+      "Backerを始める",
+      "Backer 시작하기"
+    ],
+    "Product": [
+      "产品",
+      "プロダクト",
+      "제품"
+    ],
+    "Marketplace": [
+      "市场",
+      "マーケット",
+      "마켓"
+    ],
+    "AI Search": [
+      "AI 搜索",
+      "AI検索",
+      "AI 검색"
+    ],
+    "Portfolio": [
+      "投资组合",
+      "ポートフォリオ",
+      "포트폴리오"
+    ],
+    "Research": [
+      "研究",
+      "研究",
+      "연구"
+    ],
+    "Company": [
+      "关于我们",
+      "運営情報",
+      "회사"
+    ],
+    "Thesis": [
+      "核心理念",
+      "基本構想",
+      "핵심 관점"
+    ],
+    "Pitch": [
+      "项目介绍",
+      "事業紹介",
+      "사업 소개"
+    ],
+    "FAQ": [
+      "常见问题",
+      "よくある質問",
+      "자주 묻는 질문"
+    ],
+    "Privacy": [
+      "隐私",
+      "プライバシー",
+      "개인정보 보호"
+    ],
+    "Before the world catches on": [
+      "先于众人，发现价值",
+      "世界が気づく前に",
+      "세상이 알아보기 전에"
+    ],
+    "Backer - The Attention Prediction Market": [
+      "Backer — 注意力预测市场",
+      "Backer — 注目の予測市場",
+      "Backer — 관심 예측 시장"
+    ],
+    "Open analytics privacy settings": [
+      "打开分析数据隐私设置",
+      "アクセス解析のプライバシー設定を開く",
+      "분석 데이터 개인정보 설정 열기"
+    ],
+    "Switch to light theme": [
+      "切换浅色主题",
+      "ライトテーマに切り替え",
+      "밝은 테마로 전환"
+    ],
+    "Light": [
+      "浅色",
+      "ライト",
+      "밝게"
+    ],
+    "Dark": [
+      "深色",
+      "ダーク",
+      "어둡게"
+    ],
+    "Open Trades": [
+      "进入交易",
+      "取引を見る",
+      "거래 보기"
+    ],
+    "The financial layer of the attention economy": [
+      "注意力经济的金融层",
+      "アテンションエコノミーを支える金融",
+      "관심 경제를 뒷받침하는 금융"
+    ],
+    "Prediction markets price events.": [
+      "预测市场为事件定价。",
+      "予測市場は、出来事を価格にする。",
+      "예측 시장은 사건에 가격을 매깁니다."
+    ],
+    "Backer prices attention.": [
+      "Backer 为注意力定价。",
+      "Backerは、注目を価格にする。",
+      "Backer는 관심에 가격을 매깁니다."
+    ],
+    "Who are you backing?": [
+      "你看好谁？",
+      "あなたが見込むのは誰？",
+      "누구의 가능성을 보고 있나요?"
+    ],
+    "Search": [
+      "搜索",
+      "検索",
+      "검색"
+    ],
+    "Popular Backer searches": [
+      "Backer 热门搜索",
+      "Backerの人気検索",
+      "Backer 인기 검색"
+    ],
+    "Indie hackers": [
+      "独立开发者",
+      "個人開発者",
+      "독립 개발자"
+    ],
+    "Music gems": [
+      "宝藏音乐人",
+      "まだ知られていない音楽家",
+      "숨은 뮤지션"
+    ],
+    "Digital artists": [
+      "数字艺术家",
+      "デジタルアーティスト",
+      "디지털 아티스트"
+    ],
+    "AI researchers": [
+      "AI 研究者",
+      "AI研究者",
+      "AI 연구자"
+    ],
+    "Gaming": [
+      "游戏",
+      "ゲーム",
+      "게임"
+    ],
+    "Campus fitness": [
+      "校园健身",
+      "学生のフィットネス",
+      "대학생 피트니스"
+    ],
+    "Pause scrolling suggestions": [
+      "暂停滚动建议",
+      "候補のスクロールを停止",
+      "추천 검색어 스크롤 일시 정지"
+    ],
+    "Backer reading": [
+      "阅读 Backer",
+      "Backerについて読む",
+      "Backer 읽어보기"
+    ],
+    "Read Backer Thesis": [
+      "阅读 Backer 核心理念",
+      "Backerの基本構想を読む",
+      "Backer의 핵심 관점 읽기"
+    ],
+    "Why Backer?": [
+      "为什么是 Backer？",
+      "なぜBackerなのか。",
+      "왜 Backer인가?"
+    ],
+    "People already invest": [
+      "人们早已投资，",
+      "人々はすでに投資している、",
+      "사람들은 이미 투자합니다,"
+    ],
+    "to own a piece of": [
+      "为的是拥有",
+      "手にするために、",
+      "일부를 갖기 위해,"
+    ],
+    "Attention": [
+      "注意力",
+      "注目",
+      "관심"
+    ],
+    "where belief in people gets priced": [
+      "为对人的判断定价",
+      "人への見立てを価格にする",
+      "사람에 대한 판단에 가격을 매깁니다"
+    ],
+    "GLOBAL CREATOR FLOW": [
+      "全球创作者流动",
+      "世界のクリエイターの動き",
+      "전 세계 크리에이터의 흐름"
+    ],
+    "illustrative map": [
+      "示意图",
+      "概念図",
+      "예시 지도"
+    ],
+    "You can't invest in a market where the metrics can't be trusted.": [
+      "数据不可信，市场就无从投资。",
+      "指標を信用できない市場には、投資できない。",
+      "지표를 믿을 수 없는 시장에는 투자할 수 없습니다."
+    ],
+    "Every number on an internet profile can be fabricated. Followers, views, likes, comments — all purchasable.": [
+      "网络主页上的每一个数字，都可能被伪造。粉丝、浏览、点赞、评论，都可以买来。",
+      "ネット上のプロフィールに並ぶ数字は、どれも偽装される可能性があります。フォロワー、再生数、いいね、コメントは、すべて購入できます。",
+      "온라인 프로필의 모든 수치는 조작될 수 있습니다. 팔로워, 조회 수, 좋아요, 댓글 모두 구매할 수 있습니다."
+    ],
+    "An entire shadow industry exists to inflate them, and platforms have little incentive to stop it.": [
+      "背后已有一整条刷量灰产，而平台缺乏足够动力去遏制它。",
+      "数字を水増しする裏の産業が存在する一方、プラットフォームには、それを止める動機が乏しいのが現状です。",
+      "수치를 부풀리는 비공식 산업이 존재하지만, 플랫폼에는 이를 막을 유인이 크지 않습니다."
+    ],
+    "Are these followers real humans or bots?": [
+      "这些粉丝是真人，还是机器人？",
+      "このフォロワーは人なのか、ボットなのか。",
+      "이 팔로워들은 실제 사람일까, 봇일까?"
+    ],
+    "Did this video get 1 million views in a day organically, or bought overnight?": [
+      "一天 100 万播放，是自然传播，还是一夜刷出来的？",
+      "1日100万再生は自然な広がりか、一晩で買われた数字か。",
+      "하루 100만 조회는 자연스럽게 나온 걸까, 하룻밤 사이 구매한 걸까?"
+    ],
+    "Are these comment section for real? These profiles look oddly new.": [
+      "这些评论真实吗？为什么账号看起来都这么新？",
+      "このコメントは本物なのか。新しいアカウントばかりに見えるのはなぜか。",
+      "이 댓글들은 진짜일까? 유난히 새 계정이 많아 보이는 이유는 뭘까?"
+    ],
+    "How is the viewer retention — do they come back — or one-time exposures?": [
+      "受众留存如何？他们会回来，还是只看过一次？",
+      "視聴者は戻ってくるのか。それとも一度見ただけなのか。",
+      "시청자들은 다시 돌아올까, 한 번 보고 지나갈까?"
+    ],
+    "Without data verifications, investment isn't investment. It's gambling.": [
+      "没有数据核验，投资就失去了依据，只剩下注。",
+      "データを検証できなければ、投資は根拠のない賭けになります。",
+      "데이터를 검증할 수 없다면 투자는 근거 없는 도박이 됩니다."
+    ],
+    "Interfaces": [
+      "产品界面",
+      "プロダクト",
+      "제품 인터페이스"
+    ],
+    "01 · AI Search Agent": [
+      "01 · AI 搜索智能体",
+      "01・AI検索エージェント",
+      "01 · AI 검색 에이전트"
+    ],
+    "Describe who you're looking for. In plain language.": [
+      "用日常语言，说说你想找谁。",
+      "探している人を、普段の言葉で伝えてください。",
+      "찾는 사람을 평소 쓰는 말로 설명하세요."
+    ],
+    "\"Find fitness creators under 5K followers posting 3× a week — ideally university students.\" Backer checks connected public sources, keeps each native metric attached to its origin, and shows unavailable evidence honestly.": [
+      "“找粉丝不到 5,000、每周更新三次的健身创作者，最好是大学生。”Backer 核查已连接的公开来源，为各平台原生指标保留出处，并如实标明缺失的证据。",
+      "「フォロワー5,000人未満、週3回投稿するフィットネス系クリエイター。できれば大学生」。Backerは接続済みの公開情報を確認し、各プラットフォームの指標を出典とともに示します。得られない情報は、そのまま明示します。",
+      "“팔로워 5천 명 미만에 주 3회 게시하는 피트니스 크리에이터. 가능하면 대학생.” Backer는 연결된 공개 출처를 확인하고 각 플랫폼의 지표에 원출처를 연결하며, 확보하지 못한 근거는 그대로 표시합니다."
+    ],
+    "Try the agent": [
+      "试试 AI 搜索",
+      "AI検索を試す",
+      "AI 검색 사용해 보기"
+    ],
+    "02 · Creator Discovery Feed": [
+      "02 · 创作者发现",
+      "02・クリエイターを発見",
+      "02 · 크리에이터 탐색"
+    ],
+    "Every online IP is eligible. None of them post here.": [
+      "每个网络 IP 都可以被发现，无需在这里发布内容。",
+      "ネット上のあらゆるIPが対象。ここへの投稿は必要ありません。",
+      "모든 온라인 IP가 대상입니다. 이곳에 콘텐츠를 올릴 필요는 없습니다."
+    ],
+    "SoundCloud rappers, niche educators, Bilibili vloggers, Substack writers. Browse original work, native engagement, source freshness, and Backer's five evidence dimensions without a fabricated universal score.": [
+      "从 SoundCloud 说唱歌手、垂直领域教育者，到 Bilibili 视频作者、Substack 写作者。浏览原创作品、平台原生互动、来源更新时间与 Backer 的五项证据维度，无需依赖拼凑出的统一评分。",
+      "SoundCloudのラッパー、専門分野の講師、Bilibiliの動画制作者、Substackの書き手。原作、各プラットフォームの反応、情報の更新状況、Backerの5つの証拠軸を確認できます。無理に統一スコアへまとめません。",
+      "SoundCloud 래퍼, 전문 분야 교육자, Bilibili 브이로거, Substack 작가까지. 원작, 플랫폼 고유의 참여 지표, 출처의 최신성, Backer의 다섯 가지 근거 항목을 살펴보세요. 억지로 만든 통합 점수에 의존하지 않습니다."
+    ],
+    "Public sources": [
+      "公开来源",
+      "公開情報",
+      "공개 출처"
+    ],
+    "Loading creator catalog…": [
+      "正在加载创作者目录…",
+      "クリエイター一覧を読み込み中…",
+      "크리에이터 목록 불러오는 중…"
+    ],
+    "Open Discovery": [
+      "进入发现",
+      "発見ページを開く",
+      "탐색 열기"
+    ],
+    "03 · Trades": [
+      "03 · 交易",
+      "03・取引",
+      "03 · 거래"
+    ],
+    "Turn a future creator milestone into a reviewable proposal.": [
+      "将创作者未来的里程碑，变成可审阅的市场提案。",
+      "クリエイターの将来のマイルストーンを、検討できる提案に。",
+      "크리에이터의 미래 마일스톤을 검토 가능한 제안으로 만드세요."
+    ],
+    "Choose a creator account or original work, inspect the retained metric and rules, then Back or Fade its future growth in Trades. Custom proposals stay tied to the same subject and source.": [
+      "选择创作者账号或原创作品，核查已保存的指标与规则，再在交易界面选择 Back 或 Fade，表达对未来增长的判断。自定义提案始终对应同一标的与来源。",
+      "クリエイターのアカウントや原作を選び、保存された指標とルールを確認してから、取引画面のBackかFadeで成長への見立てを示します。独自の提案も同じ対象と出典に紐づきます。",
+      "크리에이터 계정이나 원작을 선택하고 저장된 지표와 규칙을 확인한 뒤, 거래 화면에서 Back 또는 Fade로 향후 성장에 대한 판단을 표현하세요. 직접 작성한 제안도 같은 대상과 출처에 연결됩니다."
+    ],
+    "Subject": [
+      "标的",
+      "対象",
+      "대상"
+    ],
+    "Person": [
+      "人物",
+      "人物",
+      "인물"
+    ],
+    "State": [
+      "状态",
+      "状態",
+      "상태"
+    ],
+    "Draft": [
+      "草稿",
+      "下書き",
+      "초안"
+    ],
+    "04 · Portfolio": [
+      "04 · 投资组合",
+      "04・ポートフォリオ",
+      "04 · 포트폴리오"
+    ],
+    "From $1. Milestones set the terms.": [
+      "1 美元起，条款由里程碑定义。",
+      "1ドルから。条件を決めるのはマイルストーン。",
+      "1달러부터. 조건은 마일스톤이 정합니다."
+    ],
+    "\"If I reach 50K subscribers in 12 months, early backers receive 1.5×.\" Your portfolio isn't just a tracker — it's public proof-of-taste. A record of early bets that paid off is its own social capital.": [
+      "“如果我在 12 个月内达到 5 万订阅者，早期支持者获得 1.5 倍回报。”投资组合也可以成为公开的眼光记录。早期判断获得验证，本身就是一种社会资本。",
+      "「12か月で登録者5万人に達したら、初期の支援者は1.5倍を受け取る」。ポートフォリオは、目利きの実績を公開する場にもなります。早期の見立てが実を結んだ記録は、それ自体が社会的な資本です。",
+      "“12개월 안에 구독자 5만 명에 도달하면 초기 참여자는 1.5배를 받습니다.” 포트폴리오는 안목을 공개적으로 보여주는 기록이기도 합니다. 가능성을 일찍 알아본 판단이 성과로 이어진 이력 자체가 사회적 자산이 됩니다."
+    ],
+    "Taste Grade": [
+      "眼光评级",
+      "目利き評価",
+      "안목 등급"
+    ],
+    "Return": [
+      "回报",
+      "リターン",
+      "수익률"
+    ],
+    "See a portfolio": [
+      "查看投资组合",
+      "ポートフォリオを見る",
+      "포트폴리오 보기"
+    ],
+    "Aligned upside,": [
+      "让双方的收益，",
+      "双方の利益を、",
+      "양쪽의 이익을,"
+    ],
+    "for the first time.": [
+      "第一次走到一起。",
+      "初めて同じ方向へ。",
+      "처음으로 같은 방향에."
+    ],
+    "Viewers": [
+      "观众",
+      "視聴者",
+      "시청자"
+    ],
+    "Viewers attention is finally rewarded financially.": [
+      "观众付出的注意力，终于能够获得经济回报。",
+      "視聴者が注ぐ注意にも、経済的な報いを。",
+      "시청자가 기울인 관심에도 경제적 보상이 돌아갑니다."
+    ],
+    "Creators are financially rewarded directly from the amount of attention they accrue.": [
+      "创作者可直接从积累的注意力中获得经济回报。",
+      "クリエイターは、集めた注目から直接、収益を得られます。",
+      "크리에이터는 자신이 모은 관심에서 직접 경제적 보상을 얻습니다."
+    ],
+    "Attention has always been currency.": [
+      "注意力一直都是货币。",
+      "注目は、ずっと通貨だった。",
+      "관심은 늘 통화였습니다."
+    ],
+    "Now it can be equity.": [
+      "现在，它也可以成为权益。",
+      "これからは、持分にもなる。",
+      "이제는 지분이 될 수 있습니다."
+    ],
+    "Discover people and work": [
+      "发现人物与作品",
+      "人と作品を見つける",
+      "사람과 작품 찾기"
+    ],
+    "Discovery": [
+      "发现",
+      "発見",
+      "탐색"
+    ],
+    "Trades": [
+      "交易",
+      "取引",
+      "거래"
+    ],
+    "Proof of Attention": [
+      "Proof of Attention",
+      "Proof of Attention",
+      "Proof of Attention"
+    ],
+    "Invest in people, before the world does": [
+      "先于世界，投资于人",
+      "世界が気づく前に、人に投資する",
+      "세상이 알아보기 전에, 사람에게 투자하세요"
+    ],
+    "Join the Backer waitlist": [
+      "加入 Backer 候补名单",
+      "Backerの先行案内に登録",
+      "Backer 사전 등록"
+    ],
+    "Skip to the waitlist form": [
+      "跳转至候补登记表",
+      "先行登録フォームへ移動",
+      "사전 등록 양식으로 이동"
+    ],
+    "Backer beta status": [
+      "Backer 测试版状态",
+      "Backerベータ版の状況",
+      "Backer 베타 상태"
+    ],
+    "Beta": [
+      "测试版",
+      "ベータ",
+      "베타"
+    ],
+    "Join the waitlist": [
+      "加入候补名单",
+      "先行案内に登録",
+      "사전 등록"
+    ],
+    "Get early access to Backer": [
+      "抢先体验 Backer",
+      "Backerをひと足先に",
+      "Backer를 먼저 만나보세요"
+    ],
+    "A financial market where your attention can be rightfully valued.": [
+      "让你的注意力获得应有价值的金融市场。",
+      "あなたの注目に、正当な価値を与える金融市場。",
+      "당신의 관심이 정당한 가치를 인정받는 금융 시장."
+    ],
+    "Prediction market prices events.": [
+      "预测市场为事件定价。",
+      "予測市場は、出来事を価格にする。",
+      "예측 시장은 사건에 가격을 매깁니다."
+    ],
+    "Backer prices human attention.": [
+      "Backer 为人们的注意力定价。",
+      "Backerは、人々の注目を価格にする。",
+      "Backer는 사람들의 관심에 가격을 매깁니다."
+    ],
+    "Email address": [
+      "电子邮箱",
+      "メールアドレス",
+      "이메일 주소"
+    ],
+    "Get Notified": [
+      "接收上线通知",
+      "案内を受け取る",
+      "출시 알림 받기"
+    ],
+    "We’ll use your email for Backer early-access updates.": [
+      "我们将通过邮箱发送 Backer 抢先体验的相关通知。",
+      "Backerの先行利用に関するお知らせをメールでお送りします。",
+      "Backer의 얼리 액세스 소식을 이메일로 보내드립니다."
+    ],
+    "~2K people already joined": [
+      "约 2,000 人已加入",
+      "約2,000人が登録済み",
+      "약 2천 명이 이미 등록했습니다"
+    ],
+    "Coming soon": [
+      "即将上线",
+      "近日公開",
+      "곧 공개됩니다"
+    ],
+    "JavaScript is required to save your waitlist email.": [
+      "请启用 JavaScript，以保存你的候补登记邮箱。",
+      "登録用メールアドレスの保存にはJavaScriptが必要です。",
+      "사전 등록 이메일을 저장하려면 JavaScript가 필요합니다."
+    ],
+    "Joining…": [
+      "正在加入…",
+      "登録中…",
+      "등록 중…"
+    ],
+    "You’re in": [
+      "已加入",
+      "登録できました",
+      "등록되었습니다"
+    ],
+    "Enter a complete email address, like you@example.com.": [
+      "请输入完整邮箱地址，例如 you@example.com。",
+      "you@example.comのように、完全なメールアドレスを入力してください。",
+      "you@example.com과 같은 올바른 이메일 주소를 입력해 주세요."
+    ],
+    "Waitlist registration is temporarily unavailable. Please try again later.": [
+      "候补登记暂时不可用，请稍后再试。",
+      "現在、先行登録を受け付けられません。しばらくしてからお試しください。",
+      "지금은 사전 등록을 할 수 없습니다. 잠시 후 다시 시도해 주세요."
+    ],
+    "You’re on the list. We’ll notify you when Backer is ready.": [
+      "已加入候补名单。Backer 准备就绪时，我们会通知你。",
+      "登録が完了しました。Backerの準備が整い次第、お知らせします。",
+      "사전 등록이 완료되었습니다. Backer가 준비되면 알려드리겠습니다."
+    ],
+    "We couldn’t confirm your registration. Please try again.": [
+      "暂时无法确认登记结果，请重试。",
+      "登録の完了を確認できませんでした。もう一度お試しください。",
+      "등록 완료를 확인하지 못했습니다. 다시 시도해 주세요."
+    ],
+    "Join Backer — Price Attention": [
+      "加入 Backer — 为注意力定价",
+      "Backerに参加する — 注目を価格に",
+      "Backer에 참여하세요 — 관심에 가격을"
+    ],
+    "Backer — back to thesis": [
+      "Backer — 返回核心理念",
+      "Backer — 基本構想へ戻る",
+      "Backer — 핵심 관점으로 돌아가기"
+    ],
+    "Join Beta": [
+      "加入测试版",
+      "ベータ版に参加",
+      "베타 참여"
+    ],
+    "Join waitlist": [
+      "加入候补名单",
+      "先行案内に登録",
+      "사전 등록"
+    ],
+    "View the demo": [
+      "查看演示",
+      "デモを見る",
+      "데모 보기"
+    ],
+    "A financial market where you can bet on anyone on the internet.": [
+      "一个让你对互联网中任何人的未来下注的金融市场。",
+      "ネット上の誰にでも、その可能性に賭けられる金融市場。",
+      "온라인의 누구에게나 가능성을 걸 수 있는 금융 시장."
+    ],
+    "$1 minimum to take a position": [
+      "1 美元起建立头寸",
+      "1ドルからポジションを持てる",
+      "1달러부터 포지션 진입"
+    ],
+    "Every profile underwritten by Proof of Attention": [
+      "每个主页均经过 Proof of Attention 风险评估",
+      "すべてのプロフィールをProof of Attentionで評価",
+      "모든 프로필에 Proof of Attention 위험 평가 적용"
+    ],
+    "Join the beta": [
+      "加入测试版",
+      "ベータ版に参加",
+      "베타 참여"
+    ],
+    "What brings you to Backer?": [
+      "你希望如何使用 Backer？",
+      "Backerで何をしたいですか？",
+      "Backer에서 무엇을 하고 싶으신가요?"
+    ],
+    "Choose how you want to start. A few optional questions help Backer AI tune what you see.": [
+      "选择你的起点。几个可选问题，会帮助 Backer AI 优化你看到的内容。",
+      "まず、使い方を選んでください。任意の質問への回答をもとに、Backer AIが表示内容を調整します。",
+      "어떻게 시작할지 선택하세요. 몇 가지 선택 질문에 답하면 Backer AI가 보여드릴 내용을 조정합니다."
+    ],
+    "Back creators": [
+      "支持创作者",
+      "クリエイターに投資する",
+      "크리에이터에 투자하기"
+    ],
+    "Raise as a creator": [
+      "以创作者身份融资",
+      "クリエイターとして資金を募る",
+      "크리에이터로 자금 모집하기"
+    ],
+    "Your optional setup answers stay private, never enter product analytics, and are used only to improve recommendations. You can skip every question.": [
+      "设置答案保持私密，不进入产品分析，仅用于改善推荐。所有问题都可以跳过。",
+      "任意の回答は非公開で、アクセス解析には送られず、おすすめの改善にのみ使われます。すべての質問をスキップできます。",
+      "선택 질문의 답변은 비공개로 유지되며 제품 분석에 포함되지 않고 추천 개선에만 사용됩니다. 모든 질문을 건너뛸 수 있습니다."
+    ],
+    "By continuing, you agree to Backer’s": [
+      "继续即表示你同意 Backer 的",
+      "続行すると、Backerの次の規約に同意したものとします：",
+      "계속하면 다음 Backer 약관에 동의하게 됩니다:"
+    ],
+    "Terms": [
+      "服务条款",
+      "利用規約",
+      "이용약관"
+    ],
+    "and": [
+      "与",
+      "および",
+      "및"
+    ],
+    "Privacy Policy": [
+      "隐私政策",
+      "プライバシーポリシー",
+      "개인정보 처리방침"
+    ],
+    ". Backer V1 is simulated; no real money moves.": [
+      "。Backer V1 为模拟体验，不发生真实资金交易。",
+      "。Backer V1はシミュレーションです。実際の資金は移動しません。",
+      ". Backer V1은 시뮬레이션이며 실제 자금은 이동하지 않습니다."
+    ],
+    "Change choice": [
+      "更改选择",
+      "選択を変更",
+      "선택 변경"
+    ],
+    "Investor": [
+      "投资者",
+      "投資家",
+      "투자자"
+    ],
+    "Creator / IP": [
+      "创作者 / IP",
+      "クリエイター / IP",
+      "크리에이터 / IP"
+    ],
+    "Raise capital": [
+      "筹集资金",
+      "資金を募る",
+      "자금 모집"
+    ],
+    "One account, both roles. Complete either side — switch tabs anytime.": [
+      "一个账号，两种身份。任选一侧完成，随时切换标签。",
+      "一つのアカウントで両方の役割を使えます。どちらからでも始められ、タブはいつでも切り替えられます。",
+      "계정 하나로 두 역할을 사용할 수 있습니다. 어느 쪽부터 시작해도 되며 탭은 언제든 전환할 수 있습니다."
+    ],
+    "1 · Login": [
+      "1 · 登录",
+      "1・ログイン",
+      "1 · 로그인"
+    ],
+    "2 · Identity": [
+      "2 · 身份",
+      "2・プロフィール",
+      "2 · 프로필"
+    ],
+    "Create your Backer account": [
+      "创建 Backer 账号",
+      "Backerアカウントを作成",
+      "Backer 계정 만들기"
+    ],
+    "Start building your proof-of-taste portfolio.": [
+      "开始积累能证明你眼光的投资组合。",
+      "あなたの目利きを示すポートフォリオをつくりましょう。",
+      "당신의 안목을 보여주는 포트폴리오를 만들어 보세요."
+    ],
+    "Enter a valid email address.": [
+      "请输入有效的邮箱地址。",
+      "有効なメールアドレスを入力してください。",
+      "올바른 이메일 주소를 입력해 주세요."
+    ],
+    "Password": [
+      "密码",
+      "パスワード",
+      "비밀번호"
+    ],
+    "Show": [
+      "显示",
+      "表示",
+      "표시"
+    ],
+    "Hide": [
+      "隐藏",
+      "非表示",
+      "숨기기"
+    ],
+    "Password must be at least 10 characters.": [
+      "密码至少需要 10 个字符。",
+      "パスワードは10文字以上で入力してください。",
+      "비밀번호는 10자 이상이어야 합니다."
+    ],
+    "Continue": [
+      "继续",
+      "続ける",
+      "계속"
+    ],
+    "Build your investor identity": [
+      "完善投资者身份",
+      "投資家プロフィールをつくる",
+      "투자자 프로필 만들기"
+    ],
+    "Your portfolio is your proof of taste. Choose how you’ll appear inside Backer.": [
+      "投资组合记录你的眼光。选择你在 Backer 中呈现的身份。",
+      "ポートフォリオは、あなたの目利きの記録です。Backerで使う名前を決めましょう。",
+      "포트폴리오는 당신의 안목을 보여주는 기록입니다. Backer에서 사용할 이름을 정하세요."
+    ],
+    "Display name": [
+      "显示名称",
+      "表示名",
+      "표시 이름"
+    ],
+    "Display name must be 2–50 characters.": [
+      "显示名称须为 2–50 个字符。",
+      "表示名は2〜50文字で入力してください。",
+      "표시 이름은 2~50자여야 합니다."
+    ],
+    "Backer handle": [
+      "Backer 用户名",
+      "Backerユーザー名",
+      "Backer 사용자 이름"
+    ],
+    "3–24 chars · lowercase letters, numbers, underscore.": [
+      "3–24 个字符，可使用小写字母、数字和下划线。",
+      "3〜24文字。半角英小文字、数字、アンダースコアが使えます。",
+      "3~24자. 영문 소문자, 숫자, 밑줄을 사용할 수 있습니다."
+    ],
+    "optional": [
+      "选填",
+      "任意",
+      "선택"
+    ],
+    "List myself later": [
+      "稍后创建创作者主页",
+      "自分の掲載はあとで",
+      "내 프로필은 나중에 등록"
+    ],
+    "Both": [
+      "两者都是",
+      "両方",
+      "둘 다"
+    ],
+    "I understand Backer V1 is a simulated experience and no real money moves.": [
+      "我理解 Backer V1 为模拟体验，不发生真实资金交易。",
+      "Backer V1はシミュレーションであり、実際の資金は移動しないことを理解しました。",
+      "Backer V1은 시뮬레이션이며 실제 자금이 이동하지 않는다는 점을 이해했습니다."
+    ],
+    "Future real-money milestone positions can lose the full stake. Proof of Attention is advisory underwriting — it does not settle contracts.": [
+      "未来的真实资金里程碑头寸，可能损失全部投入。Proof of Attention 仅提供参考性风险评估，不用于合约结算。",
+      "将来の実資金によるマイルストーン取引では、投じた金額をすべて失う可能性があります。Proof of Attentionは参考となるリスク評価であり、契約の決済を決定しません。",
+      "향후 실제 자금으로 거래하는 마일스톤 포지션은 투자금 전액을 잃을 수 있습니다. Proof of Attention은 참고용 위험 평가이며 계약 정산을 결정하지 않습니다."
+    ],
+    "You’re on the beta list": [
+      "你已加入测试名单",
+      "ベータ版の登録が完了しました",
+      "베타 명단에 등록되었습니다"
+    ],
+    "Your spot is reserved. We’ll email you when your Backer account is ready.": [
+      "名额已为你保留。Backer 账号准备就绪时，我们会发送邮件。",
+      "登録を受け付けました。Backerアカウントの準備が整い次第、メールでお知らせします。",
+      "등록이 완료되었습니다. Backer 계정이 준비되면 이메일로 알려드리겠습니다."
+    ],
+    "Backer V1 is simulated; no real money moves. Want to see it first?": [
+      "Backer V1 为模拟体验，不发生真实资金交易。想先看看吗？",
+      "Backer V1はシミュレーションで、実際の資金は移動しません。まずは見てみますか？",
+      "Backer V1은 시뮬레이션이며 실제 자금은 이동하지 않습니다. 먼저 둘러보시겠어요?"
+    ],
+    "Back to the thesis": [
+      "返回核心理念",
+      "基本構想へ戻る",
+      "핵심 관점으로 돌아가기"
+    ],
+    "Start your Personal IPO": [
+      "发起你的 Personal IPO",
+      "あなたのPersonal IPOを始める",
+      "나만의 Personal IPO 시작하기"
+    ],
+    "Turn your views into equity. Turn your audience into shareholders. Raise capital from the people who believe in you most.": [
+      "将浏览量转化为权益，让受众成为持有人。向最看好你的人筹集资金。",
+      "視聴を持分に、視聴者をその保有者に。あなたの可能性を信じる人々から、資金を募りましょう。",
+      "조회 수를 지분으로, 시청자를 지분 보유자로. 당신의 가능성을 가장 믿는 사람들에게 자금을 모집하세요."
+    ],
+    "Start now": [
+      "立即开始",
+      "今すぐ始める",
+      "지금 시작하기"
+    ],
+    "Terms proposed in 48h": [
+      "48 小时内拟定条款",
+      "48時間以内に条件を提案",
+      "48시간 내 조건 제안"
+    ],
+    "$1 minimum backing": [
+      "1 美元起支持",
+      "1ドルから参加",
+      "1달러부터 참여"
+    ],
+    "Backer V1 is simulated; no real money moves. Link your platforms — Backer underwrites the attention and proposes milestone terms.": [
+      "Backer V1 为模拟体验，不发生真实资金交易。关联你的平台，Backer 将评估注意力质量并拟定里程碑条款。",
+      "Backer V1はシミュレーションで、実際の資金は移動しません。プラットフォームを連携すると、Backerが注目の質を評価し、マイルストーン条件を提案します。",
+      "Backer V1은 시뮬레이션이며 실제 자금은 이동하지 않습니다. 플랫폼을 연결하면 Backer가 관심의 질을 평가하고 마일스톤 조건을 제안합니다."
+    ],
+    "Application submitted": [
+      "申请已提交",
+      "申請を送信しました",
+      "신청이 제출되었습니다"
+    ],
+    "Backer will review your platforms and propose milestone terms within 48 hours. You’ll get an email when your Creator Terminal is ready.": [
+      "Backer 将审阅你的平台，并在 48 小时内拟定里程碑条款。创作者工作台就绪时，你将收到邮件。",
+      "Backerがプラットフォームを確認し、48時間以内にマイルストーン条件を提案します。クリエイター端末の準備が整い次第、メールでお知らせします。",
+      "Backer가 플랫폼을 검토하고 48시간 내 마일스톤 조건을 제안합니다. 크리에이터 터미널이 준비되면 이메일로 알려드립니다."
+    ],
+    "Back to Backer": [
+      "返回 Backer",
+      "Backerへ戻る",
+      "Backer로 돌아가기"
+    ],
+    "Close": [
+      "关闭",
+      "閉じる",
+      "닫기"
+    ],
+    "Start your creator raise": [
+      "发起创作者融资",
+      "クリエイターとして資金を募る",
+      "크리에이터 자금 모집 시작하기"
+    ],
+    "Link your platforms — we run Proof of Attention and propose milestone terms within 48 hours.": [
+      "关联你的平台，我们将进行 Proof of Attention 评估，并在 48 小时内拟定里程碑条款。",
+      "プラットフォームを連携してください。Proof of Attentionで評価し、48時間以内にマイルストーン条件を提案します。",
+      "플랫폼을 연결하세요. Proof of Attention 평가를 진행하고 48시간 내 마일스톤 조건을 제안합니다."
+    ],
+    "Platform URL": [
+      "平台链接",
+      "プラットフォームのURL",
+      "플랫폼 URL"
+    ],
+    "Paste as many as you want youtube.com/@you, instagram.com/you, x.com/you": [
+      "可粘贴多个链接，例如 youtube.com/@you、instagram.com/you、x.com/you",
+      "複数のURLを貼り付けられます。例：youtube.com/@you、instagram.com/you、x.com/you",
+      "여러 URL을 붙여 넣을 수 있습니다. 예: youtube.com/@you, instagram.com/you, x.com/you"
+    ],
+    "Submit application": [
+      "提交申请",
+      "申請を送信",
+      "신청 제출"
+    ],
+    "Set up your Backer recommendations": [
+      "设置你的 Backer 推荐",
+      "Backerのおすすめを設定",
+      "Backer 추천 설정"
+    ],
+    "Backer signup": [
+      "Backer 注册",
+      "Backer登録",
+      "Backer 가입"
+    ],
+    "Skip setup": [
+      "跳过设置",
+      "設定をスキップ",
+      "설정 건너뛰기"
+    ],
+    "Private recommendation setup": [
+      "私密推荐设置",
+      "非公開のおすすめ設定",
+      "비공개 추천 설정"
+    ],
+    "Let Backer AI understand your": [
+      "让 Backer AI 更了解你的",
+      "Backer AIに伝える、あなたの",
+      "Backer AI가 이해할 수 있도록,"
+    ],
+    "digital attention footprint": [
+      "数字注意力足迹",
+      "ネットでの関心",
+      "당신의 온라인 관심사를"
+    ],
+    "better.": [
+      "。",
+      "。",
+      "알려주세요."
+    ],
+    "Share only what feels useful. Your answers help us surface better people, platforms, and opportunities from the start.": [
+      "只分享你愿意提供的信息，让我们从一开始就为你推荐更合适的人、平台与机会。",
+      "役立ちそうだと思うことだけ、教えてください。最初からあなたに合う人、プラットフォーム、機会を紹介するために使います。",
+      "도움이 된다고 느끼는 정보만 공유하세요. 처음부터 더 잘 맞는 사람, 플랫폼, 기회를 추천하는 데 사용됩니다."
+    ],
+    "Platforms": [
+      "平台",
+      "プラットフォーム",
+      "플랫폼"
+    ],
+    "Motivation": [
+      "使用动机",
+      "利用する理由",
+      "이용 이유"
+    ],
+    "Recommendations": [
+      "推荐",
+      "おすすめ",
+      "추천"
+    ],
+    "How Backer protects your answers": [
+      "Backer 如何保护你的回答",
+      "Backerによる回答の保護",
+      "Backer의 답변 보호 방식"
+    ],
+    "Private by design": [
+      "默认保护隐私",
+      "非公開が基本",
+      "처음부터 비공개"
+    ],
+    "Your answers stay in this browser’s beta profile.": [
+      "回答保存在当前浏览器的测试版个人资料中。",
+      "回答は、このブラウザーのベータ版プロフィールに保存されます。",
+      "답변은 이 브라우저의 베타 프로필에 저장됩니다."
+    ],
+    "Recommendations only": [
+      "仅用于推荐",
+      "おすすめのためだけに",
+      "추천에만 사용"
+    ],
+    "Never used as public profile data or sent as analytics.": [
+      "不会公开展示，也不会作为分析数据发送。",
+      "公開プロフィールには使われず、アクセス解析にも送信されません。",
+      "공개 프로필에 사용하거나 분석 데이터로 전송하지 않습니다."
+    ],
+    "Your privacy is protected.": [
+      "你的隐私受到保护。",
+      "プライバシーを守ります。",
+      "개인정보를 보호합니다."
+    ],
+    "Every question is optional. We only use what you share to improve your recommendations.": [
+      "每道题都可跳过。你分享的信息，仅用于改善推荐。",
+      "すべて任意です。共有いただいた情報は、おすすめの改善にのみ使います。",
+      "모든 질문은 선택 사항입니다. 공유한 정보는 추천 개선에만 사용합니다."
+    ],
+    "Optional · about 30 seconds": [
+      "可选 · 约 30 秒",
+      "任意・約30秒",
+      "선택 사항 · 약 30초"
+    ],
+    "How will you use Backer?": [
+      "你会如何使用 Backer？",
+      "Backerをどう使いますか？",
+      "Backer를 어떻게 사용하실 건가요?"
+    ],
+    "Choose one to shape the questions. You can change your answer or skip setup at any time.": [
+      "选择一个方向，我们会据此调整问题。你可以随时更改答案或跳过设置。",
+      "使い方に応じて質問を調整します。回答の変更や設定のスキップは、いつでもできます。",
+      "용도에 맞게 질문을 조정합니다. 답변은 언제든 바꾸거나 설정을 건너뛸 수 있습니다."
+    ],
+    "Find people early and build your proof of taste.": [
+      "早一步发现人才，积累你的眼光记录。",
+      "人の可能性を早く見つけ、目利きの実績を残す。",
+      "가능성을 일찍 발견하고 안목의 기록을 쌓으세요."
+    ],
+    "Help Backer understand your work and audience.": [
+      "让 Backer 了解你的作品与受众。",
+      "あなたの作品と視聴者についてBackerに伝える。",
+      "Backer에 작품과 오디언스를 알려주세요."
+    ],
+    "Back to signup": [
+      "返回注册",
+      "登録へ戻る",
+      "가입으로 돌아가기"
+    ],
+    "Onboarding progress": [
+      "设置进度",
+      "設定の進捗",
+      "설정 진행 상황"
+    ],
+    "Backer setup": [
+      "Backer 设置",
+      "Backerの設定",
+      "Backer 설정"
+    ],
+    "1 of 3": [
+      "第 1 步，共 3 步",
+      "3ステップ中1",
+      "3단계 중 1단계"
+    ],
+    "Your creative footprint": [
+      "你的创作足迹",
+      "あなたの発信の場",
+      "나의 창작 활동"
+    ],
+    "Which platforms do you upload your work to most?": [
+      "你最常在哪些平台发布作品？",
+      "主にどのプラットフォームで作品を公開していますか？",
+      "주로 어떤 플랫폼에 작품을 올리나요?"
+    ],
+    "Choose up to three. This helps Backer AI understand where your audience already finds you.": [
+      "最多选择三个，帮助 Backer AI 了解你的受众从哪里认识你。",
+      "3つまで選べます。視聴者がどこであなたに出会っているかをBacker AIが把握します。",
+      "최대 3개를 선택하세요. 오디언스가 어디서 당신을 만나는지 Backer AI가 이해하는 데 도움이 됩니다."
+    ],
+    "Creator platforms": [
+      "创作平台",
+      "発信するプラットフォーム",
+      "창작 플랫폼"
+    ],
+    "Podcast": [
+      "播客",
+      "ポッドキャスト",
+      "팟캐스트"
+    ],
+    "Other": [
+      "其他",
+      "その他",
+      "기타"
+    ],
+    "Optional": [
+      "选填",
+      "任意",
+      "선택 사항"
+    ],
+    "0 of 3 selected": [
+      "已选 0 项，最多 3 项",
+      "0 / 3 選択済み",
+      "최대 3개 중 0개 선택"
+    ],
+    "How your work earns": [
+      "你的创作收入",
+      "作品からの収益",
+      "창작 수익"
+    ],
+    "What is your largest source of social media revenue?": [
+      "你最大的社交媒体收入来源是什么？",
+      "ソーシャルメディアでの主な収入源は何ですか？",
+      "소셜 미디어 수입의 가장 큰 원천은 무엇인가요?"
+    ],
+    "A short answer is enough. We use this only to tune opportunities and creator recommendations.": [
+      "简短回答即可。仅用于调整机会与创作者推荐。",
+      "短い回答で構いません。機会やクリエイターのおすすめの調整にのみ使います。",
+      "짧게 답해도 됩니다. 기회와 크리에이터 추천을 조정하는 데만 사용합니다."
+    ],
+    "Your answer": [
+      "你的回答",
+      "回答",
+      "답변"
+    ],
+    "For example: paid ads, fan tips, subscriptions, sponsorships, or affiliate links.": [
+      "例如：广告、粉丝打赏、订阅、品牌赞助或推广佣金。",
+      "例：広告、ファンからの投げ銭、購読、スポンサー、アフィリエイト。",
+      "예: 광고, 팬 후원, 구독, 협찬, 제휴 링크."
+    ],
+    "Share as much or as little as you like.": [
+      "分享多少，由你决定。",
+      "書きたい分だけで構いません。",
+      "원하는 만큼만 알려주세요."
+    ],
+    "Your attention footprint": [
+      "你的注意力足迹",
+      "あなたの関心の向かう先",
+      "나의 관심사"
+    ],
+    "Which platforms do you spend the most time on?": [
+      "你在哪些平台花的时间最多？",
+      "どのプラットフォームに最も時間を使いますか？",
+      "어떤 플랫폼에서 가장 많은 시간을 보내나요?"
+    ],
+    "Choose up to three. This gives Backer AI a starting point for better creator recommendations.": [
+      "最多选择三个，为 Backer AI 推荐创作者提供起点。",
+      "3つまで選べます。あなたに合うクリエイターをおすすめする手がかりになります。",
+      "최대 3개를 선택하세요. 더 잘 맞는 크리에이터를 추천하기 위한 출발점이 됩니다."
+    ],
+    "Platforms you spend time on": [
+      "你常用的平台",
+      "よく使うプラットフォーム",
+      "자주 사용하는 플랫폼"
+    ],
+    "What holds your attention": [
+      "什么吸引着你",
+      "関心を引かれる理由",
+      "관심을 끄는 이유"
+    ],
+    "What draws you to those platforms?": [
+      "这些平台的什么吸引着你？",
+      "そのプラットフォームを使う理由は何ですか？",
+      "그 플랫폼을 이용하는 이유는 무엇인가요?"
+    ],
+    "There is no right answer. This context helps us recommend people for the reasons that matter to you.": [
+      "没有标准答案。了解你的原因，才能推荐真正与你有关的人。",
+      "正解はありません。あなたが大切にする理由に沿って、人をおすすめするために使います。",
+      "정답은 없습니다. 당신이 중요하게 생각하는 이유에 맞춰 사람을 추천하는 데 도움이 됩니다."
+    ],
+    "You can keep it simple: for fun, to kill time, to learn, or to follow specific creators.": [
+      "简单说就好：娱乐、打发时间、学习，或者关注特定创作者。",
+      "「楽しむため」「暇つぶし」「学ぶため」「好きなクリエイターを見るため」など、簡単で構いません。",
+      "재미, 시간 보내기, 배움, 특정 크리에이터 팔로우 등 간단히 적어도 됩니다."
+    ],
+    "Your time, your call": [
+      "你的时间，由你决定",
+      "時間の使い方は、あなた次第",
+      "시간 사용은 나의 선택"
+    ],
+    "Do you think you spend more time than you should on them?": [
+      "你觉得自己在这些平台花的时间过多吗？",
+      "思っているより長く使ってしまうことはありますか？",
+      "원하는 것보다 더 많은 시간을 쓰고 있다고 느끼나요?"
+    ],
+    "This stays private and helps Backer AI balance discovery with how you want to spend your attention.": [
+      "答案保持私密，帮助 Backer AI 在发现新内容与你期望的注意力分配之间取得平衡。",
+      "回答は非公開です。新しい発見と、あなたが望む時間の使い方のバランスをBacker AIが考慮します。",
+      "답변은 비공개입니다. Backer AI가 새로운 발견과 원하는 관심 배분 사이에서 균형을 맞추는 데 도움이 됩니다."
+    ],
+    "Whether you spend more time than you want": [
+      "是否花了比预期更多的时间",
+      "望むより多くの時間を使っているか",
+      "원하는 것보다 더 많은 시간을 쓰는지"
+    ],
+    "Yes": [
+      "是",
+      "はい",
+      "예"
+    ],
+    "Sometimes": [
+      "有时",
+      "ときどき",
+      "가끔"
+    ],
+    "No": [
+      "否",
+      "いいえ",
+      "아니요"
+    ],
+    "Not sure": [
+      "不确定",
+      "わからない",
+      "잘 모르겠음"
+    ],
+    "Prefer not to say": [
+      "不想回答",
+      "回答しない",
+      "답변하지 않음"
+    ],
+    "Back": [
+      "返回",
+      "戻る",
+      "뒤로"
+    ],
+    "Skip this question": [
+      "跳过这题",
+      "この質問をスキップ",
+      "이 질문 건너뛰기"
+    ],
+    "Stored only in your local beta profile. You stay in control.": [
+      "仅保存在本地测试版资料中，由你掌控。",
+      "この端末のベータ版プロフィールにのみ保存されます。管理するのはあなたです。",
+      "기기의 베타 프로필에만 저장됩니다. 관리 권한은 당신에게 있습니다."
+    ],
+    "Backer — The Trust Layer for Human Attention": [
+      "Backer — 注意力的信任基础",
+      "Backer — 人々の注目を支える信頼基盤",
+      "Backer — 사람들의 관심을 위한 신뢰 기반"
+    ],
+    "Skip to thesis": [
+      "跳转至理念正文",
+      "基本構想の本文へ移動",
+      "핵심 관점 본문으로 이동"
+    ],
+    "Backer — top": [
+      "Backer — 返回顶部",
+      "Backer — ページ先頭へ",
+      "Backer — 맨 위로"
+    ],
+    "Open the Backer product demo": [
+      "打开 Backer 产品演示",
+      "Backerの製品デモを開く",
+      "Backer 제품 데모 열기"
+    ],
+    "Demo": [
+      "演示",
+      "デモ",
+      "데모"
+    ],
+    "Request the memo": [
+      "索取研究备忘录",
+      "資料を請求",
+      "자료 요청"
+    ],
+    "Chapter navigation": [
+      "章节导航",
+      "章のナビゲーション",
+      "장 탐색"
+    ],
+    "The Trust Layer for Human Attention": [
+      "注意力的信任基础",
+      "人々の注目を支える信頼基盤",
+      "사람들의 관심을 위한 신뢰 기반"
+    ],
+    "The last human job": [
+      "人类最后的工作",
+      "人に残る最後の仕事は、",
+      "인간에게 남는 마지막 일은"
+    ],
+    "is": [
+      "是",
+      "それは",
+      "바로"
+    ],
+    "judgment.": [
+      "判断。",
+      "判断。",
+      "판단입니다."
+    ],
+    "AI is compressing the middle of knowledge work. What remains scarce is taste, trust, allocation, and early belief.": [
+      "AI 正在压缩知识工作的执行环节。仍然稀缺的，是眼光、信任、资源配置，以及先于共识的判断。",
+      "AIが知識労働の実行部分を圧縮しています。それでも希少なのは、目利き、信頼、資源配分、そして早期に可能性を見抜く判断です。",
+      "AI는 지식 노동의 실행 단계를 압축하고 있습니다. 여전히 희소한 것은 안목, 신뢰, 자원 배분, 그리고 남보다 먼저 가능성을 알아보는 판단입니다."
+    ],
+    "Backer turns belief into a market.": [
+      "Backer 让判断形成市场。",
+      "Backerは、人の見立てを市場にします。",
+      "Backer는 사람들의 판단을 시장으로 만듭니다."
+    ],
+    "Enter the belief market": [
+      "进入判断的市场",
+      "見立てが取引される市場へ",
+      "판단이 거래되는 시장으로"
+    ],
+    "Why now · 01": [
+      "为什么是现在 · 01",
+      "なぜ今なのか・01",
+      "왜 지금인가 · 01"
+    ],
+    "Every work revolution": [
+      "每一次工作方式的变革，",
+      "働き方の革命は、いつも",
+      "일의 방식이 바뀔 때마다"
+    ],
+    "sounded impossible": [
+      "在发生之前，",
+      "起こるまでは",
+      "변화가 일어나기 전에는"
+    ],
+    "before it happened.": [
+      "都曾听起来不可能。",
+      "不可能に思えた。",
+      "불가능해 보였습니다."
+    ],
+    "FIELD · before 1800": [
+      "农田 · 1800 年以前",
+      "農地・1800年以前",
+      "농업 · 1800년 이전"
+    ],
+    "FACTORY · 1800s–1900s": [
+      "工厂 · 19–20 世纪",
+      "工場・19〜20世紀",
+      "공장 · 19~20세기"
+    ],
+    "OFFICE · 1900s–now": [
+      "办公室 · 20 世纪至今",
+      "オフィス・20世紀〜現在",
+      "사무실 · 20세기~현재"
+    ],
+    "JUDGMENT · now →": [
+      "判断 · 从现在起 →",
+      "判断・現在から →",
+      "판단 · 지금부터 →"
+    ],
+    "SHARE OF LABOR FORCE": [
+      "劳动力占比",
+      "労働人口に占める割合",
+      "노동 인구 비중"
+    ],
+    "agriculture": [
+      "农业",
+      "農業",
+      "농업"
+    ],
+    "agri": [
+      "农业",
+      "農業",
+      "농업"
+    ],
+    "factory": [
+      "工厂",
+      "工場",
+      "공장"
+    ],
+    "office": [
+      "办公室",
+      "オフィス",
+      "사무실"
+    ],
+    "judgment": [
+      "判断",
+      "判断",
+      "판단"
+    ],
+    "illustrative · the dominant occupation keeps shifting": [
+      "示意 · 主导职业持续转变",
+      "概念図・主要な職業は移り変わる",
+      "예시 · 주된 직업은 계속 바뀝니다"
+    ],
+    "Field.": [
+      "农田。",
+      "農地。",
+      "농업."
+    ],
+    "For most of history, work meant land, weather, hands, endurance.": [
+      "在历史的大部分时间里，工作意味着土地、天气、双手与体力。",
+      "歴史の大半で、仕事とは土地、天候、手、そして体力に関わるものでした。",
+      "역사의 대부분에서 일이란 땅, 날씨, 손, 체력을 다루는 것이었습니다."
+    ],
+    "Factory.": [
+      "工厂。",
+      "工場。",
+      "공장."
+    ],
+    "Machines made scale possible. Labor moved from soil to systems.": [
+      "机器让规模化生产成为可能，劳动从土地转向生产体系。",
+      "機械が大量生産を可能にし、労働は土から生産システムへ移りました。",
+      "기계가 대량 생산을 가능하게 하면서 노동은 땅에서 생산 체계로 옮겨갔습니다."
+    ],
+    "Office.": [
+      "办公室。",
+      "オフィス。",
+      "사무실."
+    ],
+    "Symbols became work. Spreadsheets, meetings, software, strategy, capital.": [
+      "符号成为工作对象：表格、会议、软件、战略与资本。",
+      "表計算、会議、ソフトウェア、戦略、資本。記号や情報を扱うことが仕事になりました。",
+      "스프레드시트, 회의, 소프트웨어, 전략, 자본. 기호와 정보를 다루는 것이 일이 되었습니다."
+    ],
+    "Judgment.": [
+      "判断。",
+      "判断。",
+      "판단."
+    ],
+    "When AI does the actual work, judgment and taste become the premium.": [
+      "当 AI 承担具体工作，判断与眼光便更为珍贵。",
+      "AIが実作業を担うとき、判断と目利きにこそ高い価値が生まれます。",
+      "AI가 실제 작업을 맡으면 판단과 안목의 가치가 높아집니다."
+    ],
+    "What society thinks work is": [
+      "社会对“工作”的理解",
+      "社会が考える「仕事」",
+      "사회가 생각하는 ‘일’"
+    ],
+    "hands": [
+      "双手",
+      "手",
+      "손"
+    ],
+    "machines": [
+      "机器",
+      "機械",
+      "기계"
+    ],
+    "desks": [
+      "办公桌",
+      "机",
+      "책상"
+    ],
+    "Why now · 02": [
+      "为什么是现在 · 02",
+      "なぜ今なのか・02",
+      "왜 지금인가 · 02"
+    ],
+    "AI eats": [
+      "AI 正在接管",
+      "AIが引き受けるのは、",
+      "AI가 맡는 것은"
+    ],
+    "the middle.": [
+      "中间的执行环节。",
+      "実行の工程。",
+      "중간 실행 단계입니다."
+    ],
+    "Modern knowledge work is a three-part machine. The job was always the middle. Now the middle becomes the tool.": [
+      "现代知识工作可以分为三个环节。过去，执行环节就是工作本身；如今，它正在成为工具。",
+      "現代の知識労働は、3つの工程で成り立ちます。これまで仕事だった実行の工程が、いま道具になりつつあります。",
+      "현대의 지식 노동은 세 단계로 이루어집니다. 지금까지는 중간 실행 단계가 일 그 자체였습니다. 이제 그 단계가 도구가 됩니다."
+    ],
+    "INPUT · human-lit": [
+      "输入 · 人的意图",
+      "入力・人が起点",
+      "입력 · 사람이 시작"
+    ],
+    "Intent": [
+      "意图",
+      "意図",
+      "의도"
+    ],
+    "ideas": [
+      "想法",
+      "アイデア",
+      "아이디어"
+    ],
+    "prompts": [
+      "提示",
+      "指示",
+      "프롬프트"
+    ],
+    "questions": [
+      "问题",
+      "問い",
+      "질문"
+    ],
+    "goals": [
+      "目标",
+      "目標",
+      "목표"
+    ],
+    "taste": [
+      "眼光",
+      "目利き",
+      "안목"
+    ],
+    "MIDDLE": [
+      "执行环节",
+      "実行の工程",
+      "실행 단계"
+    ],
+    "Production": [
+      "产出",
+      "制作・実行",
+      "제작·실행"
+    ],
+    "analysis": [
+      "分析",
+      "分析",
+      "분석"
+    ],
+    "decks": [
+      "演示文稿",
+      "プレゼン資料",
+      "발표 자료"
+    ],
+    "code": [
+      "代码",
+      "コード",
+      "코드"
+    ],
+    "editing": [
+      "编辑",
+      "編集",
+      "편집"
+    ],
+    "modeling": [
+      "建模",
+      "モデリング",
+      "모델링"
+    ],
+    "comparison": [
+      "比较",
+      "比較",
+      "비교"
+    ],
+    "OUTPUT · human-lit": [
+      "输出 · 人的判断",
+      "出力・人が判断",
+      "출력 · 사람이 판단"
+    ],
+    "Judgment": [
+      "判断",
+      "判断",
+      "판단"
+    ],
+    "execution choices": [
+      "执行选择",
+      "実行方針の選択",
+      "실행 방향 선택"
+    ],
+    "capital allocation": [
+      "资本配置",
+      "資本配分",
+      "자본 배분"
+    ],
+    "distribution": [
+      "分发",
+      "流通・発信",
+      "유통·배포"
+    ],
+    "risk": [
+      "风险",
+      "リスク",
+      "위험"
+    ],
+    "Turn on AI": [
+      "启用 AI",
+      "AIをオンにする",
+      "AI 켜기"
+    ],
+    "AI is on": [
+      "AI 已启用",
+      "AIはオンです",
+      "AI가 켜져 있습니다"
+    ],
+    "The middle used to be the job.": [
+      "执行环节，曾是工作本身。",
+      "実行の工程そのものが、かつての仕事でした。",
+      "중간 실행 단계가 과거에는 일 그 자체였습니다."
+    ],
+    "Now it is becoming the tool. What remains is deciding what deserves work, attention, and capital.": [
+      "如今，它正在成为工具。留给人的，是判断什么值得投入劳动、注意力与资本。",
+      "いま、それが道具になりつつあります。残るのは、何に労力、注目、資本を注ぐべきかを決めることです。",
+      "이제 그 단계가 도구가 됩니다. 남는 것은 무엇에 노동, 관심, 자본을 투입할 가치가 있는지 결정하는 일입니다."
+    ],
+    "when the AI is doing everything else, that may be one of the last remaining fields that people are still doing.": [
+      "当 AI 在做其他所有事情时，这也许会是人类仍在从事的最后几个领域之一。",
+      "AIがほかのすべてを行うようになったら、それは人がなお担う、最後に残る分野の一つかもしれません。",
+      "AI가 다른 모든 일을 하게 된다면, 그것은 인간이 여전히 맡는 마지막 몇 안 되는 분야 중 하나일지도 모릅니다."
+    ],
+    "Marc Andreessen, on venture capital and AI": [
+      "Marc Andreessen，谈风险投资与 AI",
+      "Marc Andreessen、ベンチャー投資とAIについて",
+      "Marc Andreessen, 벤처 투자와 AI에 관하여"
+    ],
+    "Andreessen is describing venture capital.": [
+      "Andreessen 描述的是风险投资。",
+      "Andreessenが語っているのは、ベンチャー投資です。",
+      "Andreessen이 설명하는 것은 벤처 투자입니다."
+    ],
+    "But VC is not only a profession.": [
+      "但风险投资不只是一种职业。",
+      "ただし、それは職業だけを意味しません。",
+      "하지만 벤처 투자는 직업만을 뜻하지 않습니다."
+    ],
+    "It is a primitive.": [
+      "它也是一种基本行为模式。",
+      "一つの基本的な行動の型でもあります。",
+      "하나의 기본적인 행동 방식이기도 합니다."
+    ],
+    "The VC primitive": [
+      "风险投资的基本行为",
+      "ベンチャー投資の基本動作",
+      "벤처 투자의 기본 행동"
+    ],
+    "spot talent early": [
+      "早期发现人才",
+      "才能を早く見つける",
+      "재능을 일찍 발견하기"
+    ],
+    "underwrite uncertainty": [
+      "评估不确定性",
+      "不確実性を評価する",
+      "불확실성 평가하기"
+    ],
+    "allocate capital": [
+      "配置资本",
+      "資本を配分する",
+      "자본 배분하기"
+    ],
+    "help the asset compound": [
+      "帮助资产持续增值",
+      "資産の継続的な成長を支える",
+      "자산의 지속적인 성장 돕기"
+    ],
+    "build a track record": [
+      "积累可查证的记录",
+      "実績を積み重ねる",
+      "검증 가능한 이력 쌓기"
+    ],
+    "Backer makes the VC primitive": [
+      "Backer 将这套基本行为",
+      "Backerは、この行動の型を",
+      "Backer는 이 행동 방식을"
+    ],
+    "internet-native.": [
+      "带入互联网。",
+      "ネットの仕組みに組み込む。",
+      "인터넷 안으로 가져옵니다."
+    ],
+    "Not everyone becomes a venture capitalist. But everyone can become an": [
+      "不是每个人都会成为风险投资人，但每个人都可以成为",
+      "誰もがベンチャー投資家になるわけではありません。それでも、誰もがなれるのは、",
+      "모두가 벤처 투자자가 되는 것은 아닙니다. 하지만 누구나 될 수 있습니다,"
+    ],
+    "allocator of belief.": [
+      "为自己的判断配置资源的人。",
+      "自分の見立てに資源を配分する人です。",
+      "자신의 판단에 자원을 배분하는 사람이."
+    ],
+    "Market · the pattern": [
+      "市场 · 反复出现的规律",
+      "市場・繰り返されるパターン",
+      "시장 · 반복되는 패턴"
+    ],
+    "Retail conviction keeps": [
+      "个人投资者的判断，",
+      "個人投資家の確信は、",
+      "개인 투자자의 확신은"
+    ],
+    "finding": [
+      "不断找到",
+      "次々と見つける、",
+      "계속 찾아냅니다,"
+    ],
+    "new surfaces.": [
+      "新的定价载体。",
+      "新たな投資の対象を。",
+      "새로운 투자 대상을."
+    ],
+    "Not the same as what came before. The pattern is what repeats: retail belief keeps finding a new surface to price.": [
+      "它们并不相同，但有一条规律反复出现：个人投资者的判断，总能找到新的定价载体。",
+      "それぞれは異なる市場です。ただ、個人の確信が新たな対象を見つけ、価格をつけていくというパターンは繰り返されています。",
+      "각 시장은 다릅니다. 다만 개인의 확신이 새로운 대상을 찾아 가격을 매긴다는 패턴은 반복됩니다."
+    ],
+    "Bitcoin": [
+      "比特币",
+      "ビットコイン",
+      "비트코인"
+    ],
+    "priced belief in money": [
+      "为对货币的判断定价",
+      "お金への見立てを価格にした",
+      "화폐에 대한 판단에 가격을 매김"
+    ],
+    "Investable": [
+      "可投资的对象",
+      "投資できる対象",
+      "투자 대상"
+    ],
+    "· a monetary network": [
+      "· 货币网络",
+      "・通貨のネットワーク",
+      "· 화폐 네트워크"
+    ],
+    "Missing before": [
+      "此前缺少的",
+      "それまでなかったもの",
+      "이전에 없던 것"
+    ],
+    "· permissionless price": [
+      "· 无需许可的定价",
+      "・許可を要しない価格形成",
+      "· 허가 없이 이루어지는 가격 형성"
+    ],
+    "Retail options": [
+      "个人投资者期权",
+      "個人向けオプション",
+      "개인 투자자 옵션"
+    ],
+    "priced belief in direction": [
+      "为对走势的判断定价",
+      "方向への見立てを価格にした",
+      "방향에 대한 판단에 가격을 매김"
+    ],
+    "· convex conviction": [
+      "· 具有凸性收益的判断",
+      "・凸型の損益構造で示す確信",
+      "· 볼록한 손익 구조로 표현하는 확신"
+    ],
+    "· access at small size": [
+      "· 小额即可参与",
+      "・少額での参加",
+      "· 소액 참여"
+    ],
+    "Internet collectibles": [
+      "数字收藏品",
+      "デジタルコレクティブル",
+      "디지털 수집품"
+    ],
+    "priced belief in culture": [
+      "为对文化的判断定价",
+      "文化への見立てを価格にした",
+      "문화에 대한 판단에 가격을 매김"
+    ],
+    "· digital provenance": [
+      "· 数字来源记录",
+      "・デジタルの来歴",
+      "· 디지털 출처 기록"
+    ],
+    "· provable digital scarcity": [
+      "· 可验证的数字稀缺性",
+      "・検証可能なデジタルの希少性",
+      "· 검증 가능한 디지털 희소성"
+    ],
+    "priced belief in events": [
+      "为对事件的判断定价",
+      "出来事への見立てを価格にした",
+      "사건에 대한 판단에 가격을 매김"
+    ],
+    "· discrete outcomes": [
+      "· 离散结果",
+      "・個別の結果",
+      "· 개별 결과"
+    ],
+    "· a market for": [
+      "· 一个面向",
+      "・市場の対象は",
+      "· 시장의 대상은"
+    ],
+    "growth": [
+      "增长",
+      "成長",
+      "성장"
+    ],
+    ", not events": [
+      "，而非事件的市场",
+      "。出来事ではなく",
+      "이며, 사건이 아닙니다"
+    ],
+    "prices belief in": [
+      "为对以下对象的判断定价：",
+      "価格にするのは、",
+      "가격을 매기는 대상은"
+    ],
+    "Bitcoin priced belief in money. Prediction markets priced belief in events. Prediction markets price discrete outcomes —": [
+      "比特币为对货币的判断定价，预测市场为对事件的判断定价。预测市场定价的是离散结果，而",
+      "ビットコインはお金への見立てを、予測市場は出来事への見立てを価格にしました。予測市場が扱うのは個別の結果。一方、",
+      "비트코인은 화폐에 대한 판단에, 예측 시장은 사건에 대한 판단에 가격을 매겼습니다. 예측 시장이 개별 결과를 가격에 반영한다면,"
+    ],
+    "Backer prices growth potential in human attention.": [
+      "Backer 定价的是注意力的增长潜力。",
+      "Backerは、人々の注目が成長する可能性を価格にします。",
+      "Backer는 사람들의 관심이 성장할 가능성에 가격을 매깁니다."
+    ],
+    "Attention ≈ asset": [
+      "注意力 ≈ 资产",
+      "注目 ≈ 資産",
+      "관심 ≈ 자산"
+    ],
+    "Views already": [
+      "浏览量早已",
+      "視聴は、すでに",
+      "조회 수는 이미"
+    ],
+    "become currency.": [
+      "成为货币。",
+      "通貨になっている。",
+      "통화가 되었습니다."
+    ],
+    "Human attention prices ads, sponsorships, distribution, cultural leverage, and founder reach. But the earliest believers capture none of the compounding value they help create.": [
+      "注意力决定广告、赞助、分发、文化影响力与创始人传播力的价格。但最早看好的人，却无法分享自己帮助创造的持续增值。",
+      "人々の注目は、広告、スポンサー、流通、文化的な影響力、創業者の発信力の価格を決めます。ところが、最初に可能性を見抜いた人は、自らが支えた成長の価値を受け取れません。",
+      "사람들의 관심은 광고, 협찬, 유통, 문화적 영향력, 창업자의 도달력에 가격을 매깁니다. 하지만 가장 먼저 가능성을 알아본 사람은 자신이 도운 성장의 가치를 나눠 갖지 못합니다."
+    ],
+    "YOU · THE AUDIENCE": [
+      "你 · 受众",
+      "あなた・オーディエンス",
+      "당신 · 오디언스"
+    ],
+    "swipe": [
+      "滑动",
+      "スワイプ",
+      "스와이프"
+    ],
+    "like": [
+      "点赞",
+      "いいね",
+      "좋아요"
+    ],
+    "comment": [
+      "评论",
+      "コメント",
+      "댓글"
+    ],
+    "share": [
+      "分享",
+      "シェア",
+      "공유"
+    ],
+    "watch-time": [
+      "观看时长",
+      "視聴時間",
+      "시청 시간"
+    ],
+    "gift": [
+      "打赏",
+      "ギフト",
+      "후원"
+    ],
+    "subscribe": [
+      "订阅",
+      "登録・購読",
+      "구독"
+    ],
+    "you earn today": [
+      "你目前获得的收益",
+      "今のあなたの収益",
+      "현재 받는 수익"
+    ],
+    "your attention & spend →": [
+      "你的注意力与消费 →",
+      "あなたの注目と支出 →",
+      "당신의 관심과 지출 →"
+    ],
+    "VALUE CAPTURED": [
+      "价值归属",
+      "価値を受け取る側",
+      "가치를 얻는 쪽"
+    ],
+    "platform": [
+      "平台",
+      "プラットフォーム",
+      "플랫폼"
+    ],
+    "algorithm": [
+      "算法",
+      "アルゴリズム",
+      "알고리즘"
+    ],
+    "creator": [
+      "创作者",
+      "クリエイター",
+      "크리에이터"
+    ],
+    "Today the value flows one way. None of it returns to the people who supply the attention.": [
+      "如今，价值单向流动，没有回到提供注意力的人手中。",
+      "現在、価値は一方向に流れています。注目を注ぐ人々には戻ってきません。",
+      "현재 가치는 한쪽으로만 흐릅니다. 관심을 제공한 사람들에게는 돌아오지 않습니다."
+    ],
+    "BACKER RAIL": [
+      "BACKER 回报通道",
+      "BACKERの還元経路",
+      "BACKER 환원 경로"
+    ],
+    "A return rail on your early belief —": [
+      "让早期判断获得回报，",
+      "早期の見立てに報いる仕組み。",
+      "가능성을 일찍 알아본 판단에 보상이 돌아오도록,"
+    ],
+    "earn while you engage.": [
+      "在参与中分享收益。",
+      "関わることが、収益につながる。",
+      "참여하면서 수익을 얻으세요."
+    ],
+    "The asset is": [
+      "这份资产，是",
+      "資産となるのは、",
+      "자산이 되는 것은"
+    ],
+    "aggregated fan conviction.": [
+      "汇聚起来的粉丝判断。",
+      "ファンの確信の集積。",
+      "팬들의 확신이 모인 것입니다."
+    ],
+    "Market · the supply": [
+      "市场 · 供给侧",
+      "市場・供給側",
+      "시장 · 공급"
+    ],
+    "AI turns individuals": [
+      "AI 让个体",
+      "AIによって、個人が",
+      "AI로 개인이"
+    ],
+    "into": [
+      "成为",
+      "変わる、",
+      "됩니다,"
+    ],
+    "media companies.": [
+      "媒体公司。",
+      "メディア企業へ。",
+      "미디어 기업으로."
+    ],
+    "AI lowers the cost of creation. Distribution turns individuals into companies. Audience becomes the first balance sheet.": [
+      "AI 降低创作成本，分发能力让个体具备企业规模。受众成为第一张资产负债表。",
+      "AIが制作コストを下げ、発信力が個人を企業に変えます。オーディエンスが、最初の貸借対照表になります。",
+      "AI가 창작 비용을 낮추고, 유통력이 개인을 기업으로 바꿉니다. 오디언스가 첫 번째 재무상태표가 됩니다."
+    ],
+    "Select an online IP to inspect what a market would have to price.": [
+      "选择一个网络 IP，看看市场需要对哪些因素定价。",
+      "オンラインIPを選び、市場が何を価格に織り込む必要があるかを確認してください。",
+      "온라인 IP를 선택하고 시장이 어떤 요소를 가격에 반영해야 하는지 살펴보세요."
+    ],
+    "The next investable asset is not only the startup.": [
+      "下一类可投资资产，不只是创业公司。",
+      "次の投資対象は、スタートアップだけではありません。",
+      "다음 투자 대상은 스타트업만이 아닙니다."
+    ],
+    "It is the": [
+      "还包括",
+      "それは、",
+      "그 대상은"
+    ],
+    "online IP": [
+      "网络 IP",
+      "オンラインIP",
+      "온라인 IP"
+    ],
+    "that compounds attention into leverage.": [
+      "将注意力持续积累为影响力的网络主体。",
+      "注目を積み重ね、影響力に変える存在です。",
+      "관심을 쌓아 영향력으로 바꾸는 존재입니다."
+    ],
+    "Trust layer · the problem": [
+      "信任基础 · 问题所在",
+      "信頼基盤・課題",
+      "신뢰 기반 · 문제"
+    ],
+    "You cannot build a capital market": [
+      "资本市场，不能建立在",
+      "資本市場は築けない、",
+      "자본 시장을 세울 수는 없습니다,"
+    ],
+    "on numbers": [
+      "人人都能",
+      "誰もがつくれる",
+      "누구나 조작할 수 있는"
+    ],
+    "anyone can fake.": [
+      "伪造的数字之上。",
+      "偽りの数字の上には。",
+      "숫자 위에는."
+    ],
+    "No trust layer,": [
+      "没有信任基础，",
+      "信頼の基盤がなければ、",
+      "신뢰 기반 없이는,"
+    ],
+    "no market.": [
+      "就没有市场。",
+      "市場は成り立たない。",
+      "시장도 없습니다."
+    ],
+    "Proof of Attention — a standard, not a feature": [
+      "Proof of Attention — 一套标准",
+      "Proof of Attention — 一つの基準として",
+      "Proof of Attention — 하나의 기준"
+    ],
+    "Is it real?": [
+      "真实可靠吗？",
+      "本物か。",
+      "실제인가?"
+    ],
+    "Will it compound?": [
+      "能否持续增长？",
+      "成長を重ねられるか。",
+      "성장을 이어갈 수 있는가?"
+    ],
+    "authenticity": [
+      "真实性",
+      "真正性",
+      "진정성"
+    ],
+    "durability": [
+      "持续性",
+      "持続性",
+      "지속성"
+    ],
+    "anomaly": [
+      "异常",
+      "異常",
+      "이상 징후"
+    ],
+    "depth": [
+      "深度",
+      "深さ",
+      "깊이"
+    ],
+    "trajectory": [
+      "趋势",
+      "推移",
+      "추세"
+    ],
+    "confidence": [
+      "置信度",
+      "確信度",
+      "확신도"
+    ],
+    "Not a better bot filter.": [
+      "我们关注的不只是过滤机器人。",
+      "単にボット検出を改善するのではなく、",
+      "봇 필터를 개선하는 데 그치지 않고,"
+    ],
+    "An independent rating layer for attention.": [
+      "而是建立独立的注意力评级体系。",
+      "注目を独立に評価する基盤です。",
+      "관심을 독립적으로 평가하는 기반을 만듭니다."
+    ],
+    "Backer does not claim to out-detect platforms — they hold private data. Backer's edge is independence, standardization, and investment-specific underwriting.": [
+      "平台掌握非公开数据，Backer 不宣称检测能力优于平台。我们的优势在于独立性、标准化，以及面向投资的风险评估。",
+      "非公開データを持つプラットフォーム以上の検出能力を、Backerは主張しません。強みは独立性、標準化、投資に即したリスク評価にあります。",
+      "비공개 데이터를 보유한 플랫폼보다 더 잘 탐지한다고 주장하지 않습니다. Backer의 강점은 독립성, 표준화, 투자에 맞춘 위험 평가입니다."
+    ],
+    "The architecture": [
+      "体系设计",
+      "仕組み",
+      "구조"
+    ],
+    "Backer is where": [
+      "Backer，让",
+      "Backerは、",
+      "Backer는"
+    ],
+    "belief gets priced.": [
+      "判断获得价格。",
+      "見立てを価格にする場所。",
+      "판단에 가격을 매기는 곳입니다."
+    ],
+    "Not a content host. A market architecture — five primitives that turn early belief into an underwritten position.": [
+      "Backer 不托管内容。我们通过五项基本机制，让早期判断成为经过风险评估的市场头寸。",
+      "コンテンツの保管先ではなく、市場の仕組みです。5つの基本機能で、早期の見立てをリスク評価済みのポジションにつなげます。",
+      "콘텐츠를 호스팅하는 곳이 아닌 시장 구조입니다. 다섯 가지 기본 기능으로 초기 판단을 위험 평가를 거친 포지션으로 연결합니다."
+    ],
+    "Creator / IP profile": [
+      "创作者 / IP 主页",
+      "クリエイター / IPプロフィール",
+      "크리에이터 / IP 프로필"
+    ],
+    "Underwriting": [
+      "风险评估",
+      "リスク評価",
+      "위험 평가"
+    ],
+    "Proof of Attention band": [
+      "Proof of Attention 等级",
+      "Proof of Attention評価帯",
+      "Proof of Attention 등급"
+    ],
+    "Pricing": [
+      "定价",
+      "価格形成",
+      "가격 형성"
+    ],
+    "Milestone contract": [
+      "里程碑合约",
+      "マイルストーン契約",
+      "마일스톤 계약"
+    ],
+    "Position": [
+      "头寸",
+      "ポジション",
+      "포지션"
+    ],
+    "Belief position": [
+      "表达判断的头寸",
+      "見立てを示すポジション",
+      "판단을 담은 포지션"
+    ],
+    "Track Record": [
+      "业绩记录",
+      "実績",
+      "실적 기록"
+    ],
+    "Taste record": [
+      "眼光记录",
+      "目利きの記録",
+      "안목 기록"
+    ],
+    "Backer does not host content.": [
+      "Backer 不托管内容。",
+      "Backerはコンテンツをホストしません。",
+      "Backer는 콘텐츠를 호스팅하지 않습니다."
+    ],
+    "Creators build investable profiles.": [
+      "创作者建立可投资的主页。",
+      "クリエイターは、投資対象となるプロフィールをつくります。",
+      "크리에이터는 투자 대상이 되는 프로필을 만듭니다."
+    ],
+    "Backers take positions in milestones.": [
+      "支持者对里程碑建立头寸。",
+      "参加者は、マイルストーンにポジションを持ちます。",
+      "참여자는 마일스톤에 포지션을 취합니다."
+    ],
+    "Proof of Attention gives belief a risk layer.": [
+      "Proof of Attention 为判断补上风险评估。",
+      "Proof of Attentionが、見立てにリスク評価を添えます。",
+      "Proof of Attention이 판단에 위험 평가를 더합니다."
+    ],
+    "Portfolios become proof of taste.": [
+      "投资组合成为眼光的证明。",
+      "ポートフォリオが、目利きの証になります。",
+      "포트폴리오가 안목의 증거가 됩니다."
+    ],
+    "From one dollar, anyone can price belief.": [
+      "从 1 美元开始，人人都能为自己的判断定价。",
+      "1ドルから、誰もが自分の見立てに価格をつけられます。",
+      "1달러부터 누구나 자신의 판단에 가격을 매길 수 있습니다."
+    ],
+    "Conceptual pitch experience. Not investment advice. Simulated market language.": [
+      "本页为概念演示，采用模拟市场表述，不构成投资建议。",
+      "本ページは構想のデモであり、投資助言ではありません。市場に関する表現はシミュレーション上のものです。",
+      "본 페이지는 개념 시연이며 투자 조언이 아닙니다. 시장 관련 표현은 시뮬레이션을 전제로 합니다."
+    ],
+    "The ask": [
+      "我们要做的事",
+      "目指すこと",
+      "우리가 하려는 일"
+    ],
+    "Build the trust layer first.": [
+      "先建立信任基础。",
+      "まず、信頼の基盤をつくる。",
+      "먼저 신뢰 기반을 만듭니다."
+    ],
+    "Own the category second.": [
+      "再确立市场地位。",
+      "その先で、この市場を確立する。",
+      "그다음 이 시장을 확립합니다."
+    ],
+    "Attention has scale. What it lacks is underwriting.": [
+      "注意力已有规模，缺的是风险评估。",
+      "注目には、すでに規模があります。足りないのはリスク評価です。",
+      "관심은 이미 규모를 갖췄습니다. 부족한 것은 위험 평가입니다."
+    ],
+    "trust": [
+      "信任",
+      "信頼",
+      "신뢰"
+    ],
+    "pricing": [
+      "定价",
+      "価格形成",
+      "가격 형성"
+    ],
+    "liquidity": [
+      "流动性",
+      "流動性",
+      "유동성"
+    ],
+    "outcomes": [
+      "结果",
+      "結果",
+      "결과"
+    ],
+    "data": [
+      "数据",
+      "データ",
+      "데이터"
+    ],
+    "stronger trust": [
+      "更稳固的信任",
+      "より強い信頼",
+      "더 단단한 신뢰"
+    ],
+    "FLYWHEEL": [
+      "循环机制",
+      "循環の仕組み",
+      "순환 구조"
+    ],
+    "THE WEDGE": [
+      "切入点",
+      "最初の切り口",
+      "첫 진입점"
+    ],
+    "underpriced creators": [
+      "价值被低估的创作者",
+      "過小評価されたクリエイター",
+      "저평가된 크리에이터"
+    ],
+    "founder-led media": [
+      "创始人主导的媒体",
+      "創業者が発信するメディア",
+      "창업자가 이끄는 미디어"
+    ],
+    "high-retention niche audiences": [
+      "高留存的垂直受众",
+      "継続率の高い専門領域の視聴者",
+      "유지율이 높은 틈새 오디언스"
+    ],
+    "AI-native online IP": [
+      "AI 原生网络 IP",
+      "AIネイティブなオンラインIP",
+      "AI 네이티브 온라인 IP"
+    ],
+    "creator markets before institutions arrive": [
+      "在机构入场前建立创作者市场",
+      "機関投資家に先んじてクリエイター市場をつくる",
+      "기관이 진입하기 전 크리에이터 시장 구축"
+    ],
+    "RISK · RESPONSE": [
+      "风险 · 应对",
+      "リスクと対応",
+      "위험과 대응"
+    ],
+    "regulation": [
+      "监管",
+      "規制",
+      "규제"
+    ],
+    "simulate before capital": [
+      "先模拟，再引入资金",
+      "実資金の前にシミュレーション",
+      "실제 자금에 앞서 시뮬레이션"
+    ],
+    "manipulation": [
+      "操纵",
+      "操作",
+      "조작"
+    ],
+    "separate rating from settlement": [
+      "评级与结算分离",
+      "評価と決済を分離",
+      "평가와 정산 분리"
+    ],
+    "surface ambiguity": [
+      "明确呈现不确定性",
+      "曖昧さを明示",
+      "불확실성 명시"
+    ],
+    "adverse selection": [
+      "逆向选择",
+      "逆選択",
+      "역선택"
+    ],
+    "cap exposure by confidence": [
+      "按置信度限制风险敞口",
+      "確信度に応じて投資額を制限",
+      "확신도에 따른 노출 한도"
+    ],
+    "platform dependency": [
+      "平台依赖",
+      "プラットフォームへの依存",
+      "플랫폼 의존"
+    ],
+    "independence over reach": [
+      "独立性优先于覆盖面",
+      "網羅性より独立性を重視",
+      "도달 범위보다 독립성 우선"
+    ],
+    "public-data limits": [
+      "公开数据的局限",
+      "公開データの限界",
+      "공개 데이터의 한계"
+    ],
+    "verified signal over time": [
+      "持续验证的信号",
+      "時間をかけて検証されたシグナル",
+      "시간에 걸쳐 검증된 신호"
+    ],
+    "Backer is": [
+      "Backer，",
+      "Backerは、",
+      "Backer는"
+    ],
+    "where belief gets priced.": [
+      "让判断获得价格。",
+      "見立てを価格にする場所。",
+      "판단에 가격을 매기는 곳입니다."
+    ],
+    "Replay the thesis": [
+      "重新浏览核心理念",
+      "基本構想を最初から見る",
+      "핵심 관점 다시 보기"
+    ],
+    "Investor access": [
+      "投资者资料",
+      "投資家向け資料",
+      "투자자 자료"
+    ],
+    "Request the memo.": [
+      "索取研究备忘录。",
+      "資料を請求する。",
+      "자료를 요청하세요."
+    ],
+    "The category brief and underwriting thesis, by request. No product login. No live market.": [
+      "可申请获取市场概述与风险评估理念。无需产品登录，当前并无真实资金市场。",
+      "市場の概説とリスク評価の構想を、ご請求に応じてお送りします。製品へのログインは不要です。実資金の市場はありません。",
+      "요청하시면 시장 개요와 위험 평가 관점을 보내드립니다. 제품 로그인은 필요하지 않으며 실제 자금 시장은 운영되지 않습니다."
+    ],
+    "Open a request": [
+      "发起申请",
+      "請求する",
+      "요청하기"
+    ],
+    "where belief gets priced": [
+      "为判断定价",
+      "見立てを価格に",
+      "판단에 가격을"
+    ],
+    "Backer FAQ — How the Money Moves": [
+      "Backer 常见问题 — 资金如何流转",
+      "Backer FAQ — お金の流れ",
+      "Backer FAQ — 자금은 어떻게 흐르나요"
+    ],
+    "Launch App": [
+      "进入应用",
+      "アプリを開く",
+      "앱 열기"
+    ],
+    "The questions": [
+      "那些",
+      "みんなが知りたい、",
+      "모두가 궁금해하는"
+    ],
+    "everyone asks.": [
+      "大家都会问的问题。",
+      "その疑問に。",
+      "질문들."
+    ],
+    "Especially the one that matters most: how the money moves — for backers and for creators.": [
+      "尤其是最关键的一点：参与者与创作者之间，资金究竟如何流转。",
+      "特に大切なのは、参加者とクリエイターの間で、お金がどう動くかということです。",
+      "특히 가장 중요한 질문, 참여자와 크리에이터 사이에서 돈이 어떻게 흐르는지를 설명합니다."
+    ],
+    "Find an answer": [
+      "查找答案",
+      "回答を探す",
+      "답변 찾기"
+    ],
+    "Search questions…": [
+      "搜索问题…",
+      "質問を検索…",
+      "질문 검색…"
+    ],
+    "Clear FAQ search": [
+      "清除问题搜索",
+      "質問の検索をクリア",
+      "질문 검색 지우기"
+    ],
+    "Clear": [
+      "清除",
+      "クリア",
+      "지우기"
+    ],
+    "10 questions": [
+      "10 个问题",
+      "10件の質問",
+      "질문 10개"
+    ],
+    "Interactive payout lab": [
+      "交互式收益计算",
+      "受取額シミュレーター",
+      "수령액 시뮬레이터"
+    ],
+    "updates live": [
+      "实时更新",
+      "リアルタイム更新",
+      "실시간 업데이트"
+    ],
+    "The payout, live": [
+      "实时计算你的收益",
+      "受取額をその場で確認",
+      "수령액을 바로 확인하세요"
+    ],
+    "Put in any numbers, pick a scenario, and watch where every dollar goes.": [
+      "输入金额、选择情境，看看每一美元流向哪里。",
+      "金額とシナリオを選び、1ドルごとの行き先を確認できます。",
+      "금액을 입력하고 시나리오를 선택해 돈이 어디로 가는지 확인하세요."
+    ],
+    "Payout scenario": [
+      "结算情境",
+      "決済シナリオ",
+      "정산 시나리오"
+    ],
+    "Milestone": [
+      "里程碑",
+      "マイルストーン",
+      "마일스톤"
+    ],
+    "PK battle": [
+      "PK 对决",
+      "対決",
+      "대결"
+    ],
+    "Perp": [
+      "永续头寸",
+      "無期限ポジション",
+      "무기한 포지션"
+    ],
+    "Your stake": [
+      "你的投入",
+      "あなたの投入額",
+      "내 투입금"
+    ],
+    "Your side": [
+      "你的选择",
+      "選ぶ側",
+      "내 선택"
+    ],
+    "YES — it hits": [
+      "YES — 达成",
+      "YES — 達成する",
+      "YES — 달성"
+    ],
+    "NO — it misses": [
+      "NO — 未达成",
+      "NO — 達成しない",
+      "NO — 미달성"
+    ],
+    "Total staked YES": [
+      "YES 方总投入",
+      "YES側の投入総額",
+      "YES 측 총투입금"
+    ],
+    "(incl. yours)": [
+      "（含你的投入）",
+      "（あなたの分を含む）",
+      "(내 투입금 포함)"
+    ],
+    "Total staked NO": [
+      "NO 方总投入",
+      "NO側の投入総額",
+      "NO 측 총투입금"
+    ],
+    "Then the milestone…": [
+      "最终，里程碑…",
+      "マイルストーンの結果は…",
+      "마일스톤 결과는…"
+    ],
+    "Hits ✓": [
+      "达成 ✓",
+      "達成 ✓",
+      "달성 ✓"
+    ],
+    "Misses ✕": [
+      "未达成 ✕",
+      "未達成 ✕",
+      "미달성 ✕"
+    ],
+    "Index at entry": [
+      "入场时指数",
+      "開始時の指数",
+      "진입 시 지수"
+    ],
+    "Index at exit": [
+      "退出时指数",
+      "終了時の指数",
+      "종료 시 지수"
+    ],
+    "Trade fee, each way": [
+      "单边交易手续费",
+      "片道の取引手数料",
+      "진입·청산 각각의 수수료"
+    ],
+    "fee 10% · proposed": [
+      "手续费 10% · 拟议",
+      "手数料10%・提案段階",
+      "수수료 10% · 제안 단계"
+    ],
+    "All fee rates and splits are proposals —": [
+      "所有费率与分配比例均为拟议方案，",
+      "手数料率と分配比率はすべて提案段階で、",
+      "모든 수수료율과 배분 비율은 제안 단계이며,"
+    ],
+    "to be determined.": [
+      "尚未确定。",
+      "未確定です。",
+      "아직 확정되지 않았습니다."
+    ],
+    "you $1": [
+      "你 $1",
+      "あなた $1",
+      "나 $1"
+    ],
+    "fee $10": [
+      "手续费 $10",
+      "手数料 $10",
+      "수수료 $10"
+    ],
+    "Your payout": [
+      "你获得的金额",
+      "あなたの受取額",
+      "내 수령액"
+    ],
+    "+350% on your $1": [
+      "投入 $1，回报 +350%",
+      "投入額$1に対して+350%",
+      "투입금 $1 대비 +350%"
+    ],
+    "Fee $10 → $6 Backer revenue · $4 creator royalty": [
+      "手续费 $10 → Backer 收入 $6 · 创作者分成 $4",
+      "手数料$10 → Backer収益$6・クリエイター分配$4",
+      "수수료 $10 → Backer 수익 $6 · 크리에이터 배분 $4"
+    ],
+    "(proposed 60 / 40)": [
+      "（拟议比例 60 / 40）",
+      "（提案比率60 / 40）",
+      "(제안 비율 60 / 40)"
+    ],
+    "The pool balance": [
+      "资金池两侧的分布",
+      "プールの配分が",
+      "풀의 배분이"
+    ],
+    "the price: side with the crowd and win pennies — be right against it and get paid multiples.": [
+      "就是价格：站在多数一侧，收益可能很薄；少数判断若正确，则可能获得数倍回报。",
+      "価格そのものです。多数派で当たれば小さな利益、少数派で正しければ何倍もの受取額になることがあります。",
+      "곧 가격입니다. 다수 쪽에서 맞히면 작은 이익을 얻고, 소수 쪽에서 맞히면 몇 배를 받을 수 있습니다."
+    ],
+    "The one-line version:": [
+      "一句话概括：",
+      "一言でいうと：",
+      "한 문장으로 말하면:"
+    ],
+    "you win the pool minus the fee, in proportion to your share of the winning side. On a perp, your dollar simply tracks the index.": [
+      "你按自己在获胜方投入中的占比，分得扣除手续费后的资金池。永续头寸则随指数变化。",
+      "勝った側への投入額に占める自分の割合に応じて、手数料控除後のプールを受け取ります。無期限ポジションでは、金額が指数に連動します。",
+      "승리한 쪽의 투입금에서 내 몫이 차지하는 비율에 따라 수수료를 뺀 풀을 받습니다. 무기한 포지션은 지수에 연동됩니다."
+    ],
+    "Questions & answers": [
+      "问题与解答",
+      "質問と回答",
+      "질문과 답변"
+    ],
+    "Start with the mechanics.": [
+      "先弄清机制。",
+      "まず、仕組みから。",
+      "먼저 구조부터 살펴보세요."
+    ],
+    "Open any question. Search looks through both questions and answers.": [
+      "点击问题展开答案。搜索会同时检索问题与回答。",
+      "質問を開くと回答が表示されます。検索は質問と回答の両方を対象にします。",
+      "질문을 열면 답변이 표시됩니다. 검색은 질문과 답변을 모두 대상으로 합니다."
+    ],
+    "What exactly am I doing when I back a creator?": [
+      "支持一位创作者，具体是在做什么？",
+      "クリエイターをBackするとは、具体的に何をすることですか？",
+      "크리에이터를 Back한다는 것은 정확히 무엇인가요?"
+    ],
+    "How is my payout calculated when a market resolves?": [
+      "市场结算时，我获得的金额如何计算？",
+      "市場の結果が確定すると、受取額はどう計算されますか？",
+      "시장 결과가 확정되면 수령액은 어떻게 계산되나요?"
+    ],
+    "How do creators get paid?": [
+      "创作者如何获得收入？",
+      "クリエイターはどう収益を得ますか？",
+      "크리에이터는 어떻게 수익을 얻나요?"
+    ],
+    "Why did the contrarian in the example make 4.5× while the crowd made 12.5%?": [
+      "为什么例子中少数派获得 4.5 倍，而多数派只有 12.5% 的收益？",
+      "例ではなぜ、少数派は4.5倍を受け取り、多数派の利益は12.5%なのですか？",
+      "예시에서 왜 소수 쪽은 4.5배를 받고 다수 쪽은 12.5%의 수익을 얻나요?"
+    ],
+    "What's a perp, and how does it pay out?": [
+      "什么是永续头寸，如何计算收益？",
+      "無期限ポジションとは何ですか。受取額はどう決まりますか？",
+      "무기한 포지션이란 무엇이며 수령액은 어떻게 정해지나요?"
+    ],
+    "How do I know a creator's numbers are real?": [
+      "如何判断创作者的数据是否真实？",
+      "クリエイターの数字が本物か、どう判断できますか？",
+      "크리에이터의 수치가 진짜인지 어떻게 알 수 있나요?"
+    ],
+    "Isn't this just gambling?": [
+      "这不就是赌博吗？",
+      "単なるギャンブルではないのですか？",
+      "그냥 도박 아닌가요?"
+    ],
+    "Does Backer bet against me?": [
+      "Backer 会站在我的对手方吗？",
+      "Backerが私の反対側に賭けることはありますか？",
+      "Backer가 제 반대편에 베팅하나요?"
+    ],
+    "What are the minimum and maximum position sizes?": [
+      "头寸金额的下限和上限是多少？",
+      "ポジションの最低額と上限額はいくらですか？",
+      "포지션의 최소 금액과 최대 금액은 얼마인가요?"
+    ],
+    "Is real money moving today?": [
+      "现在会发生真实资金交易吗？",
+      "今、実際のお金は動いていますか？",
+      "지금 실제 자금이 오가나요?"
+    ],
+    "Taking a position on a defined, measurable milestone —": [
+      "以最低 1 美元，对一个明确、可衡量的里程碑建立头寸，例如",
+      "明確に定義された、測定可能なマイルストーンにポジションを持ちます。例えば、",
+      "명확하고 측정 가능한 마일스톤에 포지션을 취하는 것입니다. 예를 들면,"
+    ],
+    "\"50K subscribers in 12 months\"": [
+      "“12 个月内达到 5 万订阅者”",
+      "「12か月で登録者5万人」",
+      "“12개월 안에 구독자 5만 명”"
+    ],
+    "— from as little as $1. It's not a donation, not a tip, and not equity in a person. If the milestone hits, your position pays under the contract terms. If it misses, the stake was the risk you accepted — like any early bet.": [
+      "。这不是捐赠、打赏，也不是对个人的股权。达成里程碑时，按合约条款支付；未达成时，投入本金就是你事先接受的风险，如同任何早期押注。",
+      "などに、1ドルから参加できます。寄付や投げ銭ではなく、人そのものの株式でもありません。達成した場合は契約条件に従って支払われます。未達成なら、投入額は事前に引き受けたリスクです。",
+      "같은 조건에 1달러부터 참여할 수 있습니다. 기부나 팁이 아니며 개인에 대한 지분도 아닙니다. 목표를 달성하면 계약 조건에 따라 지급됩니다. 달성하지 못하면 투입금은 처음부터 감수한 위험입니다."
+    ],
+    "Milestone and PK markets are pooled: every stake on both sides forms one pool. At resolution a platform fee comes off the top (proposed 10% — final fees TBD), and the rest is paid to the winning side in proportion to each backer's share of it:": [
+      "里程碑与 PK 市场采用资金池机制：双方投入汇入同一个池子。结算时先扣除平台手续费（拟议为 10%，最终费率待定），余额按各参与者在获胜方投入中的占比分配：",
+      "マイルストーン市場と対決市場では、両側の投入額を一つのプールにまとめます。結果確定時にプラットフォーム手数料（提案は10%、最終料率は未定）を差し引き、残額を勝った側の各参加者の投入比率に応じて分配します。",
+      "마일스톤 시장과 대결 시장은 양쪽 투입금을 하나의 풀로 모읍니다. 결과 확정 시 플랫폼 수수료(제안은 10%, 최종 수수료는 미정)를 먼저 뺀 뒤, 나머지를 승리한 쪽 참여자들의 투입 비율에 따라 배분합니다."
+    ],
+    "Payout = Stake × Pool × (1 − fee) ÷ Winning side": [
+      "获得金额 = 个人投入 × 资金池 ×（1 − 费率）÷ 获胜方总投入",
+      "受取額 = 自分の投入額 × プール総額 ×（1 − 手数料率）÷ 勝った側の投入総額",
+      "수령액 = 내 투입금 × 풀 총액 × (1 − 수수료율) ÷ 승리한 쪽 총투입금"
+    ],
+    "Worked example: a $100 pool split $20 YES / $80 NO, and you hold $1 on YES. The milestone hits → $90 is paid out, your share is 1/20 of it →": [
+      "例如：100 美元资金池中，YES 方 20 美元、NO 方 80 美元，你在 YES 方投入 1 美元。里程碑达成后，可分配金额为 90 美元，你占其中的 1/20，因此获得",
+      "例：100ドルのプールでYESが20ドル、NOが80ドル。あなたはYESに1ドルを投入。達成すると90ドルが分配され、あなたの取り分はその1/20、つまり",
+      "예를 들어 100달러 풀에서 YES가 20달러, NO가 80달러이고 내가 YES에 1달러를 넣었다면, 달성 시 90달러가 배분됩니다. 내 몫은 그중 1/20이므로"
+    ],
+    "$4.50, a +350% return.": [
+      "4.50 美元，回报率为 +350%。",
+      "4.50ドル。利益率は+350%です。",
+      "4.50달러를 받고 수익률은 +350%입니다."
+    ],
+    "If it misses, a $1 NO backer collects $90 × 1/80 = $1.125 (+12.5%). Try your own numbers in the calculator above.": [
+      "若未达成，NO 方投入 1 美元的人获得 $90 × 1/80 = $1.125，回报率为 +12.5%。可以在上方计算器输入自己的数值。",
+      "未達成なら、NOに1ドルを投入した人の受取額は90ドル × 1/80 = 1.125ドル（+12.5%）。上の計算機で、自由に数値を試せます。",
+      "미달성 시 NO에 1달러를 넣은 사람은 $90 × 1/80 = $1.125를 받아 수익률이 +12.5%입니다. 위 계산기에 원하는 수치를 넣어보세요."
+    ],
+    "From the fee, not from backers' losses. Under the proposed split, 60% of the market fee is Backer's revenue and 40% is paid to the creator as a royalty —": [
+      "收入来自手续费，而非参与者的亏损。按照拟议分配方案，市场手续费的 60% 为 Backer 收入，40% 作为创作者分成，",
+      "収益源は参加者の損失ではなく、手数料です。提案では、市場手数料の60%がBackerの収益、40%がクリエイターへの分配となります。これは",
+      "수익은 참여자의 손실이 아닌 수수료에서 나옵니다. 제안된 배분에서는 시장 수수료의 60%가 Backer 수익이고 40%가 크리에이터에게 돌아갑니다. 이는"
+    ],
+    "independent of the outcome": [
+      "与结果无关",
+      "結果とは無関係です",
+      "결과와 무관합니다"
+    ],
+    ", so a creator earns from the volume their market attracts whether the milestone hits or misses. In a PK battle the two creators share the royalty. All rates are proposals, to be determined.": [
+      "。因此，无论里程碑是否达成，创作者都能从其市场吸引的交易量中获益。PK 对决中，两位创作者分享分成。所有比例均为提案，尚未确定。",
+      "。そのため、達成・未達成にかかわらず、クリエイターは自らの市場の取引量から収益を得ます。対決市場では2人のクリエイターが分配を共有します。すべての料率は提案段階で、未確定です。",
+      ". 따라서 목표 달성 여부와 관계없이 크리에이터는 자기 시장에 모인 거래량에서 수익을 얻습니다. 대결에서는 두 크리에이터가 배분금을 나눕니다. 모든 비율은 제안 단계이며 아직 확정되지 않았습니다."
+    ],
+    "Because the pool balance": [
+      "因为资金池的两侧分布",
+      "プールの配分が",
+      "풀의 배분이"
+    ],
+    "the price. When 80% of the money disagrees with you and you turn out right, you split the pool with a small winning side — that's the 4.5×. When you side with the crowd, you split it with almost everyone — pennies. Early, correct conviction is exactly what the market pays for. That's the same asymmetry that rewards a fan who spots a creator at 800 followers.": [
+      "就是价格。当 80% 的资金与你意见相反，而你最终判断正确时，你与少数获胜者分享资金池，因此获得 4.5 倍。选择多数一方，则需与更多人分享，回报自然更薄。市场奖励的是早期且正确的判断，这也正是粉丝在创作者只有 800 位关注者时发现其潜力所获得的不对称回报。",
+      "価格だからです。80%の資金が反対側にあるときに正しければ、少数の勝者でプールを分けるため4.5倍になります。多数派なら、分け合う人数が増え、利益は小さくなります。市場が報いるのは、早く正しい見立てです。フォロワー800人の時点で可能性を見抜くファンにも、同じ非対称性があります。",
+      "가격이기 때문입니다. 자금의 80%가 반대편에 있을 때 내 판단이 맞으면 소수의 승리자와 풀을 나누므로 4.5배를 받습니다. 다수 쪽에 서면 더 많은 사람과 나누므로 이익은 작아집니다. 시장이 보상하는 것은 빠르고 정확한 판단입니다. 팔로워가 800명일 때 크리에이터를 발견한 팬에게도 같은 비대칭성이 적용됩니다."
+    ],
+    "A continuous position with no pool and no expiry: your dollar tracks a creator's attention index (built on verified Proof-of-Attention data). Payout = Stake × (index at exit ÷ index at entry), minus a small trade fee charged on entry and exit (proposed ~0.5% each way, TBD). Index up 20% → $1 becomes ≈ $1.19.": [
+      "永续头寸不设资金池，也没有到期日。你的投入随创作者注意力指数变化，该指数基于经核验的 Proof of Attention 数据。获得金额 = 投入 ×（退出时指数 ÷ 入场时指数），再扣除入场与退出手续费（拟议单边约 0.5%，待定）。指数上涨 20% 时，1 美元约变为 1.19 美元。",
+      "プールも満期もない継続型のポジションです。投入額は、検証済みのProof of Attentionデータに基づくクリエイターの注目指数に連動します。受取額 = 投入額 ×（終了時指数 ÷ 開始時指数）から、開始・終了時の手数料（片道約0.5%を提案、未確定）を控除。指数が20%上がると、1ドルは約1.19ドルになります。",
+      "풀과 만기 없이 유지되는 포지션입니다. 투입금은 검증된 Proof of Attention 데이터로 만든 크리에이터의 관심 지수에 연동됩니다. 수령액은 투입금 × (종료 시 지수 ÷ 진입 시 지수)에서 진입·청산 수수료(각각 약 0.5% 제안, 미정)를 뺀 금액입니다. 지수가 20% 오르면 1달러는 약 1.19달러가 됩니다."
+    ],
+    "Every listed creator carries a Proof-of-Attention read before a dollar is priced — an independent, cross-platform, auditable standard for whether an audience is real and whether it will compound. Think Moody's, not a better spam filter. Suspicious profiles aren't hidden; they're shown with the reason flagged in plain language, and position limits scale down with lower confidence.": [
+      "每位上线创作者在定价之前，都有一份 Proof of Attention 评估：以独立、跨平台、可审计的标准，判断受众是否真实、能否持续增长。它更接近 Moody’s 的评级体系，而非反垃圾过滤器。可疑主页不会被隐藏，问题原因会明确标注；置信度越低，头寸上限越低。",
+      "掲載されるクリエイターには、価格がつく前にProof of Attentionの評価が付きます。視聴者の真正性と成長の持続性を、独立したクロスプラットフォームの監査可能な基準で確認します。スパム検出より、Moody’sのような格付けに近い考え方です。疑わしいプロフィールは隠さず、理由を平易な言葉で示し、確信度が低いほどポジション上限を下げます。",
+      "등록된 크리에이터는 가격이 매겨지기 전에 Proof of Attention 평가를 받습니다. 독립적이고 플랫폼 간 비교가 가능하며 감사 가능한 기준으로 오디언스의 진정성과 성장 지속성을 판단합니다. 스팸 필터보다는 Moody’s와 같은 평가 체계에 가깝습니다. 의심스러운 프로필을 숨기지 않고 이유를 명확히 표시하며, 확신도가 낮으면 포지션 한도도 낮아집니다."
+    ],
+    "It's the same four conditions behind any real market: high attention, genuine uncertainty, measurable outcomes, strong disagreement. The difference from a casino is structural — you get underwriting information (Proof of Attention), transparent pricing (the pool is the odds), position limits tied to verifiability, and a platform that earns on volume rather than on your losses.": [
+      "它具备真实市场的四个条件：高度关注、真实不确定性、可衡量结果，以及显著分歧。与赌场的区别在于机制：提供 Proof of Attention 风险评估、透明定价（资金池决定赔率）、与可核验程度挂钩的头寸限制，平台收入来自交易量，而非你的亏损。",
+      "注目の大きさ、実際の不確実性、測定可能な結果、意見の強い対立という、市場を成り立たせる4条件があります。カジノとの違いは仕組みにあります。Proof of Attentionによるリスク情報、プールがオッズになる透明な価格形成、検証可能性に応じた上限を備え、プラットフォームは損失ではなく取引量から収益を得ます。",
+      "실제 시장을 이루는 네 가지 조건, 높은 관심, 실질적인 불확실성, 측정 가능한 결과, 뚜렷한 의견 차이가 있습니다. 카지노와의 차이는 구조에 있습니다. Proof of Attention 위험 정보, 풀이 배당률을 결정하는 투명한 가격, 검증 가능성에 따른 한도가 제공되며 플랫폼은 참여자의 손실이 아닌 거래량에서 수익을 얻습니다."
+    ],
+    "Never. Backer holds no positions, and creators can't pay for a better score. Rating and settlement are kept structurally separate — the number that rates a creator never decides who gets paid. The moment those merge, the platform becomes the house and the rating becomes corruptible. Independence is the entire asset.": [
+      "不会。Backer 不持有头寸，创作者也不能付费换取更高评分。评级与结算在机制上分离，创作者的评分不决定谁获得支付。一旦两者合并，平台就成为庄家，评级也可能被操纵。独立性是这套体系的核心。",
+      "ありません。Backerはポジションを持たず、クリエイターは評価を買うこともできません。評価と決済は構造的に分離し、評価の数値が支払い先を決めることはありません。両者が一体になれば、プラットフォームが胴元となり、評価も歪められます。独立性こそが、この仕組みの価値です。",
+      "아니요. Backer는 포지션을 보유하지 않으며 크리에이터도 돈을 내고 더 높은 점수를 받을 수 없습니다. 평가와 정산은 구조적으로 분리되므로 평가 점수가 지급 대상을 결정하지 않습니다. 둘이 합쳐지면 플랫폼이 판돈을 운영하는 주체가 되고 평가도 왜곡될 수 있습니다. 독립성이 이 체계의 핵심입니다."
+    ],
+    "The floor is $1 — that's the strategic primitive: anyone can play. The ceiling isn't a flat number; it scales with how verifiable the asset is. A flagged 2K-subscriber profile carries a far lower cap than a verified 200K creator, because position limits are the market's defense against manipulation of thin markets.": [
+      "下限为 1 美元，让人人都能参与。上限并非固定金额，而是取决于标的可核验程度。有风险标记的 2,000 订阅者主页，上限远低于经核验的 20 万订阅者主页。头寸限制用于抵御流动性不足市场中的操纵。",
+      "最低額は1ドル。誰もが参加できることを基本にしています。上限は固定せず、対象をどこまで検証できるかに応じて変えます。問題が指摘された登録者2,000人のプロフィールは、検証済みの20万人のクリエイターより大幅に低い上限になります。薄い市場での操作を抑えるためです。",
+      "최소 금액은 1달러로, 누구나 참여할 수 있게 합니다. 최대 금액은 고정값이 아니라 대상을 얼마나 검증할 수 있는지에 따라 달라집니다. 경고가 있는 구독자 2천 명 프로필의 한도는 검증된 20만 명 크리에이터보다 훨씬 낮습니다. 거래가 적은 시장의 조작을 막기 위한 장치입니다."
+    ],
+    "V1 runs as a simulated layer: positions and portfolios are tracked, no real capital moves. The mechanics and the score get proven before money goes live. When it does, settlement runs on programmable, auditable rails — with fiat on-ramps so anyone can join with a card. Everything on this page is a design proposal, not investment advice.": [
+      "V1 运行于模拟层：记录头寸与投资组合，但不发生真实资金交易。我们会先验证机制与评分，再引入真实资金。届时，结算将采用可编程、可审计的通道，并提供法币入口，让用户可以通过银行卡参与。本页全部内容均为设计提案，不构成投资建议。",
+      "V1はシミュレーションです。ポジションとポートフォリオを記録しますが、実際の資金は移動しません。実資金を扱う前に、仕組みと評価を検証します。その後はプログラム可能で監査可能な決済基盤を使い、カードで参加できる法定通貨の入金経路を設ける構想です。本ページはすべて設計案であり、投資助言ではありません。",
+      "V1은 시뮬레이션으로 운영됩니다. 포지션과 포트폴리오는 기록하지만 실제 자금은 이동하지 않습니다. 실제 자금을 도입하기 전에 구조와 평가를 검증합니다. 이후에는 프로그래밍과 감사가 가능한 정산 체계를 사용하고, 카드로 참여할 수 있는 법정화폐 입금 경로를 마련할 구상입니다. 이 페이지의 모든 내용은 설계 제안이며 투자 조언이 아닙니다."
+    ],
+    "No match": [
+      "没有匹配结果",
+      "該当する回答がありません",
+      "일치하는 결과 없음"
+    ],
+    "Try “payout”, “creator”, “perp”, or “real money”.": [
+      "试试搜索“收益”“创作者”“永续”或“真实资金”。",
+      "「受取額」「クリエイター」「無期限」「実際のお金」などで検索してください。",
+      "‘수령액’, ‘크리에이터’, ‘무기한’, ‘실제 자금’으로 검색해 보세요."
+    ],
+    "0 questions": [
+      "0 个问题",
+      "0件の質問",
+      "질문 0개"
+    ],
+    "0 answer found": [
+      "找到 0 个答案",
+      "0件の回答が見つかりました",
+      "답변 0개 찾음"
+    ],
+    "0 answers found": [
+      "找到 0 个答案",
+      "0件の回答が見つかりました",
+      "답변 0개 찾음"
+    ],
+    "1 questions": [
+      "1 个问题",
+      "1件の質問",
+      "질문 1개"
+    ],
+    "1 answer found": [
+      "找到 1 个答案",
+      "1件の回答が見つかりました",
+      "답변 1개 찾음"
+    ],
+    "1 answers found": [
+      "找到 1 个答案",
+      "1件の回答が見つかりました",
+      "답변 1개 찾음"
+    ],
+    "2 questions": [
+      "2 个问题",
+      "2件の質問",
+      "질문 2개"
+    ],
+    "2 answer found": [
+      "找到 2 个答案",
+      "2件の回答が見つかりました",
+      "답변 2개 찾음"
+    ],
+    "2 answers found": [
+      "找到 2 个答案",
+      "2件の回答が見つかりました",
+      "답변 2개 찾음"
+    ],
+    "3 questions": [
+      "3 个问题",
+      "3件の質問",
+      "질문 3개"
+    ],
+    "3 answer found": [
+      "找到 3 个答案",
+      "3件の回答が見つかりました",
+      "답변 3개 찾음"
+    ],
+    "3 answers found": [
+      "找到 3 个答案",
+      "3件の回答が見つかりました",
+      "답변 3개 찾음"
+    ],
+    "4 questions": [
+      "4 个问题",
+      "4件の質問",
+      "질문 4개"
+    ],
+    "4 answer found": [
+      "找到 4 个答案",
+      "4件の回答が見つかりました",
+      "답변 4개 찾음"
+    ],
+    "4 answers found": [
+      "找到 4 个答案",
+      "4件の回答が見つかりました",
+      "답변 4개 찾음"
+    ],
+    "5 questions": [
+      "5 个问题",
+      "5件の質問",
+      "질문 5개"
+    ],
+    "5 answer found": [
+      "找到 5 个答案",
+      "5件の回答が見つかりました",
+      "답변 5개 찾음"
+    ],
+    "5 answers found": [
+      "找到 5 个答案",
+      "5件の回答が見つかりました",
+      "답변 5개 찾음"
+    ],
+    "6 questions": [
+      "6 个问题",
+      "6件の質問",
+      "질문 6개"
+    ],
+    "6 answer found": [
+      "找到 6 个答案",
+      "6件の回答が見つかりました",
+      "답변 6개 찾음"
+    ],
+    "6 answers found": [
+      "找到 6 个答案",
+      "6件の回答が見つかりました",
+      "답변 6개 찾음"
+    ],
+    "7 questions": [
+      "7 个问题",
+      "7件の質問",
+      "질문 7개"
+    ],
+    "7 answer found": [
+      "找到 7 个答案",
+      "7件の回答が見つかりました",
+      "답변 7개 찾음"
+    ],
+    "7 answers found": [
+      "找到 7 个答案",
+      "7件の回答が見つかりました",
+      "답변 7개 찾음"
+    ],
+    "8 questions": [
+      "8 个问题",
+      "8件の質問",
+      "질문 8개"
+    ],
+    "8 answer found": [
+      "找到 8 个答案",
+      "8件の回答が見つかりました",
+      "답변 8개 찾음"
+    ],
+    "8 answers found": [
+      "找到 8 个答案",
+      "8件の回答が見つかりました",
+      "답변 8개 찾음"
+    ],
+    "9 questions": [
+      "9 个问题",
+      "9件の質問",
+      "질문 9개"
+    ],
+    "9 answer found": [
+      "找到 9 个答案",
+      "9件の回答が見つかりました",
+      "답변 9개 찾음"
+    ],
+    "9 answers found": [
+      "找到 9 个答案",
+      "9件の回答が見つかりました",
+      "답변 9개 찾음"
+    ],
+    "10 answer found": [
+      "找到 10 个答案",
+      "10件の回答が見つかりました",
+      "답변 10개 찾음"
+    ],
+    "10 answers found": [
+      "找到 10 个答案",
+      "10件の回答が見つかりました",
+      "답변 10개 찾음"
+    ],
+    "Backer — Analytics & Privacy": [
+      "Backer — 分析与隐私",
+      "Backer — アクセス解析とプライバシー",
+      "Backer — 분석과 개인정보 보호"
+    ],
+    "Analytics & privacy": [
+      "分析与隐私",
+      "アクセス解析とプライバシー",
+      "분석과 개인정보 보호"
+    ],
+    "Understand the traffic.": [
+      "了解访问情况。",
+      "利用状況を知る。",
+      "방문 현황을 이해합니다."
+    ],
+    "Respect the visitor.": [
+      "尊重每位访客。",
+      "訪問者を尊重する。",
+      "방문자를 존중합니다."
+    ],
+    "This page explains Backer’s optional analytics systems, the information they use, how long it is kept, and the controls available to you. Optional analytics is off until you explicitly accept it. The scheduled number beneath the Backer logo is separate from analytics and is described below.": [
+      "本页说明 Backer 的可选分析系统、使用的信息、保留期限，以及你可以使用的控制选项。在你明确同意之前，可选分析保持关闭。Backer 标志下按计划显示的数字独立于分析系统，具体说明见下文。",
+      "本ページでは、Backerの任意のアクセス解析、利用する情報、保存期間、利用者が選べる設定を説明します。明示的に同意するまで、任意の解析はオフです。Backerロゴの下に表示される定期更新の数値は解析とは別で、以下に説明します。",
+      "이 페이지는 Backer의 선택적 분석 시스템, 사용하는 정보, 보관 기간, 이용자가 선택할 수 있는 설정을 설명합니다. 명시적으로 동의하기 전까지 선택적 분석은 꺼져 있습니다. Backer 로고 아래의 예정된 수치는 분석과 별개이며 아래에 설명되어 있습니다."
+    ],
+    "Policy version 2026-08-20": [
+      "政策版本 2026-08-20",
+      "ポリシー版 2026-08-20",
+      "정책 버전 2026-08-20"
+    ],
+    "Last updated 20 August 2026": [
+      "最后更新：2026 年 8 月 20 日",
+      "最終更新：2026年8月20日",
+      "최종 수정: 2026년 8월 20일"
+    ],
+    "Owner and legal review required.": [
+      "需由负责人及法务审阅。",
+      "運営責任者と法務による確認が必要です。",
+      "운영 책임자와 법무 검토가 필요합니다."
+    ],
+    "Replace the bracketed company, contact, and jurisdiction placeholders before production. This draft is operational product copy, not legal advice.": [
+      "正式使用前，需替换方括号中的公司、联系方式与司法辖区占位内容。本草稿为产品运营说明，不构成法律意见。",
+      "本番利用前に、角括弧内の会社名、連絡先、管轄に関する仮置き情報を置き換えてください。この草案は製品運用の説明であり、法的助言ではありません。",
+      "정식 사용 전에 대괄호 안의 회사, 연락처, 관할 관련 자리표시자를 교체해야 합니다. 이 초안은 제품 운영 설명이며 법률 자문이 아닙니다."
+    ],
+    "Your analytics choices": [
+      "你的分析设置选择",
+      "アクセス解析の選択",
+      "분석 설정 선택"
+    ],
+    "Backer defaults Google Analytics 4 and first-party analytics to off. “Accept analytics” enables both systems. “Reject” keeps both off. Advertising storage, ad user data, and ad personalization remain denied in every case.": [
+      "Backer 默认关闭 Google Analytics 4 与第一方分析。选择“接受分析”会同时启用两者；选择“拒绝”则继续关闭。广告存储、广告用户数据与广告个性化在任何情况下均保持拒绝。",
+      "Google Analytics 4と自社のアクセス解析は、初期状態ではオフです。「アクセス解析に同意」で両方が有効になり、「拒否」では両方ともオフのままです。広告用ストレージ、広告ユーザーデータ、広告のパーソナライズは、常に拒否されます。",
+      "Google Analytics 4와 자체 분석은 기본적으로 꺼져 있습니다. ‘분석 허용’을 선택하면 둘 다 활성화되고, ‘거부’를 선택하면 둘 다 꺼진 상태를 유지합니다. 광고 저장소, 광고 사용자 데이터, 광고 개인화는 모든 경우에 거부됩니다."
+    ],
+    "Global Privacy Control and Do Not Track signals are honored as a default rejection when no choice has been saved. You may still make an explicit choice. You can change or withdraw consent at any time; withdrawal stops future collection and clears Backer’s analytics visitor and session identifiers from this browser where possible.": [
+      "如果尚未保存选择，系统将 Global Privacy Control 与 Do Not Track 信号视为默认拒绝。你仍可作出明确选择，并随时更改或撤回同意。撤回后将停止后续采集，并在可行范围内清除当前浏览器中的 Backer 分析访客与会话标识符。",
+      "選択が保存されていない場合、Global Privacy ControlとDo Not Trackの信号を既定の拒否として扱います。その後、明示的に選択することもできます。同意はいつでも変更・撤回でき、撤回すると以後の収集を停止し、可能な範囲でこのブラウザーの解析用訪問者IDとセッションIDを削除します。",
+      "저장된 선택이 없으면 Global Privacy Control과 Do Not Track 신호를 기본 거부로 처리합니다. 이후에도 명시적으로 선택할 수 있습니다. 동의는 언제든 변경하거나 철회할 수 있으며, 철회하면 이후 수집을 중단하고 가능한 범위에서 이 브라우저의 분석용 방문자·세션 식별자를 삭제합니다."
+    ],
+    "Open the same privacy control shown throughout Backer to review or change your current setting.": [
+      "打开 Backer 全站通用的隐私控件，查看或更改当前设置。",
+      "Backer全体で共通のプライバシー設定を開き、現在の選択を確認・変更できます。",
+      "Backer 전역에서 사용하는 개인정보 설정을 열어 현재 선택을 확인하거나 변경하세요."
+    ],
+    "Open privacy settings": [
+      "打开隐私设置",
+      "プライバシー設定を開く",
+      "개인정보 설정 열기"
+    ],
+    "Analytics and the header display": [
+      "分析与页眉显示",
+      "アクセス解析とヘッダー表示",
+      "분석과 헤더 표시"
+    ],
+    "After consent, Backer uses Google Analytics 4 as an analytics processor to measure sanitized page views and allowlisted product interactions. Backer manually supplies canonical paths without raw query strings, search text, email addresses, names, handles, submitted creator URLs, portfolio details, authentication data, or IP-address fields. Backer does not use Google advertising analytics.": [
+      "获得同意后，Backer 使用 Google Analytics 4 处理经清理的页面浏览与允许列表中的产品交互。Backer 手动提供规范路径，不含原始查询字符串、搜索文本、邮箱、姓名、用户名、提交的创作者链接、投资组合详情、身份验证数据或 IP 地址字段。Backer 不使用 Google 广告分析。",
+      "同意後、BackerはGoogle Analytics 4を解析処理に使用し、不要情報を除いたページ閲覧と許可リスト上の操作を計測します。正規化したパスを手動送信し、生のクエリ、検索文、メール、名前、ユーザー名、投稿されたクリエイターURL、ポートフォリオ詳細、認証情報、IPアドレス項目は含めません。Googleの広告解析は使用しません。",
+      "동의 후 Backer는 Google Analytics 4를 분석 처리 도구로 사용해 정제된 페이지 조회와 허용 목록의 제품 상호작용을 측정합니다. 정규 경로를 직접 제공하며 원본 쿼리, 검색어, 이메일, 이름, 사용자 이름, 제출된 크리에이터 URL, 포트폴리오 세부 정보, 인증 데이터, IP 주소 필드는 포함하지 않습니다. Google 광고 분석은 사용하지 않습니다."
+    ],
+    "Google receives the network request needed to provide GA4 and handles data under its own terms and controls. Backer does not attempt to obtain raw IP addresses from GA4 and does not add IP addresses to GA event payloads.": [
+      "Google 会接收提供 GA4 服务所需的网络请求，并按其自身条款与控制机制处理数据。Backer 不尝试从 GA4 获取原始 IP，也不会在 GA 事件载荷中添加 IP 地址。",
+      "GoogleはGA4の提供に必要なネットワークリクエストを受け取り、自社の規約と管理方法に従ってデータを処理します。BackerはGA4から生のIPアドレスを取得しようとせず、GAのイベントデータにも追加しません。",
+      "Google은 GA4 제공에 필요한 네트워크 요청을 받고 자체 약관과 통제에 따라 데이터를 처리합니다. Backer는 GA4에서 원본 IP 주소를 가져오려 하지 않으며 GA 이벤트 데이터에 IP 주소를 추가하지 않습니다."
+    ],
+    "Backer first-party analytics": [
+      "Backer 第一方分析",
+      "Backerの自社アクセス解析",
+      "Backer 자체 분석"
+    ],
+    "After consent, the browser sends a limited page-view record to Backer’s same-origin analytics endpoint. This system provides page views, estimated unique visitors, sessions, and estimated unique-IP counts. It is separate from GA4 and uses different identity and bot-filtering rules.": [
+      "获得同意后，浏览器会向 Backer 同源分析端点发送范围受限的页面浏览记录。系统提供页面浏览量、估计独立访客数、会话数与估计独立 IP 数。该系统独立于 GA4，采用不同的身份识别与机器人过滤规则。",
+      "同意後、ブラウザーは限定的な閲覧記録をBackerの同一オリジンの解析エンドポイントへ送信します。ページ閲覧数、推定ユニーク訪問者数、セッション数、推定ユニークIP数を提供します。GA4とは別のシステムで、識別方法とボット除外ルールも異なります。",
+      "동의 후 브라우저는 제한된 페이지 조회 기록을 Backer의 동일 출처 분석 엔드포인트로 보냅니다. 페이지 조회 수, 추정 순방문자 수, 세션 수, 추정 고유 IP 수를 제공합니다. GA4와 별개이며 식별 및 봇 필터링 규칙도 다릅니다."
+    ],
+    "Scheduled header display": [
+      "按计划更新的页眉显示",
+      "定期更新のヘッダー表示",
+      "예정에 따라 갱신되는 헤더 표시"
+    ],
+    "The number beneath the Backer logo is not a traffic measurement. It starts at 2,305 on 20 August 2026 UTC and adds 5 after each completed UTC day. It does not count visits, page loads, or unique people, and it makes no counter request.": [
+      "Backer 标志下的数字并非流量测量值。它以 UTC 2026 年 8 月 20 日的 2,305 为起点，每完整经过一个 UTC 日增加 5。不统计访问、页面加载或独立人数，也不发出计数请求。",
+      "Backerロゴの下の数字は、アクセス数の計測値ではありません。UTCの2026年8月20日に2,305から始まり、UTCで1日が完了するごとに5増えます。訪問、ページ読み込み、人数を数えず、カウンターへのリクエストも行いません。",
+      "Backer 로고 아래 숫자는 트래픽 측정값이 아닙니다. UTC 2026년 8월 20일의 2,305에서 시작해 UTC 기준 하루가 지날 때마다 5씩 증가합니다. 방문, 페이지 로드, 고유 인원을 세지 않으며 카운터 요청도 보내지 않습니다."
+    ],
+    "Information collected": [
+      "采集的信息",
+      "収集する情報",
+      "수집하는 정보"
+    ],
+    "Category": [
+      "类别",
+      "分類",
+      "분류"
+    ],
+    "Examples": [
+      "示例",
+      "例",
+      "예시"
+    ],
+    "Purpose": [
+      "用途",
+      "目的",
+      "목적"
+    ],
+    "Page and event context": [
+      "页面与事件上下文",
+      "ページとイベントの情報",
+      "페이지 및 이벤트 정보"
+    ],
+    "Canonical page key and path, sanitized title, virtual-screen name, random event ID": [
+      "规范页面标识与路径、经清理的标题、虚拟界面名称、随机事件 ID",
+      "正規化されたページキーとパス、不要情報を除いたタイトル、仮想画面名、ランダムなイベントID",
+      "정규화된 페이지 키와 경로, 정제된 제목, 가상 화면 이름, 임의 이벤트 ID"
+    ],
+    "Count consented navigation without retaining raw URLs, hashes, or search terms.": [
+      "统计经同意的导航，不保留原始 URL、片段标识或搜索词。",
+      "生のURL、フラグメント、検索語を保存せず、同意された移動を数えます。",
+      "원본 URL, 프래그먼트, 검색어를 보관하지 않고 동의된 탐색을 집계합니다."
+    ],
+    "First-party identifiers": [
+      "第一方标识符",
+      "自社の識別子",
+      "자체 식별자"
+    ],
+    "Random visitor ID and 30-minute session ID, HMACed by the server before storage": [
+      "随机访客 ID 与 30 分钟会话 ID，存储前由服务器进行 HMAC 处理",
+      "ランダムな訪問者IDと30分のセッションID。保存前にサーバーでHMAC化",
+      "임의 방문자 ID와 30분 세션 ID. 저장 전에 서버에서 HMAC 처리"
+    ],
+    "Estimate unique visitors and sessions without creating named profiles.": [
+      "估计独立访客与会话数量，不创建实名档案。",
+      "記名プロフィールを作らず、ユニーク訪問者とセッションを推定します。",
+      "기명 프로필을 만들지 않고 순방문자와 세션을 추정합니다."
+    ],
+    "Acquisition and device context": [
+      "来源与设备信息",
+      "流入元と端末の情報",
+      "유입 경로 및 기기 정보"
+    ],
+    "Referrer hostname only, allowlisted and sanitized UTM source/medium/campaign/ID, device class, locale": [
+      "仅来源主机名、允许列表中且经清理的 UTM 来源/媒介/活动/ID、设备类型、区域语言",
+      "参照元のホスト名のみ、許可リスト内で整理済みのUTM source/medium/campaign/ID、端末種別、ロケール",
+      "참조 페이지의 호스트 이름만, 허용 목록에 포함되고 정제된 UTM source/medium/campaign/ID, 기기 유형, 로케일"
+    ],
+    "Understand broad acquisition and product compatibility.": [
+      "了解总体流量来源与产品兼容性。",
+      "大まかな流入経路と製品の互換性を把握します。",
+      "전반적인 유입 경로와 제품 호환성을 파악합니다."
+    ],
+    "Server-derived network context": [
+      "服务器获取的网络信息",
+      "サーバー側で得るネットワーク情報",
+      "서버에서 얻은 네트워크 정보"
+    ],
+    "Normalized IP-derived HMAC, masked IP, coarse country/region when supplied by the trusted host": [
+      "由规范化 IP 生成的 HMAC、掩码 IP，以及可信主机提供的粗粒度国家/地区",
+      "正規化IP由来のHMAC、マスク済みIP、信頼するホストが提供する大まかな国・地域",
+      "정규화된 IP에서 생성한 HMAC, 마스킹한 IP, 신뢰하는 호스트가 제공한 대략적인 국가·지역"
+    ],
+    "Estimate unique networks, rate-limit abuse, and diagnose bot traffic.": [
+      "估计独立网络数量、限制滥用请求频率，并诊断机器人流量。",
+      "ネットワーク数の推定、不正利用のレート制限、ボット通信の診断に使います。",
+      "고유 네트워크를 추정하고, 악용 요청을 제한하고, 봇 트래픽을 진단합니다."
+    ],
+    "Technical diagnostics": [
+      "技术诊断",
+      "技術的な診断",
+      "기술 진단"
+    ],
+    "User-agent hash and bot classification generated at the server boundary": [
+      "在服务器边界生成的 User-Agent 哈希与机器人分类",
+      "サーバー境界で生成するUser-Agentハッシュとボット分類",
+      "서버 경계에서 생성한 User-Agent 해시와 봇 분류"
+    ],
+    "Filter likely bots, crawlers, previewers, and automated traffic from default human metrics.": [
+      "从默认真人指标中排除疑似机器人、爬虫、预览程序与自动化流量。",
+      "既定の人による利用指標から、ボット、クローラー、プレビュー、自動通信の疑いがあるものを除外します。",
+      "기본 사람 이용 지표에서 의심되는 봇, 크롤러, 프리뷰 도구, 자동 트래픽을 제외합니다."
+    ],
+    "The browser does not report its IP address. The server derives it only at the trusted hosting boundary. Unique visitor and unique-IP counts are estimates: shared networks, VPNs, cleared storage, multiple browsers, and multiple devices prevent exact identification of people.": [
+      "浏览器不会上报自身 IP；服务器仅在可信托管边界获取该地址。独立访客与独立 IP 均为估计值：共享网络、VPN、清除存储、多浏览器及多设备，都会妨碍精确识别人数。",
+      "ブラウザーは自身のIPアドレスを報告しません。サーバーは信頼されたホスティング境界でのみ取得します。共有回線、VPN、保存データの削除、複数のブラウザーや端末があるため、ユニーク訪問者数とIP数は推定値であり、人数を正確に特定できません。",
+      "브라우저는 자신의 IP 주소를 보고하지 않습니다. 서버는 신뢰할 수 있는 호스팅 경계에서만 이를 얻습니다. 공유 네트워크, VPN, 저장소 삭제, 여러 브라우저와 기기로 인해 사람 수를 정확히 식별할 수 없으므로 순방문자 수와 고유 IP 수는 추정치입니다."
+    ],
+    "IP protection": [
+      "IP 地址保护",
+      "IPアドレスの保護",
+      "IP 주소 보호"
+    ],
+    "By default, Backer does not retain full IP addresses. It stores a masked display value and an HMAC-SHA-256 value created with a server-only secret and key version. This is designed to support rate limiting and approximate unique-network counts without keeping the original address.": [
+      "Backer 默认不保留完整 IP 地址，仅存储掩码显示值，以及由服务器专用密钥和密钥版本生成的 HMAC-SHA-256 值。目的是在不保留原始地址的前提下，支持限流与独立网络数量的估算。",
+      "初期設定では完全なIPアドレスを保存しません。マスクした表示値と、サーバー専用の秘密鍵および鍵バージョンで生成したHMAC-SHA-256値を保存します。元のアドレスを保持せずに、レート制限とネットワーク数の概算を行うためです。",
+      "기본적으로 전체 IP 주소를 보관하지 않습니다. 마스킹한 표시값과 서버 전용 비밀키 및 키 버전으로 만든 HMAC-SHA-256 값을 저장합니다. 원본 주소를 보관하지 않고 요청 빈도 제한과 고유 네트워크 수 추정을 지원하기 위한 설계입니다."
+    ],
+    "An optional exact-IP mode may be enabled only after the owner confirms a lawful basis, notice, retention policy, and applicable consent requirements. In that mode, a full normalized IP is encrypted immediately with AES-256-GCM. It is never logged or listed in plaintext, may be revealed only one record at a time after recent administrator re-authentication, and every reveal is recorded in an immutable audit trail.": [
+      "仅在负责人确认合法依据、告知、保留政策及适用同意要求后，才可启用可选的精确 IP 模式。此模式下，完整规范化 IP 会立即通过 AES-256-GCM 加密，绝不以明文记录或列出。管理员重新验证身份后，方可逐条查看；每次查看均记录在不可修改的审计轨迹中。",
+      "正確なIPを扱う任意モードは、運営責任者が法的根拠、通知、保存方針、該当する同意要件を確認した場合に限り有効にできます。このモードでは、正規化した完全なIPを直ちにAES-256-GCMで暗号化します。平文で記録・一覧表示せず、管理者が直近に再認証した後、1件ずつのみ開示できます。開示はすべて変更不能な監査記録に残します。",
+      "정확한 IP를 다루는 선택 모드는 운영 책임자가 적법한 근거, 고지, 보관 정책, 적용되는 동의 요건을 확인한 뒤에만 활성화할 수 있습니다. 이 모드에서는 정규화된 전체 IP를 즉시 AES-256-GCM으로 암호화합니다. 평문으로 기록하거나 나열하지 않으며, 관리자가 최근 재인증을 마친 후 한 번에 한 건씩만 확인할 수 있습니다. 모든 열람은 변경 불가능한 감사 기록에 남습니다."
+    ],
+    "Retention": [
+      "保留期限",
+      "保存期間",
+      "보관 기간"
+    ],
+    "Encrypted raw IP, when the optional mode is lawfully enabled:": [
+      "依法启用可选模式时的加密原始 IP：",
+      "任意モードが適法に有効な場合の暗号化済み生IP：",
+      "선택 모드가 적법하게 활성화된 경우의 암호화된 원본 IP:"
+    ],
+    "a 7-day retention threshold.": [
+      "保留阈值为 7 天。",
+      "保存期限は7日。",
+      "보관 기준은 7일입니다."
+    ],
+    "Detailed page-view events, masked IPs, and HMACed identifiers:": [
+      "详细页面浏览事件、掩码 IP 与经 HMAC 处理的标识符：",
+      "詳細な閲覧イベント、マスク済みIP、HMAC化した識別子：",
+      "상세 페이지 조회 이벤트, 마스킹한 IP, HMAC 처리된 식별자:"
+    ],
+    "a 90-day retention threshold.": [
+      "保留阈值为 90 天。",
+      "保存期限は90日。",
+      "보관 기준은 90일입니다."
+    ],
+    "De-identified daily aggregate counts:": [
+      "去标识化的每日汇总数量：",
+      "識別情報を除いた日次集計：",
+      "비식별 처리한 일별 집계:"
+    ],
+    "retained indefinitely.": [
+      "无限期保留。",
+      "無期限に保存。",
+      "기한 없이 보관합니다."
+    ],
+    "Administrator access and reveal audit logs:": [
+      "管理员访问与信息查看审计日志：",
+      "管理者のアクセスと開示の監査ログ：",
+      "관리자 접근 및 열람 감사 로그:"
+    ],
+    "a 12-month retention threshold.": [
+      "保留阈值为 12 个月。",
+      "保存期限は12か月。",
+      "보관 기준은 12개월입니다."
+    ],
+    "An automated retention job runs daily, so deletion normally occurs within 24 hours after each threshold. Key rotation changes the version used for new HMACs or encryption without placing keys in browser code.": [
+      "自动保留任务每天运行，因此通常会在超过各期限后的 24 小时内删除。密钥轮换会更新新 HMAC 或加密使用的密钥版本，不会将密钥放入浏览器代码。",
+      "保存期間を管理する自動処理を毎日実行するため、通常は期限から24時間以内に削除されます。鍵のローテーションでは、新しいHMACや暗号化に使うバージョンを変更し、ブラウザーのコードに鍵を置くことはありません。",
+      "보관 기간 관리 작업은 매일 실행되므로 일반적으로 각 기준을 지난 뒤 24시간 이내에 삭제됩니다. 키 교체는 새 HMAC이나 암호화에 사용하는 버전을 변경하며 브라우저 코드에 키를 넣지 않습니다."
+    ],
+    "Access, security, and disclosures": [
+      "访问、安全与披露",
+      "アクセス、セキュリティ、開示",
+      "접근, 보안 및 공개"
+    ],
+    "Individual analytics records are available only through a protected administrator dashboard using a server-side session. Public analytics responses never contain visitor, IP, location, referrer, session, or administrator data.": [
+      "单条分析记录仅能通过受保护的管理员后台、使用服务器端会话访问。公开分析响应绝不包含访客、IP、位置、来源、会话或管理员数据。",
+      "個別の解析記録は、サーバー側セッションを使う保護された管理画面からのみ閲覧できます。公開の解析レスポンスに、訪問者、IP、位置、参照元、セッション、管理者の情報は含まれません。",
+      "개별 분석 기록은 서버 측 세션을 사용하는 보호된 관리자 대시보드에서만 볼 수 있습니다. 공개 분석 응답에는 방문자, IP, 위치, 참조 페이지, 세션, 관리자 데이터가 포함되지 않습니다."
+    ],
+    "The header number is an explicitly scheduled display: 2,305 at the 20 August 2026 UTC anchor, then 5 more after each completed UTC day. It is not read from GA4, Backer’s first-party collector, hosting logs, a third-party badge, or a view-count API.": [
+      "页眉数字明确按预定规则展示：以 UTC 2026 年 8 月 20 日的 2,305 为基准，每完整经过一个 UTC 日增加 5。它不读取 GA4、Backer 第一方采集器、托管日志、第三方徽章或浏览量 API。",
+      "ヘッダーの数字は、明示的に定めたスケジュールによる表示です。UTCの2026年8月20日の2,305を基点に、UTCで1日が完了するごとに5増えます。GA4、自社の収集システム、ホスティングログ、第三者バッジ、閲覧数APIから取得していません。",
+      "헤더 숫자는 명시적으로 정해진 일정에 따른 표시입니다. UTC 2026년 8월 20일의 2,305를 기준으로 하루가 지날 때마다 5씩 증가합니다. GA4, Backer 자체 수집기, 호스팅 로그, 외부 배지, 조회 수 API에서 읽어오는 값이 아닙니다."
+    ],
+    "Dashboard metrics are labeled “First-party consented analytics.” They are separate from the scheduled header display and may differ from GA4 or hosting logs because of consent choices, ad blockers, outages, retry deduplication, bot filtering, and different identity models.": [
+      "后台指标标注为“经同意的第一方分析”，独立于按计划展示的页眉数字。由于同意选择、广告拦截、服务中断、重试去重、机器人过滤及身份识别模型不同，数据可能与 GA4 或托管日志不同。",
+      "管理画面の指標には「同意に基づく自社アクセス解析」と表示します。定期更新のヘッダー表示とは別です。同意の選択、広告ブロック、障害、再試行の重複排除、ボット除外、識別方式の違いにより、GA4やホスティングログとは数値が異なる場合があります。",
+      "대시보드 지표에는 ‘동의 기반 자체 분석’이라고 표시합니다. 예정에 따라 갱신되는 헤더와는 별개입니다. 동의 선택, 광고 차단, 장애, 재시도 중복 제거, 봇 필터링, 식별 방식의 차이로 GA4나 호스팅 로그와 수치가 다를 수 있습니다."
+    ],
+    "Withdrawal and deletion requests": [
+      "撤回与删除请求",
+      "同意の撤回と削除の依頼",
+      "동의 철회 및 삭제 요청"
+    ],
+    "Use Privacy settings to stop future analytics collection from this browser. To ask about access or deletion, contact": [
+      "如需停止当前浏览器后续的分析采集，请使用隐私设置。有关访问或删除的请求，请联系",
+      "このブラウザーからの以後の解析収集を止めるには、プライバシー設定を使用してください。開示や削除については、次の連絡先へお問い合わせください：",
+      "이 브라우저의 향후 분석 수집을 중단하려면 개인정보 설정을 사용하세요. 열람이나 삭제 문의는 다음 연락처로 보내주세요:"
+    ],
+    "[privacy contact email]": [
+      "[隐私联系邮箱]",
+      "[プライバシー窓口のメールアドレス]",
+      "[개인정보 문의 이메일]"
+    ],
+    ". Backer may need enough information to locate a record, and anonymous analytics may not always be linkable back to a person.": [
+      "。Backer 可能需要足够信息来定位记录；匿名分析不一定能关联到具体个人。",
+      "。記録を特定するために情報が必要な場合があり、匿名の解析を個人に結びつけられないこともあります。",
+      ". 기록을 찾기 위해 충분한 정보가 필요할 수 있으며 익명 분석을 특정 개인과 연결하지 못할 수도 있습니다."
+    ],
+    "Company and jurisdiction": [
+      "公司与司法辖区",
+      "運営者と管轄",
+      "운영자 및 관할"
+    ],
+    "Controller/operator:": [
+      "控制者 / 运营方：",
+      "管理者・運営者：",
+      "관리자·운영자:"
+    ],
+    "[company legal name and registered address]": [
+      "[公司法定名称及注册地址]",
+      "[会社の正式名称と登記住所]",
+      "[법인명 및 등록 주소]"
+    ],
+    "Privacy contact:": [
+      "隐私联系方式：",
+      "プライバシー窓口：",
+      "개인정보 문의:"
+    ],
+    "Jurisdiction-specific rights, supervisory-authority information, international-transfer language, and legal bases:": [
+      "各司法辖区适用的权利、监管机构信息、跨境传输说明与法律依据：",
+      "管轄ごとの権利、監督機関の情報、国際移転に関する説明、法的根拠：",
+      "관할별 권리, 감독 기관 정보, 국외 이전 관련 설명, 법적 근거:"
+    ],
+    "[owner/legal counsel to complete for applicable jurisdictions]": [
+      "[由负责人 / 法律顾问按适用司法辖区补充]",
+      "[運営責任者・法律顧問が該当する管轄に応じて記入]",
+      "[운영 책임자·법률 고문이 적용 관할에 맞게 작성]"
+    ],
+    "Will next quarter's orders reflect real demand, or stockpiling ahead of a price increase?": [
+      "下季度订单反映的是真实需求，还是涨价前的提前囤货？",
+      "来期の注文は実需か、それとも値上げ前の買いだめか。",
+      "다음 분기 주문은 실수요일까, 가격 인상 전 재고 비축일까?"
+    ],
+    "If tariffs add 8% to costs, which customers will accept higher prices and which will switch suppliers?": [
+      "如果关税使成本增加 8%，哪些客户会接受涨价，哪些会更换供应商？",
+      "関税でコストが8%増えた場合、値上げを受け入れる顧客と仕入先を変える顧客は誰か。",
+      "관세로 비용이 8% 오르면 어떤 고객은 인상을 받아들이고 어떤 고객은 공급업체를 바꿀까?"
+    ],
+    "How much share could a rival's exclusive distribution deal take before our next earnings call?": [
+      "在下次财报电话会前，竞争对手的独家分销协议可能夺走多少份额？",
+      "次の決算説明会までに、競合の独占販売契約はどれだけシェアを奪うか。",
+      "다음 실적 발표 전까지 경쟁사의 독점 유통 계약이 점유율을 얼마나 가져갈까?"
+    ],
+    "If supply falls 15%, which allocation choices preserve long-term accounts rather than this quarter's sales?": [
+      "如果供应减少 15%，如何分配才能保住长期客户，而不只是本季度销售额？",
+      "供給が15%減ったら、今期の売上だけでなく長期の取引関係を守る配分は何か。",
+      "공급이 15% 줄면 이번 분기 매출보다 장기 고객을 지키는 배분은 무엇일까?"
+    ],
+    "Will customers commit enough volume to justify a $500 million factory before we break ground?": [
+      "在动工之前，客户能否承诺足够采购量，支撑一座 5 亿美元工厂的投资？",
+      "5億ドルの工場に着工する前に、投資を支えるだけの購入量を顧客は確約するか。",
+      "5억 달러 공장에 착공하기 전에 고객이 투자를 뒷받침할 만큼의 구매량을 확약할까?"
+    ],
+    "Which customers will cut their renewal scope as procurement teams tighten budgets for the coming year?": [
+      "采购团队收紧明年预算时，哪些客户会缩减续约范围？",
+      "来年度の調達予算が縮むとき、どの顧客が更新契約の範囲を減らすか。",
+      "구매팀이 내년 예산을 줄이면 어떤 고객이 갱신 계약의 범위를 축소할까?"
+    ],
+    "After an AI rollout, which employee habits will change, and where will people keep using old workflows?": [
+      "AI 上线后，员工哪些习惯会改变，哪些环节仍会沿用旧流程？",
+      "AI導入後、どの習慣が変わり、どこで旧来の業務手順が残るか。",
+      "AI 도입 후 어떤 업무 습관이 바뀌고 어디에서 기존 방식이 유지될까?"
+    ],
+    "How will customers, dealers, and employees respond if a product recall expands from one market to five?": [
+      "如果产品召回从一个市场扩大到五个，客户、经销商与员工会如何反应？",
+      "リコールが1市場から5市場へ広がったら、顧客、販売店、従業員はどう反応するか。",
+      "제품 리콜이 한 시장에서 다섯 시장으로 확대되면 고객, 대리점, 직원은 어떻게 반응할까?"
+    ],
+    "What would persuade local buyers to trust a global brand entering a market with strong domestic competitors?": [
+      "在本土竞争对手强势的市场，什么能让当地买家信任新进入的全球品牌？",
+      "国内競合が強い市場で、新規参入のグローバルブランドを買い手が信頼する理由は何か。",
+      "자국 경쟁사가 강한 시장에서 현지 구매자가 새로 진입한 글로벌 브랜드를 믿게 할 요인은 무엇일까?"
+    ],
+    "As AI assistants guide product choices, which brands gain attention and which become interchangeable?": [
+      "当 AI 助手影响产品选择时，哪些品牌获得关注，哪些变得可替代？",
+      "AIアシスタントが商品選びを導くとき、注目を得るブランドと代替可能になるブランドはどれか。",
+      "AI 비서가 제품 선택을 이끌면 어떤 브랜드가 관심을 얻고 어떤 브랜드가 대체 가능해질까?"
+    ],
+    "Which markets will see electric-car buyers delay orders if charging queues double at peak times?": [
+      "如果高峰时段的充电排队时间翻倍，哪些市场的电动车买家会推迟下单？",
+      "充電のピーク時待ち時間が倍になったら、どの市場でEVの購入が延期されるか。",
+      "충전 피크 시간대 대기가 두 배가 되면 어느 시장의 전기차 구매자가 주문을 미룰까?"
+    ],
+    "Where could a 5% price increase protect margins without pushing customers toward a lower-priced product line?": [
+      "在哪些市场，涨价 5% 能保住利润率，而不会将客户推向更便宜的产品线？",
+      "5%の値上げで利益率を守りながら、低価格帯への顧客流出を防げるのはどこか。",
+      "어디에서 5% 가격 인상으로 마진을 지키면서 고객의 저가 제품 이동을 막을 수 있을까?"
+    ],
+    "Which accounts become reachable if a rival merges its sales force and disrupts established relationships?": [
+      "竞争对手合并销售团队、打乱既有关系时，哪些客户会出现新的切入机会？",
+      "競合の営業組織統合で既存の関係が揺らぐとき、どの顧客に接点が生まれるか。",
+      "경쟁사가 영업 조직을 통합해 기존 관계가 흔들리면 어떤 고객에게 접근할 기회가 생길까?"
+    ],
+    "How will major customers change their orders if delivery promises move from two weeks to six weeks?": [
+      "如果承诺交期从两周延长到六周，大客户会如何调整订单？",
+      "納期の約束が2週間から6週間に延びたら、大口顧客は注文をどう変えるか。",
+      "약속한 납기가 2주에서 6주로 늘면 주요 고객은 주문을 어떻게 바꿀까?"
+    ],
+    "Could selling a mature division weaken customer relationships that support growth elsewhere in the company?": [
+      "出售成熟业务，是否会削弱支撑公司其他业务增长的客户关系？",
+      "成熟事業の売却は、他部門の成長を支える顧客関係を弱めないか。",
+      "성숙 사업부를 매각하면 다른 사업의 성장을 뒷받침하는 고객 관계가 약해질까?"
+    ],
+    "When a customer's internal sponsor leaves, what makes the replacement retain, expand, or replace our contract?": [
+      "客户内部支持者离职后，哪些因素会让接任者保留、扩大或替换我们的合同？",
+      "顧客側の推進役が去った後、後任が契約の維持、拡大、切り替えを決める要因は何か。",
+      "고객사 내부 지지자가 떠난 뒤 후임자가 계약을 유지·확대·교체하게 하는 요인은 무엇일까?"
+    ],
+    "Where will a 10% headcount reduction create service bottlenecks before customers begin to leave?": [
+      "裁员 10% 会先在哪些环节造成服务瓶颈，随后导致客户流失？",
+      "10%の人員削減は、顧客離れに先立ってどこにサービスの滞りを生むか。",
+      "인력을 10% 줄이면 고객 이탈에 앞서 어떤 서비스 병목이 생길까?"
+    ],
+    "What response would rebuild trust after a service outage: compensation, transparency, or visible repair?": [
+      "服务中断后，赔偿、信息透明或看得见的修复，哪种回应更能重建信任？",
+      "障害後に信頼を回復するのは、補償、透明な説明、それとも目に見える改善か。",
+      "서비스 장애 후 보상, 투명한 설명, 눈에 보이는 개선 중 무엇이 신뢰를 회복할까?"
+    ],
+    "If a government ends consumer rebates, which buyers postpone purchases and which choose cheaper alternatives?": [
+      "政府取消消费补贴后，哪些买家会推迟购买，哪些会转向更便宜的替代品？",
+      "消費者補助が終了したら、購入を延期する人と安い代替品を選ぶ人は誰か。",
+      "정부가 소비자 보조금을 없애면 누가 구매를 미루고 누가 저렴한 대안을 택할까?"
+    ],
+    "How would a direct sales expansion change distributors' willingness to recommend and stock our products?": [
+      "扩大直销业务，会怎样影响经销商推荐与备货的意愿？",
+      "直販の拡大は、販売代理店の推奨意欲や在庫確保にどう影響するか。",
+      "직접 판매 확대가 유통사의 추천과 재고 확보 의향에 어떤 영향을 줄까?"
+    ],
+    "If households cut spending 5%, which retail categories will lose basket share first?": [
+      "如果家庭支出减少 5%，哪些零售品类会最先丢失购物篮份额？",
+      "家計支出が5%減ったら、買い物かごの中で最初に比率を落とすカテゴリーは何か。",
+      "가계 지출이 5% 줄면 장바구니에서 어떤 소매 품목의 비중이 먼저 줄어들까?"
+    ],
+    "How will customers move savings between banks if deposit rates fall by one percentage point?": [
+      "存款利率下降 1 个百分点时，客户会如何在银行之间转移储蓄？",
+      "預金金利が1ポイント下がったら、顧客は貯蓄を銀行間でどう移すか。",
+      "예금 금리가 1%포인트 내리면 고객은 은행 간 저축을 어떻게 옮길까?"
+    ],
+    "Will a rival's cheaper product bring new customers into the category or pull buyers away from premium brands?": [
+      "竞争对手的低价产品，会为品类带来新客户，还是分走高端品牌的买家？",
+      "競合の低価格品はカテゴリーに新規顧客を呼ぶのか、高級ブランドから買い手を奪うのか。",
+      "경쟁사의 저가 제품은 카테고리에 새 고객을 끌어들일까, 고급 브랜드의 구매자를 가져올까?"
+    ],
+    "Which suppliers might delay investment if we shorten contracts while asking them to reserve more capacity?": [
+      "一边缩短合同期限，一边要求预留更多产能，会让哪些供应商推迟投资？",
+      "契約を短くしながら確保する生産能力を増やすよう求めたら、どの仕入先が投資を遅らせるか。",
+      "계약은 줄이면서 더 많은 생산능력을 확보해 달라고 하면 어떤 공급업체가 투자를 미룰까?"
+    ],
+    "How would customers react if an acquisition combined their two preferred suppliers into a single provider?": [
+      "如果并购把客户最青睐的两家供应商合为一家，客户会如何回应？",
+      "顧客が好む2社の仕入先が買収で1社になったら、顧客はどう反応するか。",
+      "고객이 선호하는 두 공급업체가 인수로 하나가 되면 고객은 어떻게 반응할까?"
+    ],
+    "What would convince a global customer to standardize on one supplier instead of letting each region choose?": [
+      "什么能促使全球客户统一使用一家供应商，而非由各地区自行选择？",
+      "地域ごとの選定ではなく、世界共通の1社に統一するよう顧客を動かす要因は何か。",
+      "글로벌 고객이 지역별 선택 대신 공급업체를 한 곳으로 통일하게 할 요인은 무엇일까?"
+    ],
+    "How will a return-to-office rule affect experienced employees' willingness to stay through a restructuring?": [
+      "返岗要求，会如何影响资深员工在重组期间留任的意愿？",
+      "出社義務は、再編中も経験豊富な従業員が残る意思にどう影響するか。",
+      "사무실 복귀 의무는 구조조정 기간 숙련 직원의 잔류 의향에 어떤 영향을 줄까?"
+    ],
+    "Which parts of a sustainability claim will customers trust, question, or repeat when critics challenge it?": [
+      "可持续发展声明受到质疑时，客户会相信、质疑或转述其中哪些内容？",
+      "持続可能性の主張が批判されたとき、顧客はどこを信じ、疑い、人に伝えるか。",
+      "지속가능성 주장이 비판받으면 고객은 어떤 내용을 믿고, 의심하고, 다른 사람에게 전할까?"
+    ],
+    "Where would local partnerships create more buyer confidence than launching under the parent company's name?": [
+      "在哪些地方，与本地伙伴合作会比使用母公司品牌直接进入更能建立买家信任？",
+      "親会社の名で進出するより、現地提携の方が買い手の信頼を得られるのはどこか。",
+      "어디에서는 모회사 이름으로 진출하는 것보다 현지 파트너십이 구매자의 신뢰를 더 얻을까?"
+    ],
+    "If a platform changes recommendations, where will buyers find our category and who will shape their choices?": [
+      "平台调整推荐后，买家会在哪里发现我们的品类，谁会影响他们的选择？",
+      "推薦の仕組みが変わると、買い手はどこで商品カテゴリーを知り、誰の影響で選ぶか。",
+      "플랫폼 추천이 바뀌면 구매자는 어디서 우리 카테고리를 발견하고 누구의 영향을 받아 선택할까?"
+    ],
+    "When shoppers switch to private-label goods, which premium brands can win them back after a downturn?": [
+      "消费者转向自有品牌后，哪些高端品牌能在衰退结束后把他们争取回来？",
+      "プライベートブランドに移った消費者を、景気回復後に取り戻せる高級ブランドはどれか。",
+      "소비자가 자체 브랜드로 옮긴 뒤, 경기 회복 후 이들을 되찾을 수 있는 고급 브랜드는 어디일까?"
+    ],
+    "Which policyholders will leave if renewal premiums rise 12% after a quiet claims year?": [
+      "理赔较少的一年之后，如果续保保费上涨 12%，哪些投保人会离开？",
+      "保険金請求の少なかった年に更新保険料が12%上がったら、誰が離れるか。",
+      "보험금 청구가 적었던 해에 갱신 보험료가 12% 오르면 어떤 가입자가 떠날까?"
+    ],
+    "How quickly might customers reconsider established vendors after a rival launches a credible free alternative?": [
+      "竞争对手推出可靠的免费替代品后，客户会多快重新评估现有供应商？",
+      "信頼できる無料の代替品が登場したら、顧客は既存の取引先をどれほど早く見直すか。",
+      "경쟁사가 믿을 만한 무료 대안을 내놓으면 고객은 기존 업체를 얼마나 빨리 재검토할까?"
+    ],
+    "Will distributors share more accurate demand signals if inventory risk shifts partly back to the manufacturer?": [
+      "如果制造商重新承担部分库存风险，经销商是否会分享更准确的需求信号？",
+      "在庫リスクの一部をメーカーが再び負担すれば、販売店はより正確な需要情報を共有するか。",
+      "제조사가 재고 위험 일부를 다시 부담하면 유통사는 더 정확한 수요 정보를 공유할까?"
+    ],
+    "Which markets need more capacity if customers move 20% of sourcing out of one country?": [
+      "如果客户将 20% 的采购移出某个国家，哪些市场需要增加产能？",
+      "顧客が調達の20%を一国から移すとき、どの市場で生産能力を増やす必要があるか。",
+      "고객이 조달의 20%를 한 국가 밖으로 옮기면 어느 시장에 생산능력이 더 필요할까?"
+    ],
+    "How will a three-year contract offer change buyers' choices when their own demand outlook remains uncertain?": [
+      "客户自身需求仍不明朗时，三年期合同报价会如何改变采购选择？",
+      "自社需要が不確かな買い手に、3年契約の提案はどんな選択の変化をもたらすか。",
+      "고객 자신의 수요가 불확실할 때 3년 계약 제안은 구매 선택을 어떻게 바꿀까?"
+    ],
+    "Could new sales incentives encourage teams to book deals that customers are unlikely to renew or fully deploy?": [
+      "新的销售激励是否会促使团队签下客户不太可能续约或充分部署的合同？",
+      "新しい営業報酬は、更新や十分な導入が見込めない契約を増やさないか。",
+      "새 영업 인센티브가 고객의 갱신이나 충분한 도입 가능성이 낮은 계약을 늘릴까?"
+    ],
+    "After a data breach, which customer groups will leave first, and which response would retain them?": [
+      "数据泄露后，哪些客户群最先离开，什么回应能留住他们？",
+      "情報漏えい後、最初に離れる顧客層はどこか。引き留められる対応は何か。",
+      "데이터 유출 후 어떤 고객군이 먼저 떠나고, 어떤 대응이 이들을 붙잡을까?"
+    ],
+    "What will make buyers choose locally manufactured products when imported alternatives remain 12% cheaper?": [
+      "进口替代品仍便宜 12% 时，什么会促使买家选择本地制造的产品？",
+      "輸入品が12%安いままでも、国内製造品を選ぶ理由は何か。",
+      "수입 대안이 여전히 12% 저렴할 때 구매자가 현지 생산품을 고르게 하는 이유는 무엇일까?"
+    ],
+    "Which retail partners would give us more shelf space if we simplified the range instead of raising discounts?": [
+      "如果简化产品线而非加大折扣，哪些零售伙伴会给我们更多货架空间？",
+      "値引き拡大ではなく品ぞろえの整理で、棚を広げてくれる小売先はどこか。",
+      "할인 확대 대신 제품군을 단순화하면 어떤 소매 파트너가 진열 공간을 더 내줄까?"
+    ],
+    "Will patients change providers if appointment waits rise from 7 days to 21?": [
+      "预约等待从 7 天增至 21 天，患者会更换医疗服务机构吗？",
+      "予約待ちが7日から21日に延びたら、患者は医療機関を変えるか。",
+      "예약 대기가 7일에서 21일로 늘면 환자는 의료기관을 바꿀까?"
+    ],
+    "Which business customers value stable three-year pricing over a lower first-year quote with annual resets?": [
+      "哪些企业客户更看重三年稳定价格，而非首年低价、逐年重议的报价？",
+      "初年度の安さと毎年の改定より、3年間の価格安定を重視する法人顧客は誰か。",
+      "어떤 기업 고객은 첫해 저가와 연간 재조정보다 3년간 안정된 가격을 더 중시할까?"
+    ],
+    "How would a competitor's plant closure change customer switching before our sales teams see new inquiries?": [
+      "在销售团队收到新询盘之前，竞争对手关闭工厂会怎样改变客户转移？",
+      "営業に新規照会が届く前に、競合の工場閉鎖は顧客の切り替えをどう動かすか。",
+      "영업팀에 신규 문의가 들어오기 전에 경쟁사 공장 폐쇄는 고객 이동을 어떻게 바꿀까?"
+    ],
+    "If we split orders across two suppliers, how will each change its pricing, service, and willingness to invest?": [
+      "如果将订单分给两家供应商，各方会如何调整价格、服务与投资意愿？",
+      "2社に発注を分けたら、それぞれの価格、サービス、投資意欲はどう変わるか。",
+      "주문을 두 공급업체에 나누면 각각 가격, 서비스, 투자 의향을 어떻게 바꿀까?"
+    ],
+    "Will entering an adjacent category strengthen the brand or leave customers less sure what it stands for?": [
+      "进入相邻品类，会强化品牌，还是让客户更不清楚品牌代表什么？",
+      "隣接カテゴリーへの参入はブランドを強めるか、それとも何のブランドか曖昧にするか。",
+      "인접 카테고리 진출은 브랜드를 강화할까, 고객이 브랜드의 의미를 더 모호하게 느끼게 할까?"
+    ],
+    "Where could a successful enterprise pilot fail to expand because its users and budget owners disagree?": [
+      "哪些成功的企业试点，会因使用者与预算负责人意见不一而无法推广？",
+      "実証に成功しても、利用者と予算責任者の意見が分かれて拡大できないのはどこか。",
+      "어떤 기업 파일럿은 성공해도 사용자와 예산 책임자의 의견 차이로 확대되지 못할까?"
+    ],
+    "Will teams adopt automation faster if retraining comes before new productivity targets rather than after them?": [
+      "如果先培训、后设定新的效率目标，团队会更快采用自动化吗？",
+      "生産性目標の前に再教育を行えば、チームは自動化をより早く受け入れるか。",
+      "새 생산성 목표보다 재교육을 먼저 하면 팀이 자동화를 더 빨리 받아들일까?"
+    ],
+    "Would acknowledging uncertainty early in a safety inquiry preserve more trust than waiting for full answers?": [
+      "安全调查初期坦承不确定性，是否比等待全部答案更能保住信任？",
+      "安全調査の初期に不確実性を認める方が、全容解明を待つより信頼を守れるか。",
+      "안전 조사 초기에 불확실성을 인정하는 것이 모든 답을 기다리는 것보다 신뢰를 더 지킬까?"
+    ],
+    "How could data-localization rules change which technology providers enterprise buyers will consider?": [
+      "数据本地化规定会如何改变企业买家考虑的技术供应商？",
+      "データ国内保存の規則は、企業が検討する技術提供会社をどう変えるか。",
+      "데이터 현지화 규정은 기업 구매자가 검토할 기술 공급업체를 어떻게 바꿀까?"
+    ],
+    "How will resellers change recommendations if a competitor offers better margins but buyers prefer our brand?": [
+      "竞争对手给出更高利润、但买家偏爱我们品牌时，经销商会如何调整推荐？",
+      "競合の利幅が高くても買い手が当社ブランドを好む場合、販売店の推奨はどう変わるか。",
+      "경쟁사의 마진이 더 높지만 구매자는 우리 브랜드를 선호한다면 판매사는 추천을 어떻게 바꿀까?"
+    ],
+    "Which regional demand shifts will persist after holiday sales peak and distributors start reducing inventory?": [
+      "节日销售高峰过后、经销商开始去库存时，哪些区域需求变化会持续？",
+      "繁忙期が過ぎ、販売店が在庫を減らし始めても続く地域の需要変化は何か。",
+      "명절 판매 정점이 지나 유통사가 재고를 줄이기 시작해도 어떤 지역 수요 변화가 지속될까?"
+    ],
+    "Which routes will lose business travelers if a competing airline doubles its flight frequency?": [
+      "竞争航司将航班频次翻倍后，哪些航线会失去商务旅客？",
+      "競合航空会社が便数を倍増したら、どの路線で出張客を失うか。",
+      "경쟁 항공사가 운항 횟수를 두 배로 늘리면 어떤 노선이 출장객을 잃을까?"
+    ],
+    "Which buyers would switch if a rival bundled products we sell separately into one simpler buying decision?": [
+      "竞争对手把我们单独销售的产品打包，简化采购决策后，哪些买家会转向？",
+      "当社が別売りする製品を競合が一括提案して購入を簡単にしたら、誰が乗り換えるか。",
+      "경쟁사가 우리가 따로 파는 제품을 묶어 구매를 단순화하면 어떤 고객이 옮겨갈까?"
+    ],
+    "How might customers react to shortages when we prioritize strategic accounts over our longest-standing buyers?": [
+      "供应短缺时，优先战略客户而非合作最久的客户，会引发怎样的反应？",
+      "供給不足で最古参の顧客より戦略顧客を優先したら、どんな反応が起きるか。",
+      "공급 부족 때 가장 오래된 고객보다 전략 고객을 우선하면 어떤 반응이 나올까?"
+    ],
+    "Could combining two acquired brands save costs while losing the local trust that made each business valuable?": [
+      "合并两个收购品牌，能否节约成本，却丢掉原本赋予各自价值的本地信任？",
+      "買収した2ブランドの統合は、コストを減らす一方で価値の源だった地元の信頼を失わないか。",
+      "인수한 두 브랜드를 합치면 비용은 줄어도 각 사업의 가치였던 현지 신뢰를 잃을까?"
+    ],
+    "What would cause a customer to shrink a major contract even when frontline users still value the product?": [
+      "一线使用者仍认可产品时，什么会让客户缩减大额合同？",
+      "現場が製品を評価していても、大口契約を縮小させる要因は何か。",
+      "현장 사용자가 여전히 제품을 높이 평가해도 고객이 대형 계약을 줄이는 이유는 무엇일까?"
+    ],
+    "How will employees react if AI handles routine work but they remain responsible for reviewing its mistakes?": [
+      "AI 处理日常工作，却仍由员工负责审查错误，员工会如何回应？",
+      "日常業務はAIが担い、その誤りの確認責任は人に残るとき、従業員はどう反応するか。",
+      "AI가 일상 업무를 처리하고 오류 검토 책임은 직원에게 남으면 직원은 어떻게 반응할까?"
+    ],
+    "Which audiences see a price increase during a shortage as necessary, and which interpret it as exploitation?": [
+      "短缺期间涨价，哪些受众认为有必要，哪些认为是在趁机牟利？",
+      "品不足時の値上げを必要だと考える層と、便乗だと受け止める層はどこか。",
+      "공급 부족 중 가격 인상을 누가 필요하다고 보고 누가 부당한 이익 추구로 볼까?"
+    ],
+    "How will local retailers react if our market entry relies on a global partner they see as a future competitor?": [
+      "若我们依靠的全球伙伴被本地零售商视为未来竞争者，他们会如何回应我们的进入？",
+      "進出を支える世界的な提携先を地元小売が将来の競合と見ていたら、どう反応するか。",
+      "우리의 글로벌 진출 파트너를 현지 소매상이 미래 경쟁자로 본다면 시장 진입에 어떻게 반응할까?"
+    ],
+    "Would franchise operators back a national promotion if it raises traffic but reduces profit per customer?": [
+      "全国促销带来更多客流，却降低单客利润时，加盟商会支持吗？",
+      "全国販促で来客が増えても、顧客一人あたりの利益が減るなら、加盟店は支持するか。",
+      "전국 판촉이 방문객을 늘리지만 고객당 이익을 줄인다면 가맹점은 지지할까?"
+    ],
+    "How will corporate customers change spending priorities if financing costs stay high for another 18 months?": [
+      "融资成本再维持高位 18 个月，企业客户会如何调整支出优先级？",
+      "資金調達コストがあと18か月高止まりしたら、法人顧客の支出優先順位はどう変わるか。",
+      "자금 조달 비용이 18개월 더 높게 유지되면 기업 고객은 지출 우선순위를 어떻게 바꿀까?"
+    ],
+    "If the dollar rises 10%, where will overseas buyers cut orders rather than accept higher prices?": [
+      "美元升值 10% 时，哪些海外买家会缩减订单，而非接受更高价格？",
+      "ドルが10%上がったら、値上げを受け入れず注文を減らす海外顧客はどこか。",
+      "달러가 10% 오르면 어느 해외 구매자가 가격 인상 대신 주문 축소를 택할까?"
+    ],
+    "How would buyers react if a trusted competitor were acquired by a company with a very different reputation?": [
+      "值得信任的竞争对手被声誉迥异的公司收购，买家会如何反应？",
+      "信頼していた競合が評判の大きく異なる会社に買われたら、買い手はどう反応するか。",
+      "신뢰하던 경쟁사가 평판이 크게 다른 회사에 인수되면 구매자는 어떻게 반응할까?"
+    ],
+    "Which customers will build extra safety stock after a disruption, and when could those orders reverse?": [
+      "中断之后，哪些客户会增加安全库存，这些订单又可能何时回落？",
+      "供給の混乱後、どの顧客が安全在庫を積み増し、その注文はいつ反転しうるか。",
+      "공급 차질 후 어떤 고객이 안전재고를 늘리고 그 주문은 언제 되돌아올 수 있을까?"
+    ],
+    "How much demand might shift to other products in our portfolio if we discontinue a familiar low-margin line?": [
+      "停止熟悉的低利润产品线后，多少需求会转移到我们的其他产品？",
+      "馴染みのある低利益率の製品を廃止したら、需要のどれだけが当社の他製品へ移るか。",
+      "익숙한 저마진 제품군을 중단하면 수요가 자사 다른 제품으로 얼마나 이동할까?"
+    ],
+    "Will customers accept a global service model if it removes the local account teams they currently trust?": [
+      "全球统一服务模式撤掉了客户信赖的本地团队，客户能接受吗？",
+      "信頼する現地担当チームをなくす世界共通のサービス体制を、顧客は受け入れるか。",
+      "고객이 신뢰하는 현지 담당팀이 사라지는 글로벌 서비스 모델을 받아들일까?"
+    ],
+    "How could new promotion criteria change managers' willingness to share talent and knowledge across divisions?": [
+      "新的晋升标准，会如何影响经理跨部门共享人才与知识的意愿？",
+      "新たな昇進基準は、管理職が部門を越えて人材や知識を共有する意思をどう変えるか。",
+      "새 승진 기준은 관리자가 부서 간 인재와 지식을 공유하려는 의향을 어떻게 바꿀까?"
+    ],
+    "What will customers and employees infer if we cut service staff while announcing major investment in AI?": [
+      "一边裁减服务人员，一边宣布大规模 AI 投资，客户和员工会如何解读？",
+      "サービス人員を減らしつつAIへの大型投資を発表したら、顧客と従業員は何を読み取るか。",
+      "서비스 인력을 줄이면서 대규모 AI 투자를 발표하면 고객과 직원은 어떻게 해석할까?"
+    ],
+    "Will a regional brand campaign strengthen local trust or undermine our global positioning?": [
+      "区域品牌活动会增强本地信任，还是削弱全球定位？",
+      "地域向けのブランド施策は、地元の信頼を強めるか、世界共通の位置づけを弱めるか。",
+      "지역 브랜드 캠페인은 현지 신뢰를 강화할까, 글로벌 포지셔닝을 약화할까?"
+    ],
+    "Which changes in a multichannel sales strategy move demand between partners rather than create new sales?": [
+      "多渠道销售策略中的哪些调整，只是在伙伴之间转移需求，而非创造新增销售？",
+      "マルチチャネル戦略のどの変更が、新規売上を生まず提携先の間で需要を移すだけか。",
+      "다채널 판매 전략의 어떤 변화가 신규 매출을 만들지 않고 파트너 간 수요만 옮길까?"
+    ],
+    "Which enterprise clients will replace telecom contracts when a cloud provider bundles connectivity?": [
+      "云服务商捆绑提供连接服务后，哪些企业客户会替换电信合同？",
+      "クラウド事業者が通信をセットで提供したら、どの企業が通信契約を切り替えるか。",
+      "클라우드 업체가 연결 서비스를 묶어 제공하면 어떤 기업 고객이 통신 계약을 바꿀까?"
+    ],
+    "How would a 10% premium for faster delivery change which buyers choose our standard and priority services?": [
+      "加快交付收取 10% 溢价，会如何改变标准服务与优先服务的客户选择？",
+      "迅速な納品に10%の上乗せを求めたら、通常便と優先便を選ぶ顧客はどう変わるか。",
+      "빠른 배송에 10% 할증을 붙이면 일반 서비스와 우선 서비스를 선택하는 고객이 어떻게 달라질까?"
+    ],
+    "What makes customers stay when a rival copies our flagship feature and markets it as an industry standard?": [
+      "对手复制旗舰功能并称其为行业标准时，什么能让客户留下？",
+      "競合が主力機能を模倣し業界標準として売り出しても、顧客が残る理由は何か。",
+      "경쟁사가 핵심 기능을 복제해 업계 표준으로 내세워도 고객이 남는 이유는 무엇일까?"
+    ],
+    "Will industrial buyers sign five-year energy contracts if spot prices fall 20%?": [
+      "现货价格下跌 20% 时，工业买家还会签五年能源合同吗？",
+      "スポット価格が20%下がっても、産業向けの買い手は5年のエネルギー契約を結ぶか。",
+      "현물 가격이 20% 내려도 산업 구매자는 5년 에너지 계약을 체결할까?"
+    ],
+    "Would investing in customer service protect more future revenue than expanding into a new market this year?": [
+      "今年投资客户服务，是否比拓展新市场更能守住未来收入？",
+      "今年は新市場への進出より、顧客サービスへの投資の方が将来の売上を守れるか。",
+      "올해 신규 시장 진출보다 고객 서비스 투자가 미래 매출을 더 지킬 수 있을까?"
+    ],
+    "Which customers would consolidate their vendors after a merger, and what would put us on the preferred list?": [
+      "哪些客户会在并购后整合供应商，什么能让我们进入优选名单？",
+      "合併後に取引先を集約する顧客は誰か。当社が優先リストに入る条件は何か。",
+      "합병 후 어떤 고객이 공급업체를 통합하며 우리가 우선 목록에 들 조건은 무엇일까?"
+    ],
+    "How might a reorganization change whether employees raise problems before those problems reach customers?": [
+      "组织重整会如何影响员工在问题波及客户前主动上报的意愿？",
+      "組織再編は、問題が顧客に届く前に従業員が声を上げるかどうかを変えるか。",
+      "조직 개편은 문제가 고객에게 닿기 전에 직원이 이를 알리는지에 어떤 영향을 줄까?"
+    ],
+    "Could openly explaining a supply failure reduce customer exits more than a broad advertising campaign?": [
+      "坦诚解释供应问题，是否比大规模广告更能减少客户流失？",
+      "供給問題を率直に説明する方が、大規模広告より顧客離れを抑えられるか。",
+      "공급 문제를 솔직히 설명하는 것이 대규모 광고보다 고객 이탈을 더 줄일까?"
+    ],
+    "If trade rules narrow product choice, will customers pay more, postpone purchases, or change what they buy?": [
+      "贸易规则限制产品选择后，客户会多付钱、推迟采购，还是改买其他产品？",
+      "貿易規則で選択肢が減ったら、顧客は高く買うか、延期するか、買うものを変えるか。",
+      "무역 규칙이 제품 선택을 줄이면 고객은 더 지불할까, 구매를 미룰까, 다른 제품을 살까?"
+    ],
+    "Which partners would keep building around our platform if we started competing with part of their business?": [
+      "如果我们开始与伙伴的部分业务竞争，哪些伙伴仍愿意基于平台继续开发？",
+      "提携先の事業の一部と競合し始めても、当社基盤で開発を続けるのは誰か。",
+      "파트너 사업 일부와 경쟁하기 시작해도 어떤 파트너가 우리 플랫폼에서 개발을 계속할까?"
+    ],
+    "How might a warmer winter shift product demand and change the orders retail buyers place for next season?": [
+      "暖冬会如何改变产品需求，以及零售采购商为下一季下的订单？",
+      "暖冬は需要と、小売の次シーズンの発注をどう変えるか。",
+      "따뜻한 겨울은 제품 수요와 다음 시즌 소매 구매자의 주문을 어떻게 바꿀까?"
+    ],
+    "What happens to loyalty if long-term customers learn that new buyers receive significantly better prices?": [
+      "老客户发现新客获得明显更低价格时，忠诚度会怎样变化？",
+      "新規顧客の方が大幅に安いと知った長期顧客のロイヤルティはどうなるか。",
+      "장기 고객이 신규 고객의 가격이 훨씬 좋다는 걸 알면 충성도는 어떻게 될까?"
+    ],
+    "Where could an emerging rival gain trust fastest: product performance, reliable service, or simpler contracts?": [
+      "新兴对手从哪里最快建立信任：产品性能、可靠服务，还是更简单的合同？",
+      "新興の競合が最速で信頼を得るのは、性能、安定したサービス、簡単な契約のどれか。",
+      "신생 경쟁사가 가장 빨리 신뢰를 얻는 지점은 성능, 안정적 서비스, 간단한 계약 중 무엇일까?"
+    ],
+    "How would suppliers respond if we paid faster in return for priority when production capacity becomes scarce?": [
+      "更快付款以换取产能紧张时的优先供应，供应商会如何回应？",
+      "支払いを早める代わりに供給逼迫時の優先枠を求めたら、仕入先はどう反応するか。",
+      "더 빨리 지급하는 대가로 생산능력이 부족할 때 우선 공급을 요구하면 공급업체는 어떻게 반응할까?"
+    ],
+    "What makes customers stay after a business changes ownership rather than use the moment to renegotiate?": [
+      "企业易主后，什么会让客户选择留下，而不是借机重新议价？",
+      "経営権が変わっても、再交渉ではなく取引継続を顧客が選ぶ理由は何か。",
+      "사업 주인이 바뀐 뒤 고객이 재협상보다 관계 유지를 선택하는 이유는 무엇일까?"
+    ],
+    "How will procurement teams weigh a 15% saving against the disruption of replacing an established supplier?": [
+      "采购团队如何权衡 15% 的节省与更换长期供应商带来的扰动？",
+      "調達部門は15%の節約と、既存仕入先を変える混乱をどう比較するか。",
+      "구매팀은 15% 비용 절감과 기존 공급업체 교체에 따른 혼란을 어떻게 비교할까?"
+    ],
+    "Which teams might resist a new operating model because it removes the relationships that make them effective?": [
+      "哪些团队会因新运营模式拆散了使其高效运作的关系而抵触变革？",
+      "成果を支えてきた関係を壊す新体制に、どのチームが抵抗するか。",
+      "새 운영 모델이 성과를 내던 관계를 없앤다면 어떤 팀이 저항할까?"
+    ],
+    "How will communities and customers react to a factory closure paired with retraining versus compensation?": [
+      "工厂关闭时，配套再培训与直接赔偿会分别引发社区和客户怎样的反应？",
+      "工場閉鎖に再教育を組み合わせる場合と補償する場合で、地域や顧客の反応はどう違うか。",
+      "공장 폐쇄에 재교육을 제공할 때와 보상금을 지급할 때 지역사회와 고객의 반응은 어떻게 다를까?"
+    ],
+    "Which markets will accept subscriptions for products customers have always owned outright?": [
+      "对于一直一次性购买并拥有的产品，哪些市场能接受订阅？",
+      "これまで買い切りだった製品のサブスクリプションを、どの市場が受け入れるか。",
+      "지금까지 구매해 소유하던 제품의 구독 방식을 어느 시장이 받아들일까?"
+    ],
+    "Could shared loyalty rewards bring customers across our brands, or subsidize purchases they already planned?": [
+      "跨品牌共享会员奖励，是带来交叉购买，还是补贴了本就会发生的消费？",
+      "共通の会員特典はブランド間の送客を生むか、それとも予定済みの購入を補助するだけか。",
+      "브랜드 공동 회원 혜택은 교차 구매를 만들까, 원래 계획된 구매에 보조금만 줄까?"
+    ],
+    "Which new sources of attention could turn a niche preference into a major shift in demand across a category?": [
+      "哪些新的注意力来源，可能将小众偏好变为整个品类的需求转向？",
+      "新たな注目の流入源のうち、少数の好みをカテゴリー全体の需要変化へ広げるものは何か。",
+      "어떤 새로운 관심 유입원이 틈새 취향을 카테고리 전체의 수요 변화로 키울 수 있을까?"
+    ],
+    "How will regional price differences change where global customers buy and how they negotiate group contracts?": [
+      "地区价差会如何改变全球客户的采购地点与集团合同谈判方式？",
+      "地域ごとの価格差は、世界的な顧客の購入場所や一括契約の交渉をどう変えるか。",
+      "지역별 가격 차이는 글로벌 고객의 구매 장소와 그룹 계약 협상을 어떻게 바꿀까?"
+    ],
+    "What share of a troubled bank's deposits would move to us rather than money-market funds?": [
+      "一家陷入困境银行的存款，会有多少流向我们，而非货币市场基金？",
+      "経営不安のある銀行の預金のうち、短期金融市場ファンドではなく当行へ来る割合はどれほどか。",
+      "어려움을 겪는 은행의 예금 중 머니마켓펀드가 아닌 우리 은행으로 올 비중은 얼마나 될까?"
+    ],
+    "Would customers place firmer orders if we guaranteed supply, or use that promise to keep their options open?": [
+      "若我们保证供应，客户会下更确定的订单，还是利用承诺保留选择余地？",
+      "供給を保証すれば顧客は注文を確約するか、それとも選択肢を残すために保証を利用するか。",
+      "공급을 보장하면 고객이 주문을 확약할까, 그 약속을 이용해 선택의 여지만 남길까?"
+    ],
+    "How will cutting $200 million from R&D affect talent retention and our next product cycle?": [
+      "削减 2 亿美元研发，会怎样影响人才留存与下一轮产品周期？",
+      "研究開発費を2億ドル減らすと、人材の定着と次の製品サイクルにどう影響するか。",
+      "연구개발비 2억 달러를 줄이면 인재 유지와 다음 제품 주기에 어떤 영향을 줄까?"
+    ],
+    "What shifts in a buying committee could turn a secure renewal into a competitive tender next quarter?": [
+      "采购委员会的哪些变化，会让稳妥的续约在下季度变成竞争性招标？",
+      "購買委員会のどんな変化が、確実だった更新を来期の競争入札に変えるか。",
+      "구매 위원회의 어떤 변화가 확실하던 갱신을 다음 분기 경쟁 입찰로 바꿀까?"
+    ],
+    "Will a new pay structure retain our top engineers or send them to faster-growing competitors?": [
+      "新的薪酬结构会留住顶尖工程师，还是将他们推向增长更快的对手？",
+      "新しい報酬制度は優秀な技術者を引き留めるか、成長の速い競合へ向かわせるか。",
+      "새 보상 체계가 핵심 엔지니어를 붙잡을까, 더 빨리 성장하는 경쟁사로 보낼까?"
+    ],
+    "Which stakeholders would trust an independent review after a crisis, and which would expect new leadership?": [
+      "危机过后，哪些利益相关方会信任独立调查，哪些会期待更换领导层？",
+      "危機後、独立調査を信頼する関係者と、経営陣の交代を求める関係者は誰か。",
+      "위기 후 어떤 이해관계자는 독립 조사를 신뢰하고 누가 경영진 교체를 기대할까?"
+    ],
+    "How might national sentiment change demand for a global brand with unchanged products, prices, and service?": [
+      "产品、价格与服务不变时，民族情绪会怎样影响全球品牌的需求？",
+      "製品、価格、サービスが同じでも、国民感情は世界的なブランドの需要をどう変えるか。",
+      "제품, 가격, 서비스가 같아도 국민 정서는 글로벌 브랜드 수요를 어떻게 바꿀까?"
+    ],
+    "If a partner controls more of customer discovery, how will buyers' choices and our bargaining position change?": [
+      "如果伙伴掌握了更多客户发现入口，买家的选择与我们的议价地位会怎样改变？",
+      "顧客が商品を知る経路を提携先がさらに握ると、買い手の選択と当社の交渉力はどう変わるか。",
+      "파트너가 고객의 제품 발견 경로를 더 많이 통제하면 구매자의 선택과 우리의 협상력은 어떻게 바뀔까?"
+    ],
+    "The Last Human Job": [
+      "人类最后的工作",
+      "人に残る最後の仕事",
+      "인간에게 남는 마지막 일"
+    ],
+    "The Shape of Work": [
+      "工作的形态",
+      "仕事のかたち",
+      "일의 형태"
+    ],
+    "AI Eats the Middle": [
+      "AI 接管执行环节",
+      "AIが担う実行の工程",
+      "AI가 맡는 실행 단계"
+    ],
+    "The Primitive": [
+      "基本行为模式",
+      "基本となる行動",
+      "기본 행동 방식"
+    ],
+    "New Surfaces for Conviction": [
+      "判断的新载体",
+      "確信が向かう新たな対象",
+      "확신이 향하는 새로운 대상"
+    ],
+    "Views Became Currency": [
+      "浏览量成为货币",
+      "視聴が通貨になる",
+      "조회 수가 통화가 되다"
+    ],
+    "Everyone Becomes IP": [
+      "每个人都可以成为 IP",
+      "誰もがIPになる",
+      "누구나 IP가 되다"
+    ],
+    "No Trust Layer, No Market": [
+      "没有信任，就没有市场",
+      "信頼なくして市場なし",
+      "신뢰 없이는 시장도 없다"
+    ],
+    "The Belief Market": [
+      "判断的市场",
+      "見立ての市場",
+      "판단의 시장"
+    ],
+    "Own the Category": [
+      "确立市场地位",
+      "市場を確立する",
+      "시장을 확립하다"
+    ],
+    "Pause preview": [
+      "暂停预览",
+      "プレビューを一時停止",
+      "프리뷰 일시 정지"
+    ],
+    "Play preview": [
+      "播放预览",
+      "プレビューを再生",
+      "프리뷰 재생"
+    ],
+    "manufacturing": [
+      "制造业",
+      "製造業",
+      "제조업"
+    ],
+    "white-collar & services": [
+      "白领与服务业",
+      "ホワイトカラーとサービス業",
+      "사무직 및 서비스업"
+    ],
+    "judgment & taste — the premium": [
+      "判断与眼光 — 稀缺价值",
+      "判断と目利き、その希少価値",
+      "판단과 안목, 희소한 가치"
+    ],
+    "stable": [
+      "稳定",
+      "安定",
+      "안정"
+    ],
+    "vanity": [
+      "表面热度",
+      "見かけの数字",
+      "겉으로 보이는 수치"
+    ],
+    "noise": [
+      "噪声",
+      "ノイズ",
+      "잡음"
+    ],
+    "verified": [
+      "已核验",
+      "検証済み",
+      "검증됨"
+    ],
+    "3 flags": [
+      "3 项风险标记",
+      "3件の注意事項",
+      "경고 3개"
+    ],
+    "compounding": [
+      "持续增长",
+      "成長の積み重ね",
+      "누적 성장"
+    ],
+    "discount": [
+      "折价",
+      "割引評価",
+      "할인 평가"
+    ],
+    "unpriced": [
+      "尚未定价",
+      "未評価",
+      "아직 가격에 반영되지 않음"
+    ],
+    "AI tools": [
+      "AI 工具",
+      "AIツール",
+      "AI 도구"
+    ],
+    "what the audience believes": [
+      "受众看好的是什么",
+      "視聴者は何に期待するか",
+      "오디언스가 기대하는 것"
+    ],
+    "what could compound": [
+      "什么可能持续增长",
+      "何が成長を重ねうるか",
+      "성장을 이어갈 수 있는 것"
+    ],
+    "what could be mispriced": [
+      "什么可能被错误定价",
+      "何が誤って評価されうるか",
+      "가격이 잘못 매겨질 수 있는 것"
+    ],
+    "what could be fake": [
+      "什么可能被伪造",
+      "何が偽装されうるか",
+      "조작될 수 있는 것"
+    ],
+    "audience trusts the operator behind the brand": [
+      "受众信任品牌背后的经营者",
+      "視聴者がブランドの担い手を信頼する",
+      "오디언스가 브랜드 뒤의 운영자를 신뢰함"
+    ],
+    "a media company around one point of view": [
+      "围绕一种鲜明观点形成的媒体公司",
+      "一つの視点を軸にしたメディア企業",
+      "하나의 관점을 중심으로 한 미디어 기업"
+    ],
+    "reach inflated by one viral moment": [
+      "一次爆红抬高了传播数据",
+      "一度の拡散で膨らんだリーチ",
+      "한 번의 입소문으로 부풀려진 도달 수"
+    ],
+    "borrowed audiences, rented virality": [
+      "借来的受众、买来的热度",
+      "借り物の視聴者、買われた拡散",
+      "빌려온 오디언스, 구매한 화제성"
+    ],
+    "AI educator": [
+      "AI 教育者",
+      "AI教育者",
+      "AI 교육자"
+    ],
+    "they make a hard domain legible": [
+      "让复杂领域变得容易理解",
+      "難しい分野を理解できる形にする",
+      "어려운 분야를 이해할 수 있게 설명함"
+    ],
+    "evergreen demand for clarity": [
+      "清晰解释始终有需求",
+      "わかりやすい説明への持続的な需要",
+      "명료한 설명에 대한 지속적인 수요"
+    ],
+    "engagement that never converts to retention": [
+      "互动未能转化为持续关注",
+      "継続視聴につながらない反応",
+      "재방문으로 이어지지 않는 참여"
+    ],
+    "recycled explainers, thin authority": [
+      "重复拼凑的讲解，缺乏专业积累",
+      "使い回しの解説、乏しい専門性",
+      "재탕 설명, 부족한 전문성"
+    ],
+    "musician": [
+      "音乐人",
+      "音楽家",
+      "음악가"
+    ],
+    "fans believe in a sound before the world hears it": [
+      "在世界听见之前，粉丝已认可其声音",
+      "世に知られる前に、その音を信じるファン",
+      "세상이 듣기 전에 그 음악을 알아보는 팬"
+    ],
+    "catalog + cultural half-life": [
+      "作品积累与文化影响力的持续时间",
+      "作品群と文化的な影響の持続時間",
+      "작품 목록과 문화적 영향의 지속 기간"
+    ],
+    "streams bought to fake momentum": [
+      "购买播放量，伪造增长势头",
+      "再生数を買ってつくる成長の見せかけ",
+      "재생 수를 구매해 만든 성장세"
+    ],
+    "playlist placement, not real listeners": [
+      "歌单投放，并非真实听众",
+      "実際のリスナーではなくプレイリスト枠",
+      "실제 청취자가 아닌 플레이리스트 노출"
+    ],
+    "fitness creator": [
+      "健身创作者",
+      "フィットネス系クリエイター",
+      "피트니스 크리에이터"
+    ],
+    "results and consistency build trust": [
+      "效果与长期坚持建立信任",
+      "成果と継続が信頼をつくる",
+      "성과와 꾸준함이 신뢰를 쌓음"
+    ],
+    "high-retention routine + community": [
+      "高留存的训练习惯与社群",
+      "継続率の高い習慣とコミュニティ",
+      "유지율 높은 운동 습관과 커뮤니티"
+    ],
+    "before/after spikes with no durability": [
+      "前后对比带来短期热度，却难持续",
+      "継続しないビフォーアフターの一時的反響",
+      "지속되지 않는 전후 비교의 일시적 관심"
+    ],
+    "transformation farms, fake testimonials": [
+      "批量炮制的蜕变故事与虚假证言",
+      "量産された変化の物語、虚偽の体験談",
+      "대량 생산된 변화 사례, 가짜 후기"
+    ],
+    "beauty operator": [
+      "美妆经营者",
+      "美容分野の事業者",
+      "뷰티 사업자"
+    ],
+    "taste signals a product line": [
+      "审美体现产品线潜力",
+      "感性が商品展開の可能性を示す",
+      "감각이 제품군의 가능성을 보여줌"
+    ],
+    "audience becomes a brand balance sheet": [
+      "受众成为品牌的资产基础",
+      "視聴者がブランドの資産基盤になる",
+      "오디언스가 브랜드의 자산 기반이 됨"
+    ],
+    "sponsor-driven reach masking churn": [
+      "赞助带来的曝光掩盖受众流失",
+      "スポンサー露出が隠す視聴者離れ",
+      "협찬 노출이 가리는 오디언스 이탈"
+    ],
+    "engagement pods, comment rings": [
+      "互赞群与刷评论网络",
+      "相互反応グループ、組織的なコメント",
+      "품앗이 참여 그룹, 조직적 댓글"
+    ],
+    "niche researcher": [
+      "垂直领域研究者",
+      "専門領域の研究者",
+      "전문 분야 연구자"
+    ],
+    "depth earns a small, loyal audience": [
+      "研究深度吸引规模虽小但忠诚的受众",
+      "深さが少数の忠実な読者を集める",
+      "깊이가 작지만 충성도 높은 독자를 모음"
+    ],
+    "authority compounds quietly": [
+      "专业声誉在时间中积累",
+      "専門性への信頼が静かに積み上がる",
+      "전문성에 대한 신뢰가 조용히 쌓임"
+    ],
+    "small numbers read as no signal": [
+      "规模小被误读为没有价值信号",
+      "小さな数字がシグナルなしと誤読される",
+      "작은 수치가 신호 부재로 오해됨"
+    ],
+    "citations gamed, credentials hollow": [
+      "操纵引用、资历空洞",
+      "操作された引用、実体のない肩書き",
+      "조작된 인용, 실체 없는 경력"
+    ],
+    "indie hacker": [
+      "独立开发者",
+      "個人開発者",
+      "독립 개발자"
+    ],
+    "building in public earns conviction": [
+      "公开构建过程，让判断有据可依",
+      "開発過程の公開が確信を育てる",
+      "공개된 개발 과정이 확신을 쌓음"
+    ],
+    "shipping cadence becomes track record": [
+      "持续交付构成可查证的记录",
+      "継続的なリリースが実績になる",
+      "꾸준한 출시가 실적이 됨"
+    ],
+    "launch-day reach, no second act": [
+      "发布日有曝光，却没有后续表现",
+      "公開初日だけの反響、その後が続かない",
+      "출시일의 관심 뒤에 후속 성과가 없음"
+    ],
+    "vanity MRR, staged momentum": [
+      "虚高月度经常性收入与人为造势",
+      "見せかけのMRR、演出された勢い",
+      "부풀린 MRR, 연출된 성장세"
+    ],
+    "game streamer": [
+      "游戏主播",
+      "ゲーム配信者",
+      "게임 스트리머"
+    ],
+    "community shows up live, repeatedly": [
+      "社群反复回到直播间",
+      "コミュニティが繰り返し生配信に集まる",
+      "커뮤니티가 반복해서 생방송에 참여함"
+    ],
+    "session depth + concurrency": [
+      "单次观看深度与同时在线人数",
+      "視聴の深さと同時接続数",
+      "시청 깊이와 동시 접속자 수"
+    ],
+    "view-botting and host raids": [
+      "观看机器人与导流突增",
+      "視聴ボットと一斉送客による急増",
+      "시청 봇과 일시적인 단체 유입"
+    ],
+    "inflated concurrents, hollow chat": [
+      "虚高同时在线数、空洞聊天",
+      "水増しされた同時接続、実のないチャット",
+      "부풀린 동시 접속, 실질 없는 채팅"
+    ],
+    "local expert": [
+      "本地专家",
+      "地域の専門家",
+      "지역 전문가"
+    ],
+    "real-world credibility travels online": [
+      "现实中的信誉传播到网络",
+      "現実の信頼がネットにも広がる",
+      "현실의 신뢰가 온라인으로 이어짐"
+    ],
+    "a defensible regional moat": [
+      "可守住的区域优势",
+      "守りうる地域の強み",
+      "방어 가능한 지역 경쟁력"
+    ],
+    "reach that does not localize": [
+      "曝光未转化为本地影响",
+      "地域に届かないリーチ",
+      "지역으로 이어지지 않는 도달"
+    ],
+    "fake locality, geo-spoofed followers": [
+      "伪造本地身份与粉丝所在地",
+      "偽の地域性、所在地を偽装したフォロワー",
+      "가짜 지역성, 위치를 속인 팔로워"
+    ],
+    "one-person company": [
+      "一人公司",
+      "一人会社",
+      "1인 기업"
+    ],
+    "one human is the product and the brand": [
+      "一个人同时是产品与品牌",
+      "一人の人間が製品でもブランドでもある",
+      "한 사람이 제품이자 브랜드임"
+    ],
+    "leverage compounds with reputation": [
+      "影响力随声誉积累而增长",
+      "評判とともに影響力が積み上がる",
+      "평판과 함께 영향력이 쌓임"
+    ],
+    "mispriced because it looks small": [
+      "因外在规模小而被错误定价",
+      "小さく見えるための過小評価",
+      "작아 보인다는 이유로 잘못 매겨진 가격"
+    ],
+    "persona without a real operator": [
+      "人设背后没有真实经营者",
+      "実際の担い手がいない人物像",
+      "실제 운영자가 없는 페르소나"
+    ],
+    "digital artist": [
+      "数字艺术家",
+      "デジタルアーティスト",
+      "디지털 아티스트"
+    ],
+    "a style fans recognize on sight": [
+      "粉丝一眼便能认出的风格",
+      "一目でわかる作風",
+      "팬이 한눈에 알아보는 스타일"
+    ],
+    "a body of work that appreciates": [
+      "随时间增值的作品体系",
+      "価値が増していく作品群",
+      "가치가 높아지는 작품군"
+    ],
+    "hype cycles detached from depth": [
+      "脱离作品内涵的炒作周期",
+      "作品の深さと離れた話題の波",
+      "작품의 깊이와 무관한 과열 주기"
+    ],
+    "plagiarized style, borrowed clout": [
+      "抄袭的风格、借来的名气",
+      "盗用された作風、借り物の影響力",
+      "표절한 스타일, 빌려온 영향력"
+    ],
+    "followers": [
+      "粉丝",
+      "フォロワー",
+      "팔로워"
+    ],
+    "views": [
+      "浏览量",
+      "閲覧数",
+      "조회 수"
+    ],
+    "likes": [
+      "点赞",
+      "いいね",
+      "좋아요"
+    ],
+    "comments": [
+      "评论",
+      "コメント",
+      "댓글"
+    ],
+    "impressions": [
+      "曝光量",
+      "表示回数",
+      "노출 수"
+    ],
+    "reposts": [
+      "转发",
+      "リポスト",
+      "재게시"
+    ],
+    "saves": [
+      "收藏",
+      "保存",
+      "저장"
+    ],
+    "Creator setup": [
+      "创作者设置",
+      "クリエイターの設定",
+      "크리에이터 설정"
+    ],
+    "Finish": [
+      "完成",
+      "完了",
+      "완료"
+    ],
+    "Choose how you will use Backer.": [
+      "选择你使用 Backer 的方式。",
+      "Backerの使い方を選んでください。",
+      "Backer의 사용 방식을 선택해 주세요."
+    ],
+    "Reserving your spot…": [
+      "正在保留名额…",
+      "登録を受け付け中…",
+      "등록 중…"
+    ],
+    "Remove": [
+      "移除",
+      "削除",
+      "삭제"
+    ],
+    "Enter a valid platform URL.": [
+      "请输入有效的平台链接。",
+      "有効なプラットフォームURLを入力してください。",
+      "올바른 플랫폼 URL을 입력해 주세요."
+    ],
+    "Add at least one valid platform URL.": [
+      "请至少添加一个有效的平台链接。",
+      "有効なプラットフォームURLを1つ以上追加してください。",
+      "올바른 플랫폼 URL을 하나 이상 추가해 주세요."
+    ],
+    "Submitting application…": [
+      "正在提交申请…",
+      "申請を送信中…",
+      "신청 제출 중…"
+    ],
+    "Pause recorded Trading behavior preview": [
+      "暂停交易行为预览录像",
+      "取引行動の録画を一時停止",
+      "거래 행동 프리뷰 영상 일시 정지"
+    ],
+    "Pause recorded Attention flow preview": [
+      "暂停注意力流向预览录像",
+      "注目の流れの録画を一時停止",
+      "관심의 흐름 프리뷰 영상 일시 정지"
+    ],
+    "Pause recorded Attention simulation preview": [
+      "暂停注意力仿真预览录像",
+      "注目のシミュレーションの録画を一時停止",
+      "관심 시뮬레이션 프리뷰 영상 일시 정지"
+    ],
+    "1 of 2": [
+      "第 1 步，共 2 步",
+      "2ステップ中1",
+      "2단계 중 1단계"
+    ],
+    "2 of 2": [
+      "第 2 步，共 2 步",
+      "2ステップ中2",
+      "2단계 중 2단계"
+    ],
+    "2 of 3": [
+      "第 2 步，共 3 步",
+      "3ステップ中2",
+      "3단계 중 2단계"
+    ],
+    "3 of 3": [
+      "第 3 步，共 3 步",
+      "3ステップ中3",
+      "3단계 중 3단계"
+    ],
+    "Choose up to three platforms.": [
+      "最多选择三个平台。",
+      "プラットフォームは3つまで選べます。",
+      "플랫폼은 최대 세 개까지 선택할 수 있습니다."
+    ],
+    "Backer": [
+      "Backer",
+      "Backer",
+      "Backer"
+    ],
+    "Backer AI": [
+      "Backer AI",
+      "Backer AI",
+      "Backer AI"
+    ],
+    "Backer AI Lab": [
+      "Backer AI Lab",
+      "Backer AI Lab",
+      "Backer AI Lab"
+    ],
+    "Backer Market": [
+      "Backer Market",
+      "Backer Market",
+      "Backer Market"
+    ]
+  },
+  "rich": {
+    "body.page-pitch2 #home .hero-title": [
+      "预测<span class=\"p2-headline-effect\" data-bubble-text><em class=\"grad-text\">注意力流向</em></span>",
+      "<span class=\"p2-headline-effect\" data-bubble-text><em class=\"grad-text\">注目</em>の行方を予測する。</span>",
+      "<span class=\"p2-headline-effect\" data-bubble-text><em class=\"grad-text\">관심</em>이 향할 곳을 예측하세요.</span>"
+    ],
+    "body.page-pitch2 #home .p2-hero-line": [
+      "在<em data-bubble-text>众人察觉之前</em>，<strong>先行一步。</strong>",
+      "誰もが<em data-bubble-text>気づく前に</em>、<strong>行動する。</strong>",
+      "모두가 <em data-bubble-text>알아보기 전에</em>, <strong>먼저 움직이세요.</strong>"
+    ],
+    "body.page-pitch2 #shift .section-head h2": [
+      "浏览量正在成为<em>一种货币。</em>",
+      "視聴が、<em>新たな通貨になる。</em>",
+      "조회 수가 <em>하나의 통화가 됩니다.</em>"
+    ],
+    "body.page-pitch2 #shift .bigline": [
+      "资本流向<span class=\"grad-text\">注意力聚集之处。</span>",
+      "資本は、<span class=\"grad-text\">人々の注目が集まる場所へ。</span>",
+      "자본은 <span class=\"grad-text\">사람들의 관심이 모이는 곳으로 흐릅니다.</span>"
+    ],
+    "body.page-pitch2 .p2-bridge": [
+      "<span>注意力早已牵动资本流向。</span><span>看清它的下一站，<em>也应获得相应的回报。</em></span>",
+      "<span>人々の注目が、すでに資本の流れを動かしている。</span><span>次に向かう先を見抜くことにも、<em>価値があっていい。</em></span>",
+      "<span>사람들의 관심은 이미 자본의 흐름을 움직입니다.</span><span>그다음 향할 곳을 알아보는 판단에도 <em>가치가 있어야 합니다.</em></span>"
+    ],
+    "body.page-pitch2 #why-backer h2": [
+      "<span>仿真科学。</span> <span>预测市场。</span> <em>共同构建。</em>",
+      "<span>シミュレーション科学。</span> <span>予測市場。</span> <em>ともにつくる。</em>",
+      "<span>시뮬레이션 과학.</span> <span>예측 시장.</span> <em>처음부터 함께 설계합니다.</em>"
+    ],
+    "body.page-pitch2 #why-backer .section-lead": [
+      "<span class=\"p2-word-effect\" data-bubble-text>Backer</span> 围绕注意力经济，将两者连接起来。我们让<span class=\"p2-word-effect\" data-bubble-text>研究</span>与<span class=\"p2-word-effect\" data-bubble-text>产品</span>同步设计，使彼此都能提出更好的问题。",
+      "<span class=\"p2-word-effect\" data-bubble-text>Backer</span>は、アテンションエコノミーを軸に両者をつなぎます。<span class=\"p2-word-effect\" data-bubble-text>研究</span>と<span class=\"p2-word-effect\" data-bubble-text>プロダクト</span>をともに設計し、それぞれが相手に、より良い問いを投げかけられるようにします。",
+      "<span class=\"p2-word-effect\" data-bubble-text>Backer</span>는 관심 경제를 중심으로 두 분야를 연결합니다. <span class=\"p2-word-effect\" data-bubble-text>연구</span>와 <span class=\"p2-word-effect\" data-bubble-text>제품</span>을 함께 설계해 서로 더 나은 질문을 던질 수 있게 합니다."
+    ],
+    "body.page-pitch2 #research-heading": [
+      "推演未来。<br><em>为更好的决策。</em>",
+      "未来をシミュレーションする。<br><em>より良い意思決定のために。</em>",
+      "미래를 시뮬레이션합니다.<br><em>더 나은 의사결정을 위해.</em>"
+    ],
+    "body.page-pitch2 #market-heading": [
+      "发现正在形成的势头。<br><em>在众人察觉前，<span class=\"p2-back-word p2-word-effect\" data-bubble-text>押注你的判断。</span></em>",
+      "勢いの芽を捉える。<br><em>誰もが気づく前に、<span class=\"p2-back-word p2-word-effect\" data-bubble-text>その可能性に賭ける。</span></em>",
+      "새로운 성장세를 포착하세요.<br><em>모두가 알아보기 전에, <span class=\"p2-back-word p2-word-effect\" data-bubble-text>그 가능성에 투자하세요.</span></em>"
+    ],
+    "body.page-pitch2 .p2-creator-share h3": [
+      "创作者从自己吸引来的市场中，<span>直接获得收益。</span>",
+      "クリエイターは、自らが人を集めた市場から<span>直接収益を得る。</span>",
+      "크리에이터는 자신이 사람들을 모은 시장에서 <span>직접 수익을 얻습니다.</span>"
+    ],
+    "body.page-pitch2 #codesign .section-head h2": [
+      "模型的<span class=\"p2-word-effect\" data-bubble-text>预测。</span><br>人们的<span class=\"p2-word-effect\" data-bubble-text>判断。</span><br><em>以及真实发生的结果。</em>",
+      "モデルの<span class=\"p2-word-effect\" data-bubble-text>予測。</span><br>人々の<span class=\"p2-word-effect\" data-bubble-text>見立て。</span><br><em>そして、実際に起きたこと。</em>",
+      "모델의 <span class=\"p2-word-effect\" data-bubble-text>예측.</span><br>사람들의 <span class=\"p2-word-effect\" data-bubble-text>판단.</span><br><em>그리고 실제로 일어난 결과.</em>"
+    ],
+    "body.page-pitch2 #decisions .section-head h2": [
+      "让企业在投入之前，<br><em>就明白该怎么做。</em>",
+      "資金を投じる前に、<br><em>企業の次の一手を明確に。</em>",
+      "기업이 지출하기 전에,<br><em>다음 행동을 판단할 수 있도록.</em>"
+    ],
+    "body.page-pitch2 #market-evidence .section-head h2": [
+      "人们早已用真金白银，<em class=\"grad-text\">押注未来。</em>",
+      "人々はすでに、<em class=\"grad-text\">未来の一部に投資している。</em>",
+      "사람들은 이미 <em class=\"grad-text\">미래의 가능성에 돈을 씁니다.</em>"
+    ],
+    "body.page-product #validation .section-head h2": [
+      "人们早已投资，<br><em class=\"grad-text\">押注未来。</em>",
+      "人々はすでに投資している、<br><em class=\"grad-text\">未来の一部を持つために。</em>",
+      "사람들은 이미 투자합니다,<br><em class=\"grad-text\">미래의 가능성을 갖기 위해.</em>"
+    ],
+    "body.page-product #benefits .section-head h2": [
+      "第一次，<span class=\"grad-text\">让双方利益一致。</span>",
+      "双方の利益を、<span class=\"grad-text\">初めて同じ方向へ。</span>",
+      "처음으로 <span class=\"grad-text\">양쪽의 이해관계를 일치시킵니다.</span>"
+    ],
+    "body.deck #ch1-h": [
+      "人类最后的工作，<br>是<em><span data-bubble-text>判断。</span></em>",
+      "人に残る最後の仕事は、<br><em><span data-bubble-text>判断。</span></em>",
+      "인간에게 남는 마지막 일은<br><em><span data-bubble-text>판단입니다.</span></em>"
+    ],
+    "body.deck #ch2-h": [
+      "每一次工作方式的变革，<br><em>在发生之前，都曾听起来不可能。</em>",
+      "働き方の革命は、いつも<br><em>起こるまでは不可能に思えた。</em>",
+      "일의 방식이 바뀔 때마다,<br><em>그 전에는 불가능해 보였습니다.</em>"
+    ],
+    "body.deck #ch3-h": [
+      "AI 正在接管<em>执行环节。</em>",
+      "AIが引き受ける、<em>実行の工程。</em>",
+      "AI가 맡는 <em>중간 실행 단계.</em>"
+    ],
+    "body.deck .turn-line": [
+      "Backer 将风险投资的基本行为，<span class=\"grad-text\">带入互联网。</span>",
+      "Backerは、ベンチャー投資の基本動作を<span class=\"grad-text\">ネットの仕組みに組み込む。</span>",
+      "Backer는 벤처 투자의 기본 행동을 <span class=\"grad-text\">인터넷 안으로 가져옵니다.</span>"
+    ],
+    "body.deck .turn-sub": [
+      "不是每个人都会成为风险投资人，但每个人都可以<em>为自己的判断配置资源。</em>",
+      "誰もがベンチャー投資家になるわけではありません。それでも、誰もが<em>自分の見立てに資源を配分できます。</em>",
+      "모두가 벤처 투자자가 되는 것은 아닙니다. 하지만 누구나 <em>자신의 판단에 자원을 배분할 수 있습니다.</em>"
+    ],
+    "body.deck #ch5-h": [
+      "个人投资者的判断，<br>不断找到<em>新的定价载体。</em>",
+      "個人投資家の確信が、<br><em>新たな投資対象を見つけていく。</em>",
+      "개인 투자자의 확신은<br><em>새로운 투자 대상을 찾아갑니다.</em>"
+    ],
+    "body.deck .opener-name": [
+      "Backer <span class=\"opener-prices\">为对<em>人的判断</em>定价。</span>",
+      "Backer <span class=\"opener-prices\">が価格にするのは、<em>人への見立て。</em></span>",
+      "Backer<span class=\"opener-prices\">는 <em>사람에 대한 판단</em>에 가격을 매깁니다.</span>"
+    ],
+    "body.deck #ch6-h": [
+      "浏览量早已<em>成为货币。</em>",
+      "視聴は、すでに<em>通貨になっている。</em>",
+      "조회 수는 이미 <em>통화가 되었습니다.</em>"
+    ],
+    "body.deck #ch6 .bigline": [
+      "这份资产，是<span class=\"grad-text\">汇聚起来的粉丝判断。</span>",
+      "資産となるのは、<span class=\"grad-text\">ファンの確信の集積。</span>",
+      "자산이 되는 것은 <span class=\"grad-text\">팬들의 확신이 모인 것입니다.</span>"
+    ],
+    "body.deck #ch7-h": [
+      "AI 让个体成为<em>媒体公司。</em>",
+      "AIが個人を<em>メディア企業に変える。</em>",
+      "AI로 개인이 <em>미디어 기업이 됩니다.</em>"
+    ],
+    "body.deck #ch7 .bigline": [
+      "下一类可投资资产，不只是创业公司。<br>还包括将注意力持续积累为影响力的<em>网络 IP。</em>",
+      "次の投資対象は、スタートアップだけではありません。<br>注目を積み重ね、影響力に変える<em>オンラインIP</em>もそうです。",
+      "다음 투자 대상은 스타트업만이 아닙니다.<br>관심을 쌓아 영향력으로 바꾸는 <em>온라인 IP</em>도 그 대상입니다."
+    ],
+    "body.deck #ch8-h": [
+      "资本市场，不能建立在<em>人人都能伪造的数字之上。</em>",
+      "資本市場は、<em>誰もが偽装できる数字の上には築けない。</em>",
+      "자본 시장을 <em>누구나 조작할 수 있는 숫자 위에 세울 수는 없습니다.</em>"
+    ],
+    "body.deck #ch9-h": [
+      "Backer，<br><em>让判断获得价格。</em>",
+      "Backerは、<br><em>見立てを価格にする場所。</em>",
+      "Backer는<br><em>판단에 가격을 매기는 곳입니다.</em>"
+    ],
+    "body.deck .final-line": [
+      "Backer，<span class=\"grad-text\">让判断获得价格。</span>",
+      "Backerは、<span class=\"grad-text\">見立てを価格にする場所。</span>",
+      "Backer는 <span class=\"grad-text\">판단에 가격을 매기는 곳입니다.</span>"
+    ],
+    "body.page-faq .faq-masthead-copy h1": [
+      "那些<em>大家都会问的问题。</em>",
+      "<em>みんなが知りたい</em>、その疑問に。",
+      "<em>모두가 궁금해하는</em> 질문들."
+    ],
+    "body.page-faq #calcInsight": [
+      "资金池的两侧分布<em>就是价格</em>：站在多数一侧，收益可能很薄；少数判断若正确，则可能获得数倍回报。",
+      "プールの配分が<em>価格そのもの</em>です。多数派で当たれば小さな利益、少数派で正しければ何倍もの受取額になることがあります。",
+      "풀의 배분이 <em>곧 가격</em>입니다. 다수 쪽에서 맞히면 작은 이익을 얻고, 소수 쪽에서 맞히면 몇 배를 받을 수 있습니다."
+    ],
+    "body.page-faq #faqList .faq-item:nth-child(4) .faq-a-inner p": [
+      "资金池的分布就是价格。80% 的资金与你意见相反，而你最终判断正确时，你与少数获胜者分享资金池，因此获得 4.5 倍。站在多数一方，则需与更多人分享，回报自然更薄。市场奖励的是早期且正确的判断。这也正是粉丝在创作者只有 800 位关注者时发现其潜力所获得的不对称回报。",
+      "プールの配分が価格だからです。80%の資金が反対側にあるときに正しければ、少数の勝者でプールを分けるため4.5倍になります。多数派なら、分け合う人数が増え、利益は小さくなります。市場が報いるのは、早く正しい見立てです。フォロワー800人の時点で可能性を見抜くファンにも、同じ非対称性があります。",
+      "풀의 배분이 가격이기 때문입니다. 자금의 80%가 반대편에 있을 때 내 판단이 맞으면 소수의 승리자와 풀을 나누므로 4.5배를 받습니다. 다수 쪽에 서면 더 많은 사람과 나누므로 이익은 작아집니다. 시장이 보상하는 것은 빠르고 정확한 판단입니다. 팔로워가 800명일 때 크리에이터를 발견한 팬에게도 같은 비대칭성이 적용됩니다."
+    ],
+    "body.page-onboarding #footprintTitle": [
+      "让 Backer AI 更了解你的<em>数字注意力足迹。</em>",
+      "Backer AIに、<em>ネットでの関心</em>を伝えよう。",
+      "Backer AI에 <em>온라인 관심사</em>를 알려주세요."
+    ],
+    "body.page-pitch2 #market-evidence .section-head .section-lead": [
+      "注意力聚集，资本随之而来，市场由此形成，为其定价。预测市场已大规模证明了这一行为。Backer 将它应用于注意力真正围绕的主体：<strong>人。</strong>",
+      "人々の注目が集まると資本が流れ込み、それを価格にする市場が生まれます。予測市場は、その行動を大きな規模で実証しました。Backerが対象とするのは、注目の中心にいる<strong>人です。</strong>",
+      "사람들의 관심이 모이면 자본이 흐르고, 그 가치를 매기는 시장이 생깁니다. 예측 시장은 이 행동을 대규모로 보여주었습니다. Backer는 관심이 실제로 향하는 대상, <strong>사람에게</strong> 이를 적용합니다."
+    ],
+    "body.page-product #validation .section-head .section-lead": [
+      "注意力聚集，资本随之而来，市场由此形成，为其定价。预测市场已大规模证明了这一行为。Backer 将它应用于注意力真正围绕的主体：<strong>人。</strong>",
+      "人々の注目が集まると資本が流れ込み、それを価格にする市場が生まれます。予測市場は、その行動を大きな規模で実証しました。Backerが対象とするのは、注目の中心にいる<strong>人です。</strong>",
+      "사람들의 관심이 모이면 자본이 흐르고, 그 가치를 매기는 시장이 생깁니다. 예측 시장은 이 행동을 대규모로 보여주었습니다. Backer는 관심이 실제로 향하는 대상, <strong>사람에게</strong> 이를 적용합니다."
+    ],
+    "body.deck #wall > button.tile:nth-of-type(4) .tile-reveal > span:last-child": [
+      "<b>此前缺少的</b> · 面向<em>增长</em>而非事件的市场",
+      "<b>それまでなかったもの</b>・出来事ではなく<em>成長</em>を扱う市場",
+      "<b>이전에 없던 것</b> · 사건이 아닌 <em>성장</em>을 다루는 시장"
+    ],
+    "body.page-faq #faqList .faq-item:first-child .faq-a-inner p": [
+      "以最低 1 美元，对一个明确、可衡量的里程碑建立头寸，例如<em>“12 个月内达到 5 万订阅者”</em>。这不是捐赠、打赏，也不是对个人的股权。达成里程碑时，按合约条款支付；未达成时，投入本金就是你事先接受的风险，如同任何早期押注。",
+      "明確に定義された、測定可能なマイルストーンに1ドルからポジションを持ちます。例えば<em>「12か月で登録者5万人」</em>という条件です。寄付や投げ銭ではなく、人そのものの株式でもありません。達成した場合は契約条件に従って支払われます。未達成なら、投入額は事前に引き受けたリスクです。",
+      "명확하고 측정 가능한 마일스톤에 1달러부터 포지션을 취합니다. 예를 들어 <em>“12개월 안에 구독자 5만 명”</em>이라는 조건입니다. 기부나 팁이 아니며 개인에 대한 지분도 아닙니다. 목표를 달성하면 계약 조건에 따라 지급됩니다. 달성하지 못하면 투입금은 처음부터 감수한 위험입니다."
+    ]
+  },
+  "patterns": {
+    "Play recorded {0} preview": [
+      "播放「{0}」预览录像",
+      "「{0}」の録画を再生",
+      "‘{0}’ 프리뷰 영상 재생"
+    ],
+    "Pause recorded {0} preview": [
+      "暂停「{0}」预览录像",
+      "「{0}」の録画を一時停止",
+      "‘{0}’ 프리뷰 영상 일시 정지"
+    ],
+    "Go to chapter {0}: {1}": [
+      "跳转至第 {0} 章：{1}",
+      "第{0}章へ：{1}",
+      "{0}장으로 이동: {1}"
+    ],
+    "Inspect {0}": [
+      "查看{0}",
+      "{0}を詳しく見る",
+      "{0} 자세히 보기"
+    ],
+    "{0} of 3 selected": [
+      "已选 {0} 项，最多 3 项",
+      "{0} / 3 選択済み",
+      "최대 3개 중 {0}개 선택"
+    ],
+    "Question {0} of {1}.": [
+      "第 {0} 题，共 {1} 题。",
+      "全{1}問中、第{0}問。",
+      "총 {1}개 중 {0}번째 질문."
+    ],
+    "Back to question {0}.": [
+      "返回第 {0} 题。",
+      "第{0}問に戻りました。",
+      "{0}번째 질문으로 돌아갑니다."
+    ],
+    "{0} platform linked.": [
+      "已关联 {0} 个平台。",
+      "{0}件のプラットフォームを連携しました。",
+      "플랫폼 {0}개가 연결되었습니다."
+    ],
+    "{0} platforms linked.": [
+      "已关联 {0} 个平台。",
+      "{0}件のプラットフォームを連携しました。",
+      "플랫폼 {0}개가 연결되었습니다."
+    ],
+    "Thanks, {0} — your spot is reserved. We’ll email {1} when your Backer account is ready.": [
+      "谢谢你，{0}。名额已保留，Backer 账号准备就绪时，我们会发邮件至 {1}。",
+      "{0}さん、ご登録ありがとうございます。Backerアカウントの準備が整い次第、{1}へメールをお送りします。",
+      "{0}님, 등록이 완료되었습니다. Backer 계정이 준비되면 {1}로 이메일을 보내드립니다."
+    ],
+    "Creator setup started. Question 1 of {0}.": [
+      "创作者设置已开始。第 1 题，共 {0} 题。",
+      "クリエイターの設定を開始しました。全{0}問中、第1問。",
+      "크리에이터 설정을 시작했습니다. 총 {0}개 중 첫 번째 질문."
+    ],
+    "Backer setup started. Question 1 of {0}.": [
+      "Backer 设置已开始。第 1 题，共 {0} 题。",
+      "Backerの設定を開始しました。全{0}問中、第1問。",
+      "Backer 설정을 시작했습니다. 총 {0}개 중 첫 번째 질문."
+    ],
+    "Question skipped. Question {0} of {1}.": [
+      "已跳过。第 {0} 题，共 {1} 题。",
+      "スキップしました。全{1}問中、第{0}問。",
+      "질문을 건너뛰었습니다. 총 {1}개 중 {0}번째 질문."
+    ]
+  }
+};

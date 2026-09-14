@@ -212,7 +212,7 @@
     var date = new Date(value);
     if (!value || Number.isNaN(date.getTime())) return 'Time not retained';
     try {
-      return new Intl.DateTimeFormat('en-US', withTime ? {
+      return new Intl.DateTimeFormat((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US'), withTime ? {
         month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit',
         timeZone: 'UTC', timeZoneName: 'short'
       } : { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(date);
@@ -224,13 +224,13 @@
     if (parsed === null) return text(value, 'Unavailable');
     if (Math.abs(parsed) >= 1000000) return (parsed / 1000000).toFixed(parsed >= 10000000 ? 0 : 1).replace(/\.0$/, '') + 'M';
     if (Math.abs(parsed) >= 1000) return (parsed / 1000).toFixed(parsed >= 100000 ? 0 : 1).replace(/\.0$/, '') + 'K';
-    return new Intl.NumberFormat('en-US').format(parsed);
+    return new Intl.NumberFormat((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US')).format(parsed);
   }
 
   function formatMoney(value) {
     var parsed = number(value);
     if (parsed === null) return 'No simulated volume';
-    return '$' + new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(parsed) + ' sim.';
+    return '$' + new Intl.NumberFormat((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US'), { maximumFractionDigits: 0 }).format(parsed) + ' sim.';
   }
 
   function slug(value) {

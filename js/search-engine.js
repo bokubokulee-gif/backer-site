@@ -106,12 +106,12 @@
     if (!isFinite(number)) return '';
     if (Math.abs(number) >= 1000000) return (number / 1000000).toFixed(Math.abs(number) >= 10000000 ? 0 : 1).replace(/\.0$/, '') + 'M';
     if (Math.abs(number) >= 1000) return (number / 1000).toFixed(Math.abs(number) >= 100000 ? 0 : 1).replace(/\.0$/, '') + 'K';
-    return new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 }).format(number);
+    return new Intl.NumberFormat((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US'), { maximumFractionDigits: 1 }).format(number);
   }
   function formatDate(value) {
     var iso = validISO(value);
     if (!iso) return '';
-    return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(iso));
+    return new Intl.DateTimeFormat((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US'), { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(iso));
   }
   function initials(value) {
     return clean(value).split(/\s+/).slice(0, 2).map(function (part) { return part.charAt(0); }).join('').toUpperCase() || '?';
@@ -381,7 +381,7 @@
     if (!host || !index) return;
     host.innerHTML = '<span class="sx-plat-filter-label">Sources</span>' + index.providers.map(function (provider) {
       return '<button type="button" class="sx-plat-toggle" data-plat="' + esc(provider) + '" aria-pressed="' + activeProviders.has(provider) + '">' + icon(provider)
-        + '<span>' + esc(providerLabel(provider)) + '</span></button>';
+        + '<span translate="no">' + esc(providerLabel(provider)) + '</span></button>';
     }).join('');
     host.querySelectorAll('[data-plat]').forEach(function (button) {
       button.addEventListener('click', function () {
@@ -440,11 +440,11 @@
     var label = resultKindLabel(kind);
     var more = rows.length > shown
       ? '<div class="sxr-more-row"><button type="button" class="sxr-more" data-sxr-more="' + kind + '" data-sxr-visible="' + shown + '" aria-controls="sxr-grid-' + kind + '" aria-label="Show ' + Math.min(RESULT_LIMIT, rows.length - shown) + ' more ' + label + '">'
-        + '<span data-sxr-more-label>More ' + label + '</span><small data-sxr-more-count>' + shown.toLocaleString('en-US') + ' of ' + rows.length.toLocaleString('en-US') + ' shown</small>'
+        + '<span data-sxr-more-label>More ' + label + '</span><small data-sxr-more-count>' + shown.toLocaleString((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US')) + ' of ' + rows.length.toLocaleString((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US')) + ' shown</small>'
         + '<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></button></div>'
       : '';
     return '<section class="sxr-section" aria-labelledby="sxr-' + kind + '"><div class="sxr-section-head"><div><span class="sxr-kicker">Source-backed ' + label + '</span><h2 id="sxr-' + kind + '">' + esc(title) + '</h2></div>'
-      + '<p><strong>' + rows.length.toLocaleString('en-US') + '</strong> catalog matches · <span data-sxr-progress="' + kind + '">showing ' + shown.toLocaleString('en-US') + '</span></p></div>'
+      + '<p><strong>' + rows.length.toLocaleString((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US')) + '</strong> catalog matches · <span data-sxr-progress="' + kind + '">showing ' + shown.toLocaleString((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US')) + '</span></p></div>'
       + '<div class="sxr-grid" id="sxr-grid-' + kind + '">' + rows.slice(0, shown).map(function (row) { return resultCard(row, tradeEligibility); }).join('') + '</div>' + more + '</section>';
   }
   function bindResultExpansion(result) {
@@ -465,10 +465,10 @@
         var firstNewCard = grid.children[previous];
         button.dataset.sxrVisible = String(next);
         var progress = rootElement.querySelector('[data-sxr-progress="' + kind + '"]');
-        if (progress) progress.textContent = 'showing ' + next.toLocaleString('en-US');
+        if (progress) progress.textContent = 'showing ' + next.toLocaleString((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US'));
         var buttonLabel = button.querySelector('[data-sxr-more-label]');
         var count = button.querySelector('[data-sxr-more-count]');
-        if (count) count.textContent = next.toLocaleString('en-US') + ' of ' + rows.length.toLocaleString('en-US') + ' shown';
+        if (count) count.textContent = next.toLocaleString((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US')) + ' of ' + rows.length.toLocaleString((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US')) + ' shown';
         if (next >= rows.length) {
           button.disabled = true;
           button.classList.add('is-complete');
@@ -494,12 +494,12 @@
     var total = result.profiles.length + result.works.length;
     var queryLabel = currentQuery ? '“' + currentQuery + '”' : 'the retained catalog';
     rootElement.querySelector('.search-view.sx').classList.add('has-results');
-    out.innerHTML = '<div class="sxr-summary"><div><span>Backer AI search</span><h2>' + total.toLocaleString('en-US') + ' matches for ' + esc(queryLabel) + '</h2></div>'
+    out.innerHTML = '<div class="sxr-summary"><div><span>Backer AI search</span><h2>' + total.toLocaleString((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US')) + ' matches for ' + esc(queryLabel) + '</h2></div>'
       + '<p>Names, handles, bios, titles, excerpts, providers, and exact retained metrics only. Backer does not invent missing facts or infer private traits.</p></div>'
       + (total ? resultsSection('profiles', 'Profiles', result.profiles) + resultsSection('works', 'Contents', result.works)
         : '<div class="sx-notice sx-notice-block" role="status"><b>No retained record matches those words and selected sources.</b> Try a name, handle, topic, platform, or original-work title. Nothing was generated to fill the gap.</div>')
-      + '<div class="sxr-provenance">' + index.profiles.length.toLocaleString('en-US') + ' source-linked profiles · '
-      + index.works.length.toLocaleString('en-US') + ' original works up to date</div>';
+      + '<div class="sxr-provenance">' + index.profiles.length.toLocaleString((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US')) + ' source-linked profiles · '
+      + index.works.length.toLocaleString((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US')) + ' original works up to date</div>';
     bindResultExpansion(result);
     canonicalURL(currentQuery);
     announce(total + ' retained catalog matches.');

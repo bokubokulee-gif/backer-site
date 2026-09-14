@@ -2,13 +2,20 @@
 (() => {
   'use strict';
   // Shared homepage interaction; keep the warm gradient continuous per glyph.
-  const headline = document.querySelector('.hero-title [data-bubble-text]');
-  if (headline) {
+  if (document.querySelector('.hero-title [data-bubble-text]')) {
     const prepareGradient = () => {
+      const headline = document.querySelector('.hero-title [data-bubble-text]');
+      if (!headline) return;
       const letters = [...headline.querySelectorAll('.bubble-letter')];
       if (!letters.length) return;
+      const phrase = letters.map(letter => letter.textContent.replace(/\u00a0/g, ' ')).join('');
+      const language = window.BackerI18n ? window.BackerI18n.locale : 'en';
+      const attention = { en: 'attention', zh: '注意力', ja: '注目', ko: '관심' }[language];
+      const wordStart = phrase.indexOf(attention);
+      const gradientIndex = wordStart >= 0 ? Array.from(phrase.slice(0, wordStart)).length : 0;
+      letters.slice(gradientIndex).forEach(letter => letter.classList.add('p2-gradient-letter'));
       const measure = () => {
-        const gradientStart = letters[6].offsetLeft;
+        const gradientStart = letters[gradientIndex].offsetLeft;
         const lastLetter = letters[letters.length - 1];
         // Include the italic ink overhang inside each padded glyph's paint box.
         headline.style.setProperty('--p2-bubble-width', `${lastLetter.offsetLeft + lastLetter.offsetWidth - gradientStart}px`);

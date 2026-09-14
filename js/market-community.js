@@ -509,7 +509,7 @@
   }
 
   function money(amount) {
-    return '$' + Number(amount).toLocaleString('en-US', { maximumFractionDigits: 0 });
+    return '$' + Number(amount).toLocaleString((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US'), { maximumFractionDigits: 0 });
   }
 
   function renderActivityRow(context, row) {

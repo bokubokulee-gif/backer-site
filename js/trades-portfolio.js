@@ -26,7 +26,7 @@
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
   function money(value) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(number(value) || 0);
+    return new Intl.NumberFormat((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US'), { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(number(value) || 0);
   }
   function signedMoney(value) {
     var parsed = number(value) || 0;
@@ -34,7 +34,7 @@
   }
   function cents(value) {
     var parsed = number(value) || 0;
-    return new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 }).format(parsed) + '¢';
+    return new Intl.NumberFormat((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US'), { maximumFractionDigits: 1 }).format(parsed) + '¢';
   }
   function date(value) {
     var parsed = new Date(value);

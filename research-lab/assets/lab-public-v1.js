@@ -387,7 +387,8 @@ function drawSpatialStageLabels(width, height) {
     const center = stageWorldCenter(stage, vertical);
     const anchor = projectWorld(vertical ? { ...center, x: -WORLD.radiusZ - 34 } : { ...center, y: -WORLD.radiusY - 24 }, width, height);
     if (!anchor.visible || anchor.x < -90 || anchor.x > width + 90 || anchor.y < -30 || anchor.y > height + 30) continue;
-    const label = `${String(stage + 1).padStart(2, '0')}  ${STAGES[stage].label}`;
+    const stageLabel = window.BackerI18n ? window.BackerI18n.t(STAGES[stage].label) : STAGES[stage].label;
+    const label = `${String(stage + 1).padStart(2, '0')}  ${stageLabel}`;
     const labelWidth = context.measureText(label).width + 12;
     context.fillStyle = 'rgba(8, 8, 10, .78)';
     context.fillRect(anchor.x - labelWidth / 2, anchor.y - 9, labelWidth, 18);

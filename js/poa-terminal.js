@@ -1883,7 +1883,7 @@
   function strictDate(value) {
     var parsed = Date.parse(value || '');
     if (!Number.isFinite(parsed)) return 'Time unavailable';
-    try { return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(parsed)); }
+    try { return new Intl.DateTimeFormat((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US'), { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(parsed)); }
     catch (error) { return new Date(parsed).toISOString().slice(0, 10); }
   }
 

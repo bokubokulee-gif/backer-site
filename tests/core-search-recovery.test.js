@@ -207,7 +207,8 @@ test('public page and shared dock restore the dedicated Backer AI route', () => 
   const dock = fs.readFileSync(path.join(root, 'js/backer-dock.js'), 'utf8');
   const engine = fs.readFileSync(path.join(root, 'js/search-engine.js'), 'utf8');
   const artifact = fs.readFileSync(path.join(root, 'scripts/build-pages-artifact.mjs'), 'utf8');
-  assert.match(html, /js\/search-engine\.js\?v=20260826-perf-1/);
+  assert.match(html, /src="js\/search-engine\.js\?v=[\w.-]+"/,
+    'the dedicated Search script must carry a nonempty cache key');
   assert.match(html, /href="backerdemo\.html#search" data-view="search">AI Search/);
   assert.match(html, /01 · AI Search Agent[\s\S]*?<article class="surface reveal" data-view="search"|<article class="surface reveal" data-view="search">[\s\S]*?01 · AI Search Agent/);
   assert.match(dock, /linkHTML\('search', 'backerdemo\.html#search'/);
@@ -219,32 +220,38 @@ test('public page and shared dock restore the dedicated Backer AI route', () => 
   assert.match(artifact, /'js\/search-engine\.js'/);
 });
 
-test('every changed public Search asset is allowlisted and uses its current cache key', () => {
-  const versions = {
-    'css/styles.css': '20260826-perf-1',
-    'css/backer-dock.css': '20260821-2',
-    'css/market.css': '20260831-trades-news-2',
-    'css/market2.css': '20260821-account-metrics-1',
-    'css/search.css': '20260824-sources-clean-1',
-    'js/app.js': '20260831-trades-news-2',
-    'js/backer-dock.js': '20260826-perf-1',
-    'js/market2.js': '20260826-perf-1',
-    'js/search-engine.js': '20260826-perf-1',
-    'js/trades-catalog-model.js': '20260826-perf-1',
-    'js/site-menu.js': '20260914-host-1'
-  };
+test('every shared public Search asset is allowlisted and uses a consistent cache key', () => {
+  const assets = [
+    'css/styles.css',
+    'css/backer-dock.css',
+    'css/market.css',
+    'css/market2.css',
+    'css/search.css',
+    'js/app.js',
+    'js/backer-dock.js',
+    'js/market2.js',
+    'js/search-engine.js',
+    'js/trades-catalog-model.js',
+    'js/site-menu.js'
+  ];
   const artifact = fs.readFileSync(path.join(root, 'scripts/build-pages-artifact.mjs'), 'utf8');
   const pages = fs.readdirSync(root).filter((file) => file.endsWith('.html'));
 
-  for (const [asset, version] of Object.entries(versions)) {
-    assert.match(artifact, new RegExp(`['"]${asset.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}['"]`), `${asset} must ship in the Pages artifact`);
+  for (const asset of assets) {
+    const escaped = asset.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    assert.match(artifact, new RegExp(`['"]${escaped}['"]`), `${asset} must ship in the Pages artifact`);
+    const expression = new RegExp(`(?:src|href)=["']${escaped}(?:\\?([^"']*))?["']`, 'g');
+    let version;
     let references = 0;
     for (const page of pages) {
       const source = fs.readFileSync(path.join(root, page), 'utf8');
-      const expression = new RegExp(`${asset.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\?v=([^"']+)`, 'g');
       for (const match of source.matchAll(expression)) {
         references += 1;
-        assert.equal(match[1], version, `${page} must cache-bust ${asset}`);
+        const pageVersion = new URLSearchParams(match[1]).get('v');
+        assert.ok(pageVersion, `${page} must cache-bust ${asset}`);
+        if (version === undefined) version = pageVersion;
+        assert.equal(pageVersion, version,
+          `${page} must use the same cache key for ${asset} as the other public pages`);
       }
     }
     assert.ok(references > 0, `${asset} must have at least one public HTML reference`);

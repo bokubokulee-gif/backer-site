@@ -11,6 +11,14 @@ const destination = path.resolve(process.argv[2] || '');
 
 const PUBLIC_FILES = Object.freeze([
   '.nojekyll',
+  'js/i18n.js',
+  'css/i18n.css',
+  'js/locales/marketing.js',
+  'js/locales/interface.js',
+  'js/locales/research.js',
+  'js/locales/supplement.js',
+  'research-lab/assets/locale-lineage.js',
+  'js/locales/analytics.js',
   'js/card-glow.js',
   'css/card-glow.css',
   'js/access-gate.js',

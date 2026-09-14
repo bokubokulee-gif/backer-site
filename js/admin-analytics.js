@@ -1080,18 +1080,18 @@
   }
 
   function formatNumber(value) {
-    return new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 }).format(toNumber(value));
+    return new Intl.NumberFormat(window.BackerI18n ? window.BackerI18n.formatLocale : undefined, { maximumFractionDigits: 0 }).format(toNumber(value));
   }
 
   function formatCompact(value) {
-    return new Intl.NumberFormat(undefined, {
+    return new Intl.NumberFormat(window.BackerI18n ? window.BackerI18n.formatLocale : undefined, {
       notation: "compact",
       maximumFractionDigits: 1
     }).format(toNumber(value));
   }
 
   function formatDecimal(value) {
-    return new Intl.NumberFormat(undefined, {
+    return new Intl.NumberFormat(window.BackerI18n ? window.BackerI18n.formatLocale : undefined, {
       minimumFractionDigits: 1,
       maximumFractionDigits: 2
     }).format(finiteNumber(value, 0));
@@ -1105,13 +1105,13 @@
       ? { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }
       : { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" };
     if (state.timeDisplay === "utc") formatterOptions.timeZone = "UTC";
-    return new Intl.DateTimeFormat(undefined, formatterOptions).format(date) + (state.timeDisplay === "utc" ? " UTC" : "");
+    return new Intl.DateTimeFormat(window.BackerI18n ? window.BackerI18n.formatLocale : undefined, formatterOptions).format(date) + (state.timeDisplay === "utc" ? " UTC" : "");
   }
 
   function formatDate(value) {
     var date = new Date(String(value).slice(0, 10) + "T00:00:00Z");
     if (Number.isNaN(date.getTime())) return String(value || "—");
-    return new Intl.DateTimeFormat(undefined, {
+    return new Intl.DateTimeFormat(window.BackerI18n ? window.BackerI18n.formatLocale : undefined, {
       month: "short",
       day: "numeric",
       year: "numeric",
@@ -1122,7 +1122,7 @@
   function formatSeriesDate(value) {
     var date = new Date(String(value).slice(0, 10) + "T00:00:00Z");
     if (Number.isNaN(date.getTime())) return String(value || "");
-    return new Intl.DateTimeFormat(undefined, {
+    return new Intl.DateTimeFormat(window.BackerI18n ? window.BackerI18n.formatLocale : undefined, {
       month: "short",
       day: "numeric",
       timeZone: "UTC"
@@ -1132,7 +1132,7 @@
   function formatTime(date) {
     var options = { hour: "2-digit", minute: "2-digit" };
     if (state.timeDisplay === "utc") options.timeZone = "UTC";
-    return new Intl.DateTimeFormat(undefined, options).format(date) + (state.timeDisplay === "utc" ? " UTC" : "");
+    return new Intl.DateTimeFormat(window.BackerI18n ? window.BackerI18n.formatLocale : undefined, options).format(date) + (state.timeDisplay === "utc" ? " UTC" : "");
   }
 
   function dateInputValue(date) {

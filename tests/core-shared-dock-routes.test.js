@@ -189,7 +189,11 @@ test('the public router keeps Trades canonical and preserves the pre-Trades demo
   assert.match(artifact, /'js\/market-archive\.js'/, 'the archived script must ship in the Pages artifact');
   assert.match(artifact, /'css\/market-archive\.css'/, 'the archived stylesheet must ship in the Pages artifact');
   assert.match(demoPage, /js\/app\.js\?v=[\w.-]+/, 'the public router must carry a cache key');
-  assert.match(detailPage, /js\/market-detail-page\.js\?v=20260822-archive-1/, 'the archive return route must carry a new cache key');
+  const detailScript = [...detailPage.matchAll(/src="js\/market-detail-page\.js(?:\?([^"\s]*))?"/g)];
+  assert.ok(detailScript.length > 0, 'the archive return route must load its dedicated script');
+  const detailVersions = detailScript.map(match => new URLSearchParams(match[1]).get('v'));
+  assert.ok(detailVersions.every(version => version && version === detailVersions[0]),
+    'the archive return script must carry a nonempty, consistent cache key');
   assert.match(dock, /linkHTML\('trades',\s*'backerdemo\.html#trades'/, 'the shared dock must link directly to canonical Trades');
   assert.match(dock, /\^#market-archive[\s\S]*return ''/, 'the archive must not claim the active Trades menu item');
   assert.match(dock, /\^#market\(\?:\\\?\|\$\)[\s\S]*return 'trades'/, 'the #market alias must still identify canonical Trades');

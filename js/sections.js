@@ -9,7 +9,7 @@
   const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ---------------- count-up numbers ---------------- */
-  function fmtInt(v) { return Math.round(v).toLocaleString('en-US'); }
+  function fmtInt(v) { return Math.round(v).toLocaleString((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US')); }
   function runCount(el) {
     const to = parseFloat(el.dataset.to) || 0;
     const dur = parseFloat(el.dataset.dur) || 1200;
@@ -56,7 +56,7 @@
   const state = { scen: 'milestone', side: 'yes', out: 'yes' };
   let lastPayout = 0, payoutRaf = 0, payoutTimer = 0;
 
-  const money = (v, maxFrac) => '$' + (+v).toLocaleString('en-US', {
+  const money = (v, maxFrac) => '$' + (+v).toLocaleString((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US'), {
     minimumFractionDigits: 2, maximumFractionDigits: maxFrac == null ? 2 : maxFrac
   });
   const num = (id) => {

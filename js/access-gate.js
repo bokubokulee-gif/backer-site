@@ -62,6 +62,9 @@
     function requireWaitlist(reason, replace) {
       var url = new URL('waitlist.html', siteRoot);
       url.searchParams.set('source', reason === 'portfolio' ? 'portfolio' : reason === 'create' ? 'create' : 'trade');
+      var language = root.BackerI18n && root.BackerI18n.locale;
+      if (!language) language = new URL(root.location.href).searchParams.get('lang');
+      if (['zh', 'ja', 'ko'].indexOf(language) >= 0) url.searchParams.set('lang', language);
       // An embedded Market preview must open the full-page registration screen.
       var destination = root;
       try { if (root.top && root.top !== root) destination = root.top; } catch (error) {}

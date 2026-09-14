@@ -38,11 +38,15 @@ const REVIEWED_PUBLIC_DATA = Object.freeze({
 const REVIEWED_RESEARCH_SCRIPTS = Object.freeze({
   'research-lab/assets/attention-flow-public-v1.js': {
     classification: 'authored attention examples and anonymous marker animation; no human corpus, source connectors, fitted parameters, or forecast engine',
-    sha256: '5af1b9a3426c8fbded2ba99bcccaa7a7e1cc7ab3d6ecddb193f9ac8788b63fca'
+    sha256: '9e0bd3fbdbee4233197b719874e46b85102e264ac7e2f359d0424f8027942ba7'
   },
   'research-lab/assets/lab-public-v1.js': {
     classification: 'reviewed spatial aggregate field presenter with anonymous visual markers',
-    sha256: 'e459aecab1c6e95383d4196062c9b16ff20c7d8d16d736ebc794185113eb0302'
+    sha256: '32edad23d351689be50a7f001e4193d4f53c8a56aa246bd55f494fc17b34cda2'
+  },
+  'research-lab/assets/locale-lineage.js': {
+    classification: 'authored translations of two existing public Research provenance statements; static copy only, without collection routes, source connectors, data, or computation',
+    sha256: '92a8775600512b136394b6c3d0e07ad1a41e24e61a6b0f8201a4648e13cde1c4'
   },
   'research-lab/assets/method-public-v1.js': {
     classification: 'public method navigation and declared-condition explainer without model formulas',

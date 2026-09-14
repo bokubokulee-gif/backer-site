@@ -123,7 +123,8 @@ function drawField() {
     const marker = markers[state.selected];
     ctx.beginPath(); ctx.arc(marker.x, marker.y, 7, 0, Math.PI * 2);
     ctx.strokeStyle = '#fff6e3'; ctx.lineWidth = 1; ctx.stroke();
-    if ($('marker-stage').textContent !== STAGES[marker.stage]) $('marker-stage').textContent = STAGES[marker.stage];
+    const stageLabel = window.BackerI18n ? window.BackerI18n.t(STAGES[marker.stage]) : STAGES[marker.stage];
+    if ($('marker-stage').textContent !== stageLabel) $('marker-stage').textContent = stageLabel;
   }
   canvas.dataset.modelHour = String(Math.floor(state.hour));
   canvas.dataset.motion = state.playing ? 'running' : 'paused';

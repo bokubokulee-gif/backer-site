@@ -11,7 +11,14 @@ test('Reading styles are delivered after page styles on every refined Lab surfac
   for (const file of ['validation.html', 'attention-flow.html', 'method.html']) {
     const page = read(`research-lab/${file}`);
     const styles = [...page.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*>/g)].map(match => match[0]);
-    assert.match(styles.at(-1), /assets\/readability-v1\.css/);
+    const readingIndex = styles.findIndex(style => /assets\/readability-v1\.css/.test(style));
+    assert.ok(readingIndex >= 0, `${file} must load the shared reading styles`);
+    const pageStyles = styles.filter(style => !/css\/(?:backer-dock|i18n)\.css/.test(style));
+    assert.match(pageStyles.at(-1), /assets\/readability-v1\.css/,
+      `${file} must apply reading styles after all Lab page styles`);
+    const languageIndex = styles.findIndex(style => /css\/i18n\.css/.test(style));
+    assert.ok(languageIndex > readingIndex,
+      `${file} must apply language typography after the shared reading defaults`);
   }
   assert.match(read('scripts/build-pages-artifact.mjs'), /'research-lab\/assets\/readability-v1\.css'/);
 });

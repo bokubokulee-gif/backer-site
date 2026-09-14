@@ -47,7 +47,7 @@
 
   function formatNumber(value) {
     var number = finiteNumber(value);
-    return number == null ? 'Not set' : number.toLocaleString('en-US');
+    return number == null ? 'Not set' : number.toLocaleString((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US'));
   }
 
   function formatDraftDate(value) {

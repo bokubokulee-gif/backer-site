@@ -74,19 +74,19 @@
     var parsed = number(value);
     if (parsed == null) return display(value);
     if (typeof B.fmt === 'function') return B.fmt(parsed);
-    return new Intl.NumberFormat('en-US', { notation: Math.abs(parsed) >= 10000 ? 'compact' : 'standard', maximumFractionDigits: 1 }).format(parsed);
+    return new Intl.NumberFormat((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US'), { notation: Math.abs(parsed) >= 10000 ? 'compact' : 'standard', maximumFractionDigits: 1 }).format(parsed);
   }
   function formatExactCount(value) {
     var parsed = number(value);
-    return parsed == null ? display(value) : new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(parsed);
+    return parsed == null ? display(value) : new Intl.NumberFormat((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US'), { maximumFractionDigits: 0 }).format(parsed);
   }
   function formatMoney(value) {
     var parsed = number(value) || 0;
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(parsed);
+    return new Intl.NumberFormat((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US'), { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(parsed);
   }
   function formatPaperVolume(value) {
     var parsed = number(value) || 0;
-    return '$' + new Intl.NumberFormat('en-US', { notation: parsed >= 10000 ? 'compact' : 'standard', maximumFractionDigits: 1 }).format(parsed);
+    return '$' + new Intl.NumberFormat((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US'), { notation: parsed >= 10000 ? 'compact' : 'standard', maximumFractionDigits: 1 }).format(parsed);
   }
   function formatDate(value, includeYear) {
     var date = new Date(value);
@@ -95,7 +95,7 @@
   }
   function formatNumber(value) {
     var parsed = number(value);
-    return parsed == null ? 'Not set' : new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(parsed);
+    return parsed == null ? 'Not set' : new Intl.NumberFormat((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US'), { maximumFractionDigits: 2 }).format(parsed);
   }
   function analytics(event, props) {
     try { if (root.BackerAnalytics) root.BackerAnalytics.track(event, props || {}); } catch (error) {}

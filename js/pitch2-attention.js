@@ -13,10 +13,13 @@
     if (!root || root.dataset.attentionReady) return;
     const letters = [...root.querySelectorAll('.bubble-letter')];
     const phrase = letters.map(letter => letter.textContent.replace(/\u00a0/g, ' ')).join('');
-    const match = /\battention\b/.exec(phrase);
-    if (!match) return;
-    const word = letters.slice(match.index, match.index + match[0].length);
-    if (word.length !== 9) return;
+    const language = window.BackerI18n ? window.BackerI18n.locale : 'en';
+    const attention = { en: 'attention', zh: '注意力', ja: '注目', ko: '관심' }[language];
+    const index = phrase.indexOf(attention);
+    if (index < 0) return;
+    const start = Array.from(phrase.slice(0, index)).length;
+    const word = letters.slice(start, start + Array.from(attention).length);
+    if (!word.length) return;
 
     // Keep all original glyphs flat and in order: pitch2.js measures their offsets
     // and the existing gradient rules depend on their nth-child positions.

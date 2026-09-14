@@ -215,7 +215,7 @@
     var deadline = state.values.deadline ? humanDate(state.values.deadline) : 'the stated deadline';
     var target = finiteNumber(state.values.target);
     if (state.values.instrument === 'pk') return 'Which outcome will record the highest ' + label + ' by ' + deadline + '?';
-    return 'Will ' + subjectName() + ' reach at least ' + (target == null ? 'the stated target' : target.toLocaleString('en-US')) + ' ' + (metric ? metric.unit : label) + ' by ' + deadline + '?';
+    return 'Will ' + subjectName() + ' reach at least ' + (target == null ? 'the stated target' : target.toLocaleString((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US'))) + ' ' + (metric ? metric.unit : label) + ' by ' + deadline + '?';
   }
   function defaultQuestion() {
     if (state.values.instrument === 'pk') return 'Which outcome will lead on the rule-defined native metric by the stated deadline?';
@@ -453,8 +453,8 @@
       ['Question', state.values.question || 'Not set'],
       ['Outcomes', outcomesText()],
       ['Native metric', metric ? platformLabel(state.values.platform) + ' ' + metric.label : 'Not set'],
-      ['Baseline', state.values.baseline ? Number(state.values.baseline).toLocaleString('en-US') + ' on ' + humanDate(state.values.baselineAt) : 'Not set'],
-      ['Target', state.values.target ? Number(state.values.target).toLocaleString('en-US') : 'Not set'],
+      ['Baseline', state.values.baseline ? Number(state.values.baseline).toLocaleString((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US')) + ' on ' + humanDate(state.values.baselineAt) : 'Not set'],
+      ['Target', state.values.target ? Number(state.values.target).toLocaleString((typeof window !== 'undefined' && window.BackerI18n ? window.BackerI18n.formatLocale : 'en-US')) : 'Not set'],
       ['Cutoff', humanDate(state.values.deadline)],
       ['Source', state.values.sourceUrl || 'Not set'],
       ['Metric state', availability.label],
