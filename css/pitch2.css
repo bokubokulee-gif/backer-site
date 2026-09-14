@@ -51,9 +51,14 @@
 .p2-hero-foundation{position:relative;z-index:2;width:min(780px,100%);display:grid;grid-template-columns:1fr 40px 1fr;align-items:stretch;gap:30px;border-top:1px solid var(--p2-rule);padding-top:26px}
 .p2-hero-foundation a{display:flex;flex-direction:column;justify-content:flex-start;min-height:66px;transition:transform .2s}
 .p2-hero-foundation a:hover{transform:translateY(-3px)}
-.p2-hero-foundation a>span{font-size:15px;font-weight:600;color:var(--accent)}
-.p2-hero-foundation p{font-size:13px;line-height:1.5;color:var(--muted);margin:7px auto 0;max-width:245px}
+.p2-hero-foundation a>span{font-size:20px;font-weight:700;color:var(--accent)}
+.p2-hero-foundation p{font-size:17px;font-weight:700;line-height:1.5;color:#ddd9d1;margin:10px auto 0;max-width:280px;text-wrap:balance}
 .p2-join{display:grid;place-items:center;font:30px var(--serif);color:var(--accent)}
+/* Keep enlarged labels and sentences readable on the narrowest phones. */
+@media(max-width:380px){
+ .page-pitch2 .p2-hero-foundation{grid-template-columns:minmax(0,1fr);gap:16px}
+ .page-pitch2 .p2-join{font-size:20px;line-height:1}
+}
 /* Map the existing gradient across animated letters, keeping their colors. */
 .page-pitch2 .hero-title [data-bubble-text]{position:relative;display:inline-block;padding:.16em .18em .12em;margin:-.16em -.18em -.12em;overflow:visible;font-family:inherit;font-weight:inherit;font-style:normal;letter-spacing:inherit}
 .page-pitch2 .hero-title .p2-headline-effect em{padding:0}
@@ -166,7 +171,7 @@
 }
 @media(max-width:620px){
  .p2-walkthrough{grid-template-columns:1fr;gap:27px;margin-top:36px}.p2-walkthrough a{padding-top:22px}.p2-walkthrough p{min-height:0}.p2-walkthrough b{margin-top:13px}.p2-next-step{margin-top:36px}.p2-next-step h3{font-size:24px}.p2-next-step p{font-size:14px}
- .page-pitch2 .p2-hero{padding:112px 20px 48px;gap:32px}.p2-hero-foundation{gap:12px;grid-template-columns:1fr 20px 1fr;padding-top:22px}.p2-hero-foundation a>span{font-size:13px}.p2-hero-foundation p{font-size:12px}.p2-join{font-size:25px}
+ .page-pitch2 .p2-hero{padding:112px 20px 48px;gap:32px}.p2-hero-foundation{gap:12px;grid-template-columns:1fr 20px 1fr;padding-top:22px}.p2-hero-foundation a>span{font-size:18px}.p2-hero-foundation p{font-size:16px}.p2-join{font-size:25px}
 
  .page-pitch2 .section{padding:66px 20px}.page-pitch2 .section-head h2{font-size:36px}.page-pitch2 .section-head{margin-bottom:32px}.page-pitch2 .section-lead{font-size:15px;line-height:1.7;margin-top:19px}.page-pitch2 .kicker{font-size:9px;margin-bottom:17px}.p2-section-note{font-size:14px}.page-pitch2 .p2-attention-bridge{padding-top:32px;padding-bottom:32px}.p2-bridge>span+span{margin-top:16px}
 
