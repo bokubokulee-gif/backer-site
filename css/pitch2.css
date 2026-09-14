@@ -13,9 +13,21 @@
 @media(min-width:621px){.page-pitch2 .p2-positioning h2{font-size:clamp(36px,4.7vw,56px)}}
 .page-pitch2 .p2-positioning .section-lead{max-width:960px;margin:28px auto 0;font-size:clamp(17px,1.65vw,20px);font-weight:700;line-height:1.65;color:var(--ink);text-wrap:pretty}
 .page-pitch2 .section-head h2 em{display:inline-block;padding-bottom:.08em}
-/* Shared Lab and Market identity; retain heading semantics without headline sizing. */
+/* One product introduction hierarchy for Lab and Market. */
 .p2-brand-mark{display:block;width:clamp(38px,4vw,48px);height:auto;aspect-ratio:1;object-fit:contain;margin:0 auto 14px}
 .page-pitch2 .p2-brand-label,.page-pitch2 .section-head .p2-brand-label{display:block;margin:0 0 17px;color:var(--accent,#e9bd86);font-family:var(--sans);font-size:11px;font-weight:600;font-style:normal;line-height:1.55;letter-spacing:.16em;text-transform:uppercase;text-align:center}
+.p2-product-heading{max-width:860px;margin:0 auto;text-align:center}
+.p2-product-heading h2{font-size:clamp(35px,5.3vw,65px);line-height:1.06;letter-spacing:-.045em;font-weight:650;text-wrap:balance}
+.p2-product-heading h2 em{font-family:inherit;font-weight:inherit;font-style:normal;color:var(--accent,#e9bd86);letter-spacing:inherit}
+.p2-product-heading>p{max-width:780px;margin:25px auto 0;color:#ddd9d1;font-size:clamp(16px,1.65vw,19px);font-weight:500;line-height:1.65;text-wrap:balance}
+.p2-product-link{display:flex;justify-content:center;align-items:center;gap:12px;width:fit-content;min-height:44px;margin:19px auto 26px;color:var(--accent,#e9bd86);font-size:12px;font-weight:600;line-height:1.5}
+.p2-product-link span{font-size:23px;line-height:1;transition:transform .2s}
+.p2-product-link:is(:hover,:focus-visible) span{transform:translate(3px,-3px)}
+@media(max-width:520px){
+ .p2-product-heading>p{font-size:16px;line-height:1.7}
+ .p2-product-link{font-size:11px;margin-block:17px 21px}
+}
+@media(prefers-reduced-motion:reduce){.p2-product-link span{transition:none;transform:none!important}}
 .page-pitch2 .section-lead{font-size:18px;max-width:690px;line-height:1.7;color:#b8b4ac;margin-top:24px}
 .page-pitch2 .kicker{font-size:10px;letter-spacing:.16em;margin-bottom:20px}
 /* Keep complete Shift sentences together at every container width. */
@@ -73,21 +85,12 @@
 .p2-market-story li{display:grid;grid-template-columns:130px 1fr;gap:12px;font-size:13px}
 .p2-market-story li b{font-weight:500;color:var(--accent)}
 .p2-market-story li span{color:var(--muted)}
-.p2-market-mission{margin:0 auto;font-size:clamp(9px,2.75cqw,25px);line-height:1.4;letter-spacing:-.025em;white-space:nowrap;text-align:center}
-.page-pitch2 .p2-market .p2-market-intro{--lg-fg-warm:linear-gradient(135deg,rgba(244,171,99,.065),rgba(244,171,99,.015));--lg-fg-dark:linear-gradient(135deg,rgba(22,22,27,.32),rgba(12,12,15,.20));--lg-blur:8px;--lg-sat:125%;font-family:var(--sans);width:min(100%,900px);max-width:none;margin:26px auto 0;padding:clamp(18px,3cqw,30px) clamp(10px,2cqw,24px);border:1px solid var(--lg-bd-warm);border-radius:18px;background:var(--lg-fg-warm),var(--lg-fg-dark);box-shadow:var(--lg-rim);-webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat));backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) url(#liquid-glass);color:var(--ink);font-size:min(18px,2.18cqw);font-weight:700;line-height:1.6;text-align:center}
-.p2-market-intro>span{display:block;white-space:nowrap}
-.p2-market-intro>span+span{margin-top:12px}
-@media(prefers-reduced-transparency:reduce){
- .page-pitch2 .p2-market .p2-market-intro{background:#101013;-webkit-backdrop-filter:none;backdrop-filter:none}
-}
-.p2-back-word{color:var(--accent);font-weight:700}
+.p2-back-word{color:var(--accent);font-weight:inherit}
 .p2-creator-points{padding-left:19px;display:grid;gap:9px;color:#bdb8ae;font-size:15px;line-height:1.65}
 .p2-creator-points li::marker{color:var(--accent)}
 .p2-creator-share{display:grid;grid-template-columns:55px 1fr;gap:25px;border:1px solid var(--p2-rule);border-radius:20px;padding:36px;margin-top:40px;background:linear-gradient(120deg,rgba(233,189,134,.10),rgba(233,189,134,.025))}
 .p2-share-symbol{font-size:43px;line-height:1;color:var(--accent)}
 .p2-share-symbol svg{display:block;width:48px;height:48px}
-.page-pitch2 .p2-market>.section-head{max-width:none;container-type:inline-size}
-.page-pitch2 .p2-market>.section-head h2{text-align:center}
 .p2-word-effect{display:inline-block;overflow:visible}
 .p2-creator-share h3{font-size:23px;letter-spacing:-.025em;margin-bottom:12px}
 .p2-creator-share p{color:#bdb8ae;font-size:15px;line-height:1.75;max-width:780px}
