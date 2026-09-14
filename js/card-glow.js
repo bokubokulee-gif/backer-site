@@ -15,7 +15,7 @@
     '.p2-business-questions', '.p2-decision-panel',
     '.ccard', '.chart-card', '.score-block', '.terms', '.ai-panel',
     '.claim', '.open-note', '.proof-glass',
-    '.mdp-status-card', '.pt-block', '.pt-strict-panel'
+    '.mdp-status-card', '.pt-block', '.pt-strict-panel', '.waitlist-card'
   ].join(',');
   var PROXIMITY = 64;
   var INACTIVE_ZONE = 0.01;
