@@ -1,8 +1,10 @@
 # Backer waitlist storage
 
-Status: endpoint code is prepared. A database and Vercel deployment must be configured and verified before the public form can collect registrations.
+Production configuration (2026-09-14): Vercel project `backer-site` in team `backer-dev`, with the Neon Free database `backer-waitlist`. Migration `006_waitlist.sql` creates the private signup and rate-limit tables.
 
-The GitHub Pages site can stay at its current address. Its form sends JSON to a Vercel function at `https://YOUR-VERCEL-HOST/api/waitlist`, which writes to a private PostgreSQL database. GitHub stores the source code; registration emails belong in the database, never in commits, issues or public artifacts. Hosting the frontend on Vercel also works, using `/api/waitlist` on the same origin.
+Both GitHub Pages and the Vercel site send registrations to `https://backer-site.vercel.app/api/waitlist`, which writes to private PostgreSQL storage. GitHub stores the source code; registration emails belong in the database, never in commits, issues or public artifacts. Vercel production automatically deploys the repository's `main` branch.
+
+Open the database from [Vercel Storage](https://vercel.com/d/dashboard/integrations/neon/icfg_HXhD4r2bfbgsuFcG4B7bwggO/resources/store_RGp4mSWsF3zKrj9y), then use Neon's SQL editor or table view to inspect `backer_waitlist`. The dashboard requires the owner's login.
 
 ## Configure
 
@@ -44,7 +46,7 @@ Only the normalized email, fixed source and server creation time are stored as s
 
 Run `node --test tests/backend-waitlist.test.js` locally. These are mocked database tests; they do not establish a live connection or validate the SQL against a running database.
 
-After configuration, use an owner-controlled test address to verify a signup from the canonical site and inspect one row in the database's private dashboard. Repeat the same address and confirm one row remains. Verify a disallowed origin, a simulated service failure, and the rate limit in a separate preview environment. Do not test rate limits against real visitors or submit another person's address.
+After configuration, use an owner-controlled address or a unique synthetic address at the reserved `example.com` domain to verify a signup from each canonical site and inspect one row in the database. Repeat the same address and confirm one row remains, then delete that synthetic row. This endpoint does not send email. Verify a disallowed origin, a simulated service failure, and the rate limit in a separate preview environment. Do not test rate limits against real visitors or submit another person's address.
 
 The owner can view/export `email`, `source`, and `created_at` from `backer_waitlist` using the database provider's authenticated dashboard. There is no public list/export endpoint. Handle CSV exports privately; delete an address on request from that table.
 
@@ -54,4 +56,4 @@ Expired abuse-control buckets are removed after successful requests. Also schedu
 delete from backer_waitlist_rate_limits where expires_at < now();
 ```
 
-Each bucket expires within two hours of its clock-hour start. Daily cleanup may add up to 24 hours. The signup records remain until the owner removes them; select and communicate a retention policy before collecting real registrations.
+Each bucket expires within two hours of its clock-hour start. Daily cleanup may add up to 24 hours. The signup records remain until the owner removes them. The form states that emails are used for Backer early-access updates.

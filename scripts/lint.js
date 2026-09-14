@@ -18,10 +18,10 @@ const CANONICAL_PAGES = [
   'waitlist.html',
   'onboarding.html',
   'signup.html',
-  'portfolio.html',
   'privacy.html'
 ];
 const REDIRECT_PAGES = [
+  'portfolio.html',
   'index.html',
   'thesis.html',
   'thesiss.html',
