@@ -91,13 +91,16 @@
 .p2-market-story li b{font-weight:500;color:var(--accent)}
 .p2-market-story li span{color:var(--muted)}
 .p2-back-word{color:var(--accent);font-weight:inherit}
-.p2-creator-points{padding-left:19px;display:grid;gap:9px;color:#bdb8ae;font-size:15px;line-height:1.65}
-.p2-creator-points li::marker{color:var(--accent)}
-.p2-creator-share{display:grid;grid-template-columns:55px 1fr;gap:25px;border:1px solid var(--p2-rule);border-radius:20px;padding:36px;margin-top:40px;background:linear-gradient(120deg,rgba(233,189,134,.10),rgba(233,189,134,.025))}
-.p2-share-symbol{font-size:43px;line-height:1;color:var(--accent)}
+.p2-creator-points{list-style:none;padding:0;margin:0;display:grid;color:#eeeae2;font-size:clamp(18px,1.65vw,20px);font-weight:700;line-height:1.55}
+.p2-creator-points li{position:relative;padding:18px 0 18px 22px;border-top:1px solid rgba(233,189,134,.16);text-wrap:pretty}
+.p2-creator-points li:last-child{padding-bottom:0}
+.p2-creator-points li::before{content:"";position:absolute;left:0;top:calc(18px + .58em);width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.p2-creator-share{display:grid;grid-template-columns:64px minmax(0,1fr);gap:28px;border:1px solid rgba(233,189,134,.32);border-radius:24px;padding:clamp(32px,4vw,48px);margin-top:40px;background:radial-gradient(ellipse at 0 0,rgba(233,189,134,.12),transparent 65%),#101013;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 20px 50px rgba(0,0,0,.18)}
+.p2-share-symbol{display:grid;place-items:center;width:64px;height:64px;border:1px solid rgba(233,189,134,.2);border-radius:18px;background:rgba(233,189,134,.06);color:var(--accent)}
 .p2-share-symbol svg{display:block;width:48px;height:48px}
 .p2-word-effect{display:inline-block;overflow:visible}
-.p2-creator-share h3{font-size:23px;letter-spacing:-.025em;margin-bottom:12px}
+.p2-creator-share h3{max-width:800px;font-size:clamp(28px,3.8vw,38px);font-weight:700;line-height:1.16;letter-spacing:-.035em;margin-bottom:26px;text-wrap:balance}
+.p2-creator-share h3 span{color:var(--accent)}
 .p2-creator-share p{color:#bdb8ae;font-size:15px;line-height:1.75;max-width:780px}
 .p2-revenue-path{display:flex;align-items:center;flex-wrap:wrap;gap:16px;font-size:12px;margin-top:24px}
 .p2-revenue-path i{font-style:normal;color:var(--accent)}
@@ -175,7 +178,7 @@
 
  .page-pitch2 .section{padding:66px 20px}.page-pitch2 .section-head h2{font-size:36px}.page-pitch2 .section-head{margin-bottom:32px}.page-pitch2 .section-lead{font-size:15px;line-height:1.7;margin-top:19px}.page-pitch2 .kicker{font-size:9px;margin-bottom:17px}.p2-section-note{font-size:14px}.page-pitch2 .p2-attention-bridge{padding-top:32px;padding-bottom:32px}.p2-bridge>span+span{margin-top:16px}
 
- .p2-market-layout{grid-template-columns:1fr;gap:34px}.p2-contract{padding:25px}.p2-market-story h3{font-size:35px}.p2-market-story>p{font-size:14px}.p2-market-story ol{gap:18px}.p2-market-story li{grid-template-columns:108px 1fr;gap:10px}.p2-creator-share{grid-template-columns:1fr;gap:15px;padding:25px;margin-top:32px}.p2-share-symbol{font-size:30px}.p2-creator-share h3{font-size:22px}.p2-creator-share p{font-size:14px}.p2-revenue-path{font-size:11px;gap:9px}.p2-revenue-path>i:nth-of-type(2){display:none}.p2-revenue-path>strong{width:100%}.p2-creator-share small{font-size:10px}
+ .p2-market-layout{grid-template-columns:1fr;gap:34px}.p2-contract{padding:25px}.p2-market-story h3{font-size:35px}.p2-market-story>p{font-size:14px}.p2-market-story ol{gap:18px}.p2-market-story li{grid-template-columns:108px 1fr;gap:10px}.p2-creator-share{grid-template-columns:1fr;gap:22px;padding:26px 22px;margin-top:32px;border-radius:20px}.p2-share-symbol{width:56px;height:56px;border-radius:16px}.p2-share-symbol svg{width:42px;height:42px}.p2-creator-share h3{margin-bottom:24px}.p2-creator-share p{font-size:14px}.p2-revenue-path{font-size:11px;gap:9px}.p2-revenue-path>i:nth-of-type(2){display:none}.p2-revenue-path>strong{width:100%}.p2-creator-share small{font-size:10px}
 
  .p2-decisions-layout{grid-template-columns:1fr;gap:24px}.p2-decision-tabs{display:grid;grid-template-columns:1fr 1fr;gap:0 22px}.p2-decision-tabs button{font-size:22px;padding:14px 0}.p2-decision-tabs button>span{font-size:14px}.p2-decision-panel{min-height:400px;padding:26px}.p2-business-model{grid-template-columns:1fr;gap:28px;margin-top:40px}.p2-finale{padding:60px 20px 85px!important}.page-pitch2 .p2-finale .finale-line{font-size:36px}.p2-finale .finale-cta{flex-direction:column;align-items:center;gap:14px}
 }

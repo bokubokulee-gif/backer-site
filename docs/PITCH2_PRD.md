@@ -142,3 +142,7 @@ Acceptance: inspected both introductions at 1280px and 410px and the compatibili
 Hero foundation readability follow-up: enlarge the Backer AI Lab and Backer Market labels from 15px to 20px (18px on phones), and descriptions from 13px to 17px (16px on phones). Set both to 700 weight, brighten the descriptions, and balance natural line wrapping. Keep the existing paired layout, exact copy, links and hero interactions on both pitch routes. Verify the annotated 511px width, narrow phones and desktop before publication.
 
 At 380px and below, stack the two product links around the plus sign; this prevents unequal label wrapping and overly narrow body lines after enlargement. Keep the side-by-side layout above this narrow-phone boundary.
+
+Creator earnings card: make this key benefit prominent with a 28–38px bold headline, a gold emphasis on “earns directly”, 18–20px bold benefit text, separated rows and a solid dark surface that keeps the dot background behind the card. Frame the existing coin icon in a restrained gold-tinted tile and enlarge the internal spacing. Preserve all existing wording, including “We plan to share”, and the three points; keep the single-column mobile layout with readable 18px minimum body text. Apply and visually verify both pitch routes before publishing.
+
+Verified the creator card at 771px, 390px and 1280px, plus 320px fitting on pitch2. Body text remains 18–20px at weight700, with no horizontal overflow. Exact heading and benefit wording matches the previous release. Lint and the 177-file public artifact audit pass.
