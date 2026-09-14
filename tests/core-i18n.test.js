@@ -37,18 +37,18 @@ test('English is the exact default; an explicit valid URL wins over saved locale
   assert.equal(japanese.api.locale, 'ja');
   assert.equal(japanese.document.documentElement.lang, 'ja');
   assert.equal(japanese.api.t('Join the waitlist'), '先行案内に登録');
-  assert.deepEqual(japanese.writes, [['backer_locale_v1', 'ja']]);
+  assert.deepEqual(japanese.writes, []);
 });
 
-test('saved locale survives routes without a query; invalid locale and blocked storage are safe', () => {
-  assert.equal(runtime({ stored: 'zh' }).document.documentElement.lang, 'zh-CN');
-  assert.equal(runtime({ url: 'https://example.test/?lang=invalid', stored: 'ko' }).api.locale, 'ko');
+test('bare and invalid-language URLs always open English even after an earlier language choice', () => {
+  for (const stored of ['zh', 'ja', 'ko']) assert.equal(runtime({ stored }).document.documentElement.lang, 'en');
+  assert.equal(runtime({ url: 'https://example.test/?lang=invalid', stored: 'ko' }).api.locale, 'en');
   assert.equal(runtime({ storageError: true }).api.locale, 'en');
   assert.equal(runtime({ url: 'https://example.test/?lang=zh', storageError: true }).api.locale, 'zh');
 });
 
 test('native parameter order preserves values and source text outside the reviewed catalog', () => {
-  const { api } = runtime({ stored: 'ja' });
+  const { api } = runtime({ url: 'https://example.test/?lang=ja' });
   assert.equal(api.t('  Showing 12 of 103 profiles.\n'), '  全103件中12件を表示。\n');
   assert.equal(api.t('A creator’s original post title'), 'A creator’s original post title');
   assert.equal(api.t('@original_handle'), '@original_handle');
@@ -57,7 +57,7 @@ test('native parameter order preserves values and source text outside the review
 });
 
 test('language navigation preserves host, mount, route, query and hash', () => {
-  const r = runtime({ url: 'https://example.test/backer-site/backerdemo.html?release=a#trades?topic=science', stored: 'ja' });
+  const r = runtime({ url: 'https://example.test/backer-site/backerdemo.html?release=a&lang=ja#trades?topic=science' });
   r.api.switchLanguage('ko');
   assert.equal(r.redirects[0], 'https://example.test/backer-site/backerdemo.html?release=a&lang=ko#trades?topic=science');
   assert.equal(r.api.url('../backer-site/research.html#simulation'), 'https://example.test/backer-site/research.html?lang=ja#simulation');

@@ -4,16 +4,11 @@
   if (window.BackerI18n) return;
   var LANGUAGES = ['en', 'zh', 'ja', 'ko'];
   var LABELS = { en: 'English', zh: '简体中文', ja: '日本語', ko: '한국어' };
-  var SHORT = { en: 'EN', zh: '中文', ja: '日本語', ko: '한국어' };
-  var STORAGE = 'backer_locale_v1';
   var currentURL = new URL(window.location.href);
   var requested = currentURL.searchParams.get('lang');
-  var saved;
-  try { saved = window.localStorage.getItem(STORAGE); } catch (_) {}
-  var locale = LANGUAGES.indexOf(requested) >= 0 ? requested : LANGUAGES.indexOf(saved) >= 0 ? saved : 'en';
-  if (LANGUAGES.indexOf(requested) >= 0) {
-    try { window.localStorage.setItem(STORAGE, locale); } catch (_) {}
-  }
+  // A fresh visit always opens the original English edition.
+  // Explicit language choices travel with internal links instead of browser storage.
+  var locale = LANGUAGES.indexOf(requested) >= 0 ? requested : 'en';
   document.documentElement.lang = locale === 'zh' ? 'zh-CN' : locale;
   document.documentElement.dataset.backerLocale = locale;
   var localeIndex = LANGUAGES.indexOf(locale) - 1;
@@ -179,7 +174,6 @@
 
   function switchLanguage(next) {
     if (LANGUAGES.indexOf(next) < 0 || next === locale) return;
-    try { window.localStorage.setItem(STORAGE, next); } catch (_) {}
     var url = new URL(location.href);
     url.searchParams.set('lang', next);
     window.location.assign(url.href);
@@ -194,7 +188,7 @@
     var label = document.createElement('label');
     label.className = 'backer-locale__label';
     label.htmlFor = 'backer-language';
-    label.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c5 5 5 13 0 18-5-5-5-13 0-18Z"/></svg><span>' + SHORT[locale] + '</span><svg class="backer-locale__chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>';
+    label.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c5 5 5 13 0 18-5-5-5-13 0-18Z"/></svg><span>' + LABELS[locale] + '</span><svg class="backer-locale__chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>';
     var select = document.createElement('select');
     select.id = 'backer-language';
     select.setAttribute('aria-label', {en:'Website language',zh:'网站语言',ja:'表示言語',ko:'표시 언어'}[locale]);
@@ -210,12 +204,9 @@
     control.append(label, select);
     var header = document.querySelector('header.nav,header.topbar,header.mdp-nav,header.mb-nav,header.onboarding-header');
     if (header && header.closest('[hidden]')) header = null;
-    var brand = header && header.querySelector('a.brand,a.mdp-brand,a.mb-brand,.backer-brand-lockup');
-    if (brand) {
-      var lockup = brand.classList.contains('backer-brand-lockup') ? brand : document.createElement('div');
-      if (lockup !== brand) { lockup.className = 'backer-brand-lockup'; brand.replaceWith(lockup); lockup.appendChild(brand); }
-      lockup.classList.add('backer-brand-locale');
-      lockup.appendChild(control);
+    if (header) {
+      header.classList.add('backer-locale-header');
+      header.appendChild(control);
     } else {
       control.classList.add('backer-locale--floating');
       document.body.appendChild(control);
