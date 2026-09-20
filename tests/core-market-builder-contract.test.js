@@ -27,6 +27,8 @@ function builderHarness(hash, catalog, sharedStore) {
     location: { href: 'https://example.test/backercreate.html' + hash, search: '', hash },
     BackerDiscoveryCatalog: { load: () => Promise.resolve(catalog), workById: Catalog.workById },
     BackerMarketDraftStore: draftStore,
+    // These flow tests explicitly model an admitted user; gate behavior has its own suite.
+    BackerAccessGate: { requireWaitlist: () => false },
     crypto: { randomUUID: () => '00000000-0000-4000-8000-000000000001' },
     requestAnimationFrame(callback) { callback(); },
     scrollTo() {},

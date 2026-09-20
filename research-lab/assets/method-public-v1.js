@@ -18,10 +18,10 @@ function updateControl(control) {
 
 function updateDeclaredState() {
   const changed = controls.filter((control) => control.value !== control.dataset.baseline).length;
-  if (runState) runState.textContent = changed ? `${changed} declared change${changed === 1 ? '' : 's'}` : 'Public example';
+  if (runState) runState.textContent = changed ? `${changed} declared change${changed === 1 ? '' : 's'}` : 'Static scenario declaration';
   if (runNote) runNote.textContent = changed
     ? 'Conditions are staged for explanation only. The public browser does not execute the research model.'
-    : 'The public page shows reviewed example outputs. Research formulas and full profiles run outside the browser.';
+    : 'The page presents authored aggregate examples. These controls declare assumptions; they do not fit a population or run a behavioral model.';
 }
 
 controls.forEach((control) => {
@@ -52,8 +52,8 @@ document.querySelectorAll('[data-adapter-toggle]').forEach((toggle) => {
 runButton?.addEventListener('click', () => {
   runState?.classList.remove('is-running');
   runState?.classList.add('is-complete');
-  if (runState) runState.textContent = 'Secure research run required';
-  if (runNote) runNote.textContent = 'Backer publishes reviewed aggregate outputs here. Population records, memories, and model formulas are not sent to the browser.';
+  if (runState) runState.textContent = 'Scenario declaration ready';
+  if (runNote) runNote.textContent = 'Conditions are recorded for inspection. The examples remain fixed; use the complete simulation method to explore the browser-based teaching model.';
 });
 
 function publicManifest() {
@@ -67,8 +67,8 @@ function publicManifest() {
     'population=5000 anonymous visual markers',
     `public_sources=${adapters || 'none'}`,
     declared,
-    'runtime=secure research service; not included in browser artifact',
-    'boundary=published aggregate preview, pending outcome validation',
+    'runtime=static declaration; no model execution',
+    'boundary=authored aggregate examples; no measured forecast accuracy',
   ].join('\n');
 }
 

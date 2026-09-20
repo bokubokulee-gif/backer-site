@@ -206,7 +206,7 @@ test('unapproved YouTube-derived metrics and score inputs never reach the read m
       youtubePolicyMode: 'raw-provider-only',
       coverageGaps: []
     }]
-  }), normalizeQuery({ platform: 'youtube', window: '7d' }));
+  }), normalizeQuery({ platform: 'youtube', window: '7d' }), '2026-08-11T00:00:00Z');
   assert.deepEqual(person.metrics.map(item => item.metricName), ['viewCount', 'approved_velocity']);
   assert.equal(person.evidence[0].crossPlatformScore, null);
   assert.equal(person.evidence[0].youtubeIncludedInScore, false);

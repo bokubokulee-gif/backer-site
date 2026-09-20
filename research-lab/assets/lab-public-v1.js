@@ -15,25 +15,25 @@ const SCENARIOS = Object.freeze({
     description: 'Observed market prior; no intervention applied.',
     stageCounts: [3345, 1275, 310, 70, 0], expected: 869, interval: [821, 917], probability: 0.78,
     book: 0.68, delta: 'REFERENCE SNAPSHOT',
-    drivers: ['Current causal stage', 'Trading propensity', 'Attention availability'],
+    drivers: ['Current modeled stage', 'Trading propensity', 'Attention availability'],
   },
   'social-proof': {
     code: 'B1 / SOCIAL', label: 'SOCIAL PROOF', note: 'Published scenario: influence rises from 1.0× to 1.5×.',
-    description: 'A reviewed aggregate projection with stronger visible social proof.',
+    description: 'An authored aggregate example with stronger visible social proof.',
     stageCounts: [3030, 1320, 450, 170, 30], expected: 1114, interval: [1048, 1181], probability: 0.91,
     book: 0.73, delta: '+245 VS BASELINE',
     drivers: ['Visible peer commitment', 'Signal repetition', 'Trading propensity'],
   },
   'lower-friction': {
     code: 'B2 / FRICTION', label: 'LOWER FRICTION', note: 'Published scenario: action friction falls from 1.0× to 0.5×.',
-    description: 'A reviewed aggregate projection with fewer steps between belief and commitment.',
+    description: 'An authored aggregate example with fewer steps between belief and commitment.',
     stageCounts: [3140, 1210, 420, 190, 40], expected: 1238, interval: [1162, 1310], probability: 0.94,
     book: 0.76, delta: '+369 VS BASELINE',
-    drivers: ['Lower action friction', 'Commitment readiness', 'Current causal stage'],
+    drivers: ['Lower action friction', 'Commitment readiness', 'Current modeled stage'],
   },
   'diverse-reach': {
     code: 'B3 / REACH', label: 'DIVERSE REACH', note: 'Published scenario: reach broadens across less-connected clusters.',
-    description: 'A reviewed aggregate projection with broader, less concentrated exposure.',
+    description: 'An authored aggregate example with broader, less concentrated exposure.',
     stageCounts: [2870, 1430, 510, 160, 30], expected: 1047, interval: [982, 1113], probability: 0.87,
     book: 0.71, delta: '+178 VS BASELINE',
     drivers: ['Broader network coverage', 'Attention availability', 'Signal diversity'],
@@ -44,17 +44,17 @@ const INFO = Object.freeze({
   scene: 'Forecast pairs the complete field with a readable workbench. Network enlarges the field. Markets keeps source selection in view.',
   counterfactual: 'A declared condition changed in a published aggregate scenario. It is not an observed real-world intervention.',
   baseline: 'The reference model snapshot with no declared intervention.',
-  'social-proof': 'A reviewed scenario output in which visible peer influence is stronger.',
-  'trade-friction': 'A reviewed scenario output in which fewer steps separate intent from commitment.',
-  'diverse-reach': 'A reviewed scenario output in which exposure is spread across more clusters.',
+  'social-proof': 'An authored scenario example in which visible peer influence is stronger.',
+  'trade-friction': 'An authored scenario example in which fewer steps separate intent from commitment.',
+  'diverse-reach': 'An authored scenario example in which exposure is spread across more clusters.',
   'market-universe': 'Dated public Kalshi and Polymarket observations normalized into a shared display shape.',
-  'behavior-lens': 'Individual profile filters are unavailable in the public build because the full research population is not browser-shipped.',
+  'behavior-lens': 'Individual profile filters are not implemented in this preview.',
   'observed-yes': 'The venue-displayed probability captured with the source observation.',
   'observed-volume': 'The venue activity field retained with its original measurement boundary.',
-  'model-book': 'A published model snapshot. The computation that produced it does not execute in this browser.',
-  'filled-contract-proxy': 'Expected modeled agents reaching the filled-contract proxy within the stated horizon.',
-  'clear-threshold': 'Published probability that the modeled result clears the predeclared threshold.',
-  'modeled-drivers': 'Plain-language labels accompanying the published model output; they are not causal proof.',
+  'model-book': 'A fixed illustrative book value. Changing the observed market does not recompute this example.',
+  'filled-contract-proxy': 'Authored example count of modeled markers reaching the filled-contract proxy within the stated horizon.',
+  'clear-threshold': 'Authored example probability of clearing the stated threshold. It is not calibrated against observed outcomes.',
+  'modeled-drivers': 'Assumed mechanisms accompanying fixed example outputs; they are not measured contributions or causal proof.',
 });
 
 const FALLBACK_MARKET = Object.freeze({
@@ -463,7 +463,7 @@ function renderScenario({ transitionGraph = false } = {}) {
   $('#selected-situation-link').href = market.sourceUrl || '#';
   $('#simulated-book-probability').textContent = `${Math.round(scenario.book * 100)}¢`;
   $('#forecast-expected').textContent = scenario.expected.toLocaleString();
-  $('#forecast-interval').textContent = `90% published interval ${scenario.interval[0].toLocaleString()}–${scenario.interval[1].toLocaleString()}`;
+  $('#forecast-interval').textContent = `Illustrative range ${scenario.interval[0].toLocaleString()}–${scenario.interval[1].toLocaleString()}`;
   $('#forecast-threshold-label').textContent = 'P(≥750 BY T+24)';
   $('#forecast-probability').textContent = `${Math.round(scenario.probability * 100)}%`;
   $('#forecast-delta').textContent = scenario.delta;
@@ -547,18 +547,18 @@ function showMarker(point, { focus = false } = {}) {
   $('#profile-context').textContent = 'Anonymous visual marker · aggregate projection only';
   $('#profile-tick').textContent = `T+${String(Math.floor(state.tick)).padStart(3, '0')}`;
   $('#profile-action').textContent = stage.label;
-  $('#profile-reason').textContent = `${stage.meaning}. Individual profile attributes and decision traces are withheld from the public build.`;
+  $('#profile-reason').textContent = `${stage.meaning}. Individual profile attributes and decision traces are not represented by this anonymous marker.`;
   $('#profile-belief').textContent = '—';
   $('#profile-market').textContent = `${Math.round((market.probability || 0) * 100)}¢`;
   $('#profile-confidence').textContent = '—';
-  $('#profile-context-grid').innerHTML = `<div><dt>Public stage</dt><dd>${stage.label}</dd></div><div><dt>Projection</dt><dd>${SCENARIOS[state.scenario].label}</dd></div><div><dt>Identity</dt><dd>Not published</dd></div>`;
-  $('#trait-bars').innerHTML = '<p class="trait-row">Research traits are evaluated outside the public browser artifact.</p>';
+  $('#profile-context-grid').innerHTML = `<div><dt>Public stage</dt><dd>${stage.label}</dd></div><div><dt>Projection</dt><dd>${SCENARIOS[state.scenario].label}</dd></div><div><dt>Identity</dt><dd>Anonymous marker</dd></div>`;
+  $('#trait-bars').innerHTML = '<p class="trait-row">Individual trait values are not represented in this aggregate example.</p>';
   $('#profile-event').textContent = sourceLabel(market);
-  $('#profile-cash').textContent = 'WITHHELD';
+  $('#profile-cash').textContent = 'NOT MODELED';
   $('#profile-position').textContent = '—';
   $('#profile-entry').textContent = '—';
-  $('#memory-list').innerHTML = '<li><time>PUBLIC</time><span>No individual memory or behavioral history is shipped.</span></li>';
-  $('#profile-reflection').textContent = 'This panel explains the selected marker’s aggregate stage without exposing a modeled person record.';
+  $('#memory-list').innerHTML = '<li><time>PUBLIC</time><span>No individual memory or behavioral history is represented.</span></li>';
+  $('#profile-reflection').textContent = 'This panel identifies an anonymous marker within the authored aggregate scenario.';
   if (focus) focusPoint(point);
   drawField();
 }
@@ -1011,7 +1011,7 @@ function wireControls() {
   }));
   document.addEventListener('click', (event) => { if (!event.target.closest('.info-trigger')) $('#research-tooltip').hidden = true; });
   $('#source-status').addEventListener('click', () => {
-    $('#source-dialog-content').innerHTML = `<article class="source-card"><header><strong>PUBLIC MARKET SNAPSHOT</strong><span>OBSERVED</span></header><p>Dated public market observations retain their original source links and measurement boundary.</p></article><article class="source-card"><header><strong>AGGREGATE MODEL OUTPUT</strong><span>PUBLISHED</span></header><p>The browser receives reviewed scenario summaries and anonymous field markers—not the full population, memories, or research formulas.</p></article><article class="source-card"><header><strong>OUTCOME</strong><span>PENDING</span></header><p>Forecasts remain unvalidated until compared with a resolved real-world outcome.</p></article>`;
+    $('#source-dialog-content').innerHTML = `<article class="source-card"><header><strong>PUBLIC MARKET SNAPSHOT</strong><span>OBSERVED</span></header><p>Dated public market observations retain their original source links and measurement boundary.</p></article><article class="source-card"><header><strong>AGGREGATE MODEL OUTPUT</strong><span>PUBLISHED</span></header><p>The browser displays authored scenario examples and anonymous field markers. Changing a market updates context; it does not fit or rerun the example.</p></article><article class="source-card"><header><strong>OUTCOME</strong><span>PENDING</span></header><p>Evaluate each endpoint against matched observations: filled orders for fill counts, resolved events for event probabilities. No accuracy is established here.</p></article>`;
     $('#source-dialog').showModal();
   });
   $('#close-source-dialog').addEventListener('click', () => $('#source-dialog').close());

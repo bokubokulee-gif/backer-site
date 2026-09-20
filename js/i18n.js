@@ -20,8 +20,8 @@
   var attributeStates = new WeakMap();
   var pending = new Set();
   var frame = 0;
-  var SKIP = 'script,style,code,pre,[translate="no"],[data-i18n-skip],[data-backer-language],.m2-person-name,.m2-profile-handle,#m2DossierTitle,.m2-feed-body h3,.m2-feed-byline b,.m2-work-body h4,.mkt-provider,#mbPlatform option,.mb-person-name b,.mb-work-strip b,#mbPerson option,#mbWork option,.m2-ledger-provider b,.m2-work-meta b,.mini-auth,.mini-name,.mini-work,.sxr-card h3,.sxr-provider,.bubble-letter,[data-swapping="true"]';
-  var ATTRIBUTES = ['aria-label', 'aria-description', 'title', 'placeholder', 'alt', 'data-label'];
+  var SKIP = 'script,style,code,pre:not([data-i18n-allow]),[translate="no"],[data-i18n-skip],[data-backer-language],.m2-person-name,.m2-profile-handle,#m2DossierTitle,.m2-feed-body h3,.m2-feed-byline b,.m2-work-body h4,.mkt-provider,#mbPlatform option,.mb-person-name b,.mb-work-strip b,#mbPerson option,#mbWork option,.m2-ledger-provider b,.m2-work-meta b,.mini-auth,.mini-name,.mini-work,.sxr-card h3,.sxr-provider,.bubble-letter,[data-swapping="true"]';
+  var ATTRIBUTES = ['aria-label', 'aria-description', 'title', 'placeholder', 'alt', 'data-label', 'aria-roledescription', 'aria-valuetext'];
   var SOURCE_NAMES = new Set(['Backer','Medium','YouTube','GitHub','Bilibili','Twitch','X','Reddit','Instagram','Substack','DEV','Spotify','Kick','Patreon','SoundCloud','TikTok','LinkedIn','RSS','Kalshi','Polymarket']);
 
   function normalize(value) { return String(value).replace(/\s+/g, ' ').trim(); }
@@ -106,6 +106,7 @@
       var next = translate(value);
       if (next !== value) { state[name] = next; element.setAttribute(name, next); }
     });
+    if(element.tagName==='META' && /^(description|og:title|og:description|twitter:title|twitter:description)$/.test(element.getAttribute('name')||element.getAttribute('property')||'')){var content=element.getAttribute('content');var localized=translate(content);if(localized!==content)element.setAttribute('content',localized);}
     attributeStates.set(element, state);
     if (element.tagName === 'IFRAME' && element.hasAttribute('src')) {
       var frameURL = localeURL(element.getAttribute('src'));
@@ -202,7 +203,7 @@
     });
     select.addEventListener('change', function () { switchLanguage(select.value); });
     control.append(label, select);
-    var header = document.querySelector('header.nav,header.topbar,header.mdp-nav,header.mb-nav,header.onboarding-header');
+    var header = document.querySelector('header.sim-header,header.paper-header,header.nav,header.topbar,header.mdp-nav,header.mb-nav,header.onboarding-header');
     if (header && header.closest('[hidden]')) header = null;
     if (header) {
       header.classList.add('backer-locale-header');

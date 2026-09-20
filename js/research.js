@@ -2,41 +2,18 @@
   'use strict';
 
   var stage = document.querySelector('.research-stage');
-  var tablist = document.querySelector('.research-preview-options');
-  var tabs = Array.prototype.slice.call(document.querySelectorAll('[data-research-tab]'));
   var robot = document.getElementById('research-robot');
-  if (tablist && tabs.length) {
-    function selectPreview(key, focus, updateHash) {
-      stage.dataset.preview = key;
-      tabs.forEach(function (tab) {
-        var selected = tab.dataset.researchTab === key;
-        tab.setAttribute('aria-describedby', 'preview-description-' + tab.dataset.researchTab);
-        tab.tabIndex = 0;
-        tab.classList.toggle('is-selected', selected);
-        var panel = document.getElementById('preview-panel-' + tab.dataset.researchTab);
-        panel.hidden = !selected;
-        if (selected && focus) tab.focus();
-      });
-      if (robot) robot.dispatchEvent(new CustomEvent('research-preview-change', { detail: { preview: key } }));
-      if (updateHash) history.replaceState(null, '', '#' + key);
+  var previews = document.querySelectorAll('[data-research-tab]');
+  previews.forEach(function (link) {
+    function highlight() {
+      stage.dataset.preview = link.dataset.researchTab;
+      if (robot) robot.dispatchEvent(new CustomEvent('research-preview-change', { detail: { preview: link.dataset.researchTab } }));
     }
-    tabs.forEach(function (tab, index) {
-      tab.addEventListener('pointerenter', function () { selectPreview(tab.dataset.researchTab, false, false); });
-      tab.addEventListener('focus', function () { selectPreview(tab.dataset.researchTab, false, false); });
-      tab.addEventListener('keydown', function (event) {
-        if (['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp', 'Home', 'End'].indexOf(event.key) < 0) return;
-        event.preventDefault();
-        var next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowLeft' || event.key === 'ArrowUp' ? -1 : 1) + tabs.length) % tabs.length;
-        selectPreview(tabs[next].dataset.researchTab, true, true);
-      });
-    });
-    function fromHash() {
-      var key = location.hash.slice(1);
-      var known = tabs.some(function (tab) { return tab.dataset.researchTab === key; });
-      selectPreview(known ? key : 'trading', false, false);
-    }
-    fromHash();
-    window.addEventListener('hashchange', fromHash);
+    link.addEventListener('pointerenter', highlight);
+    link.addEventListener('focus', highlight);
+  });
+  if (['trading', 'attention', 'simulation'].indexOf(location.hash.slice(1)) >= 0) {
+    document.querySelector('.research-gateway--previews').open = true;
   }
 
   window.addEventListener('pageshow', function () { document.body.classList.remove('is-launching'); });

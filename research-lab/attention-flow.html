@@ -1,11 +1,12 @@
 <!doctype html>
 <html lang="en">
   <head>
-<script src="../js/i18n.js?v=20260914-locale-right-2"></script>
+<script src="../js/i18n.js?v=20260920-5"></script>
 <script src="../js/locales/marketing.js?v=20260914-locale-3" defer></script>
 <script src="../js/locales/interface.js?v=20260914-locale-3" defer></script>
 <script src="../js/locales/research.js?v=20260914-locale-3" defer></script>
 <script src="../js/locales/supplement.js?v=20260914-locale-3" defer></script>
+<script src="../js/locales/research-previews.js?v=20260920-5" defer></script>
 <script src="assets/locale-lineage.js?v=20260914-locale-3" defer></script>
 
 <script src="../js/access-gate.js?v=20260914-locale-3"></script>
@@ -14,15 +15,16 @@
     <meta name="theme-color" content="#08080a" />
     <meta
       name="description"
-      content="Backer Research Preview 02: an illustrative 5,000-agent field for studying where attention may move across the internet."
+      content="Human attention research: compare exposure, persistence and action across communities."
     />
-    <title>Attention Flow Preview | Backer Research Lab</title>
+    <title>Human Attention Prediction Research | Backer</title>
     <link rel="icon" type="image/png" href="./img/backer-mark.png" />
     <link rel="stylesheet" href="./assets/styles-D6FYb-UD.css?v=20260912-type-1" />
     <link rel="stylesheet" href="./assets/attention-flow-public-v1.css" />
     <link rel="stylesheet" href="./assets/readability-v1.css" />
     <link rel="stylesheet" href="../css/backer-dock.css?v=20260912-coverage-1" />
   <link rel="stylesheet" href="../css/i18n.css?v=20260914-locale-right-2" />
+    <link rel="stylesheet" href="./assets/research-notes-20260920.css" />
 </head>
   <body class="flow-body">
     <a class="skip-link" href="#flow-field">Skip to attention flow field</a>
@@ -43,13 +45,12 @@
         </div>
 
         <nav class="topnav" aria-label="Research Lab pages">
-          <a href="./">FIELD 01</a>
-          <a href="./method.html">METHOD</a>
-          <a href="./validation.html">PROTOCOL</a>
-          <a href="./thesis.html">THESIS</a>
-          <a class="backer-home-link" href="../">
-            <span class="backer-home-full">BACK TO BACKER</span>
-            <span class="backer-home-short">BACKER HOME</span>
+          <a class="is-active" href="./attention-flow.html" aria-current="page">PREVIEW</a>
+          <a href="./attention-method.html">METHOD</a>
+          <a href="./attention-thesis.html">THESIS</a>
+          <a class="backer-home-link" href="../research.html">
+            <span class="backer-home-full">RESEARCH HOME</span>
+            <span class="backer-home-short">RESEARCH HOME</span>
             <span aria-hidden="true">&#8599;</span>
           </a>
         </nav>
@@ -60,7 +61,7 @@
           <section class="flow-rail-section flow-intro">
             <p class="instrument-label">WEB ATTENTION / 5,000</p>
             <h1>Where does attention move next?</h1>
-            <p>Trace how a topic may be noticed, carried across communities, revisited, and converted into a costly action.</p>
+            <p>Inspect how exposure becomes sustained attention across communities. Revisit, diffusion and costly action are distinct outcomes.</p>
           </section>
 
           <section class="flow-rail-section flow-boundary" aria-label="Scientific boundary">
@@ -236,21 +237,21 @@
 
           <section class="method-borrowing">
             <p><strong>MiroFish / OASIS</strong> informs graph-to-environment and action-log mechanics. <strong>Agent Reach</strong> informs source routing; Backer must record collection provenance. Neither validates this trajectory.</p>
-            <div><a href="./validation.html">Read validation protocol <span aria-hidden="true">&#8594;</span></a><a href="./method.html">Open Method <span aria-hidden="true">&#8594;</span></a></div>
+            <div><a href="./attention-method.html#evaluation">Read validation protocol <span aria-hidden="true">&#8594;</span></a><a href="./attention-method.html">Open Method <span aria-hidden="true">&#8594;</span></a></div>
           </section>
         </aside>
 
         <section class="flow-study" aria-labelledby="flow-study-title">
           <div>
             <p class="instrument-label">RESEARCH PREVIEW 02 / STUDY DESIGN</p>
-            <h2 id="flow-study-title">From a market to the wider attention field.</h2>
-            <p>The first preview asks how modeled traders respond. This second study asks where a topic travels across the web—and which attention persists. Its target environment is 5,000 generative agents, grounded in permitted aggregate traces and an opt-in audience panel.</p>
-            <p>Today this page animates anonymous markers over authored examples. It does not run 5,000 language-model agents, collect live platform data, or establish predictive accuracy.</p>
-            <a href="./validation.html">See the evidence required to advance &#8594;</a>
+            <h2 id="flow-study-title">Exposure is not persistence.</h2>
+            <p>A burst of circulation can dissipate before it changes a decision. This study separates reach, active attention, propagation, return and commitment. Its proposed unit of analysis is a topic–platform–cohort trajectory over a declared horizon.</p>
+            <p>The current instrument animates 5,000 anonymous markers over authored scenarios. A fitted model would require dated observations, explicit sampling weights and later outcomes withheld from development.</p>
+            <a href="./attention-method.html#evaluation">See the evidence required to advance &#8594;</a>
           </div>
           <dl class="flow-study-contract">
             <div><dt>01 / CALIBRATE THE TOPIC</dt><dd>Separate recurring topics from bursts. Cluster permitted posts and links, remove duplicates and likely automated traffic, then normalize prevalence and velocity within each platform, language, and a declared rolling window. Report missing coverage; never add raw views across platforms.</dd></div>
-            <div><dt>02 / BUILD THE ENVIRONMENT</dt><dd>Use MiroFish / OASIS-style graph-to-environment design: modeled audience strata, bounded feeds, ranking, memory, exposure, and timestamped action logs. Agent Reach informs collection routes; it does not supply a representative human sample.</dd></div>
+            <div><dt>02 / BUILD THE ENVIRONMENT</dt><dd>Represent a bounded feed, a network of exposure opportunities and heterogeneous audience strata. Preserve timestamps and source provenance. Attention competes with an outside option; memory can decay before a decision threshold is reached.</dd></div>
             <div><dt>03 / OBSERVE ATTENTION</dt><dd>Public post and link activity are proxies. Test notice, dwell, revisit, and costly action separately using consented diaries, browser-data donations, creator analytics, saved-link histories, and small panel tasks. Do not infer belief from a repost or join identities across platforms.</dd></div>
             <div><dt>04 / FREEZE, THEN RESOLVE</dt><dd>Before each 24h, 72h, or 7d window, freeze inputs and forecasts. Score topic-platform share and cohort return against future observations and simple persistence, trend, and network baselines. Keep consented randomized tests separate from scenario comparisons.</dd></div>
           </dl>

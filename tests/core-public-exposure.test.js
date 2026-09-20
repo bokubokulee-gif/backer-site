@@ -99,7 +99,7 @@ test('public build is explicit, minified, source-map-free, and used by Vercel', 
   assert.match(builder, /'js\/admin-analytics\.js'/);
   assert.match(builder, /'research-lab\/assets\/lab-public-v1\.js'/);
   assert.match(builder, /'research-lab\/assets\/lab-public-v2\.css'/);
-  assert.match(builder, /'research-lab\/assets\/method-public-v1\.js'/);
+  assert.match(builder, /'research-lab\/assets\/research-papers\.js'/);
   assert.doesNotMatch(builder, /'research-lab\/data\/agents\.json\.gz'/);
   assert.doesNotMatch(builder, /'research-lab\/assets\/lab-CsGj-wRf\.js'/);
   assert.doesNotMatch(builder, /'research-lab\/assets\/method-DDHZH2_6\.js'/);
@@ -138,4 +138,13 @@ test('Vercel permits the shipped Market and simulation embeds while rejecting fo
       assert.ok(directives.get('img-src').includes(new URL(src).origin), `${filename} image origin must be permitted: ${new URL(src).origin}`);
     }
   }
+});
+
+test('educational simulation scripts retain review and byte-drift guards', async () => {
+  const root = fixture();
+  write(root, 'js/simulation-model.js', 'window.BackerSimulationModel = {};');
+  write(root, 'js/simulation-unreviewed.js', 'window.unknownModel = {};');
+  const result = await (await policy()).auditPublicArtifact(root);
+  assert.ok(result.findings.some((item) => item.file === 'js/simulation-model.js' && item.code === 'research_script_digest_drift'));
+  assert.ok(result.findings.some((item) => item.file === 'js/simulation-unreviewed.js' && item.code === 'unreviewed_research_script'));
 });

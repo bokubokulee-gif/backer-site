@@ -69,11 +69,15 @@ test('language navigation preserves host, mount, route, query and hash', () => {
 test('all public pages load the same locale runtime and reviewed catalog assets', () => {
   const builder = fs.readFileSync(path.join(root, 'scripts/build-pages-artifact.mjs'), 'utf8');
   const pages = [...builder.matchAll(/^  '([^']+\.html)',?$/gm)].map(match => match[1]);
-  assert.equal(pages.length, 27);
+  assert.ok(pages.length >= 27, 'existing public page inventory is retained');
+  for (const route of ['simulation.html', ...['product-innovation','marketing-brand','audience-segmentation','scenario-planning','strategic-communications'].map(name => 'use-cases/' + name + '.html'), ...['method','thesis','attention-method','attention-thesis','simulation-method','simulation-thesis'].map(name => 'research-lab/' + name + '.html')]) assert.ok(pages.includes(route), 'localized route is built: ' + route);
   for (const page of pages) {
     const html = fs.readFileSync(path.join(root, page), 'utf8');
     assert.match(html, /js\/i18n\.js\?v=/, page);
     assert.match(html, /css\/i18n\.css\?v=/, page);
-    for (const pack of ['marketing', 'interface', 'research', 'supplement']) assert.ok(html.includes('js/locales/' + pack + '.js'), page + ': ' + pack);
+    const dedicated = page === 'simulation.html' ? 'simulation' : page.startsWith('use-cases/') ? 'simulation-usecases' : /^research-lab\/(?:method|thesis|attention-method|attention-thesis|simulation-method|simulation-thesis)\.html$/.test(page) ? 'research-papers' : null;
+    const packs = dedicated ? [dedicated] : ['marketing', 'interface', 'research', 'supplement'];
+    for (const pack of packs) assert.ok(html.includes('js/locales/' + pack + '.js'), page + ': ' + pack);
+    assert.ok(builder.includes("'js/locales/" + (dedicated || 'research') + ".js'"), 'catalog is included in the public artifact: ' + page);
   }
 });

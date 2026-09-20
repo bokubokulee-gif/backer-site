@@ -18,13 +18,23 @@ function occurrences(source, expression) {
   return Array.from(source.matchAll(expression)).length;
 }
 
-test('public pages mount one shared dock; locked Portfolio is only a waitlist redirect', () => {
+test('public pages mount shared or dedicated navigation; locked Portfolio is only a waitlist redirect', () => {
   assert.ok(PUBLIC_HTML.includes('research-lab/index.html'), 'the inventory must include nested research pages');
   assert.ok(PUBLIC_HTML.includes('admin/analytics/index.html'), 'the inventory must include the published admin entry');
   assert.ok(PUBLIC_HTML.includes('research-lab/attention-simulatoin.html'), 'the inventory must include published redirect aliases');
 
   for (const file of PUBLIC_HTML) {
     const source = fs.readFileSync(path.join(ROOT, file), 'utf8');
+    const isSimulation = file === 'simulation.html' || file.startsWith('use-cases/');
+    const isPaper = /^research-lab\/(?:method|thesis|attention-method|attention-thesis|simulation-method|simulation-thesis)\.html$/.test(file);
+    if (isSimulation || isPaper) {
+      assert.equal(occurrences(source, /<header class="(?:sim|paper)-header"/g), 1, `${file} mounts one dedicated header`);
+      assert.equal(occurrences(source, /<nav class="(?:sim-site|paper)-nav"/g), 1, `${file} mounts one page navigation`);
+      assert.match(source, /href="(?:\.\.\/)?research\.html"/, `${file} links to the research gateway`);
+      assert.equal(occurrences(source, /aria-current="page"/g), 1, `${file} identifies the current page`);
+      assert.doesNotMatch(source, /data-backer-dock|backer-dock\.(?:js|css)/, `${file} avoids competing navigation`);
+      continue;
+    }
     if (file === 'portfolio.html') {
       const gate = source.match(/<script\b[^>]*src="js\/access-gate\.js(?:\?[^"<>]+)?"[^>]*><\/script>/);
       assert.ok(gate, 'Portfolio redirect must load the shared access policy');

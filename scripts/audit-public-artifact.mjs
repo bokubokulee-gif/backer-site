@@ -36,13 +36,51 @@ const REVIEWED_PUBLIC_DATA = Object.freeze({
 });
 
 const REVIEWED_RESEARCH_SCRIPTS = Object.freeze({
+  'js/simulation-atmosphere.js': {
+    classification: 'four authored fictional records with draggable source-to-feature reveal and exact phrase inspection; no extraction service or inference',
+    sha256: '96920f23b413109e62cf07f88180734a502ec4d13103ae7be61f7c54276f16f9'
+  },
+  'js/simulation-motion.js': {
+    classification: 'native scroll scene expansion, progress and presentation reveals; no data or model computation',
+    sha256: 'd9e0e98757129ca01c11d978019b2b8202061193ca547f934ba1959d9ed4f8c1'
+  },
+  'js/simulation-story.js': {
+    classification: '100 synthetic profiles with a conserved 400-unit budget, direct signal gates, elapsed memory, removable barriers and conserved resource parcels; no human data or fitted engine',
+    sha256: '5da81859a57c40d4fae92b52eb8f1736639105209ee3c7db2b586643682a9cde'
+  },
+  // Exact-byte educational demo review: docs/SIMULATION_PUBLIC_SCRIPT_REVIEW.md.
+  // Proprietary research modules below remain blocked.
+  'research-lab/assets/research-notes-20260920.js': {
+    classification: 'public teaching diagrams with explicit assumed coefficients; no human records or fitted model',
+    sha256: 'aa15fe0854ea9d5b6ee526bf5298888672665dd34868ee7d1e4320e623c40638'
+  },
+  'js/simulation-model.js': {
+    classification: 'transparent educational cohort model with authored assumptions; no trained weights, human corpus or forecast service',
+    sha256: '99b28cd279bfb026e83970774483bcddaeaea0f03f792e283e7f5f581e42af29'
+  },
+  'js/simulation-cases.js': {
+    classification: 'fifteen explicitly fictional decision briefs and proposed validation questions',
+    sha256: '4458bf39f5c6935e8ac48571d8ff213ab5bdb21ac1b98b410af5b5eb7dc66245'
+  },
+  'js/simulation.js': {
+    classification: 'public study tabs and directly manipulated probability distributions with conserved mass; no trained model',
+    sha256: 'a331c12ca94bf663d463f8cd7254efb45abc5338e0085a6846c2fb29b4158c16'
+  },
+  'js/simulation-usecases.js': {
+    classification: 'five direct object teaching experiments and fifteen authored fictional result fixtures; no human data or forecast service',
+    sha256: 'c91b557ca3e3b27b39f1f49e511d31e52bb9e28b87df097db4042ee99ce25df1'
+  },
+  'research-lab/assets/research-papers.js': {
+    classification: 'three direct scientific teaching figures using fictional quotes, assumed retention and fixed-margin joint probabilities; no trained model',
+    sha256: 'f0aa385b00326362b134536ba83c42f1b11bdd6cb097b5bc86d86260f47939bc'
+  },
   'research-lab/assets/attention-flow-public-v1.js': {
     classification: 'authored attention examples and anonymous marker animation; no human corpus, source connectors, fitted parameters, or forecast engine',
     sha256: '9e0bd3fbdbee4233197b719874e46b85102e264ac7e2f359d0424f8027942ba7'
   },
   'research-lab/assets/lab-public-v1.js': {
     classification: 'reviewed spatial aggregate field presenter with anonymous visual markers',
-    sha256: '32edad23d351689be50a7f001e4193d4f53c8a56aa246bd55f494fc17b34cda2'
+    sha256: '9dd6b5edf50da1661e41b135ab31082c1c11c4ee41d398c1ddd9f08a9864eb07'
   },
   'research-lab/assets/locale-lineage.js': {
     classification: 'authored translations of two existing public Research provenance statements; static copy only, without collection routes, source connectors, data, or computation',
@@ -50,7 +88,7 @@ const REVIEWED_RESEARCH_SCRIPTS = Object.freeze({
   },
   'research-lab/assets/method-public-v1.js': {
     classification: 'public method navigation and declared-condition explainer without model formulas',
-    sha256: '6a0e71a4811963035b30ea19c3bf760bb449464782ca472c2e3453eed4460ed9'
+    sha256: '0b9f9835c442cc67cb30760482baba8d9f90e5b34682a6a242b69721718de911'
   },
   'research-lab/assets/styles-B29Xo75-.js': {
     classification: 'reviewed public Research presentation support',
@@ -156,7 +194,8 @@ function inspectResearchBoundary(relativePath, source = '') {
       'The complete 5,000-agent research corpus is browser-downloadable. Keep it server-side and publish only a reviewed projection.'
     ));
   }
-  if (/^research-lab\/assets\/[A-Za-z0-9_-]+\.js$/.test(relativePath)) {
+  if (/^research-lab\/assets\/[A-Za-z0-9_-]+\.js$/.test(relativePath)
+    || /^js\/simulation(?:-[A-Za-z0-9_-]+)?\.js$/.test(relativePath)) {
     const policy = REVIEWED_RESEARCH_SCRIPTS[relativePath];
     if (!policy) {
       findings.push(finding(
