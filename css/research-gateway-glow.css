@@ -1,0 +1,6 @@
+/* The glow remains inside summary so native closed details can render it.
+   Its containing block is the details card, including any expanded content. */
+.research-gateway > summary.card-glow-summary-host{
+  position:static;
+  border-radius:inherit;
+}

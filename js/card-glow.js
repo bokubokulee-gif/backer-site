@@ -15,7 +15,8 @@
     '.p2-business-questions', '.p2-decision-panel',
     '.ccard', '.chart-card', '.score-block', '.terms', '.ai-panel',
     '.claim', '.open-note', '.proof-glass',
-    '.mdp-status-card', '.pt-block', '.pt-strict-panel', '.waitlist-card'
+    '.mdp-status-card', '.pt-block', '.pt-strict-panel', '.waitlist-card',
+    'details.research-gateway'
   ].join(',');
   var PROXIMITY = 64;
   var INACTIVE_ZONE = 0.01;
@@ -38,16 +39,32 @@
     if (!frame && !document.hidden) frame = window.requestAnimationFrame(paint);
   }
 
+  function layerHost(card) {
+    // Closed native details only render their summary. Keep the decoration there
+    // while measuring the complete details card, including its expanded content.
+    return card.matches('details.research-gateway') ? card.querySelector(':scope > summary') : card;
+  }
+
+  function attachLayer(state) {
+    var host = layerHost(state.card);
+    if (!host) return;
+    host.classList.add('has-card-glow');
+    if (host !== state.card) host.classList.add('card-glow-summary-host');
+    if (state.layer.parentNode !== host) host.appendChild(state.layer);
+    host.classList.toggle('is-card-glow-focused', state.focused);
+    state.host = host;
+  }
+
   function register(card) {
     if (registry.has(card) || !card.isConnected) return;
+    if (!layerHost(card)) return;
     var layer = document.createElement('span');
     layer.className = 'backer-card-glow-layer';
     layer.setAttribute('aria-hidden', 'true');
     var staticPosition = window.getComputedStyle(card).position === 'static';
     if (staticPosition) card.classList.add('card-glow-relative');
-    card.classList.add('has-card-glow');
-    card.appendChild(layer);
     var state = { card: card, layer: layer, angle: 0, active: false, focused: false, touchUntil: 0 };
+    attachLayer(state);
     registry.set(card, state);
     if (intersection) intersection.observe(card);
     else visible.add(state);
@@ -65,7 +82,7 @@
         if (card.isConnected) {
           // A renderer may replace a card's contents while retaining its host.
           // Reattach the same layer rather than leaving an untracked bare card.
-          if (state.layer.parentNode !== card) card.appendChild(state.layer);
+          attachLayer(state);
           return;
         }
         visible.delete(state);
@@ -81,7 +98,11 @@
 
   function closestCard(element) {
     var card = element && element.closest && element.closest('.has-card-glow');
-    return card ? registry.get(card) : null;
+    if (card && registry.has(card)) return registry.get(card);
+    // A gateway summary owns the layer; links in expanded content also belong
+    // to the surrounding registered details card.
+    var gateway = element && element.closest && element.closest('details.research-gateway');
+    return gateway ? registry.get(gateway) : null;
   }
 
   function setActive(state, active) {
@@ -117,7 +138,7 @@
       var active = focusActive || touchActive || near;
       if (state.focused !== focusActive) {
         state.focused = focusActive;
-        state.card.classList.toggle('is-card-glow-focused', focusActive);
+        state.host.classList.toggle('is-card-glow-focused', focusActive);
       }
       setActive(state, active);
       if (!active || focusActive || motion.matches) return;
@@ -208,6 +229,9 @@
     });
     document.addEventListener('focusin', schedule);
     document.addEventListener('focusout', schedule);
+    document.addEventListener('toggle', function (event) {
+      if (event.target.matches('details.research-gateway')) schedule();
+    }, true);
     window.addEventListener('scroll', schedule, { passive: true, capture: true });
     window.addEventListener('resize', schedule, { passive: true });
     window.addEventListener('blur', clearPointer);
