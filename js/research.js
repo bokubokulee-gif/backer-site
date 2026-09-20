@@ -88,7 +88,7 @@
   else mountActionLine();
 
   window.addEventListener('pageshow', function () { document.body.classList.remove('is-launching'); });
-  var SPEED_PX_PER_SECOND = 4;
+  var SPEED_PX_PER_SECOND = 16;
   var orbit = document.querySelector('.research-orbit');
   if (!orbit) return;
   var previewLinks = document.querySelectorAll('[data-research-preview]');

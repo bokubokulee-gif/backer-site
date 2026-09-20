@@ -18,15 +18,20 @@
       "Backer に戻る",
       "Backer로 돌아가기"
     ],
-    "Toggle the robot’s heart eyes": [
-      "切换机器人的爱心眼睛",
-      "ロボットのハートの目を切り替える",
-      "로봇의 하트 눈 켜기·끄기"
+    "A clearer view to the future.": [
+      "更清晰地看见未来。",
+      "未来が、もっとはっきり見える。",
+      "미래가 더 선명하게 보입니다."
     ],
-    "Move the pointer or use arrow keys to turn the head. Tap or press Enter or Space to turn heart eyes on or off.": [
-      "移动指针或按方向键可转动头部。点击、按回车或空格可切换爱心眼睛。",
-      "ポインターまたは矢印キーで顔を動かせます。クリック、Enter、スペースでハートの目を切り替えます。",
-      "포인터나 방향키로 고개를 돌릴 수 있습니다. 클릭하거나 Enter 또는 스페이스를 누르면 하트 눈이 켜지거나 꺼집니다."
+    "Toggle the robot’s glasses": [
+      "给机器人戴上或摘下眼镜",
+      "ロボットの眼鏡をかける・外す",
+      "로봇 안경 쓰기·벗기"
+    ],
+    "Move the pointer or use arrow keys to turn the head. Click, tap or press Enter or Space to put glasses on or take them off.": [
+      "移动指针或按方向键可转动头部。点击、轻触或按回车或空格可戴上或摘下眼镜。",
+      "ポインターまたは矢印キーで顔を動かせます。クリック、タップ、Enter、スペースで眼鏡をかけたり外したりできます。",
+      "포인터나 방향키로 고개를 돌릴 수 있습니다. 클릭, 탭, Enter 또는 스페이스로 안경을 쓰거나 벗을 수 있습니다."
     ],
     "Research previews": [
       "研究预览",
@@ -5558,10 +5563,15 @@
       "Backer に戻る",
       "Backer로 돌아가기"
     ],
-    "toggle the robot’s heart eyes": [
-      "切换机器人的爱心眼睛",
-      "ロボットのハートの目を切り替える",
-      "로봇의 하트 눈 켜기·끄기"
+    "a clearer view to the future.": [
+      "更清晰地看见未来。",
+      "未来が、もっとはっきり見える。",
+      "미래가 더 선명하게 보입니다."
+    ],
+    "toggle the robot’s glasses": [
+      "给机器人戴上或摘下眼镜",
+      "ロボットの眼鏡をかける・外す",
+      "로봇 안경 쓰기·벗기"
     ],
     "research previews": [
       "研究预览",

@@ -16,6 +16,7 @@ export function mountResearchRobot(host) {
   let camera;
   let body;
   let head;
+  let glasses;
   let glassMaterial;
   let eyeMaterial;
   let tipMaterial;
@@ -31,9 +32,10 @@ export function mountResearchRobot(host) {
   let height = 0;
   let previousFrame = 0;
   let frameGate = 0;
-  let loved = false;
+  let glassesOn = false;
   let lastPointer = null;
   let pointerDown = null;
+  let suppressPointerClick = false;
   const look = { x: 0, y: 0 };
   const eyes = [];
   const initialPreview = host.dataset.preview || host.closest('[data-preview]')?.dataset.preview;
@@ -107,13 +109,12 @@ export function mountResearchRobot(host) {
     head.rotation.x = THREE.MathUtils.lerp(head.rotation.x, -look.y * 0.19, headDamping);
 
     const blinkPhase = (elapsed + 1.1) % 4.1;
-    const blink = !reduced && !loved && blinkPhase < 0.25
+    const blink = !reduced && blinkPhase < 0.25
       ? Math.max(0.075, 1 - Math.sin((blinkPhase / 0.25) * Math.PI)) : 1;
     eyes.forEach(eye => {
-      eye.normal.visible = !loved;
-      eye.heart.visible = loved;
       eye.group.scale.set(1.1, 1.1 * blink, 1.1);
     });
+    glasses.visible = glassesOn;
 
     accent.lerp(accentTarget, reduced ? 1 : 1 - Math.exp(-7 * delta));
     eyeMaterial.color.copy(accent);
@@ -150,14 +151,17 @@ export function mountResearchRobot(host) {
 
   function react() {
     if (stopped) return;
-    loved = !loved;
-    host.setAttribute('aria-pressed', String(loved));
-    if (greeting) greeting.textContent = loved ? 'Hello, curious human.' : '';
+    glassesOn = !glassesOn;
+    glasses.visible = glassesOn;
+    host.dataset.robotGlasses = glassesOn ? 'on' : 'off';
+    host.setAttribute('aria-pressed', String(glassesOn));
+    if (greeting) greeting.textContent = glassesOn ? 'A clearer view to the future.' : '';
     requestFrame();
   }
 
   function resetLook() {
     lastPointer = null;
+    if (pointerDown) suppressPointerClick = true;
     pointerDown = null;
     look.x = look.y = 0;
     requestFrame();
@@ -293,8 +297,9 @@ export function mountResearchRobot(host) {
     return path;
   }
 
-  function makeEye(x, yaw, topGeometry, bottomGeometry, heartGeometry) {
+  function makeEye(x, yaw, topGeometry, bottomGeometry) {
     const group = new THREE.Group();
+    group.name = x < 0 ? 'research-robot-eye-left' : 'research-robot-eye-right';
     group.position.set(x, -0.02, 0.29);
     group.rotation.y = yaw;
     group.scale.setScalar(1.1);
@@ -304,14 +309,65 @@ export function mountResearchRobot(host) {
     // Both eyes share their geometries and material.
     normal.add(new THREE.Mesh(topGeometry, eyeMaterial));
     normal.add(new THREE.Mesh(bottomGeometry, eyeMaterial));
-    const heart = new THREE.Mesh(heartGeometry, eyeMaterial);
-    heart.visible = false;
-    group.add(heart);
-    eyes.push({ group, normal, heart });
+    eyes.push({ group, normal });
+  }
+
+  function makeGlasses() {
+    glasses = new THREE.Group();
+    glasses.name = 'research-robot-glasses';
+    glasses.visible = false;
+    head.add(glasses);
+    const frameSurface = material({
+      color: GOLD, roughness: 0.24, metalness: 0.62,
+      emissive: '#4a2d12', emissiveIntensity: 0.12,
+    });
+    const lensSurface = own(new THREE.MeshBasicMaterial({
+      color: '#fff2dc', transparent: true, opacity: 0.045,
+      depthWrite: false, toneMapped: false,
+    }));
+    class LensRimCurve extends THREE.Curve {
+      getPoint(t, target = new THREE.Vector3()) {
+        const angle = t * Math.PI * 2;
+        return target.set(Math.cos(angle) * 0.067, Math.sin(angle) * 0.055, 0);
+      }
+    }
+    const rimGeometry = own(new THREE.TubeGeometry(new LensRimCurve(), 56, 0.0056, 8, true));
+    const lensGeometry = own(new THREE.CircleGeometry(1, 48));
+    for (const direction of [-1, 1]) {
+      const lens = new THREE.Group();
+      lens.position.set(direction * 0.079, -0.02, 0.323);
+      lens.rotation.y = direction * 0.13;
+      glasses.add(lens);
+      lens.add(new THREE.Mesh(rimGeometry, frameSurface));
+      const pane = new THREE.Mesh(lensGeometry, lensSurface);
+      pane.name = 'research-robot-clear-lens';
+      pane.scale.set(0.065, 0.053, 1);
+      pane.position.z = -0.001;
+      lens.add(pane);
+      const temple = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(direction * 0.145, -0.02, 0.316),
+        new THREE.Vector3(direction * 0.224, -0.01, 0.245),
+        new THREE.Vector3(direction * 0.286, -0.015, 0.11),
+        new THREE.Vector3(direction * 0.28, -0.043, 0.04),
+      ]);
+      mesh(glasses, new THREE.TubeGeometry(temple, 24, 0.0043, 8, false), frameSurface);
+    }
+    const bridge = new THREE.QuadraticBezierCurve3(
+      new THREE.Vector3(-0.027, 0.009, 0.33),
+      new THREE.Vector3(0, 0.028, 0.345),
+      new THREE.Vector3(0.027, 0.009, 0.33),
+    );
+    mesh(glasses, new THREE.TubeGeometry(bridge, 18, 0.005, 8, false), frameSurface);
+  }
+
+  function isNestedControl(event) {
+    const control = event.target?.closest?.('a, button, input, select, textarea, [contenteditable="true"]');
+    return Boolean(control && control !== host);
   }
 
   try {
     host.dataset.robotState = 'loading';
+    host.dataset.robotGlasses = 'off';
     host.setAttribute('aria-pressed', 'false');
     renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' });
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -402,19 +458,11 @@ export function mountResearchRobot(host) {
     mesh(head, new THREE.SphereGeometry(0.28, 48, 32), face);
     mesh(head, new THREE.SphereGeometry(0.3, 48, 32), glassMaterial);
 
-    class HeartCurve extends THREE.Curve {
-      getPoint(t, target = new THREE.Vector3()) {
-        const a = t * Math.PI * 2;
-        const x = 16 * Math.pow(Math.sin(a), 3);
-        const y = 13 * Math.cos(a) - 5 * Math.cos(2 * a) - 2 * Math.cos(3 * a) - Math.cos(4 * a);
-        return target.set(x * 0.002, (y + 6) * 0.002, 0);
-      }
-    }
     const topGeometry = own(new THREE.TubeGeometry(eyePath(1), 20, 0.0042, 8, false));
     const bottomGeometry = own(new THREE.TubeGeometry(eyePath(-1), 20, 0.0042, 8, false));
-    const heartGeometry = own(new THREE.TubeGeometry(new HeartCurve(), 48, 0.0038, 8, true));
-    makeEye(-0.07, -0.2, topGeometry, bottomGeometry, heartGeometry);
-    makeEye(0.07, 0.2, topGeometry, bottomGeometry, heartGeometry);
+    makeEye(-0.07, -0.2, topGeometry, bottomGeometry);
+    makeEye(0.07, 0.2, topGeometry, bottomGeometry);
+    makeGlasses();
     makeEar(head, -0.29, true, surfaces);
     makeEar(head, 0.29, false, surfaces);
     // A subtle ground halo echoes the page's gold/green orbit without postprocessing.
@@ -425,27 +473,35 @@ export function mountResearchRobot(host) {
     listen(document, 'pointerleave', resetLook, { passive: true });
     listen(window, 'blur', resetLook);
     listen(window, 'scroll', updateLook, { passive: true, capture: true });
-    listen(host, 'pointerleave', () => { pointerDown = null; }, { passive: true });
     listen(host, 'pointerdown', event => {
-      if (event.button !== 0 || event.isPrimary === false || event.target.closest?.('a, button, input, select')) return;
+      if (event.button !== 0 || event.isPrimary === false || isNestedControl(event)) return;
       updatePointer(event);
-      pointerDown = { id: event.pointerId, x: event.clientX, y: event.clientY, at: performance.now(), moved: false };
+      pointerDown = { id: event.pointerId, x: event.clientX, y: event.clientY, moved: false };
+      suppressPointerClick = false;
     }, { passive: true });
-    listen(host, 'pointerup', event => {
+    listen(document, 'pointerup', event => {
       if (!pointerDown || pointerDown.id !== event.pointerId) return;
-      const bounds = host.getBoundingClientRect();
-      const inside = event.clientX >= bounds.left && event.clientX <= bounds.right &&
-        event.clientY >= bounds.top && event.clientY <= bounds.bottom;
       const distance = Math.hypot(event.clientX - pointerDown.x, event.clientY - pointerDown.y);
-      if (inside && !pointerDown.moved && distance < 12 && performance.now() - pointerDown.at < 700) react();
+      suppressPointerClick = pointerDown.moved || distance >= 12;
       pointerDown = null;
-    }, { passive: true });
-    listen(host, 'pointercancel', () => { pointerDown = null; }, { passive: true });
+    }, { passive: true, capture: true });
+    listen(document, 'pointercancel', event => {
+      if (!pointerDown || pointerDown.id !== event.pointerId) return;
+      pointerDown = null;
+      suppressPointerClick = true;
+    }, { passive: true, capture: true });
+    // Native click is the single activation path: pointer, touch and assistive clicks all work.
+    listen(host, 'click', event => {
+      if ((event.button !== undefined && event.button !== 0) || isNestedControl(event)) return;
+      const dragged = suppressPointerClick && event.detail !== 0;
+      suppressPointerClick = false;
+      if (!dragged) react();
+    });
     listen(host, 'keydown', event => {
-      if (event.target.closest?.('a, button, input, select') && event.target !== host) return;
+      if (isNestedControl(event)) return;
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
-        if (!event.repeat) react();
+        if (!event.repeat) host.click();
       } else if (event.key.startsWith('Arrow')) {
         event.preventDefault();
         if (event.key === 'ArrowLeft') look.x = Math.max(-1, look.x - 0.35);

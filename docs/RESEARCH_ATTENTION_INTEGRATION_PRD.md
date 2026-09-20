@@ -14,3 +14,8 @@ Scope experience styling and DOM selectors. Keep existing robot, orbit, action-w
 
 ## Acceptance and release
 Inspect desktop and mobile entry, all three stages, reverse scroll, transition into robot and both native disclosures. Verify menu links stay on each host. Run syntax, relevant repository checks and audited public build. Publish source to main for Vercel and audited static artifact to gh-pages; verify both live research routes, scene modules/fonts, robot readiness and gateway interactions before reporting complete.
+
+## Follow-up refinement
+Shrink the decorative robot orbit and anchor it to the robot slot so it clears the preceding simulation card and stays stable when disclosures expand. Orbit dots move four times faster. Render the robot at80% of its previous size without changing the layout slot. Replace the heart-eyes interaction with glasses toggled by click, tap, Enter or Space. Remove the redundant uppercase Research kicker above the H1. Publish both hosts after responsive and interaction verification.
+
+When glasses are on, show “A clearer view to the future.” beneath the robot.
