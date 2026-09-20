@@ -1549,6 +1549,84 @@
       "{0}단위의 자원 투입. 접촉 {1}, 고려 {2}, 행동 {3}. 점을 선택해 과정을 추적하세요."
     ]
   },
+  "actionLine": {
+  "en": {
+    "prefix": "Simulate human behavior before you ",
+    "words": [
+      "commit",
+      "invest",
+      "price",
+      "ship",
+      "expand",
+      "launch",
+      "hire",
+      "acquire",
+      "pivot",
+      "announce"
+    ],
+    "suffix": ".",
+    "accessibleLabel": "Simulate human behavior before you act.",
+    "pauseLabel": "Pause rotating word",
+    "resumeLabel": "Resume rotating word"
+  },
+  "zh": {
+    "prefix": "先模拟人类行为，再",
+    "words": [
+      "作出决定",
+      "投资",
+      "定价",
+      "交付产品",
+      "拓展业务",
+      "推出产品",
+      "招聘",
+      "收购",
+      "调整方向",
+      "发布消息"
+    ],
+    "suffix": "。",
+    "accessibleLabel": "先模拟人类行为，再行动。",
+    "pauseLabel": "暂停文字轮换",
+    "resumeLabel": "继续文字轮换"
+  },
+  "ja": {
+    "prefix": "人の行動をシミュレーションしてから、",
+    "words": [
+      "決断する",
+      "投資する",
+      "価格を決める",
+      "製品を届ける",
+      "事業を広げる",
+      "立ち上げる",
+      "採用する",
+      "買収する",
+      "方針を変える",
+      "発表する"
+    ],
+    "suffix": "。",
+    "accessibleLabel": "人の行動をシミュレーションしてから、実行する。",
+    "pauseLabel": "言葉の切り替えを一時停止",
+    "resumeLabel": "言葉の切り替えを再開"
+  },
+  "ko": {
+    "prefix": "사람의 행동을 먼저 시뮬레이션하고, ",
+    "words": [
+      "결정하세요",
+      "투자하세요",
+      "가격을 정하세요",
+      "제품을 내놓으세요",
+      "사업을 확장하세요",
+      "출시하세요",
+      "채용하세요",
+      "인수하세요",
+      "방향을 바꾸세요",
+      "발표하세요"
+    ],
+    "suffix": ".",
+    "accessibleLabel": "사람의 행동을 먼저 시뮬레이션하고, 실행하세요.",
+    "pauseLabel": "문구 전환 일시정지",
+    "resumeLabel": "문구 전환 재개"
+  }
+},
   "rich": {
     "#hero-title": [
       "注意力如何<br>转化为决策。",
