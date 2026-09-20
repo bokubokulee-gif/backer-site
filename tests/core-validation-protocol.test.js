@@ -7,14 +7,14 @@ const test = require('node:test');
 const ROOT = path.join(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(ROOT, file), 'utf8');
 
-test('Reading styles are delivered after page styles on every refined Lab surface', () => {
-  for (const file of ['validation.html', 'attention-flow.html']) {
+test('Reading styles remain available on the surviving research surfaces', () => {
+  for (const file of ['attention-flow.html']) {
     const page = read(`research-lab/${file}`);
     const styles = [...page.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*>/g)].map(match => match[0]);
     const readingIndex = styles.findIndex(style => /assets\/readability-v1\.css/.test(style));
     assert.ok(readingIndex >= 0, `${file} must load the shared reading styles`);
     const pageStyles = styles.filter(style => !/css\/(?:backer-dock|i18n)\.css/.test(style));
-    assert.match(pageStyles.at(-1), file === 'attention-flow.html' ? /assets\/research-notes-20260920\.css/ : /assets\/readability-v1\.css/,
+    assert.match(pageStyles.at(-1), /assets\/research-notes-20260920\.css/,
       `${file} must apply reading styles after all Lab page styles`);
     const languageIndex = styles.findIndex(style => /css\/i18n\.css/.test(style));
     assert.ok(languageIndex > readingIndex,
@@ -26,29 +26,45 @@ test('Reading styles are delivered after page styles on every refined Lab surfac
   assert.ok(method.indexOf('assets/research-papers.css') < method.indexOf('css/i18n.css'), 'paper typography precedes language typography');
 });
 
-test('Validation protocol separates the current population from the unstarted study', () => {
-  const page = read('research-lab/validation.html');
-  assert.match(page, /Today: 5,000 modeled agents/);
-  assert.match(page, /consented trader study, not yet started/);
-  assert.match(page, /No participant-linked histories/);
-  assert.match(page, /participants set by power analysis/);
-  assert.match(page, /No inference across this line/);
-  for (const stage of ['sampling', 'interviews', 'repeat', 'holdouts', 'randomized', 'calibration', 'subgroups']) {
-    assert.match(page, new RegExp(`href="#${stage}"`));
-    assert.match(page, new RegExp(`id="${stage}"`));
+test('The removed validation page and its exclusive styles cannot be published', () => {
+  const builder = read('scripts/build-pages-artifact.mjs');
+  for (const file of [
+    'research-lab/validation.html',
+    'research-lab/assets/validation-public-v1.css',
+    'research-lab/assets/content-CYtyA-wJ.css',
+  ]) {
+    assert.equal(fs.existsSync(path.join(ROOT, file)), false, `${file} must be removed from source`);
+    assert.equal(builder.includes(`'${file}'`), false, `${file} must not be in the public artifact`);
   }
-  assert.equal((page.match(/class="protocol-record"/g) || []).length, 7);
-  assert.match(page, /human randomization unit, assignment, spillover assumptions/);
-  assert.match(page, /2411\.10109v1/);
+
+  const manifest = builder.match(/const PUBLIC_FILES = Object\.freeze\(\[([\s\S]*?)\]\);/);
+  assert.ok(manifest, 'the explicit public file list must remain inspectable');
+  const pages = [...manifest[1].matchAll(/'([^']+\.html)'/g)].map(match => match[1]);
+  assert.ok(pages.length > 0, 'the navigation audit must inspect published HTML');
+  for (const file of pages) {
+    for (const [, href] of read(file).matchAll(/(?:href|src)="([^"]+)"/g)) {
+      const target = new URL(href, `https://backer.example/${file}`);
+      assert.doesNotMatch(target.pathname, /(?:^|\/)research-lab\/validation\.html$/,
+        `${file} must not link to the removed protocol page`);
+      assert.doesNotMatch(target.pathname, /\/(?:validation-public-v1|content-CYtyA-wJ)\.css$/,
+        `${file} must not load the removed protocol styles`);
+    }
+  }
 });
 
-test('Both previews and Method have working local navigation to the new research pages', () => {
+test('Research navigation remains valid and Method retains its evaluation section', () => {
   const method = read('research-lab/method.html');
-  assert.match(method, /href="\.\/validation\.html"/);
+  assert.match(method, /id="validation"/);
+  assert.match(method, /Brier score for N binary forecasts/);
   assert.match(method, /href="\.\/attention-flow\.html"/);
   assert.match(read('research.html'), /href="research-lab\/attention-flow\.html"/);
   assert.match(read('research-lab/index.html'), /href="\.\/attention-flow\.html"/);
-  for (const file of ['research-lab/validation.html', 'research-lab/attention-flow.html']) {
+  for (const file of [
+    'research-lab/index.html', 'research-lab/attention-flow.html', 'research-lab/attention-simulation.html',
+    'research-lab/method.html', 'research-lab/thesis.html',
+    'research-lab/attention-method.html', 'research-lab/attention-thesis.html',
+    'research-lab/simulation-method.html', 'research-lab/simulation-thesis.html',
+  ]) {
     const page = read(file);
     const ids = [...page.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
     assert.equal(new Set(ids).size, ids.length, `${file} must not duplicate IDs`);

@@ -158,10 +158,8 @@ const PUBLIC_FILES = Object.freeze([
   'img/pitch/polymarket.png',
   'licenses/cobe-MIT.txt',
   'licenses/three-MIT.txt',
-  'research-lab/assets/content-CYtyA-wJ.css',
   'research-lab/assets/attention-flow-public-v1.css',
   'research-lab/assets/attention-flow-public-v1.js',
-  'research-lab/assets/validation-public-v1.css',
   'research-lab/assets/research-links-v1.css',
   'research-lab/assets/readability-v1.css',
   'research-lab/assets/dm-mono-latin-400-normal--0xN8mdc.woff',
@@ -217,7 +215,6 @@ const PUBLIC_FILES = Object.freeze([
   'research-lab/simulation-thesis.html',
   'research-lab/assets/research-papers.css',
   'research-lab/assets/research-papers.js',
-  'research-lab/validation.html',
   'research-lab/attention-flow.html',
   'research-lab/attention-simulation.html',
   'research-lab/attention-simulatoin.html'

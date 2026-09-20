@@ -1,6 +1,8 @@
 /* Authored CJK copy for the simulation overview, source scanner and Research gateway. */
 (function(){window.BackerLocalePacks=window.BackerLocalePacks||{};window.BackerLocalePacks.simulation={
   "messages": {
+    "Use Cases": ["应用场景", "活用例", "활용 사례"],
+    "Explore Backer’s trading behavior research, attention prediction and interactive attention simulation.": ["探索 Backer 的交易行为研究、注意力预测与交互式注意力仿真。", "Backerの取引行動研究、注意予測、インタラクティブな注意シミュレーションを探る。", "Backer의 거래 행동 연구, 관심 예측, 인터랙티브 관심 시뮬레이션을 살펴보세요."],
     "Scan complete. Select a feature to inspect its evidence.": ["扫描完成。选择特征，查看依据。","読み取り完了。特徴を選び、根拠を確認してください。","스캔 완료. 특성을 선택해 근거를 확인하세요."],
     "├─ object ────── ├─ observation ────── └─ unknown ──────": ["├─ 对象 ────── ├─ 观测 ────── └─ 未知 ──────","├─ 対象 ────── ├─ 観察 ────── └─ 不明 ──────","├─ 대상 ────── ├─ 관측 ────── └─ 미지 ──────"],
     "How Simulation Works — Backer Research": [
@@ -1208,35 +1210,15 @@
       "仕組みを見る",
       "작동 방식 보기"
     ],
-    "Define a decision. Explore the response.": [
-      "定义决策，探索反应。",
-      "意思決定を定め、反応を探る。",
-      "의사결정을 정의하고 반응을 탐구하세요."
-    ],
     "Explore the simulation": [
       "探索仿真",
       "シミュレーションを見る",
       "시뮬레이션 살펴보기"
     ],
-    "Simulation Research Previews": [
+    "Simulation Research Preview": [
       "仿真研究预览",
       "シミュレーション研究プレビュー",
       "시뮬레이션 연구 미리보기"
-    ],
-    "Examine the models and their evidence.": [
-      "检视模型与证据。",
-      "モデルと根拠を確かめる。",
-      "모델과 근거를 살펴보세요."
-    ],
-    "01 / THE METHOD": [
-      "01 / 方法",
-      "01 / 方法",
-      "01 / 방법"
-    ],
-    "02 / THE INSTRUMENTS": [
-      "02 / 研究工具",
-      "02 / 研究ツール",
-      "02 / 연구 도구"
     ],
     "From interest to adoption": [
       "从兴趣到采用",

@@ -2,7 +2,6 @@
 window.BackerLocalePacks = window.BackerLocalePacks || {};
 window.BackerLocalePacks.researchPapers = {
   "messages": {
-    "Read the proposed validation protocol ↗": ["阅读拟议验证方案 ↗", "提案する検証計画を読む ↗", "제안된 검증 계획 읽기 ↗"],
     "Explore attention research ↗": ["探索注意力研究 ↗", "注意の研究を見る ↗", "관심 연구 탐색 ↗"],
     "From attention to a priced decision. | Trading behavior method | Backer Research": [
       "从注意力到交易决策。| 交易行为研究方法 | Backer Research",
