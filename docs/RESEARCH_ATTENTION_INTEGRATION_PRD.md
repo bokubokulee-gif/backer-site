@@ -26,3 +26,6 @@ When glasses are on, show “A clearer view to the future.” beneath the robot.
 - Use the user's exact first-card copy: “Define your targeted population” and “Whose behavior matter to this decision?”
 - Step 2: “Create simulations:” with “Simulations are formed from the behavior of a population you try to predict.”
 - Step 3: “See what they will actually do” with “Watch how people make a decision, every step of the way.”
+
+## Intro attention principle
+Place the new paragraph directly beneath the intro headline, within its title column, with a clear paragraph gap: “Human attention follows where human attention accumulates.” Cycle only the amber opening phrase through Human attention, Capital allocation, Decision making, and Conviction, using the robot line's vertical word transition. Reserve the longest phrase's width to prevent layout shifts. Pause on click and while offscreen; keep the opening phrase static for reduced motion.

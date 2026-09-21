@@ -16,18 +16,15 @@
     document.querySelector('.research-gateway--previews').open = true;
   }
 
-  function mountActionLine() {
-    var line = document.querySelector('[data-research-actions]');
-    if (!line) return;
-    var locale = window.BackerI18n ? window.BackerI18n.locale : 'en';
-    var editions = window.BackerLocalePacks && window.BackerLocalePacks.simulation && window.BackerLocalePacks.simulation.actionLine;
-    if (!editions) return;
-    var copy = editions[locale] || editions.en;
+  function mountRotatingLine(line, copy, staticWhenReduced) {
+    if (!line || !copy) return;
     var button = line.querySelector('[data-action-word]');
     var current = line.querySelector('[data-action-current]');
+    if (!button || !current) return;
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     var index = 0, timer = 0, paused = false, visible = true, animations = [];
-    line.querySelector('[data-action-prefix]').textContent = copy.prefix;
+    var prefix = line.querySelector('[data-action-prefix]');
+    if (prefix) prefix.textContent = copy.prefix;
     line.setAttribute('aria-label', copy.accessibleLabel);
     current.textContent = copy.words[0] + copy.suffix;
     copy.words.forEach(function (word) {
@@ -44,6 +41,7 @@
       if (outgoing) outgoing.remove();
     }
     function next() {
+      if (staticWhenReduced && reduced.matches) return;
       settle();
       var previous = current.textContent;
       index = (index + 1) % copy.words.length;
@@ -68,14 +66,14 @@
       button.setAttribute('aria-label', label);
       button.setAttribute('title', label);
       button.setAttribute('aria-pressed', String(paused));
-      if (!paused && visible && !document.hidden) timer = window.setInterval(next, 1000);
+      if (!paused && visible && !document.hidden && !(staticWhenReduced && reduced.matches)) timer = window.setInterval(next, 1000);
       else settle();
     }
     button.addEventListener('click', function () { paused = !paused; sync(); });
     document.addEventListener('visibilitychange', sync);
     window.addEventListener('pagehide', function () { window.clearInterval(timer); settle(); });
     window.addEventListener('pageshow', sync);
-    reduced.addEventListener('change', settle);
+    reduced.addEventListener('change', staticWhenReduced ? sync : settle);
     if ('IntersectionObserver' in window) new IntersectionObserver(function (entries) {
       visible = entries[0].isIntersecting;
       sync();
@@ -84,8 +82,20 @@
     line.dataset.actionCount = String(copy.words.length);
     sync();
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mountActionLine, {once:true});
-  else mountActionLine();
+  function mountActionLines() {
+    var locale = window.BackerI18n ? window.BackerI18n.locale : 'en';
+    var editions = window.BackerLocalePacks && window.BackerLocalePacks.simulation && window.BackerLocalePacks.simulation.actionLine;
+    if (editions) mountRotatingLine(document.querySelector('[data-research-actions]'), editions[locale] || editions.en, false);
+    mountRotatingLine(document.querySelector('[data-research-principle]'), {
+      words: ['Human attention', 'Capital allocation', 'Decision making', 'Conviction'],
+      suffix: '',
+      accessibleLabel: 'Human attention, capital allocation, decision making, and conviction follow where human attention accumulates.',
+      pauseLabel: 'Pause rotating phrase',
+      resumeLabel: 'Resume rotating phrase'
+    }, true);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mountActionLines, {once:true});
+  else mountActionLines();
 
   window.addEventListener('pageshow', function () { document.body.classList.remove('is-launching'); });
   var SPEED_PX_PER_SECOND = 16;
