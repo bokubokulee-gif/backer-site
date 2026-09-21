@@ -83,8 +83,8 @@
       outgoing.setAttribute('aria-hidden', 'true');
       outgoing.textContent = previous;
       button.appendChild(outgoing);
-      animations.push(current.animate([{opacity:0,transform:'translateY(.45em)'},{opacity:1,transform:'translateY(0)'}], timing));
-      var leaving = outgoing.animate([{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(-.45em)'}], timing);
+      animations.push(current.animate([{opacity:0,transform:'translateY(100%)'},{opacity:1,transform:'translateY(0)'}], timing));
+      var leaving = outgoing.animate([{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(-100%)'}], timing);
       leaving.onfinish = function () { outgoing.remove(); holdCurrentWord(); };
       animations.push(leaving);
     }

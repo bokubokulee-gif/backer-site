@@ -35,7 +35,7 @@ test('Research scroll story sits below its H1 and above the original interactive
 test('Embedded experience uses the requested copy without its standalone page chrome', () => {
   const page = read('research.html');
   const experience = page.slice(page.indexOf('class="attention-experience"'), page.indexOf('class="research-continuation"'));
-  assert.match(experience.replace(/<[^>]*>/g, ''), /We simulate a world configured to accumulated human attention and decision makings\./);
+  assert.match(experience.replace(/<[^>]*>/g, ''), /Simulate a world configured to accumulated human attention and decision makings/);
   assert.doesNotMatch(experience, /<header\b|<footer\b|<h1\b|motion-toggle|scene-label|Explore the model|Experience again/);
   assert.match(experience, /aria-label="Previous step"/);
   assert.match(experience, /aria-label="Next step"/);
