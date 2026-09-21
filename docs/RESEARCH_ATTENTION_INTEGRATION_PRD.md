@@ -25,3 +25,4 @@ When glasses are on, show “A clearer view to the future.” beneath the robot.
 - Remove the bottom progress line. Keep the forward arrow on all three steps; at 3/3 it still returns to 1/3.
 - Use the user's exact first-card copy: “Define your targeted population” and “Whose behavior matter to this decision?”
 - Step 2: “Create simulations:” with “Simulations are formed from the behavior of a population you try to predict.”
+- Step 3: “See what they will actually do” with “Watch how people make a decision, every step of the way.”
