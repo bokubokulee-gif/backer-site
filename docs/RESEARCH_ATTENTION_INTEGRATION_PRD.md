@@ -24,3 +24,4 @@ When glasses are on, show “A clearer view to the future.” beneath the robot.
 - Add the existing gold Backer mark before Backer in the H1, with bold Backer and light Research as in the supplied Kalshi reference. Keep mark and Backer together when the title wraps on mobile.
 - Remove the bottom progress line. Keep the forward arrow on all three steps; at 3/3 it still returns to 1/3.
 - Use the user's exact first-card copy: “Define your targeted population” and “Whose behavior matter to this decision?”
+- Step 2: “Create simulations:” with “Simulations are formed from the behavior of a population you try to predict.”
