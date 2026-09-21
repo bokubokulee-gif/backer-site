@@ -1,4 +1,4 @@
-/* A persistent population. Scroll bends its surface; a single external clock renders it. */
+/* A persistent, wandering population. A single external clock drives motion and scroll. */
 const COUNT = 1152;
 const PATH_COUNT = 42;
 const TAU = Math.PI * 2;
@@ -20,8 +20,6 @@ export function createAttentionScene(canvas) {
   const sphereZ = new Float32Array(COUNT);
   const diskX = new Float32Array(COUNT);
   const diskZ = new Float32Array(COUNT);
-  const selection = new Float32Array(COUNT);
-  const diskFocus = new Float32Array(COUNT);
   const seeds = new Float32Array(COUNT * 3);
   const pointSize = new Float32Array(COUNT);
   const color = new Uint8Array(COUNT);
@@ -47,12 +45,38 @@ export function createAttentionScene(canvas) {
     pointSize[i] = .86 + random() * .24;
     const tint = random();
     color[i] = tint < .09 ? 1 : tint < .115 ? 2 : 0;
+    // Keep identities and their neighbours across every viewport. Irregular cells plus
+    // overlapping flight paths provide even coverage without visible rows or resets.
+    const u = ((i % 36) + .03 + seeds[i * 3] * .94) / 36 * 2 - 1;
+    const v = (Math.floor(i / 36) + .03 + seeds[i * 3 + 1] * .94) / 32 * 2 - 1;
+    gridX[i] = u;
+    gridY[i] = v;
+    const longitude = u * Math.PI * .98;
+    const latitude = clamp(v * .977, -.996, .996);
+    const ring = Math.sqrt(1 - latitude * latitude);
+    const shell = .26 + .72 * Math.cbrt(seeds[i * 3 + 2]);
+    sphereX[i] = Math.sin(longitude) * ring * shell;
+    sphereY[i] = latitude * shell;
+    sphereZ[i] = Math.cos(longitude) * ring * shell;
+    const radial = Math.sqrt(1 - Math.abs(latitude));
+    diskX[i] = Math.sin(longitude) * radial;
+    diskZ[i] = Math.cos(longitude) * radial;
   }
   for (let j = 0; j < PATH_COUNT; j++) {
     pathBend[j] = (random() - .5) * .34;
     pathDrift[j] = (random() - .5) * .46;
     pathPhase[j] = random();
     pathDepth[j] = (random() - .5) * 1.24;
+    const targetX = -.91 + j / (PATH_COUNT - 1) * 1.82;
+    let nearest = 0;
+    let distance = Infinity;
+    for (let i = 0; i < COUNT; i++) {
+      const dx = diskX[i] - targetX;
+      const dz = diskZ[i] - pathDepth[j];
+      const candidate = dx * dx + dz * dz;
+      if (candidate < distance) { distance = candidate; nearest = i; }
+    }
+    pathAnchor[j] = nearest;
   }
 
   // Rasterize the optical falloff once. Each frame paints images rather than thousands of arcs.
@@ -112,45 +136,6 @@ export function createAttentionScene(canvas) {
       ? Math.min(width * .395, sceneHeight * .56)
       : Math.min(width * .34, height * .415);
     diskRadius = width * .405;
-    const gridWidth = width * 1.025;
-    const gridHeight = mobile ? sceneHeight + 62 : height * .97;
-    const columns = Math.max(12, Math.round(Math.sqrt(COUNT * gridWidth / gridHeight)));
-    const rows = Math.ceil(COUNT / columns);
-
-    for (let i = 0; i < COUNT; i++) {
-      const col = i % columns;
-      const row = Math.floor(i / columns);
-      const u = col / (columns - 1) * 2 - 1;
-      const v = row / (rows - 1) * 2 - 1;
-      gridX[i] = u * gridWidth * .5;
-      gridY[i] = v * gridHeight * .5;
-      // Neighbours stay neighbours: a planar population wraps around longitude, not random targets.
-      const longitude = u * Math.PI * .98 + (seeds[i * 3] - .5) * .12;
-      const latitude = clamp(v * .977 + (seeds[i * 3 + 1] - .5) * .055, -.996, .996);
-      const ring = Math.sqrt(1 - latitude * latitude);
-      const shell = .958 + seeds[i * 3 + 2] * .042;
-      sphereX[i] = Math.sin(longitude) * ring * shell;
-      sphereY[i] = latitude * shell;
-      sphereZ[i] = Math.cos(longitude) * ring * shell;
-      // Flatten along the same meridians. Equal-area radii prevent a dense, noisy outer rim.
-      const radial = Math.sqrt(1 - Math.abs(latitude));
-      diskX[i] = Math.sin(longitude) * radial;
-      diskZ[i] = Math.cos(longitude) * radial;
-      selection[i] = Math.exp(-(u * u / .105 + v * v / .20) * 2.1);
-      diskFocus[i] = Math.exp(-(diskX[i] * diskX[i] * 5.5 + diskZ[i] * diskZ[i] * 2.2));
-    }
-    for (let j = 0; j < PATH_COUNT; j++) {
-      const targetX = -.91 + j / (PATH_COUNT - 1) * 1.82;
-      let nearest = 0;
-      let distance = Infinity;
-      for (let i = 0; i < COUNT; i++) {
-        const dx = diskX[i] - targetX;
-        const dz = diskZ[i] - pathDepth[j];
-        const candidate = dx * dx + dz * dz;
-        if (candidate < distance) { distance = candidate; nearest = i; }
-      }
-      pathAnchor[j] = nearest;
-    }
     ambient = ctx.createRadialGradient(width * .5, height * .43, 0, width * .5, height * .43, width * .48);
     ambient.addColorStop(0, 'rgba(233,189,134,.021)');
     ambient.addColorStop(.6, 'rgba(245,243,238,.005)');
@@ -165,11 +150,16 @@ export function createAttentionScene(canvas) {
       const anchor = pathAnchor[j];
       const x0 = px[anchor];
       const y0 = py[anchor];
-      const x1 = x0 + pathBend[j] * width * .23;
-      const y1 = y0 - sceneHeight * .43;
-      const x2 = x0 + (pathBend[j] * .65 + pathDrift[j] * .18) * width;
-      const y2 = -height * .14;
-      const x3 = x0 + pathDrift[j] * width;
+      const phase = pathPhase[j] * TAU;
+      const breeze = Math.sin(elapsed * .19 + phase) * .035 + Math.sin(elapsed * .31 + phase * 1.7) * .018;
+      const curl = Math.cos(elapsed * .26 + phase * 1.3) * .030;
+      // The entire curve wanders with its person. Pulses use these same control
+      // points, so they always follow the visible current as it changes shape.
+      const x1 = x0 + (pathBend[j] * .45 + breeze * .75) * width;
+      const y1 = y0 - sceneHeight * (.30 + Math.sin(elapsed * .17 + phase) * .055);
+      const x2 = x0 + (pathBend[j] * .85 + pathDrift[j] * .18 - breeze + curl) * width;
+      const y2 = -height * .14 + Math.sin(elapsed * .21 + phase) * height * .035;
+      const x3 = x0 + (pathDrift[j] + breeze * .65) * width;
       const y3 = -height * .45;
       ctx.strokeStyle = j % 11 === 0 ? COLORS[1] : j % 19 === 0 ? COLORS[2] : COLORS[0];
       ctx.globalAlpha = opacity * (.14 + j % 5 * .024);
@@ -213,28 +203,64 @@ export function createAttentionScene(canvas) {
     const sphereCenter = mobile ? sceneTop + sceneHeight * .51 : height * .46;
     const diskCenter = mobile ? sceneTop + sceneHeight * .69 : height * .565;
     const centerY = gridCenter + (sphereCenter - gridCenter) * wrap + (diskCenter - sphereCenter) * flatten;
+    const gridWidth = width * 1.025;
+    const gridHeight = mobile ? sceneHeight + 62 : height * .97;
+    const diskThickness = mobile ? clamp(sceneHeight * .095, 15, 34) : height * .060;
     const cameraDistance = Math.max(sphereRadius * 4.7, width * 1.14, 400);
     const baseRadius = mobile ? clamp(width * .0038, 1.3, 1.8) : clamp(width * .00235, 2.15, 3.25);
     const emphasisRadiusGain = mobile ? .62 : .46;
     const lowerFade = mobile ? Math.max(height - 203, sceneTop + sceneHeight + 30) : height + 15;
+    const focusX = Math.sin(elapsed * .17) * .14 + Math.sin(elapsed * .083) * .045;
+    const focusY = Math.sin(elapsed * .13) * .15;
+    const focusBreath = 1 + Math.sin(elapsed * .27) * .085;
     bucketHeads.fill(-1);
 
     for (let i = 0; i < COUNT; i++) {
-      const objectX = sphereX[i] * sphereRadius * (1 - flatten) + diskX[i] * diskRadius * flatten;
-      const objectY = sphereY[i] * sphereRadius * (1 - flatten) + (seeds[i * 3] - .5) * 7 * flatten;
-      const objectZ = sphereZ[i] * sphereRadius * (1 - flatten) + diskZ[i] * diskRadius * flatten;
+      const a = seeds[i * 3];
+      const b = seeds[i * 3 + 1];
+      const c = seeds[i * 3 + 2];
+      const u = gridX[i];
+      const v = gridY[i];
+      const orbit = elapsed * (.26 + b * .36) + a * TAU;
+      const wander = elapsed * (.37 + a * .27) + c * TAU;
+      // Broad currents share a spatial field; each person also has a different
+      // looping path and a smaller, faster flutter. All are continuous in time.
+      const driftX = Math.sin(v * 3.6 + elapsed * .23) * .050
+        + Math.cos(u * 4.1 + v * 1.7 - elapsed * .17) * .024
+        + Math.cos(orbit) * (.045 + c * .035) + Math.sin(wander) * .027
+        + Math.sin(elapsed * (1.25 + a * .90) + c * TAU) * .010;
+      const driftY = Math.cos(u * 3.4 - elapsed * .21) * .060
+        + Math.sin(v * 3.1 - u * 1.6 + elapsed * .14) * .025
+        + Math.sin(orbit) * (.060 + b * .040) + Math.cos(wander) * .024
+        + Math.cos(elapsed * (1.05 + b * .86) + a * TAU) * .016;
+      const driftZ = Math.sin(wander + u * 2.2) * .105
+        + Math.cos(orbit * .73 + v * 2.5) * .065;
+      const populationX = u + driftX;
+      const populationY = v + driftY;
+      const flowX = diskX[i] + driftX * .64;
+      const flowZ = diskZ[i] + driftZ * .50;
+      const objectX = (sphereX[i] + driftX * .82) * sphereRadius * (1 - flatten) + flowX * diskRadius * flatten;
+      const objectY = (sphereY[i] + driftY * .82) * sphereRadius * (1 - flatten)
+        + ((b - .5) * diskThickness + driftY * sphereRadius * .65) * flatten;
+      const objectZ = (sphereZ[i] + driftZ * .70) * sphereRadius * (1 - flatten) + flowZ * diskRadius * flatten;
       const rotatedX = objectX * cosRotation + objectZ * sinRotation;
       const rotatedZ = -objectX * sinRotation + objectZ * cosRotation;
       const tiltedY = objectY * cosPitch - rotatedZ * sinPitch;
       const tiltedZ = objectY * sinPitch + rotatedZ * cosPitch;
-      const worldX = gridX[i] * (1 - wrap) + rotatedX * wrap;
-      const worldY = gridY[i] * (1 - wrap) + tiltedY * wrap;
-      const worldZ = tiltedZ * wrap;
+      const worldX = populationX * gridWidth * .5 * (1 - wrap) + rotatedX * wrap;
+      const worldY = populationY * gridHeight * .5 * (1 - wrap) + tiltedY * wrap;
+      const worldZ = driftZ * Math.min(width, gridHeight) * .09 * (1 - wrap) + tiltedZ * wrap;
       const perspective = cameraDistance / (cameraDistance - worldZ);
       const x = width * .5 + worldX * perspective;
       const y = centerY + worldY * perspective;
-      const depth = clamp(.5 + tiltedZ / (Math.max(sphereRadius, diskRadius * flatten) * 2.1), 0, 1);
-      const focus = selection[i] * (1 - flatten) + diskFocus[i] * flatten;
+      const depth = clamp(.5 + worldZ / (Math.max(sphereRadius, diskRadius * flatten) * 2.1), 0, 1);
+      const focusDX = populationX - focusX;
+      const focusDY = populationY - focusY;
+      const populationFocus = Math.exp(-(focusDX * focusDX / .105 + focusDY * focusDY / .20) * 2.1 / focusBreath);
+      const flowDX = flowX - focusX * 1.15;
+      const flowDZ = flowZ - focusY * .75;
+      const flowFocus = Math.exp(-(flowDX * flowDX * 5.5 + flowDZ * flowDZ * 2.2) / focusBreath);
+      const focus = populationFocus * (1 - flatten) + flowFocus * flatten;
       // Give the selected population a clear core with a smooth falloff, especially on mobile.
       const selected = smooth((focus - .10) / .55);
       const edgeX = smooth(Math.min(x + 10, width + 10 - x) / (width * .06));
