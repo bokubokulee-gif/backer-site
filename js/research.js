@@ -22,7 +22,7 @@
     var current = line.querySelector('[data-action-current]');
     if (!button || !current) return;
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-    var index = 0, timer = 0, paused = false, visible = true, animations = [];
+    var index = 0, timer = 0, paused = false, visible = true, pageActive = true, animations = [];
     var measures = [], widthAnimation = null;
     var timing = {duration:240, easing:'cubic-bezier(.22,.7,.2,1)'};
     var prefix = line.querySelector('[data-action-prefix]');
@@ -53,14 +53,23 @@
       }
     }
     function settle() {
-      animations.forEach(function (animation) { animation.cancel(); });
+      animations.forEach(function (animation) { animation.onfinish = null; animation.cancel(); });
       animations = [];
       widthAnimation = null;
       var outgoing = button.querySelector('.research-action-outgoing');
       if (outgoing) outgoing.remove();
     }
+    function canRotate() {
+      return !paused && visible && pageActive && !document.hidden && !(staticWhenReduced && reduced.matches);
+    }
+    function holdCurrentWord() {
+      window.clearTimeout(timer);
+      // The readable hold starts after the slide finishes, not when the new text is inserted.
+      timer = canRotate() ? window.setTimeout(next, 1000) : 0;
+    }
     function next() {
-      if (staticWhenReduced && reduced.matches) return;
+      timer = 0;
+      if (!canRotate()) return;
       settle();
       var previousWidth = copy.fitActiveWord ? button.getBoundingClientRect().width : 0;
       var previous = current.textContent;
@@ -68,7 +77,7 @@
       current.textContent = copy.words[index] + copy.suffix;
       line.dataset.actionIndex = index;
       fitCurrentWord(previousWidth);
-      if (reduced.matches || !current.animate) return;
+      if (reduced.matches || !current.animate) { holdCurrentWord(); return; }
       var outgoing = document.createElement('span');
       outgoing.className = 'research-action-outgoing';
       outgoing.setAttribute('aria-hidden', 'true');
@@ -76,24 +85,24 @@
       button.appendChild(outgoing);
       animations.push(current.animate([{opacity:0,transform:'translateY(.45em)'},{opacity:1,transform:'translateY(0)'}], timing));
       var leaving = outgoing.animate([{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(-.45em)'}], timing);
-      leaving.onfinish = function () { outgoing.remove(); };
+      leaving.onfinish = function () { outgoing.remove(); holdCurrentWord(); };
       animations.push(leaving);
     }
     function sync() {
-      window.clearInterval(timer);
+      window.clearTimeout(timer);
       timer = 0;
+      settle();
       var label = paused ? copy.resumeLabel : copy.pauseLabel;
       button.setAttribute('aria-label', label);
       button.setAttribute('title', label);
       button.setAttribute('aria-pressed', String(paused));
-      if (!paused && visible && !document.hidden && !(staticWhenReduced && reduced.matches)) timer = window.setInterval(next, 1000);
-      else settle();
+      holdCurrentWord();
     }
     button.addEventListener('click', function () { paused = !paused; sync(); });
     document.addEventListener('visibilitychange', sync);
-    window.addEventListener('pagehide', function () { window.clearInterval(timer); settle(); });
-    window.addEventListener('pageshow', sync);
-    reduced.addEventListener('change', staticWhenReduced ? sync : settle);
+    window.addEventListener('pagehide', function () { pageActive = false; window.clearTimeout(timer); timer = 0; settle(); });
+    window.addEventListener('pageshow', function () { pageActive = true; sync(); });
+    reduced.addEventListener('change', sync);
     if (copy.fitActiveWord) {
       fitCurrentWord();
       // Observe the intrinsic word measures, not the animated button, to avoid resize feedback.
