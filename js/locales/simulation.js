@@ -1647,6 +1647,11 @@
   }
 },
   "rich": {
+    ".attention-experience .intro-description-copy": [
+      "我们构建一个<span class=\"attention\">仿真</span>世界，观察人的注意力如何积累、决策如何形成。",
+      "人の注意が集まり、意思決定が形づくられる世界を<span class=\"attention\">シミュレーションします</span>。",
+      "사람의 관심이 쌓이고 의사결정이 형성되는 세계를 <span class=\"attention\">시뮬레이션합니다</span>."
+    ],
     "#hero-title": [
       "注意力如何<br>转化为决策。",
       "注意から、<br>意思決定へ。",
