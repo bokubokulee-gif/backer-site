@@ -36,8 +36,19 @@ export function createAttentionScene(canvas) {
   const py = new Float32Array(COUNT);
   const pz = new Float32Array(COUNT);
   const alpha = new Float32Array(COUNT);
+  const alphaBeforeHorizontalFade = new Float32Array(COUNT);
   const radius = new Float32Array(COUNT);
   const emphasis = new Float32Array(COUNT);
+  const flowMass = new Float32Array(COUNT);
+  const flowMin = new Float64Array(2);
+  const flowMax = new Float64Array(2);
+  const flowLight = new Float64Array(2);
+  const flowMoment = new Float64Array(2);
+  const flowBowlLight = new Float64Array(2);
+  const flowCenter = new Float64Array(2);
+  const flowHalfWidth = new Float64Array(2);
+  const flowTarget = new Float64Array(2);
+  const flowShift = new Float64Array(2);
   const pathAnchor = new Uint16Array(PATH_COUNT);
   const pathBend = new Float32Array(PATH_COUNT);
   const pathDrift = new Float32Array(PATH_COUNT);
@@ -334,12 +345,14 @@ export function createAttentionScene(canvas) {
       pz[i] = depth;
       emphasis[i] = selected;
       alpha[i] = clamp((backgroundOpacity + (.96 - backgroundOpacity) * selected) * edgeX * edgeY, 0, 1);
+      alphaBeforeHorizontalFade[i] = clamp((backgroundOpacity + (.96 - backgroundOpacity) * selected) * edgeY, 0, 1);
       radius[i] = baseRadius * pointSize[i] * (.92 + selected * emphasisRadiusGain) * perspective
         * (1 - wrap * .25 + wrap * depth * .56 + flatten * .22);
       const bucket = clamp(Math.floor(depth * 7.999), 0, 7);
       nextPoint[i] = bucketHeads[bucket];
       bucketHeads[bucket] = i;
     }
+    if (flatten > 0) centerFlowPlane(flatten);
     drawPaths(smooth((progress - 1.16) / .69));
     for (let bucket = 0; bucket < 8; bucket++) {
       for (let i = bucketHeads[bucket]; i !== -1; i = nextPoint[i]) {
@@ -363,6 +376,66 @@ export function createAttentionScene(canvas) {
       }
     }
     ctx.globalAlpha = 1;
+  }
+
+  function centerFlowPlane(amount) {
+    flowMin.fill(Infinity);
+    flowMax.fill(-Infinity);
+    flowLight.fill(0);
+    flowMoment.fill(0);
+    for (let i = 0; i < COUNT; i++) {
+      const group = emphasis[i] > 0 ? 1 : 0;
+      // Projected area, tint, and the cached sprite's optical falloff determine
+      // visible mass. World-space centering alone biases the plane toward near dots.
+      const soft = pz[i] < .29 ? 1 : pz[i] > .86 ? smooth((amount - .42) / .16) : 0;
+      const tint = color[i] === 1 ? .79972 : color[i] === 2 ? .519273 * (1 - emphasis[i]) + emphasis[i] : 1;
+      flowMass[i] = radius[i] * radius[i] * tint * (1 - soft * .3544087);
+      const light = flowMass[i] * alpha[i];
+      flowMin[group] = Math.min(flowMin[group], px[i]);
+      flowMax[group] = Math.max(flowMax[group], px[i]);
+      flowLight[group] += light;
+      flowMoment[group] += px[i] * light;
+    }
+    for (let group = 0; group < 2; group++) {
+      const center = (flowMin[group] + flowMax[group]) * .5;
+      const mean = flowLight[group] > 0 ? flowMoment[group] / flowLight[group] : center;
+      flowShift[group] = (width * .5 - center) * amount;
+      flowCenter[group] = center + flowShift[group];
+      flowHalfWidth[group] = Math.max(1, (flowMax[group] - flowMin[group]) * .5);
+      flowTarget[group] = mean + (width * .5 - mean) * amount;
+    }
+    for (let i = 0; i < COUNT; i++) {
+      px[i] += flowShift[emphasis[i] > 0 ? 1 : 0];
+      alpha[i] = alphaBeforeHorizontalFade[i] * smooth(Math.min(px[i] + 10, width + 10 - px[i]) / (width * .06));
+    }
+    // Balance the interior without moving the centered left/right extents. The
+    // shallow adjustment keeps individual spacing irregular and leaves depth intact.
+    // Re-measuring also accounts for the edge fade after projection and translation.
+    for (let pass = 0; pass < 3; pass++) {
+      flowLight.fill(0);
+      flowMoment.fill(0);
+      flowBowlLight.fill(0);
+      for (let i = 0; i < COUNT; i++) {
+        const group = emphasis[i] > 0 ? 1 : 0;
+        const normalizedX = (px[i] - flowCenter[group]) / flowHalfWidth[group];
+        const light = flowMass[i] * alpha[i];
+        flowLight[group] += light;
+        flowMoment[group] += px[i] * light;
+        flowBowlLight[group] += Math.max(0, 1 - normalizedX * normalizedX) * light;
+      }
+      for (let group = 0; group < 2; group++) {
+        const limit = flowHalfWidth[group] * .18;
+        flowShift[group] = flowBowlLight[group] > 1e-7
+          ? clamp((flowTarget[group] * flowLight[group] - flowMoment[group]) / flowBowlLight[group], -limit, limit)
+          : 0;
+      }
+      for (let i = 0; i < COUNT; i++) {
+        const group = emphasis[i] > 0 ? 1 : 0;
+        const normalizedX = (px[i] - flowCenter[group]) / flowHalfWidth[group];
+        px[i] += flowShift[group] * Math.max(0, 1 - normalizedX * normalizedX);
+        alpha[i] = alphaBeforeHorizontalFade[i] * smooth(Math.min(px[i] + 10, width + 10 - px[i]) / (width * .06));
+      }
+    }
   }
 
   function render(nowMs = performance.now()) {

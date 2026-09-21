@@ -16,13 +16,17 @@
     document.querySelector('.research-gateway--previews').open = true;
   }
 
-  function mountRotatingLine(line, copy, staticWhenReduced) {
+  var WORD_ROTATION_MS = 2000;
+  var wordRotationEpoch = performance.now() + WORD_ROTATION_MS;
+
+  function mountRotatingLine(line, copy, staticWhenReduced, phaseOffset) {
     if (!line || !copy) return;
     var button = line.querySelector('[data-action-word]');
     var current = line.querySelector('[data-action-current]');
     if (!button || !current) return;
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     var index = 0, timer = 0, paused = false, visible = true, pageActive = true, animations = [];
+    var lastWordCycle = -1, pendingWordCycle = 0, nextWordAt = 0;
     var measures = [], widthAnimation = null;
     var timing = {duration:240, easing:'cubic-bezier(.22,.7,.2,1)'};
     var prefix = line.querySelector('[data-action-prefix]');
@@ -64,12 +68,22 @@
     }
     function holdCurrentWord() {
       window.clearTimeout(timer);
-      // The readable hold starts after the slide finishes, not when the new text is inserted.
-      timer = canRotate() ? window.setTimeout(next, 1000) : 0;
+      timer = 0;
+      if (!canRotate()) return;
+      // Separate slots keep the lines a second apart, even after scrolling or resuming.
+      // Each line advances every two seconds, including its short transition.
+      var now = performance.now();
+      var firstSlot = wordRotationEpoch + phaseOffset;
+      pendingWordCycle = Math.max(lastWordCycle + 1, 0, Math.floor((now - firstSlot) / WORD_ROTATION_MS) + 1);
+      nextWordAt = firstSlot + pendingWordCycle * WORD_ROTATION_MS;
+      timer = window.setTimeout(next, Math.max(1, Math.ceil(nextWordAt - now)));
     }
     function next() {
       timer = 0;
       if (!canRotate()) return;
+      // A busy frame must not make both lines catch up at once.
+      if (performance.now() - nextWordAt > 120) { holdCurrentWord(); return; }
+      lastWordCycle = pendingWordCycle;
       settle();
       var previousWidth = copy.fitActiveWord ? button.getBoundingClientRect().width : 0;
       var previous = current.textContent;
@@ -128,7 +142,7 @@
   function mountActionLines() {
     var locale = window.BackerI18n ? window.BackerI18n.locale : 'en';
     var editions = window.BackerLocalePacks && window.BackerLocalePacks.simulation && window.BackerLocalePacks.simulation.actionLine;
-    if (editions) mountRotatingLine(document.querySelector('[data-research-actions]'), editions[locale] || editions.en, false);
+    if (editions) mountRotatingLine(document.querySelector('[data-research-actions]'), editions[locale] || editions.en, false, 1000);
     mountRotatingLine(document.querySelector('[data-research-principle]'), {
       words: ['Human', 'Capital', 'Conviction', 'Culture'],
       fitActiveWord: true,
@@ -136,7 +150,7 @@
       accessibleLabel: 'Human, capital, conviction, and culture follow where human attention accumulates.',
       pauseLabel: 'Pause rotating phrase',
       resumeLabel: 'Resume rotating phrase'
-    }, true);
+    }, true, 0);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mountActionLines, {once:true});
   else mountActionLines();
