@@ -23,6 +23,8 @@
     if (!button || !current) return;
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     var index = 0, timer = 0, paused = false, visible = true, animations = [];
+    var measures = [], widthAnimation = null;
+    var timing = {duration:240, easing:'cubic-bezier(.22,.7,.2,1)'};
     var prefix = line.querySelector('[data-action-prefix]');
     if (prefix) prefix.textContent = copy.prefix;
     line.setAttribute('aria-label', copy.accessibleLabel);
@@ -33,27 +35,45 @@
       measure.setAttribute('aria-hidden', 'true');
       measure.textContent = word + copy.suffix;
       button.appendChild(measure);
+      measures.push(measure);
     });
+    function fitCurrentWord(fromWidth) {
+      if (!copy.fitActiveWord) return;
+      var width = measures[index].getBoundingClientRect().width;
+      if (!(width > 0)) return;
+      var target = (Math.ceil(width * 1000) / 1000) + 'px';
+      if (button.style.width === target) return;
+      if (widthAnimation) widthAnimation.cancel();
+      widthAnimation = null;
+      // Keep the final width in the style, so canceling a slide never restores the old word's gap.
+      button.style.width = target;
+      if (typeof fromWidth === 'number' && fromWidth > 0 && !reduced.matches && current.animate && button.animate) {
+        widthAnimation = button.animate([{width:fromWidth + 'px'}, {width:target}], timing);
+        animations.push(widthAnimation);
+      }
+    }
     function settle() {
       animations.forEach(function (animation) { animation.cancel(); });
       animations = [];
+      widthAnimation = null;
       var outgoing = button.querySelector('.research-action-outgoing');
       if (outgoing) outgoing.remove();
     }
     function next() {
       if (staticWhenReduced && reduced.matches) return;
       settle();
+      var previousWidth = copy.fitActiveWord ? button.getBoundingClientRect().width : 0;
       var previous = current.textContent;
       index = (index + 1) % copy.words.length;
       current.textContent = copy.words[index] + copy.suffix;
       line.dataset.actionIndex = index;
+      fitCurrentWord(previousWidth);
       if (reduced.matches || !current.animate) return;
       var outgoing = document.createElement('span');
       outgoing.className = 'research-action-outgoing';
       outgoing.setAttribute('aria-hidden', 'true');
       outgoing.textContent = previous;
       button.appendChild(outgoing);
-      var timing = {duration:240, easing:'cubic-bezier(.22,.7,.2,1)'};
       animations.push(current.animate([{opacity:0,transform:'translateY(.45em)'},{opacity:1,transform:'translateY(0)'}], timing));
       var leaving = outgoing.animate([{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(-.45em)'}], timing);
       leaving.onfinish = function () { outgoing.remove(); };
@@ -74,6 +94,20 @@
     window.addEventListener('pagehide', function () { window.clearInterval(timer); settle(); });
     window.addEventListener('pageshow', sync);
     reduced.addEventListener('change', staticWhenReduced ? sync : settle);
+    if (copy.fitActiveWord) {
+      fitCurrentWord();
+      // Observe the intrinsic word measures, not the animated button, to avoid resize feedback.
+      if ('ResizeObserver' in window) {
+        var wordObserver = new ResizeObserver(function () { fitCurrentWord(); });
+        measures.forEach(function (measure) { wordObserver.observe(measure); });
+      }
+      window.addEventListener('resize', function () { fitCurrentWord(); }, {passive:true});
+      window.addEventListener('pageshow', function () { fitCurrentWord(); });
+      if (document.fonts) {
+        if (document.fonts.ready) document.fonts.ready.then(function () { fitCurrentWord(); });
+        if (document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', function () { fitCurrentWord(); });
+      }
+    }
     if ('IntersectionObserver' in window) new IntersectionObserver(function (entries) {
       visible = entries[0].isIntersecting;
       sync();
@@ -87,9 +121,10 @@
     var editions = window.BackerLocalePacks && window.BackerLocalePacks.simulation && window.BackerLocalePacks.simulation.actionLine;
     if (editions) mountRotatingLine(document.querySelector('[data-research-actions]'), editions[locale] || editions.en, false);
     mountRotatingLine(document.querySelector('[data-research-principle]'), {
-      words: ['Human attention', 'Capital allocation', 'Decision making', 'Conviction'],
+      words: ['Human', 'Capital', 'Conviction', 'Culture'],
+      fitActiveWord: true,
       suffix: '',
-      accessibleLabel: 'Human attention, capital allocation, decision making, and conviction follow where human attention accumulates.',
+      accessibleLabel: 'Human, capital, conviction, and culture follow where human attention accumulates.',
       pauseLabel: 'Pause rotating phrase',
       resumeLabel: 'Resume rotating phrase'
     }, true);

@@ -9,14 +9,15 @@
 .attention-experience button{font:inherit;color:inherit;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .attention-experience a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
 .attention-experience button:focus-visible,.attention-experience a:focus-visible,.attention-experience .stage:focus-visible{outline:2px solid var(--attention-amber);outline-offset:5px}
-.attention-experience .intro{width:min(1130px,76vw);margin:0 auto;padding:70px 0 64px;display:grid;grid-template-columns:minmax(0,1fr) 38%;align-items:start;gap:clamp(32px,4vw,68px)}
-.attention-experience .intro h2{font-size:clamp(30px,2vw,34px);font-weight:400;line-height:1.2;letter-spacing:-.045em;margin:0;text-wrap:pretty}
+.attention-experience .intro{width:min(1130px,90vw);margin:0 auto;padding:70px 0 24px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;column-gap:clamp(32px,5vw,72px);row-gap:64px}
+.attention-experience .intro h2,.attention-experience .intro-principle{font-family:inherit;font-size:clamp(30px,2.7vw,40px);font-weight:400;line-height:1.2;letter-spacing:-.045em;margin:0;text-wrap:pretty}
 .attention-experience .attention{color:var(--attention-amber)}
 .attention-experience .secondary{color:#999792}
-.attention-experience .intro-description,.attention-experience .intro-principle{font-size:18px;line-height:1.45;max-width:440px;color:#e0ddd7;letter-spacing:-.015em;margin:0;text-wrap:pretty}
-.attention-experience .intro-description{margin-top:2px}
-.attention-experience .intro-principle{margin-top:28px}
-.attention-experience .intro-principle .research-action-word{color:var(--attention-amber);font-weight:500;vertical-align:bottom;white-space:nowrap}
+.attention-experience .intro-description{grid-column:1/-1;min-width:0;font-size:clamp(14px,1.8vw,18px);line-height:1.5;color:#e0ddd7;letter-spacing:-.015em;margin:0;text-align:center;white-space:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:#e9bd8666 transparent}
+.attention-experience .intro-description:focus-visible{outline:1px solid var(--attention-amber);outline-offset:5px}
+.attention-experience .intro-principle .research-action-word{color:var(--attention-amber);font-weight:inherit;vertical-align:bottom;white-space:nowrap}
+.attention-experience .intro-principle .research-action-current{width:max-content}
+.attention-experience .intro-principle .research-action-measure{position:absolute;inset:auto;width:max-content}
 .attention-experience .intro-principle .research-action-word:hover{color:#f1cfa5}
 .attention-experience .experience-track{position:relative;height:390svh;margin:0;scroll-margin-top:var(--scene-inset)}
 .attention-experience .stage-wrap{position:sticky;top:var(--scene-inset);height:calc(100svh - var(--scene-inset) - var(--scene-bottom));display:flex;justify-content:center}
@@ -63,15 +64,10 @@
 .research-continuation .research-orbit{top:50%;width:min(calc(100vw - 64px),calc(var(--robot-slot-height) + 32px));transform:translate(-50%,-50%)}
 .research-continuation .research-gateway summary{grid-template-columns:minmax(0,1fr)}
 
-@media(min-width:761px) and (max-width:1100px){.attention-experience .intro{width:76vw;gap:30px}.attention-experience .intro h2{font-size:30px}.attention-experience .caption h3{font-size:19px}}
-@media(min-width:761px) and (max-width:960px){.attention-experience .intro{grid-template-columns:1fr;gap:24px}.attention-experience .intro-description{margin-top:0}.attention-experience .intro-description,.attention-experience .intro-principle{max-width:460px}}
+@media(min-width:761px) and (max-width:1100px){.attention-experience .caption h3{font-size:19px}}
 @media(max-width:760px){
   .attention-experience{--scene-inset:80px;--scene-bottom:18px}
-  .attention-experience .intro{display:block;width:auto;margin:0;padding:44px 26px 42px}
-  .attention-experience .intro h2{font-size:clamp(30px,5.7vw,39px);line-height:1.2}
-  .attention-experience .intro-principle{margin-top:26px}
-  .attention-experience .intro-description{margin-top:28px}
-  .attention-experience .intro-description,.attention-experience .intro-principle{font-size:17px;line-height:1.5;max-width:460px}
+  .attention-experience .intro{width:calc(100% - 48px);padding:44px 0 22px;row-gap:40px}
   .attention-experience .experience-track{height:355svh}
   .attention-experience .stage{width:calc(100vw - 24px);border-radius:24px;transform:scale(var(--stage-x,.93),var(--stage-y,.90))}
   .attention-experience .stage-topbar{left:20px;right:20px;top:18px}
@@ -88,7 +84,8 @@
   .attention-experience .step-button{width:25px}
   .research-continuation{padding-top:42px}
 }
-@media(max-width:380px){.attention-experience .intro{padding-left:22px;padding-right:22px}.attention-experience .intro h2{font-size:29px}.attention-experience .caption-card{height:204px}.attention-experience .caption{padding:17px 14px}.attention-experience .caption h3{font-size:18px}.attention-experience .story-row{padding:0 4px;gap:3px}}
+@media(max-width:639px){.attention-experience .intro{grid-template-columns:minmax(0,1fr);row-gap:32px}.attention-experience .intro h2,.attention-experience .intro-principle{font-size:clamp(29px,5.7vw,34px)}.attention-experience .intro-description{text-align:left}}
+@media(max-width:380px){.attention-experience .intro{width:calc(100% - 44px)}.attention-experience .caption-card{height:204px}.attention-experience .caption{padding:17px 14px}.attention-experience .caption h3{font-size:18px}.attention-experience .story-row{padding:0 4px;gap:3px}}
 @media(max-height:480px){.attention-experience{--scene-inset:68px;--scene-bottom:12px}.attention-experience .stage{width:min(94vw,700px);border-radius:20px}.attention-experience .stage-topbar{top:10px}.attention-experience .caption-card{height:128px}.attention-experience .story-row{width:560px}.attention-experience .caption{padding:12px 18px}.attention-experience .caption-top{margin-bottom:7px}.attention-experience .caption h3{font-size:18px;margin-bottom:6px}.attention-experience .caption p{font-size:12px;line-height:1.45}.attention-experience .story-controls{bottom:9px;gap:0}.attention-experience .stage-brand{font-size:17px}.attention-experience .stage-brand img{width:19px;height:19px}}
 @media(prefers-reduced-motion:reduce){.attention-experience .stage{transform:none;will-change:auto}.attention-experience #attention-canvas,.attention-experience .stage-topbar,.attention-experience .story-controls{transform:none}.attention-experience *{transition:none!important}.attention-experience .experience-track{height:300svh}}
 
