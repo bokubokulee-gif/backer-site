@@ -30,6 +30,8 @@ export function mountResearchRobot(host) {
   let reduced = media.matches;
   let width = 0;
   let height = 0;
+  let backingWidth = 0;
+  let backingHeight = 0;
   let previousFrame = 0;
   let frameGate = 0;
   let glassesOn = false;
@@ -127,12 +129,12 @@ export function mountResearchRobot(host) {
   function renderFrame(now) {
     frame = 0;
     if (stopped || !inView || document.hidden) return;
-    const interval = 1000 / 45;
+    const interval = 1000 / 30;
     if (!reduced && frameGate && now - frameGate < interval - 0.5) {
       requestFrame();
       return;
     }
-    const delta = previousFrame ? Math.min((now - previousFrame) / 1000, 0.08) : 1 / 45;
+    const delta = previousFrame ? Math.min((now - previousFrame) / 1000, 0.08) : 1 / 30;
     previousFrame = now;
     frameGate = frameGate ? now - ((now - frameGate) % interval) : now;
     try {
@@ -200,8 +202,22 @@ export function mountResearchRobot(host) {
     width = Math.round(bounds.width);
     height = Math.round(bounds.height);
     if (!width || !height) return;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
-    renderer.setSize(width, height, false);
+    // Keep the geometry genuinely 4K even when its CSS slot is small. Browser
+    // zoom may change the slot/DPR, but never reduces the requested backing size.
+    // Supersampling supplies antialiasing without a second multisample buffer.
+    const longestEdge = Math.max(width, height);
+    const requestedEdge = Math.max(4096, Math.ceil(longestEdge * (window.devicePixelRatio || 1)));
+    const supportedEdge = renderer.capabilities?.maxTextureSize || requestedEdge;
+    const backingScale = Math.min(requestedEdge, supportedEdge) / longestEdge;
+    const nextWidth = Math.max(1, Math.round(width * backingScale));
+    const nextHeight = Math.max(1, Math.round(height * backingScale));
+    if (backingWidth !== nextWidth || backingHeight !== nextHeight) {
+      backingWidth = nextWidth;
+      backingHeight = nextHeight;
+      renderer.setPixelRatio(1);
+      renderer.setSize(backingWidth, backingHeight, false);
+      host.dataset.robotResolution = `${backingWidth}x${backingHeight}`;
+    }
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
     updateLook();
@@ -361,28 +377,30 @@ export function mountResearchRobot(host) {
   }
 
   function makeBodyMark() {
-    // Four alpha contours traced from img/backer-mark.png, simplified within two
-    // source pixels. Preserve its open rays: there is no badge or backing disk.
+    // Trace the real mark's four rays. Straight cuts remain straight while the
+    // circular outside is a smooth spline rather than a faceted raster contour.
     const contours = [
-      [[48,166], [57,141], [81,99], [98,78], [132,48], [167,28], [201,16], [233,10], [275,10], [46,293], [39,260], [38,225], [41,195]],
-      [[242,212], [67,330], [60,332], [55,319], [61,313], [372,46], [377,44], [390,53], [423,86], [424,92]],
-      [[311,301], [82,366], [72,354], [72,351], [79,348], [470,184], [476,224], [475,255]],
-      [[344,366], [438,359], [411,395], [372,427], [330,448], [277,460], [224,458], [171,442], [134,421], [97,387]],
+      { start: [275,10], lines: [[46,293]], arc: [[39,260], [38,225], [41,195], [48,166], [57,141], [81,99], [98,78], [132,48], [167,28], [201,16], [233,10], [275,10]] },
+      { start: [55,319], lines: [[375,44]], arc: [[390,53], [408,70], [424,90]], end: [[61,333]] },
+      { start: [72,352], lines: [[470,184]], arc: [[474,205], [476,230], [475,255]], end: [[80,366]] },
+      { start: [97,387], lines: [[438,359]], arc: [[411,395], [372,427], [330,448], [277,460], [224,458], [171,442], [134,421], [97,387]] },
     ];
     const scale = 0.000625;
+    const point = ([x, y]) => new THREE.Vector2((x - 257) * scale, (235 - y) * scale);
     const shapes = contours.map(contour => {
       const shape = new THREE.Shape();
-      contour.forEach(([x, y], index) => {
-        const point = [(x - 257) * scale, (235 - y) * scale];
-        if (index) shape.lineTo(...point);
-        else shape.moveTo(...point);
-      });
+      const start = point(contour.start);
+      shape.moveTo(start.x, start.y);
+      const lineTo = value => { const next = point(value); shape.lineTo(next.x, next.y); };
+      contour.lines.forEach(lineTo);
+      shape.splineThru(contour.arc.map(point));
+      (contour.end || []).forEach(lineTo);
       shape.closePath();
       return shape;
     });
     const source = new THREE.ExtrudeGeometry(shapes, {
       depth: 0.009, steps: 1, bevelEnabled: true,
-      bevelThickness: 0.0032, bevelSize: 0.0028, bevelSegments: 3,
+      bevelThickness: 0.0032, bevelSize: 0.0028, bevelSegments: 8, curveSegments: 16,
     });
     const positions = source.getAttribute('position');
     const normals = source.getAttribute('normal');
@@ -397,7 +415,7 @@ export function mountResearchRobot(host) {
       const ca = edgeLengthSquared(c, a);
       // Short cap triangles follow the sphere instead of cutting a flat chord
       // through the cream body. The bevel normals are interpolated as well.
-      if (Math.max(ab, bc, ca) > 0.025 ** 2) {
+      if (Math.max(ab, bc, ca) > 0.02 ** 2) {
         if (ab >= bc && ab >= ca) {
           const mid = midpoint(a, b);
           subdivide(a, mid, c, output); subdivide(mid, b, c, output);
@@ -457,7 +475,7 @@ export function mountResearchRobot(host) {
     host.dataset.robotState = 'loading';
     host.dataset.robotGlasses = 'off';
     host.setAttribute('aria-pressed', 'false');
-    renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' });
+    renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: 'low-power' });
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.12;
@@ -483,10 +501,10 @@ export function mountResearchRobot(host) {
     scene.add(new THREE.HemisphereLight('#fff0d8', '#504938', 1.1));
     const key = new THREE.DirectionalLight('#ffe8c6', 2.6);
     key.position.set(3, 4, 5);
-    // Only the small relief casts a shadow. A bounded 512px map supplies its
-    // contact shading without changing the existing head/glasses lighting.
+    // Only the small relief casts a shadow. A detailed 2048px map resolves its
+    // fine contact edge without changing the existing head/glasses lighting.
     key.castShadow = true;
-    key.shadow.mapSize.set(512, 512);
+    key.shadow.mapSize.set(2048, 2048);
     Object.assign(key.shadow.camera, { left: -0.8, right: 0.8, top: 0.8, bottom: -0.8, near: 1, far: 10 });
     key.shadow.bias = -0.0001;
     key.shadow.normalBias = 0.001;
@@ -545,7 +563,7 @@ export function mountResearchRobot(host) {
     body = new THREE.Group();
     body.position.y = -0.3;
     scene.add(body);
-    const casing = mesh(body, new THREE.SphereGeometry(0.43, 48, 32, 0, Math.PI * 2, Math.PI * 0.15, Math.PI * 0.85), chassis);
+    const casing = mesh(body, new THREE.SphereGeometry(0.43, 192, 128, 0, Math.PI * 2, Math.PI * 0.15, Math.PI * 0.85), chassis);
     casing.name = 'research-robot-chassis';
     casing.receiveShadow = true;
     makeBodyMark();
@@ -559,8 +577,8 @@ export function mountResearchRobot(host) {
     head.position.y = 0.6;
     body.add(head);
     const face = material({ color: '#101110', roughness: 0.36, metalness: 0.16 });
-    mesh(head, new THREE.SphereGeometry(0.28, 48, 32), face);
-    mesh(head, new THREE.SphereGeometry(0.3, 48, 32), glassMaterial);
+    mesh(head, new THREE.SphereGeometry(0.28, 128, 96), face);
+    mesh(head, new THREE.SphereGeometry(0.3, 128, 96), glassMaterial);
 
     const topGeometry = own(new THREE.TubeGeometry(eyePath(1), 20, 0.0042, 8, false));
     const bottomGeometry = own(new THREE.TubeGeometry(eyePath(-1), 20, 0.0042, 8, false));
