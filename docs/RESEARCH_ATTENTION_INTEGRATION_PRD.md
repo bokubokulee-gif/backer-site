@@ -19,3 +19,8 @@ Inspect desktop and mobile entry, all three stages, reverse scroll, transition i
 Shrink the decorative robot orbit and anchor it to the robot slot so it clears the preceding simulation card and stays stable when disclosures expand. Orbit dots move four times faster. Render the robot at80% of its previous size without changing the layout slot. Replace the heart-eyes interaction with glasses toggled by click, tap, Enter or Space. Remove the redundant uppercase Research kicker above the H1. Publish both hosts after responsive and interaction verification.
 
 When glasses are on, show “A clearer view to the future.” beneath the robot.
+
+## September 21 annotations
+- Add the existing gold Backer mark before Backer in the H1, with bold Backer and light Research as in the supplied Kalshi reference. Keep mark and Backer together when the title wraps on mobile.
+- Remove the bottom progress line. Keep the forward arrow on all three steps; at 3/3 it still returns to 1/3.
+- Use the user's exact first-card copy: “Define your targeted population” and “Whose behavior matter to this decision?”

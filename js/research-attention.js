@@ -111,7 +111,7 @@ export function initAttentionExperience(root) {
     });
     previous.disabled = index === 0;
     next.setAttribute('aria-label', index === 2 ? 'Replay experience' : 'Next step');
-    if (next.firstElementChild) next.firstElementChild.textContent = index === 2 ? '↺' : '→';
+    if (next.firstElementChild) next.firstElementChild.textContent = '→';
   }
   function goToStep(index) {
     if (!Number.isFinite(index)) return;
@@ -122,7 +122,7 @@ export function initAttentionExperience(root) {
       behavior: reduced ? 'instant' : 'smooth',
     });
   }
-  function updateFrame(ratio, growth) {
+  function updateFrame(growth) {
     const sx = reduced ? 1 : (geometry.narrow ? .93 + growth * .07 : .831 + growth * .169);
     const sy = reduced ? 1 : (geometry.narrow ? .90 + growth * .10 : .69 + growth * .31);
     const ui = reduced ? 1 : smoothstep((growth - .90) / .10);
@@ -132,7 +132,6 @@ export function initAttentionExperience(root) {
     stage.style.setProperty('--ui-x', (1 / sx).toFixed(5));
     stage.style.setProperty('--ui-y', (1 / sy).toFixed(5));
     stage.style.setProperty('--scene-ui', ui.toFixed(4));
-    stage.style.setProperty('--progress', ratio.toFixed(4));
     if ((ui > .85) !== uiVisible) {
       uiVisible = ui > .85;
       story.inert = !uiVisible;
@@ -165,7 +164,7 @@ export function initAttentionExperience(root) {
     if (presentationScroll !== previousScroll) {
       scene.setProgress(reduced ? Math.round(progress) : progress);
       updateCaption(Math.round(progress));
-      updateFrame(ratio, growth);
+      updateFrame(growth);
       previousScroll = presentationScroll;
     }
     for (let i = 0; i < glows.length; i++) {
