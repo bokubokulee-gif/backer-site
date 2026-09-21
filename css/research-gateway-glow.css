@@ -1,1 +1,1 @@
-.research-gateway>summary.card-glow-summary-host{position:static;border-radius:inherit}
+.research-gateway{--research-gateway-radius:18px;border-radius:var(--research-gateway-radius)}.research-gateway>summary.card-glow-summary-host{position:static;border-radius:var(--research-gateway-radius)}
