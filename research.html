@@ -16,12 +16,12 @@
 <link rel="icon" type="image/png" href="img/backer-mark.png?v=2" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/styles.css?v=20260912-type-1" />
 <link rel="stylesheet" href="css/site-menu.css?v=20260907-hover-1" />
 <link rel="stylesheet" href="css/research.css?v=20260920-attention-1" />
 <link rel="stylesheet" href="css/card-glow.css?v=20260920-1" />
-<link rel="stylesheet" href="css/research-attention.css?v=20260920-robot-2" />
+<link rel="stylesheet" href="css/research-attention.css?v=20260921-heading-1" />
 <link rel="stylesheet" href="css/research-gateway-glow.css?v=20260920-1" />
 <link rel="preload" href="fonts/attention/manrope-400.woff2" as="font" type="font/woff2" crossorigin />
 <script src="js/site-menu.js?v=20260914-host-1" defer></script>
@@ -44,7 +44,7 @@
 
 <main class="research-main" id="main">
   <section class="research-stage" aria-labelledby="research-title">
-    <h1 id="research-title">Backer Research</h1>
+    <h1 id="research-title"><span class="research-title-brand"><img src="img/backer-mark.png?v=2" alt="" aria-hidden="true" width="104" height="104" />Backer</span> <span class="research-title-name">Research</span></h1>
     <div class="attention-experience" aria-label="Human attention, simulated">
     <section class="intro" aria-labelledby="attention-headline">
       <div class="intro-title">
@@ -67,8 +67,8 @@
               <div class="caption-card has-card-glow" aria-live="polite" aria-atomic="true">
                 <div class="caption" data-step="0">
                   <div class="caption-top"><span class="step-art grid-art" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="step-number">1 <span>/ 3</span></span></div>
-                  <h3>Define your population</h3>
-                  <p>The people whose behavior matters to this decision.</p>
+                  <h3>Define your targeted population</h3>
+                  <p>Whose behavior matter to this decision?</p>
                 </div>
                 <div class="caption" data-step="1" aria-hidden="true" inert>
                   <div class="caption-top"><span class="step-art sphere-art" aria-hidden="true"></span><span class="step-number">2 <span>/ 3</span></span></div>
@@ -85,13 +85,12 @@
               <button class="round-button next" aria-label="Next step"><span aria-hidden="true">→</span></button>
             </div>
             <nav class="step-navigation" aria-label="Simulation stages">
-              <button class="step-button is-active" aria-label="Define your population" aria-current="step" data-target="0"><span></span></button>
+              <button class="step-button is-active" aria-label="Define your targeted population" aria-current="step" data-target="0"><span></span></button>
               <button class="step-button" aria-label="Change the conditions" data-target="1"><span></span></button>
               <button class="step-button" aria-label="See where behavior actually goes" data-target="2"><span></span></button>
             </nav>
           </div>
           <span class="backer-card-glow-layer" aria-hidden="true"></span>
-          <div class="scroll-progress" aria-hidden="true"><span></span></div>
         </div>
       </div>
     </section>
@@ -136,7 +135,7 @@
 </main>
 
 <script src="js/research.js?v=20260920-orbit-2"></script>
-<script type="module" src="js/research-attention.js?v=20260920-1"></script>
+<script type="module" src="js/research-attention.js?v=20260921-controls-1"></script>
 <script src="js/card-glow.js?v=20260920-1" defer></script>
 <script type="module" src="js/research-robot.mjs?v=20260920-glasses-3"></script>
 <div data-backer-dock></div>
