@@ -3,10 +3,10 @@
   window.BackerLocalePacks = window.BackerLocalePacks || {};
   window.BackerLocalePacks.research = {
   "messages": {
-    "Backer Research — Preview": [
-      "Backer Research — 研究预览",
-      "Backer Research — 研究プレビュー",
-      "Backer Research — 연구 미리보기"
+    "Backer AI Research": [
+      "Backer AI Research",
+      "Backer AI Research",
+      "Backer AI Research"
     ],
     "Backer home": [
       "Backer 首页",
@@ -5548,10 +5548,10 @@
       "POLYMARKET · 司法",
       "POLYMARKET · 사법"
     ],
-    "backer research — preview": [
-      "Backer Research — 研究预览",
-      "Backer Research — 研究プレビュー",
-      "Backer Research — 연구 미리보기"
+    "backer ai research": [
+      "Backer AI Research",
+      "Backer AI Research",
+      "Backer AI Research"
     ],
     "backer home": [
       "Backer 首页",
