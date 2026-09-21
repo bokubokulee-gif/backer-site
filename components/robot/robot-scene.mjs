@@ -360,6 +360,94 @@ export function mountResearchRobot(host) {
     mesh(glasses, new THREE.TubeGeometry(bridge, 18, 0.005, 8, false), frameSurface);
   }
 
+  function makeBodyMark() {
+    // Four alpha contours traced from img/backer-mark.png, simplified within two
+    // source pixels. Preserve its open rays: there is no badge or backing disk.
+    const contours = [
+      [[48,166], [57,141], [81,99], [98,78], [132,48], [167,28], [201,16], [233,10], [275,10], [46,293], [39,260], [38,225], [41,195]],
+      [[242,212], [67,330], [60,332], [55,319], [61,313], [372,46], [377,44], [390,53], [423,86], [424,92]],
+      [[311,301], [82,366], [72,354], [72,351], [79,348], [470,184], [476,224], [475,255]],
+      [[344,366], [438,359], [411,395], [372,427], [330,448], [277,460], [224,458], [171,442], [134,421], [97,387]],
+    ];
+    const scale = 0.000625;
+    const shapes = contours.map(contour => {
+      const shape = new THREE.Shape();
+      contour.forEach(([x, y], index) => {
+        const point = [(x - 257) * scale, (235 - y) * scale];
+        if (index) shape.lineTo(...point);
+        else shape.moveTo(...point);
+      });
+      shape.closePath();
+      return shape;
+    });
+    const source = new THREE.ExtrudeGeometry(shapes, {
+      depth: 0.009, steps: 1, bevelEnabled: true,
+      bevelThickness: 0.0032, bevelSize: 0.0028, bevelSegments: 3,
+    });
+    const positions = source.getAttribute('position');
+    const normals = source.getAttribute('normal');
+    const surfaces = [[], []];
+    const vertex = index => [positions.getX(index), positions.getY(index), positions.getZ(index),
+      normals.getX(index), normals.getY(index), normals.getZ(index)];
+    const midpoint = (a, b) => a.map((value, index) => (value + b[index]) * 0.5);
+    const edgeLengthSquared = (a, b) => (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2;
+    function subdivide(a, b, c, output) {
+      const ab = edgeLengthSquared(a, b);
+      const bc = edgeLengthSquared(b, c);
+      const ca = edgeLengthSquared(c, a);
+      // Short cap triangles follow the sphere instead of cutting a flat chord
+      // through the cream body. The bevel normals are interpolated as well.
+      if (Math.max(ab, bc, ca) > 0.025 ** 2) {
+        if (ab >= bc && ab >= ca) {
+          const mid = midpoint(a, b);
+          subdivide(a, mid, c, output); subdivide(mid, b, c, output);
+        } else if (bc >= ca) {
+          const mid = midpoint(b, c);
+          subdivide(a, b, mid, output); subdivide(a, mid, c, output);
+        } else {
+          const mid = midpoint(c, a);
+          subdivide(a, b, mid, output); subdivide(mid, b, c, output);
+        }
+        return;
+      }
+      output.push(a, b, c);
+    }
+    source.groups.forEach(group => {
+      const output = surfaces[group.materialIndex];
+      for (let index = group.start; index < group.start + group.count; index += 3) {
+        subdivide(vertex(index), vertex(index + 1), vertex(index + 2), output);
+      }
+    });
+    source.dispose();
+    const geometry = new THREE.BufferGeometry();
+    const curvedPositions = [];
+    const curvedNormals = [];
+    const normal = new THREE.Vector3();
+    let offset = 0;
+    surfaces.forEach((vertices, materialIndex) => {
+      vertices.forEach(([x, y, z, nx, ny, nz]) => {
+        const surfaceZ = Math.sqrt(0.43 ** 2 - x * x - y * y);
+        curvedPositions.push(x, y, surfaceZ + z + 0.0008);
+        // Inverse-transpose of the curved projection preserves real bevel
+        // highlights as the body turns; the mark is actual surface geometry.
+        normal.set(nx + x / surfaceZ * nz, ny + y / surfaceZ * nz, nz).normalize();
+        curvedNormals.push(normal.x, normal.y, normal.z);
+      });
+      geometry.addGroup(offset, vertices.length, materialIndex);
+      offset += vertices.length;
+    });
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(curvedPositions, 3));
+    geometry.setAttribute('normal', new THREE.Float32BufferAttribute(curvedNormals, 3));
+    geometry.computeBoundingSphere();
+    const faceSurface = material({ color: '#ddcfb6', roughness: 0.4, metalness: 0.16 });
+    const edgeSurface = material({ color: '#b29d7b', roughness: 0.46, metalness: 0.24 });
+    const mark = mesh(body, geometry, [faceSurface, edgeSurface]);
+    mark.name = 'research-robot-body-mark';
+    mark.castShadow = true;
+    mark.userData.source = 'img/backer-mark.png';
+    mark.userData.reliefDepth = 0.0122;
+  }
+
   function isNestedControl(event) {
     const control = event.target?.closest?.('a, button, input, select, textarea, [contenteditable="true"]');
     return Boolean(control && control !== host);
@@ -374,6 +462,10 @@ export function mountResearchRobot(host) {
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.12;
     renderer.setClearColor(0x000000, 0);
+    if (renderer.shadowMap) {
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    }
     const canvas = renderer.domElement;
     canvas.className = 'robot-canvas research-robot-canvas';
     canvas.setAttribute('aria-hidden', 'true');
@@ -391,6 +483,15 @@ export function mountResearchRobot(host) {
     scene.add(new THREE.HemisphereLight('#fff0d8', '#504938', 1.1));
     const key = new THREE.DirectionalLight('#ffe8c6', 2.6);
     key.position.set(3, 4, 5);
+    // Only the small relief casts a shadow. A bounded 512px map supplies its
+    // contact shading without changing the existing head/glasses lighting.
+    key.castShadow = true;
+    key.shadow.mapSize.set(512, 512);
+    Object.assign(key.shadow.camera, { left: -0.8, right: 0.8, top: 0.8, bottom: -0.8, near: 1, far: 10 });
+    key.shadow.bias = -0.0001;
+    key.shadow.normalBias = 0.001;
+    key.shadow.radius = 1.5;
+    own(key.shadow);
     scene.add(key);
     const fill = new THREE.DirectionalLight('#fff4e3', 1.35);
     fill.position.set(-3, 1, 3);
@@ -444,7 +545,10 @@ export function mountResearchRobot(host) {
     body = new THREE.Group();
     body.position.y = -0.3;
     scene.add(body);
-    mesh(body, new THREE.SphereGeometry(0.43, 48, 32, 0, Math.PI * 2, Math.PI * 0.15, Math.PI * 0.85), chassis);
+    const casing = mesh(body, new THREE.SphereGeometry(0.43, 48, 32, 0, Math.PI * 2, Math.PI * 0.15, Math.PI * 0.85), chassis);
+    casing.name = 'research-robot-chassis';
+    casing.receiveShadow = true;
+    makeBodyMark();
     mesh(body, new THREE.TorusGeometry(0.235, 0.025, 12, 48), surfaces.gold, [0, 0.34, 0], [Math.PI / 2, 0, 0]);
     const neckProfile = [
       [0.1, -0.05], [0.215, -0.05], [0.28, 0.02], [0.295, 0.045],

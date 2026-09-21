@@ -78,12 +78,13 @@ body.is-launching .research-stage{opacity:0;transform:scale(1.015)}
 .page-research{--pos:#e9bd86;--preview-accent:#e9bd86;background:#08080a}.research-stage h1{font-weight:600}.research-kicker{font-size:13px;font-weight:600}.gateway-heading{font-size:25px;font-weight:600;line-height:1.4}.gateway-description{font-size:16px;font-weight:500;line-height:1.7;color:#c4c0b8}.research-gateway summary{min-height:186px;padding:29px}.research-gateway--previews:hover,.research-gateway--previews[open]{border-color:rgba(233,189,134,.44)}.gateway-content>a>span{font-size:18px;font-weight:600;line-height:1.55}.gateway-content>a>small{font-size:13px;line-height:1.8;color:#bcb5a9}.gateway-content .gateway-overview span{font-size:19px}.gateway-note{font-size:14px;line-height:1.8;color:#bcb5a9}.robot-greeting{font-size:14px}.research-orbit::after{border-color:rgba(233,189,134,.09)}
 @media(max-width:620px){.research-kicker{font-size:12px}.research-gateway summary{padding:25px;min-height:165px}.gateway-heading{font-size:23px}.gateway-description{font-size:15px}.gateway-content>a>span{font-size:17px}.gateway-content>a>small{font-size:12px}.gateway-content .gateway-overview span{font-size:18px}.gateway-note{font-size:13px}.robot-greeting{font-size:13px}}
 
-/* Gateway labels use the same layout at every size; retain the 620px stack. */
-.research-gateway summary{display:grid;grid-template-columns:minmax(0,1fr) auto;align-content:center;gap:10px 18px;min-height:146px}
+/* Keep the two entry cards centered, at 95% of their former width and height. */
+.research-gateway{width:95%;justify-self:center}
+.research-gateway summary{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px;min-height:138.6px;padding:27.5px;text-align:center}
 .gateway-heading{grid-column:1;grid-row:1;padding-right:0}
 .gateway-description{grid-column:1;grid-row:2}
 
-@media(max-width:620px){.research-gateway summary{min-height:128px}}
+@media(max-width:620px){.research-gateway summary{min-height:121.5px;padding:23.75px}}
 
 /* A stable word slot keeps the sentence still as the action changes. */
 .research-action-line{margin:0 auto 30px;max-width:48ch;font-size:clamp(26px,2.5vw,32px);font-weight:700;line-height:1.4;letter-spacing:-.025em;color:#c4c0b8;text-align:center;text-wrap:balance}

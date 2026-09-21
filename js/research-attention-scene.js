@@ -30,6 +30,7 @@ export function createAttentionScene(canvas) {
   const pz = new Float32Array(COUNT);
   const alpha = new Float32Array(COUNT);
   const radius = new Float32Array(COUNT);
+  const emphasis = new Float32Array(COUNT);
   const pathAnchor = new Uint16Array(PATH_COUNT);
   const pathBend = new Float32Array(PATH_COUNT);
   const pathDrift = new Float32Array(PATH_COUNT);
@@ -214,6 +215,7 @@ export function createAttentionScene(canvas) {
     const centerY = gridCenter + (sphereCenter - gridCenter) * wrap + (diskCenter - sphereCenter) * flatten;
     const cameraDistance = Math.max(sphereRadius * 4.7, width * 1.14, 400);
     const baseRadius = mobile ? clamp(width * .0038, 1.3, 1.8) : clamp(width * .00235, 2.15, 3.25);
+    const emphasisRadiusGain = mobile ? .62 : .46;
     const lowerFade = mobile ? Math.max(height - 203, sceneTop + sceneHeight + 30) : height + 15;
     bucketHeads.fill(-1);
 
@@ -233,16 +235,19 @@ export function createAttentionScene(canvas) {
       const y = centerY + worldY * perspective;
       const depth = clamp(.5 + tiltedZ / (Math.max(sphereRadius, diskRadius * flatten) * 2.1), 0, 1);
       const focus = selection[i] * (1 - flatten) + diskFocus[i] * flatten;
+      // Give the selected population a clear core with a smooth falloff, especially on mobile.
+      const selected = smooth((focus - .10) / .55);
       const edgeX = smooth(Math.min(x + 10, width + 10 - x) / (width * .06));
       const edgeY = smooth(Math.min(y + 18, lowerFade - y) / 34);
-      const gridOpacity = .23 + selection[i] * .74;
-      const sphereOpacity = .16 + depth * depth * .41 + selection[i] * .46;
-      const diskOpacity = .21 + depth * .30 + diskFocus[i] * .25;
+      const gridOpacity = .12 + selected * .84;
+      const sphereOpacity = .11 + depth * depth * .28 + selected * .60;
+      const diskOpacity = .14 + depth * .21 + selected * .50;
       px[i] = x;
       py[i] = y;
       pz[i] = depth;
+      emphasis[i] = selected;
       alpha[i] = clamp((gridOpacity * (1 - wrap) + sphereOpacity * sphereAmount + diskOpacity * flatten) * edgeX * edgeY, 0, 1);
-      radius[i] = baseRadius * pointSize[i] * (1 + focus * .16) * perspective
+      radius[i] = baseRadius * pointSize[i] * (.92 + selected * emphasisRadiusGain) * perspective
         * (1 - wrap * .25 + wrap * depth * .56 + flatten * .22);
       const bucket = clamp(Math.floor(depth * 7.999), 0, 7);
       nextPoint[i] = bucketHeads[bucket];
@@ -252,10 +257,22 @@ export function createAttentionScene(canvas) {
     for (let bucket = 0; bucket < 8; bucket++) {
       for (let i = bucketHeads[bucket]; i !== -1; i = nextPoint[i]) {
         if (alpha[i] < .008) continue;
-        ctx.globalAlpha = alpha[i] * (color[i] === 2 ? .7 : 1);
-        const sprite = sprites[((pz[i] < .29 && wrap > .3) || (flatten > .5 && pz[i] > .86) ? 3 : 0) + color[i]];
+        const spriteOffset = (pz[i] < .29 && wrap > .3) || (flatten > .5 && pz[i] > .86) ? 3 : 0;
         const size = radius[i] * 4.8;
-        ctx.drawImage(sprite, px[i] - size * .5, py[i] - size * .5, size, size);
+        const x = px[i] - size * .5;
+        const y = py[i] - size * .5;
+        if (color[i] === 2) {
+          // Green remains a quiet background accent; selected people resolve continuously to cream.
+          ctx.globalAlpha = alpha[i] * .7 * (1 - emphasis[i]);
+          ctx.drawImage(sprites[spriteOffset + 2], x, y, size, size);
+          if (emphasis[i] > .001) {
+            ctx.globalAlpha = alpha[i] * emphasis[i];
+            ctx.drawImage(sprites[spriteOffset], x, y, size, size);
+          }
+        } else {
+          ctx.globalAlpha = alpha[i];
+          ctx.drawImage(sprites[spriteOffset + color[i]], x, y, size, size);
+        }
       }
     }
     ctx.globalAlpha = 1;
