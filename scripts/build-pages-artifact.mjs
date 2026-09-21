@@ -61,6 +61,7 @@ const PUBLIC_FILES = Object.freeze([
   'css/research-gateway-glow.css',
   'js/research-attention.js',
   'js/research-attention-scene.js',
+  'js/research-current-renderer.js',
   'fonts/attention/manrope-400.woff2',
   'fonts/attention/manrope-500.woff2',
   'fonts/attention/manrope-600.woff2',

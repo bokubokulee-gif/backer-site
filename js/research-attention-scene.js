@@ -1,6 +1,8 @@
+import { createCurrentRenderer } from './research-current-renderer.js?v=20260921-cohort-current-2';
+
 /* A persistent, wandering population. A single external clock drives motion and scroll. */
 const COUNT = 1152;
-const PATH_COUNT = 42;
+const PATH_COUNT = 30;
 const TAU = Math.PI * 2;
 const clamp = (n, low, high) => Math.max(low, Math.min(high, n));
 const smooth = n => { const t = clamp(n, 0, 1); return t * t * (3 - 2 * t); };
@@ -11,6 +13,7 @@ export function createAttentionScene(canvas) {
   const ctx = canvas.getContext('2d', { alpha: true });
   if (!ctx) return { render() {}, setProgress() {}, setPaused() {}, setReducedMotion() {}, destroy() {} };
 
+  const drawCurrent = createCurrentRenderer(ctx);
   let seed = 716203;
   const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) | 0; return (seed >>> 0) / 4294967296; };
   const gridX = new Float32Array(COUNT);
@@ -20,6 +23,12 @@ export function createAttentionScene(canvas) {
   const sphereZ = new Float32Array(COUNT);
   const diskX = new Float32Array(COUNT);
   const diskZ = new Float32Array(COUNT);
+  const cohortWeight = new Float32Array(COUNT);
+  const cohortIndices = new Uint16Array(COUNT);
+  const cohortDriftX = new Float32Array(COUNT);
+  const cohortDriftY = new Float32Array(COUNT);
+  const cohortDriftZ = new Float32Array(COUNT);
+  const cohortDirection = new Float32Array(COUNT);
   const seeds = new Float32Array(COUNT * 3);
   const pointSize = new Float32Array(COUNT);
   const color = new Uint8Array(COUNT);
@@ -37,6 +46,11 @@ export function createAttentionScene(canvas) {
   // Eight fixed depth buckets avoid a sort and avoid fresh arrays in the animation loop.
   const bucketHeads = new Int32Array(8);
   const nextPoint = new Int32Array(COUNT);
+  let cohortCount = 0;
+  let cohortWeightTotal = 0;
+  let cohortOriginX = 0;
+  let cohortOriginY = 0;
+  let cohortOriginZ = 0;
 
   for (let i = 0; i < COUNT; i++) {
     seeds[i * 3] = random();
@@ -51,6 +65,17 @@ export function createAttentionScene(canvas) {
     const v = (Math.floor(i / 36) + .03 + seeds[i * 3 + 1] * .94) / 32 * 2 - 1;
     gridX[i] = u;
     gridY[i] = v;
+    // Select people once. Their identity and emphasis persist through every phase.
+    const cohortDistance = Math.hypot(u / .31, v / .40);
+    if (cohortDistance < 1) {
+      const weight = smooth((1 - cohortDistance) / .25);
+      cohortWeight[i] = weight;
+      cohortIndices[cohortCount++] = i;
+      cohortWeightTotal += weight;
+      cohortOriginX += u * weight;
+      cohortOriginY += v * weight;
+      cohortOriginZ += seeds[i * 3 + 2] * weight;
+    }
     const longitude = u * Math.PI * .98;
     const latitude = clamp(v * .977, -.996, .996);
     const ring = Math.sqrt(1 - latitude * latitude);
@@ -61,6 +86,14 @@ export function createAttentionScene(canvas) {
     const radial = Math.sqrt(1 - Math.abs(latitude));
     diskX[i] = Math.sin(longitude) * radial;
     diskZ[i] = Math.cos(longitude) * radial;
+  }
+  cohortOriginX /= cohortWeightTotal;
+  cohortOriginY /= cohortWeightTotal;
+  cohortOriginZ /= cohortWeightTotal;
+  for (let j = 0; j < cohortCount; j++) {
+    const i = cohortIndices[j];
+    cohortDirection[i] = Math.atan2((gridY[i] - cohortOriginY) / .40, (gridX[i] - cohortOriginX) / .31)
+      + (seeds[i * 3 + 2] - .5) * .60;
   }
   for (let j = 0; j < PATH_COUNT; j++) {
     pathBend[j] = (random() - .5) * .34;
@@ -145,7 +178,7 @@ export function createAttentionScene(canvas) {
 
   function drawPaths(opacity) {
     if (opacity < .002) return;
-    const lineWidth = mobile ? .70 : .82;
+    const lineWidth = mobile ? .58 : .72;
     for (let j = 0; j < PATH_COUNT; j++) {
       const anchor = pathAnchor[j];
       const x0 = px[anchor];
@@ -162,26 +195,14 @@ export function createAttentionScene(canvas) {
       const x3 = x0 + (pathDrift[j] + breeze * .65) * width;
       const y3 = -height * .45;
       ctx.strokeStyle = j % 11 === 0 ? COLORS[1] : j % 19 === 0 ? COLORS[2] : COLORS[0];
-      ctx.globalAlpha = opacity * (.14 + j % 5 * .024);
+      ctx.globalAlpha = opacity * (.10 + j % 5 * .014);
       ctx.lineWidth = lineWidth;
       ctx.beginPath();
       ctx.moveTo(x0, y0);
       ctx.bezierCurveTo(x1, y1, x2, y2, x3, y3);
       ctx.stroke();
-      const t = (elapsed * (.041 + j % 3 * .004) + pathPhase[j]) % 1;
-      const inv = 1 - t;
-      const x = inv * inv * inv * x0 + 3 * inv * inv * t * x1 + 3 * inv * t * t * x2 + t * t * t * x3;
-      const y = inv * inv * inv * y0 + 3 * inv * inv * t * y1 + 3 * inv * t * t * y2 + t * t * t * y3;
-      const tx = 3 * inv * inv * (x1 - x0) + 6 * inv * t * (x2 - x1) + 3 * t * t * (x3 - x2);
-      const ty = 3 * inv * inv * (y1 - y0) + 6 * inv * t * (y2 - y1) + 3 * t * t * (y3 - y2);
-      const length = Math.sqrt(tx * tx + ty * ty) || 1;
-      const glint = mobile ? 4 : 6;
-      ctx.globalAlpha = opacity * Math.sin(t * Math.PI) * .64;
-      ctx.lineWidth = mobile ? 1 : 1.25;
-      ctx.beginPath();
-      ctx.moveTo(x - tx / length * glint, y - ty / length * glint);
-      ctx.lineTo(x + tx / length * glint, y + ty / length * glint);
-      ctx.stroke();
+      drawCurrent(x0, y0, x1, y1, x2, y2, x3, y3,
+        elapsed, pathPhase[j], opacity, mobile, j);
     }
   }
 
@@ -210,9 +231,33 @@ export function createAttentionScene(canvas) {
     const baseRadius = mobile ? clamp(width * .0038, 1.3, 1.8) : clamp(width * .00235, 2.15, 3.25);
     const emphasisRadiusGain = mobile ? .62 : .46;
     const lowerFade = mobile ? Math.max(height - 203, sceneTop + sceneHeight + 30) : height + 15;
-    const focusX = Math.sin(elapsed * .17) * .14 + Math.sin(elapsed * .083) * .045;
-    const focusY = Math.sin(elapsed * .13) * .15;
-    const focusBreath = 1 + Math.sin(elapsed * .27) * .085;
+    // Only scroll disperses the highlighted cohort. The squared envelope has zero
+    // displacement and velocity at both settled phases, including when reversed.
+    const excursion = Math.sin(wrap * Math.PI) ** 2;
+    let cohortMeanX = 0;
+    let cohortMeanY = 0;
+    let cohortMeanZ = 0;
+    for (let j = 0; j < cohortCount; j++) {
+      const i = cohortIndices[j];
+      const a = seeds[i * 3];
+      const b = seeds[i * 3 + 1];
+      const c = seeds[i * 3 + 2];
+      const dx = Math.cos(elapsed * (.38 + b * .26) + a * TAU) * .013
+        + Math.sin(elapsed * (1.1 + c * .5) + b * TAU) * .004;
+      const dy = Math.sin(elapsed * (.32 + c * .25) + b * TAU) * .018
+        + Math.cos(elapsed * (.98 + a * .7) + c * TAU) * .006;
+      const dz = Math.sin(elapsed * (.30 + b * .20) + c * TAU) * .021;
+      cohortDriftX[i] = dx;
+      cohortDriftY[i] = dy;
+      cohortDriftZ[i] = dz;
+      cohortMeanX += dx * cohortWeight[i];
+      cohortMeanY += dy * cohortWeight[i];
+      cohortMeanZ += dz * cohortWeight[i];
+    }
+    // Independent flutter remains local; it never translates the whole bright cloud.
+    cohortMeanX /= cohortWeightTotal;
+    cohortMeanY /= cohortWeightTotal;
+    cohortMeanZ /= cohortWeightTotal;
     bucketHeads.fill(-1);
 
     for (let i = 0; i < COUNT; i++) {
@@ -247,32 +292,48 @@ export function createAttentionScene(canvas) {
       const rotatedZ = -objectX * sinRotation + objectZ * cosRotation;
       const tiltedY = objectY * cosPitch - rotatedZ * sinPitch;
       const tiltedZ = objectY * sinPitch + rotatedZ * cosPitch;
-      const worldX = populationX * gridWidth * .5 * (1 - wrap) + rotatedX * wrap;
-      const worldY = populationY * gridHeight * .5 * (1 - wrap) + tiltedY * wrap;
-      const worldZ = driftZ * Math.min(width, gridHeight) * .09 * (1 - wrap) + tiltedZ * wrap;
+      let worldX = populationX * gridWidth * .5 * (1 - wrap) + rotatedX * wrap;
+      let worldY = populationY * gridHeight * .5 * (1 - wrap) + tiltedY * wrap;
+      let worldZ = driftZ * Math.min(width, gridHeight) * .09 * (1 - wrap) + tiltedZ * wrap;
+      const selected = cohortWeight[i];
+      if (selected > 0) {
+        const localX = u - cohortOriginX;
+        const localY = v - cohortOriginY;
+        const flutterX = cohortDriftX[i] - cohortMeanX;
+        const flutterY = cohortDriftY[i] - cohortMeanY;
+        const flutterZ = cohortDriftZ[i] - cohortMeanZ;
+        const direction = cohortDirection[i] + wrap * (a - .5) * 1.8;
+        const reach = sphereRadius * (.55 + c * .27) * excursion;
+        // The central cloud does not inherit the sphere's rotation. Each person
+        // fans out along its own bent route, then returns to its own central place.
+        const centralX = localX * (gridWidth * .5 * (1 - wrap) + sphereRadius * (.46 / .31) * wrap)
+          + flutterX * sphereRadius + Math.cos(direction) * reach;
+        const centralY = localY * (gridHeight * .5 * (1 - wrap) + sphereRadius * (.50 / .40) * wrap)
+          + flutterY * sphereRadius + Math.sin(direction) * reach * .82;
+        const centralZ = ((c - cohortOriginZ) * .26 * wrap + flutterZ) * sphereRadius
+          + Math.sin(direction + b * TAU) * reach * .20;
+        // These same people unfold across the output plane. Keep its center fixed
+        // instead of letting background rotation carry the entire cohort to one edge.
+        const cohortFlowX = localX / .31 * diskRadius * .92 + flutterX * sphereRadius;
+        const cohortFlowZ = (c - cohortOriginZ) * diskRadius * 1.6;
+        const cohortFlowY = (b - .5) * diskThickness + flutterY * sphereRadius;
+        worldX = centralX * (1 - flatten) + cohortFlowX * flatten;
+        worldY = centralY * (1 - flatten) + (cohortFlowY * cosPitch - cohortFlowZ * sinPitch) * flatten;
+        worldZ = centralZ * (1 - flatten) + (cohortFlowY * sinPitch + cohortFlowZ * cosPitch) * flatten;
+      }
       const perspective = cameraDistance / (cameraDistance - worldZ);
       const x = width * .5 + worldX * perspective;
       const y = centerY + worldY * perspective;
       const depth = clamp(.5 + worldZ / (Math.max(sphereRadius, diskRadius * flatten) * 2.1), 0, 1);
-      const focusDX = populationX - focusX;
-      const focusDY = populationY - focusY;
-      const populationFocus = Math.exp(-(focusDX * focusDX / .105 + focusDY * focusDY / .20) * 2.1 / focusBreath);
-      const flowDX = flowX - focusX * 1.15;
-      const flowDZ = flowZ - focusY * .75;
-      const flowFocus = Math.exp(-(flowDX * flowDX * 5.5 + flowDZ * flowDZ * 2.2) / focusBreath);
-      const focus = populationFocus * (1 - flatten) + flowFocus * flatten;
-      // Give the selected population a clear core with a smooth falloff, especially on mobile.
-      const selected = smooth((focus - .10) / .55);
       const edgeX = smooth(Math.min(x + 10, width + 10 - x) / (width * .06));
       const edgeY = smooth(Math.min(y + 18, lowerFade - y) / 34);
-      const gridOpacity = .12 + selected * .84;
-      const sphereOpacity = .11 + depth * depth * .28 + selected * .60;
-      const diskOpacity = .14 + depth * .21 + selected * .50;
+      const backgroundOpacity = .08 * (1 - wrap) + (.075 + depth * depth * .19) * sphereAmount
+        + (.11 + depth * .17) * flatten;
       px[i] = x;
       py[i] = y;
       pz[i] = depth;
       emphasis[i] = selected;
-      alpha[i] = clamp((gridOpacity * (1 - wrap) + sphereOpacity * sphereAmount + diskOpacity * flatten) * edgeX * edgeY, 0, 1);
+      alpha[i] = clamp((backgroundOpacity + (.96 - backgroundOpacity) * selected) * edgeX * edgeY, 0, 1);
       radius[i] = baseRadius * pointSize[i] * (.92 + selected * emphasisRadiusGain) * perspective
         * (1 - wrap * .25 + wrap * depth * .56 + flatten * .22);
       const bucket = clamp(Math.floor(depth * 7.999), 0, 7);

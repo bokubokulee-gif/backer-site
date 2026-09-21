@@ -1,4 +1,4 @@
-import { createAttentionScene } from './research-attention-scene.js?v=20260921-organic-motion-1';
+import { createAttentionScene } from './research-attention-scene.js?v=20260921-cohort-current-4';
 
 const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
 const smoothstep = value => { const x = clamp(value); return x * x * (3 - 2 * x); };
