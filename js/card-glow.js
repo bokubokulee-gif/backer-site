@@ -34,6 +34,154 @@
   var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
   var coarse = window.matchMedia('(pointer: coarse)');
   var intersection = null;
+  var geometryObserver = null;
+  var glowLayers = new Map();
+  var radiusOwners = new WeakMap();
+  var pendingGeometry = new Set();
+
+  function radiusLength(value, size) {
+    value = String(value || '0').trim();
+    if (/^-?(?:\d*\.)?\d+(?:px|%)?$/.test(value)) {
+      return Math.max(0, parseFloat(value) * (value.endsWith('%') ? size / 100 : 1));
+    }
+    // Computed radii can retain percentages inside calc/min/max/clamp expressions.
+    var tokens = value.match(/(?:\d*\.)?\d+(?:e[-+]?\d+)?(?:px|%)?|[a-z]+|[()+*/,-]/gi) || [];
+    var position = 0;
+    function atom() {
+      var token = tokens[position++];
+      if (token === '+' || token === '-') return (token === '-' ? -1 : 1) * atom();
+      if (token === '(') {
+        var grouped = sum();
+        if (tokens[position++] !== ')') return NaN;
+        return grouped;
+      }
+      if (/^(?:calc|min|max|clamp)$/.test(token || '')) {
+        if (tokens[position++] !== '(') return NaN;
+        var values = [sum()];
+        while (tokens[position] === ',') { position++; values.push(sum()); }
+        if (tokens[position++] !== ')') return NaN;
+        if (token === 'min') return Math.min.apply(Math, values);
+        if (token === 'max') return Math.max.apply(Math, values);
+        if (token === 'clamp') return Math.max(values[0], Math.min(values[1], values[2]));
+        return values[0];
+      }
+      return parseFloat(token) * (token && token.endsWith('%') ? size / 100 : 1);
+    }
+    function product() {
+      var result = atom();
+      while (tokens[position] === '*' || tokens[position] === '/') {
+        var operation = tokens[position++];
+        var operand = atom();
+        result = operation === '*' ? result * operand : result / operand;
+      }
+      return result;
+    }
+    function sum() {
+      var result = product();
+      while (tokens[position] === '+' || tokens[position] === '-') {
+        var operation = tokens[position++];
+        var operand = product();
+        result = operation === '+' ? result + operand : result - operand;
+      }
+      return result;
+    }
+    var result = sum();
+    return position === tokens.length && Number.isFinite(result) ? Math.max(0, result) : 0;
+  }
+
+  function cornerRadius(value, width, height) {
+    var parts = [], start = 0, depth = 0;
+    value = String(value || '0').trim();
+    for (var i = 0; i < value.length; i++) {
+      if (value[i] === '(') depth++;
+      else if (value[i] === ')') depth--;
+      else if (/\s/.test(value[i]) && !depth) {
+        if (i > start) parts.push(value.slice(start, i));
+        start = i + 1;
+      }
+    }
+    if (start < value.length) parts.push(value.slice(start));
+    return [radiusLength(parts[0], width), radiusLength(parts[1] || parts[0], height)];
+  }
+
+  function normalizedRadii(radii, width, height) {
+    // CSS reduces all radii by one common factor when adjacent corners overlap.
+    // A zero sum imposes no constraint, rather than shrinking every other corner.
+    var sums = [radii[0][0] + radii[1][0], radii[3][0] + radii[2][0], radii[0][1] + radii[3][1], radii[1][1] + radii[2][1]];
+    var scale = 1;
+    for (var i = 0; i < sums.length; i++) if (sums[i] > 0) scale = Math.min(scale, (i < 2 ? width : height) / sums[i]);
+    return radii.map(function (radius) { return [radius[0] * scale, radius[1] * scale]; });
+  }
+
+  function roundedRectPath(x, y, width, height, radii) {
+    function n(value) { return String(Math.round(value * 10000) / 10000); }
+    function point(a, b) { return n(a) + ' ' + n(b); }
+    function arc(radius, a, b) {
+      return radius[0] > 0 && radius[1] > 0
+        ? ' A ' + point(radius[0], radius[1]) + ' 0 0 1 ' + point(a, b)
+        : ' L ' + point(a, b);
+    }
+    return 'M ' + point(x + radii[0][0], y) +
+      ' L ' + point(x + width - radii[1][0], y) + arc(radii[1], x + width, y + radii[1][1]) +
+      ' L ' + point(x + width, y + height - radii[2][1]) + arc(radii[2], x + width - radii[2][0], y + height) +
+      ' L ' + point(x + radii[3][0], y + height) + arc(radii[3], x, y + height - radii[3][1]) +
+      ' L ' + point(x, y + radii[0][1]) + arc(radii[0], x + radii[0][0], y) + ' Z';
+  }
+
+  function ringClip(width, height, radii, inset) {
+    var outer = normalizedRadii(radii, width, height);
+    var path = roundedRectPath(0, 0, width, height, outer);
+    var innerWidth = width - inset * 2;
+    var innerHeight = height - inset * 2;
+    if (innerWidth > 0 && innerHeight > 0) {
+      var inner = outer.map(function (radius) { return [Math.max(0, radius[0] - inset), Math.max(0, radius[1] - inset)]; });
+      path += ' ' + roundedRectPath(inset, inset, innerWidth, innerHeight, normalizedRadii(inner, innerWidth, innerHeight));
+    }
+    return 'path(evenodd, "' + path + '")';
+  }
+
+  function trackGlowLayer(layer) {
+    if (!layer || !layer.isConnected || glowLayers.has(layer)) return;
+    glowLayers.set(layer, '');
+    pendingGeometry.add(layer);
+    if (geometryObserver) geometryObserver.observe(layer);
+  }
+
+  function refreshGeometry() {
+    glowLayers.forEach(function (_, layer) { pendingGeometry.add(layer); });
+    schedule();
+  }
+
+  function paintGeometry() {
+    pendingGeometry.forEach(function (layer) {
+      if (!layer.isConnected) return;
+      var style = window.getComputedStyle(layer);
+      // CSS used dimensions stay in layout pixels under both transforms and CSS zoom.
+      var width = parseFloat(style.width);
+      var height = parseFloat(style.height);
+      if (style.boxSizing !== 'border-box') {
+        width += (parseFloat(style.paddingLeft) || 0) + (parseFloat(style.paddingRight) || 0) + (parseFloat(style.borderLeftWidth) || 0) + (parseFloat(style.borderRightWidth) || 0);
+        height += (parseFloat(style.paddingTop) || 0) + (parseFloat(style.paddingBottom) || 0) + (parseFloat(style.borderTopWidth) || 0) + (parseFloat(style.borderBottomWidth) || 0);
+      }
+      if (!Number.isFinite(width)) width = layer.offsetWidth || layer.clientWidth;
+      if (!Number.isFinite(height)) height = layer.offsetHeight || layer.clientHeight;
+      if (!(width > 0 && height > 0)) return;
+      // Native details/summary inheritance can resolve the summary's radius to zero.
+      // Its decoration follows the complete details card, whose corner geometry is authoritative.
+      var radiusOwner = radiusOwners.get(layer);
+      var radiusStyle = radiusOwner ? window.getComputedStyle(radiusOwner) : style;
+      var radii = [radiusStyle.borderTopLeftRadius, radiusStyle.borderTopRightRadius, radiusStyle.borderBottomRightRadius, radiusStyle.borderBottomLeftRadius]
+        .map(function (value) { return cornerRadius(value, width, height); });
+      var inset = radiusLength(style.getPropertyValue('--card-glow-width') || '3px', Math.min(width, height));
+      var signature = [width, height, inset];
+      radii.forEach(function (radius) { signature.push(radius[0], radius[1]); });
+      signature = signature.join(',');
+      if (glowLayers.get(layer) === signature) return;
+      glowLayers.set(layer, signature);
+      layer.style.setProperty('--card-glow-clip', ringClip(width, height, radii, inset));
+    });
+    pendingGeometry.clear();
+  }
 
   function schedule() {
     if (!frame && !document.hidden) frame = window.requestAnimationFrame(paint);
@@ -50,7 +198,13 @@
     if (!host) return;
     host.classList.add('has-card-glow');
     if (host !== state.card) host.classList.add('card-glow-summary-host');
-    if (state.layer.parentNode !== host) host.appendChild(state.layer);
+    if (host !== state.card) radiusOwners.set(state.layer, state.card);
+    else radiusOwners.delete(state.layer);
+    if (state.layer.parentNode !== host) {
+      host.appendChild(state.layer);
+      pendingGeometry.add(state.layer);
+    }
+    trackGlowLayer(state.layer);
     host.classList.toggle('is-card-glow-focused', state.focused);
     state.host = host;
   }
@@ -74,6 +228,9 @@
     if (!root || root.nodeType !== 1 || !root.isConnected) return;
     if (root.matches(SELECTOR)) register(root);
     root.querySelectorAll(SELECTOR).forEach(register);
+    // Manual Research layers have their own animation clock and no pointer registry entry.
+    if (root.matches('.backer-card-glow-layer')) trackGlowLayer(root);
+    root.querySelectorAll('.backer-card-glow-layer').forEach(trackGlowLayer);
   }
 
   function reconcile() {
@@ -89,6 +246,13 @@
         registry.delete(card);
         if (intersection) intersection.unobserve(card);
         if (touchCard === state) touchCard = null;
+      });
+      glowLayers.forEach(function (_, layer) {
+        if (layer.isConnected) return;
+        if (geometryObserver) geometryObserver.unobserve(layer);
+        radiusOwners.delete(layer);
+        pendingGeometry.delete(layer);
+        glowLayers.delete(layer);
       });
       pendingRemoval = false;
     }
@@ -114,6 +278,7 @@
   function paint(now) {
     frame = 0;
     reconcile();
+    paintGeometry();
     var elapsed = lastFrame ? Math.min(48, now - lastFrame) : 16;
     lastFrame = now;
     var focused = keyboardInput ? closestCard(document.activeElement) : null;
@@ -190,6 +355,12 @@
 
   function start() {
     if (!document.body) return;
+    if ('ResizeObserver' in window) {
+      geometryObserver = new ResizeObserver(function (entries) {
+        entries.forEach(function (entry) { pendingGeometry.add(entry.target); });
+        schedule();
+      });
+    }
     if ('IntersectionObserver' in window) {
       intersection = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
@@ -209,7 +380,7 @@
       mutations.forEach(function (mutation) {
         if (mutation.removedNodes.length) pendingRemoval = true;
         mutation.addedNodes.forEach(function (node) {
-          if (node.nodeType === 1 && !node.classList.contains('backer-card-glow-layer')) pendingRoots.add(node);
+          if (node.nodeType === 1) pendingRoots.add(node);
         });
       });
       if (pendingRoots.size || pendingRemoval) schedule();
@@ -230,10 +401,20 @@
     document.addEventListener('focusin', schedule);
     document.addEventListener('focusout', schedule);
     document.addEventListener('toggle', function (event) {
-      if (event.target.matches('details.research-gateway')) schedule();
+      if (event.target.matches('details.research-gateway')) {
+        var state = registry.get(event.target);
+        if (state) pendingGeometry.add(state.layer);
+        schedule();
+      }
     }, true);
     window.addEventListener('scroll', schedule, { passive: true, capture: true });
-    window.addEventListener('resize', schedule, { passive: true });
+    window.addEventListener('resize', refreshGeometry, { passive: true });
+    window.addEventListener('pagehide', function (event) {
+      if (event.persisted) return;
+      if (geometryObserver) geometryObserver.disconnect();
+      glowLayers.clear();
+      pendingGeometry.clear();
+    });
     window.addEventListener('blur', clearPointer);
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) {
@@ -251,7 +432,7 @@
   window.BackerCardGlow = {
     refresh: function () {
       if (document.body) pendingRoots.add(document.body);
-      schedule();
+      refreshGeometry();
     },
     selector: SELECTOR
   };

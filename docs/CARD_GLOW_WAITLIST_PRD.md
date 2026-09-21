@@ -8,6 +8,9 @@ Visitors can browse markets and events. Portfolio and commitment actions (Back, 
 ## Visual implementation
 A decorative, pointer-transparent child draws a 3px multicolor directional ring inside each card. Card backgrounds, backdrop filters, rim shadows, parent pseudo-elements and positioning remain owned by their existing styles. A shared listener updates visible cards; new results and rerenders are decorated automatically. Reduced motion uses static feedback; keyboard focus and touch remain supported.
 
+## Rounded-edge refinement
+Both the outer contour and inner cutout must follow continuous rounded curves, including at high zoom. Use explicit even-odd vector clipping rather than a rectangular content-box mask. Resolve all four corner radii from the actual layer, preserve fractional stroke widths, and update the geometry on resize, dynamic replacement and disclosure expansion. The same geometry must cover the independently animated Research stage and caption. Verify all six consuming pages and English, Chinese, Japanese and Korean variants before publishing both hosts.
+
 ## Access and registration
 Load the access guard before application scripts; guard action handlers and direct portfolio/position routes. Replace the standalone Portfolio document with a waitlist redirect and visible fallback link. Browsing and detail navigation remain available.
 
