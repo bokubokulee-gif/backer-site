@@ -127,3 +127,7 @@ A research diagram may show illustrative distributions, but should label them **
 Avoid implying that historical alpha came only from company facts; behavioral finance and order-flow models already exist. The differentiated hypothesis is the quality, permission, representativeness and update speed of Backer's behavioral evidence and its incremental predictive value. Avoid saying all hedge funds have lost their edge; the reviewed paper's sample-specific evidence needs its own scope statement.
 
 API CTA may say **We’re opening API access. Contact us to discuss a research integration.** This communicates planned access without inventing a public endpoint or released live product.
+
+## Architecture correction after user review
+
+The original recommendation above concentrated on event features and underrepresented the requested product thesis. The current design also places Jev directly inside Backer's trader simulation as a bounded next-choice primitive. Backer supplies accumulated individual observations and current market/portfolio state; Jev selects from explicit actions; code advances simulated state; observed outcomes support calibration. See `HFT_JEV_DECISION_LOOP.md` for the current primary-source design and exact request contract. The public demonstration uses authored choices, not live inference.

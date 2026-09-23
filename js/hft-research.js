@@ -2,7 +2,7 @@
   'use strict';
   var M = window.BackerHftModel;
   if (!M) return;
-  var state = { study: 'fh', event: 'beat', profile: 0, history: true, stage: 'jev', age: 250, mix: 'balanced' };
+  var state = { study: 'fh', event: 'beat', profile: 0, history: true, stage: 'jev', age: 250, mix: 'balanced', record: 2, ledger: { shares: 100, cash: 5000 }, steps: 0 };
   function t(value) { return window.BackerI18n ? window.BackerI18n.t(value) : value; }
   function byId(id) { return document.getElementById(id); }
   function text(id, value) { byId(id).textContent = t(value); }
@@ -10,6 +10,35 @@
   function signed(value) { return (value < 0 ? '−' : '+') + Math.abs(value).toFixed(1); }
   function pressed(selector, key, selected) { document.querySelectorAll(selector).forEach(function (button) { button.setAttribute('aria-pressed', String(button.dataset[key] === String(selected))); }); }
   function svgNode(tag, attrs, value) { var n = document.createElementNS('http://www.w3.org/2000/svg', tag); Object.keys(attrs).forEach(function (k) { n.setAttribute(k, attrs[k]); }); if (value !== undefined) n.textContent = t(value); return n; }
+
+  function renderMemory() {
+    var profile = M.profiles[state.profile], timeline = byId('memory-timeline');
+    timeline.replaceChildren();
+    profile.records.forEach(function (record, i) {
+      var button = el('button', record.date); button.type = 'button'; button.dataset.record = String(i);
+      button.setAttribute('aria-pressed', String(state.record === i));
+      button.addEventListener('click', function () { state.record = i; renderMemory(); byId('memory-timeline').querySelector('[data-record="' + i + '"]').focus(); });
+      timeline.appendChild(button);
+    });
+    var record = profile.records[state.record];
+    text('memory-event', record.event); text('memory-action', record.action); text('memory-context', record.context);
+    byId('memory-timeline').closest('.hft-memory').classList.toggle('is-withheld', !state.history);
+  }
+  function resetDecision() { state.ledger = { shares: 100, cash: 5000 }; state.steps = 0; }
+  function renderDecision() {
+    var profile = M.profiles[state.profile], action = M.decision(state.event, state.profile, state.ledger, state.history);
+    text('decision-trader', profile.id); text('decision-history', state.history ? profile.history : 'Behavioral history withheld; only the market situation is supplied.');
+    text('decision-event', M.events[state.event].label); text('decision-market', M.markets[state.event].context);
+    byId('decision-shares').textContent = state.ledger.shares;
+    byId('decision-cash').textContent = state.ledger.cash.toLocaleString('en-US');
+    byId('decision-count').textContent = state.steps + ' / 3';
+    var options = byId('decision-options'); options.replaceChildren();
+    [['add', 'Add 10 shares'], ['hold', 'Keep the position'], ['reduce', 'Reduce 10 shares'], ['insufficient', 'Insufficient evidence']].forEach(function (entry) {
+      var option = el('span', entry[1]); option.dataset.selected = String(action === entry[0]); if (action === entry[0]) option.setAttribute('aria-current', 'true'); options.appendChild(option);
+    });
+    text('decision-result', 'The highlighted choice is an authored example, not a live Jev answer.');
+    byId('advance-decision').disabled = state.steps >= 3;
+  }
 
   function renderField() {
     var svg = byId('investor-field');
@@ -49,7 +78,7 @@
       row.type = 'button'; row.dataset.cohort = String(i);
       row.setAttribute('aria-pressed', String(i === state.profile));
       row.addEventListener('click', function () {
-        state.profile = i; renderResponse();
+        state.profile = i; resetDecision(); renderResponse();
         byId('cohort-composition').querySelector('[data-cohort="' + i + '"]').focus();
       });
       row.append(el('small', '0' + (i + 1)), el('span', M.profiles[i].label), el('b', (weight * 100).toFixed(weight === 1 / 3 ? 1 : 0) + '%'));
@@ -151,34 +180,34 @@
       var tr = el('tr'); var th = el('th', M.actions[i]); th.scope = 'row'; tr.append(th, el('td', String(value)), el('td', String(event.base[i]))); table.appendChild(tr);
     });
     text('response-reading', state.history ? profile.reading : 'Without history, every profile uses the same event-only distribution. Every person now receives the same forecast.');
-    renderField(); renderPopulation();
+    renderField(); renderPopulation(); renderMemory(); renderDecision();
     byId('response-announcement').textContent = t(event.label) + '. ' + t(profile.label) + '. ' + t('Selected distribution') + ': ' + values.map(function (v, i) { return t(M.actions[i]) + ' ' + v + '%'; }).join('; ') + '.';
   }
 
   var STAGES = {
     evidence: {
-      kind: 'Point-in-time inputs', title: 'Reconstruct the decision context.',
-      body: 'Connect timestamped events with observed exposure, decisions, holdings and constraints. Build a history of the conditions under which each person acts.',
-      note: 'Use consented or licensed records. Keep inferred motives separate from observed actions.',
-      caption: 'Evidence record', rows: [['Observed', 'Event, exposure, order, position'], ['Recorded', 'Timestamp, source, consent scope'], ['Kept separate', 'Inferred motives and missing data']]
+      kind: 'Accumulated individual behavior', title: 'Build from what this person actually did.',
+      body: 'Link each observed trade to the information available, the current position and the market situation. Accumulate decisions across events to model the individual, rather than assign a generic personality.',
+      note: 'Use consented or licensed records. Separate recorded explanations from inferred motives.',
+      caption: 'Backer supplies the trader state', rows: [['History', 'Past choices + information seen + reaction time'], ['Current state', 'Holdings + available cash + constraints'], ['Situation', 'Company event + market conditions + cutoff']]
     },
     jev: {
-      kind: 'Typed semantic judgments', title: 'A defined answer. Ready for code.',
-      body: 'Jev selects from defined answers and returns probabilities. Interpret announcements, classify decision context and feed structured features into Backer’s behavioral model.',
-      note: 'Model confidence describes the answer distribution. It is not a probability of profit.',
-      caption: 'Illustrative Choice question', rows: [['Question', 'How does this announcement change the stated outlook?'], ['Options', 'Improves · unchanged · weakens · unclear'], ['Output', 'Selected option + probabilities + confidence']]
+      kind: 'A bounded decision at each step', title: 'What would this trader choose now?',
+      body: 'Jev evaluates the supplied trader state and selects from explicit actions, with probabilities. Backer can use that judgment inside the simulation without asking for a conversation or parsing a written recommendation.',
+      note: 'Jev returns choices, not reasons. Explanations come from inspected evidence and tested changes to the inputs.',
+      caption: 'The Choice inside the simulation', rows: [['Question', 'Given this history and situation, what would this trader do next?'], ['Options', 'Add · keep position · reduce · insufficient evidence'], ['Output', 'Selected option + probabilities + confidence']]
     },
     backer: {
-      kind: 'Conditional behavioral model', title: 'Model the individual response.',
-      body: 'Combine semantic features with observed histories, current positions and constraints. Estimate who adds, holds or reduces, and when they act. Calibrate against held-out decisions.',
-      note: 'Jev supplies semantic features. Backer estimates and calibrates behavioral responses.',
-      caption: 'Behavioral output', rows: [['Condition on', 'Event + history + current state'], ['Estimate', 'Action distribution + response horizon'], ['Attach', 'Coverage, uncertainty, model version']]
+      kind: 'The simulation advances', title: 'Update the world. Ask again.',
+      body: 'Code applies the simulated choice, updates positions and cash, and advances market conditions. The next Jev judgment sees that updated state. Aggregate calibrated paths across traders to estimate the population response.',
+      note: 'Simulated decisions remain separate from observed trades. Execution and accounting follow explicit code.',
+      caption: 'One step becomes the next input', rows: [['Update', 'Simulated holdings + cash + decision time'], ['Repeat', 'Updated trader state + next market situation'], ['Aggregate', 'Actions + timing + sizes across traders']]
     },
     fund: {
-      kind: 'Independent deterministic controls', title: 'Connect behavior to execution.',
-      body: 'Apply behavioral context within the fund’s sizing, liquidity and execution rules. Check signal freshness, price impact and exposure before admitting an order.',
-      note: 'Position sizing depends on expected return and risk, separately from model confidence.',
-      caption: 'Execution checks', rows: [['Validate', 'Schema, timestamp and signal lifetime'], ['Constrain', 'Liquidity, exposure, turnover and costs'], ['Observe', 'Fills, realized outcomes and drift']]
+      kind: 'The record keeps growing', title: 'Compare the simulation with real decisions.',
+      body: 'When new trades are observed, compare them with the earlier forecasts. Extend the individual’s history and recalibrate the model. Test new Jev and foundation-model versions against the same held-out decisions.',
+      note: 'Model confidence and realized trading performance are evaluated separately.',
+      caption: 'The accumulation loop', rows: [['Observe', 'Actual decisions + timing + outcomes'], ['Compare', 'Forecast error + calibration + cost'], ['Improve', 'Richer histories + better models + new situations']]
     }
   };
   function renderStage() {
@@ -196,12 +225,14 @@
   }
   document.querySelectorAll('[data-mix]').forEach(function (b) { b.addEventListener('click', function () { state.mix = b.dataset.mix; renderPopulation(); }); });
   document.querySelectorAll('[data-study]').forEach(function (b) { b.addEventListener('click', function () { state.study = b.dataset.study; renderAlpha(); }); });
-  document.querySelectorAll('[data-event]').forEach(function (b) { b.addEventListener('click', function () { state.event = b.dataset.event; renderResponse(); }); });
-  document.querySelectorAll('[data-profile]').forEach(function (b) { b.addEventListener('click', function () { state.profile = Number(b.dataset.profile); renderResponse(); }); });
+  document.querySelectorAll('[data-event]').forEach(function (b) { b.addEventListener('click', function () { state.event = b.dataset.event; resetDecision(); renderResponse(); }); });
+  document.querySelectorAll('[data-profile]').forEach(function (b) { b.addEventListener('click', function () { state.profile = Number(b.dataset.profile); resetDecision(); renderResponse(); }); });
   document.querySelectorAll('[data-stage]').forEach(function (b) { b.addEventListener('click', function () { state.stage = b.dataset.stage; renderStage(); }); });
   document.querySelectorAll('[data-age]').forEach(function (b) { b.addEventListener('click', function () { state.age = Number(b.dataset.age); renderFreshness(); }); });
-  byId('history-toggle').addEventListener('click', function () { state.history = !state.history; renderResponse(); });
-  byId('reset-response').addEventListener('click', function () { state.event = 'beat'; state.profile = 0; state.history = true; state.mix = 'balanced'; renderResponse(); });
+  byId('history-toggle').addEventListener('click', function () { state.history = !state.history; resetDecision(); renderResponse(); });
+  byId('reset-response').addEventListener('click', function () { state.event = 'beat'; state.profile = 0; state.history = true; state.mix = 'balanced'; state.record = 2; resetDecision(); renderResponse(); });
+  byId('advance-decision').addEventListener('click', function () { if (state.steps < 3) { state.ledger = M.step(state.event, state.profile, state.ledger, state.history); state.steps++; renderDecision(); } });
+  byId('reset-decision').addEventListener('click', function () { resetDecision(); renderDecision(); });
   renderAlpha(); renderResponse(); renderStage(); renderFreshness();
   if (typeof ResizeObserver !== 'undefined') new ResizeObserver(function () { renderAlpha(); renderPopulation(); renderClock(); }).observe(byId('alpha-chart').parentElement);
 }());

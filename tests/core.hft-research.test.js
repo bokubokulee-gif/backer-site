@@ -124,3 +124,99 @@ test('population rejects unknown, inherited and non-string identifiers with expl
   }
   assert.throws(() => model.population('beat', ['balanced'], false), RangeError, 'array cannot masquerade as a valid mix');
 });
+
+test('a simulated buy pays for ten shares at the selected market price and the next step uses the new ledger', () => {
+  const initial = Object.freeze({ shares: 100, cash: 5000 });
+  assert.equal(model.decision('beat', 0, initial, true), 'add');
+  const first = model.step('beat', 0, initial, true);
+  assert.deepEqual(first, { shares: 110, cash: 3960, action: 'add' });
+  const second = model.step('beat', 0, first, true);
+  assert.deepEqual(second, { shares: 120, cash: 2920, action: 'add' });
+  assert.deepEqual(model.step('beat', 0, second, true), { shares: 130, cash: 1880, action: 'add' });
+  assert.deepEqual(model.step('mixed', 0, initial, true), { shares: 110, cash: 4010, action: 'add' },
+    'the mixed-event fixture fills at $99, not the $104 earnings-beat price');
+  assert.deepEqual(initial, { shares: 100, cash: 5000 });
+});
+
+test('a simulated sale removes ten held shares and credits the full stated proceeds', () => {
+  const initial = Object.freeze({ shares: 100, cash: 5000 });
+  assert.equal(model.decision('cut', 2, initial, true), 'reduce');
+  const first = model.step('cut', 2, initial, true);
+  assert.deepEqual(first, { shares: 90, cash: 5940, action: 'reduce' });
+  assert.deepEqual(model.step('cut', 2, first, true), { shares: 80, cash: 6880, action: 'reduce' });
+  assert.deepEqual(model.step('mixed', 2, initial, true), { shares: 90, cash: 5990, action: 'reduce' });
+  assert.deepEqual(initial, { shares: 100, cash: 5000 });
+});
+
+test('keeping a position leaves both balances unchanged and returns an independent ledger', () => {
+  const initial = Object.freeze({ shares: 100, cash: 5000 });
+  assert.equal(model.decision('beat', 1, initial, true), 'hold');
+  const result = model.step('beat', 1, initial, true);
+  assert.deepEqual(result, { shares: 100, cash: 5000, action: 'hold' });
+  assert.notEqual(result, initial);
+  result.cash = 0;
+  result.shares = 0;
+  assert.deepEqual(initial, { shares: 100, cash: 5000 });
+  assert.deepEqual(model.step('beat', 1, initial, true), { shares: 100, cash: 5000, action: 'hold' });
+});
+
+test('fixed-lot buys stop before overdrawing cash, including at the exact affordability boundary', () => {
+  const underfunded = Object.freeze({ shares: 100, cash: 1039.99 });
+  assert.equal(model.decision('beat', 0, underfunded, true), 'hold');
+  assert.deepEqual(model.step('beat', 0, underfunded, true), { shares: 100, cash: 1039.99, action: 'hold' });
+  const fullySpent = model.step('beat', 0, { shares: 100, cash: 1040 }, true);
+  assert.deepEqual(fullySpent, { shares: 110, cash: 0, action: 'add' });
+  assert.deepEqual(model.step('beat', 0, fullySpent, true), { shares: 110, cash: 0, action: 'hold' });
+  let ledger = { shares: 100, cash: 5000 };
+  for (let i = 0; i < 4; i += 1) ledger = model.step('beat', 0, ledger, true);
+  assert.deepEqual(ledger, { shares: 140, cash: 840, action: 'add' });
+  assert.deepEqual(model.step('beat', 0, ledger, true), { shares: 140, cash: 840, action: 'hold' });
+});
+
+test('fixed-lot sales cannot create a short position or turn a partial holding into a full fill', () => {
+  for (const shares of [0, 9]) {
+    const initial = Object.freeze({ shares, cash: 5000 });
+    assert.equal(model.decision('cut', 2, initial, true), 'hold');
+    assert.deepEqual(model.step('cut', 2, initial, true), { shares, cash: 5000, action: 'hold' });
+  }
+  const soldOut = model.step('cut', 2, { shares: 10, cash: 5000 }, true);
+  assert.deepEqual(soldOut, { shares: 0, cash: 5940, action: 'reduce' });
+  assert.deepEqual(model.step('cut', 2, soldOut, true), { shares: 0, cash: 5940, action: 'hold' });
+});
+
+test('invalid simulated balances are rejected before a decision or transition', () => {
+  const invalid = [
+    null, undefined, {}, [], 'ledger',
+    { shares: 100 }, { cash: 5000 },
+    { shares: 100, cash: -0.01 }, { shares: 100, cash: NaN },
+    { shares: 100, cash: Infinity }, { shares: 100, cash: '5000' },
+    { shares: -1, cash: 5000 }, { shares: 1.5, cash: 5000 },
+    { shares: NaN, cash: 5000 }, { shares: Infinity, cash: 5000 },
+    { shares: '100', cash: 5000 }
+  ];
+  for (const ledger of invalid) {
+    assert.throws(() => model.decision('beat', 0, ledger, true), RangeError);
+    assert.throws(() => model.step('beat', 0, ledger, true), RangeError);
+  }
+  assert.deepEqual(model.step('beat', 0, { shares: 0, cash: 0 }, true),
+    { shares: 0, cash: 0, action: 'hold' }, 'zero balances are valid, constrained states');
+});
+
+test('all authored ledger paths preserve marked value at the fixed fill price and keep observations unchanged', () => {
+  const observedHistory = JSON.stringify(model.profiles);
+  for (const event of Object.keys(model.events)) {
+    for (let profile = 0; profile < model.profiles.length; profile += 1) {
+      for (const history of [false, true]) {
+        const initial = Object.freeze({ shares: 100, cash: 5000 });
+        const result = model.step(event, profile, initial, history);
+        const price = model.markets[event].price;
+        assertClose(result.cash + result.shares * price, 5000 + 100 * price,
+          `${event}/${profile}/${history}: a zero-cost fixed-price fill conserves marked value`);
+        assert.deepEqual(initial, { shares: 100, cash: 5000 });
+        assert.ok(result.cash >= 0 && result.shares >= 0);
+      }
+    }
+  }
+  assert.equal(JSON.stringify(model.profiles), observedHistory,
+    'simulated steps must not append to or rewrite the observed-history fixtures');
+});

@@ -7,7 +7,7 @@
 - Packaged preview: http://127.0.0.1:4398/use-cases/high-frequency-trading.html
 - Research entry: http://127.0.0.1:4398/research.html
 - Source: `use-cases/high-frequency-trading.html`, `js/hft-model.js`, `js/hft-research.js`, `css/hft-research.css`.
-- Locales: `js/locales/hft-research.js` plus the existing shared packs. 201 complete EN→ZH/JA/KO entries; extraction found no missing page-specific static or dynamic strings.
+- Locales: `js/locales/hft-research.js` plus the existing shared packs. 344 complete EN→ZH/JA/KO entries; extraction found no missing page-specific static or dynamic strings.
 - API invitation and contact route added to all six use cases. Contact leads to the existing early-access form, preserving the selected language. No form was submitted.
 
 ## Research and evidence boundaries
@@ -22,7 +22,7 @@ All response distributions on the page are authored teaching fixtures. No trader
 
 ## Verification
 
-- Full repository test command: `node --test tests/core*.test.js tests/backend*.test.js tests/market2-v21-release.test.js` — **286 passed, 0 failed**.
+- Full repository test command: `node --test tests/core*.test.js tests/backend*.test.js tests/market2-v21-release.test.js` — **293 passed, 0 failed**.
 - Repository lint passed; final locale syntax and `git diff --check` passed.
 - Public build: **223 allowlisted files, 0 critical exposure findings**. The two HFT scripts have reviewed byte digests; unknown or modified HFT scripts fail the research boundary policy. Internal audits, SDK test files and screenshots are excluded from the public artifact.
 - Browser: all nine event/history combinations updated the four probabilities and conserved 100%; history removal restored the common event-only reference; reset restored the initial case. Keyboard activation was checked.
@@ -50,3 +50,14 @@ This checkout borrowed the existing repository dependencies during verification.
 - Added a visual freshness clock with three selectable ages. Expired context is discarded at the original deadline.
 - Four-language browser checks verified the new figures, native copy, focused cohort retention after redraw, common baseline on history removal, expiry states and locale-preserving contact links. The user’s 645px view and narrow 390px layout were inspected.
 - The revised scripts contain only cited research data, authored fixtures, deterministic presentation arithmetic and UI behavior; no network calls or private data. Updated reviewed hashes match the audited minified artifact.
+
+## Individual-trader correction and re-release
+
+The user clarified that the core edge is accumulated individual trading behavior and that Jev belongs in the simulated trader's next-decision loop. The page now leads with that mechanism and places the empirical motivation after the trader simulation.
+
+- Added three fictional individual trading histories with inspectable records and current conditions, rather than relying only on generic cohort labels.
+- Added a Jev decision-loop explanation and interactive authored-choice demonstration: select a trader and situation, advance three steps, observe holdings and cash, reset and compare. Jev is explicitly a bounded next-choice primitive; the public page does not call a live model.
+- Added seven ledger/fixture tests. Fourteen HFT model tests and all 293 repository tests pass. Tests cover exact buy/sell/hold accounting, feasibility limits, input immutability, invalid ledgers and preservation of observed-history records.
+- Rewrote the full Chinese page as native editorial copy; updated Japanese and Korean. All 280 active source strings have three translations; the catalog has 344 entries including compatibility keys.
+- Reviewed the actual Chinese hero, individual record inspector and decision ledger. Source and packaged preview show the revised accumulated-history thesis and why Jev participates in simulation.
+- Added HFT_JEV_DECISION_LOOP.md with the exact documented Choice request and separation of observed history, simulated state, model abstention and real outcomes.
