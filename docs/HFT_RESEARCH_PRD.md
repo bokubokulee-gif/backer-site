@@ -1,0 +1,68 @@
+# High Frequency Trading supports
+
+Status: implemented and verified locally, 23 September 2026. See HFT_VALIDATION.md for evidence and access limits.
+
+## Purpose
+
+Add a sixth Backer Research use case for quantitative and discretionary funds. Explain and make inspectable the hypothesis that behavioral histories can add predictive information about investor responses to company events. Preserve the existing static site, dark Backer identity, and English, Chinese, Japanese and Korean editions.
+
+Sequence: source learning and claim audit → this PRD → implementation → functional and rendered verification. Build in an isolated checkout of current origin/main (50da9a6). This request authorizes a local build; publication is a separate action.
+
+## What we learned
+
+1. Chen, Sialm and Xu, *The Growth and Performance of Artificial Intelligence in Asset Management*, NBER working paper 35273, May 2026. Table 5 compares disclosed AI and non-AI hedge funds after controls. Fung–Hsieh relative monthly alpha is +49.6 bp before 2018 and −8.3 bp during 2018–2024; the latter is not significant. AQR equivalents: +48.8 and −2.9 bp. These are relative coefficients, not absolute AI returns. The paper does not establish that all funds lost their edge or evaluate HFT or retail LLM assistants. Declining advantage is consistent with competition; the mechanism is not causally established. Low monthly correlation cannot exclude intraday crowding or tail risk. [Paper](https://www.nber.org/system/files/working_papers/w35273/w35273.pdf)
+2. Jev answers narrow typed questions. Choice selects an option and supplies probabilities and concentration-based confidence; it does not converse or generate an investment rationale. Schema validity is not factual correctness, a behavioral frequency or expected profit. Keep calculations, time comparisons, risk limits and execution in deterministic code. [Choice](https://docs.typesafe.ai/primitives/choice) · [Confidence](https://docs.typesafe.ai/confidence) · [API](https://docs.typesafe.ai/api)
+3. The vendor's launch article reports 70–500 ms end-to-end in its evaluation context, not a trading latency SLA. Use hosted semantic judgments upstream of latency-critical execution. Measure deployment-specific tail latency and stale-result rates. [Vendor article](https://typesafe.ai/blog/introducing-system-one-models-and-jev)
+4. The supplied Medium tutorial could not be read. Web, reader, direct retrieval and browser content extraction failed; no unseen code, performance or profitability claim may be described as verified. [Supplied tutorial](https://algoinsights.medium.com/build-a-24-7-hft-trading-system-with-jev-a-step-by-step-guide-242d30cd0c5e)
+5. Existing Backer research separates attention, belief, action, order flow and price impact. A plausible persona does not establish a valid forecast. Trading histories are incomplete observations; exposure, holdings, resources, horizon and delegated policies matter. Existing funds already study behavior, sentiment and order flow. Our hypothesis is incremental predictive value, not the invention of behavioral finance.
+
+## Thesis and boundaries
+
+As AI-assisted company analysis becomes more accessible, differences in investor response may remain economically useful. The same information can produce different choices because positions, liquidity needs, attention, past decisions and delegation rules differ. People can execute themselves or delegate execution; neither requires a human click per order.
+
+Proposed foundation: evidence-grounded Backer behavioral simulation + Jev's typed semantic judgments + future models admitted through prospective evaluation. More capable models may improve measurement and coverage; they can also accelerate adaptation and signal decay. Do not assume omniscience, rationality, correctness, or durable alpha.
+
+The public page is an interactive research explanation. It has no live Jev call, private trader data, trading suggestions, broker connection or executed order. Illustrative probabilities are authored fixtures. The proposed API is opening for early access; do not invent an endpoint, uptime commitment or production availability.
+
+## Page structure and interactions
+
+Route: `use-cases/high-frequency-trading.html`. Research list label exactly **High Frequency Trading supports**. Page title **High Frequency Trading**; hero thesis **Same information. Different trades.**
+
+1. Hero: a compact branching response illustration and concise thesis. Quantitative and discretionary funds are named. Clearly state research-support scope.
+2. Evidence: switch between Fung–Hsieh and AQR; chart pre/post relative alpha with zero line and approximate 95% intervals calculated from reported standard errors. Show exact table values accessibly and describe the statistical uncertainty. Never fabricate an annual performance line.
+3. Behavioral experiment: choose one of three company events, then one of three synthetic investor profiles. Show buy/hold/reduce/no-action distributions, observed-history assumptions, and a visible model-with/without-history comparison. No real forecast or implied return. Event and profile choices directly change the illustration. All values sum to 100%; an outside option is present. Expose assumptions and values.
+4. Architecture: select a stage in evidence → Jev judgments → Backer response model → fund controls. Reveal inputs, outputs and a narrow choice example. Jev output is closed-set, not a chat response. Uncalibrated model confidence is never converted directly into sizing or Kelly fractions.
+5. Trading clock: distinguish precomputed behavioral context, event-driven updates and latency-critical execution. A simple stale/fresh context choice shows why a fund must discard expired signals. Model retries must not silently extend signal validity.
+6. Validation and thesis: frozen information cutoffs, consented/licensed behavioral data, person/time/event-disjoint holdouts, calibration and baseline ablations, realistic replay with spreads/fees/impact/fills, capacity and decay, regime shifts, paper-trading promotion gate. A proposed signal is useful only after incremental out-of-sample and net-cost evidence.
+7. Source notes and API/contact block. Source citations are adjacent to empirical claims. Add the same API/contact block to every existing use case. Use verified existing early-access route unless the user supplies another contact destination.
+
+## Visual and engineering contract
+
+- Native HTML/CSS/JS and current Manrope/DM Mono shell. Charcoal, off-white, muted gold; chart series may use neutral distinctions. Strong editorial hierarchy, fine dividers, roomy figures, no generic dashboard/card grid.
+- Meaningful manipulation through events, profiles and model selectors. Charts display units, denominators, legend, uncertainty and data status. No decorative stock imagery is needed.
+- Keyboard-operable native buttons, visible focus, pressed states, semantic figures, tabular alternatives and polite live summaries. No color-only data distinction. Respect reduced motion.
+- Desktop and 390/320 px views; inspect actual renders in all four languages, including dynamic content and navigation. Body copy and chart labels must remain legible; no horizontal page overflow.
+- Shared i18n engine, locale propagation and same-host links. Static English content remains readable without JavaScript; interactive failures must not imply live analysis.
+- Add all new public assets to build allowlist. Keep research exposure guards, reviewing hashes where applicable. No credentials or internal audit documents in the public artifact.
+
+## Acceptance
+
+- [x] Original paper and supplied tutorial audit recorded, with access limits and tested/untested boundaries.
+- [x] Requested Research entry and all use-case navigation paths work in EN/ZH/JA/KO.
+- [x] Paper coefficients and intervals match source; authored fixtures are clearly distinct.
+- [x] Every event/profile/model/context selection updates its intended graph and readable explanation.
+- [x] API opening and contact actions appear on all six use cases and lead somewhere functional.
+- [x] Relevant model, localization, public-exposure and site checks pass.
+- [x] Desktop/mobile screenshots inspected; keyboard and reduced-motion behavior checked.
+- [x] Final report distinguishes built/verified locally from published or empirically validated alpha.
+
+## Refinement and launch brief — 23 September 2026
+
+The user requests stronger conviction, more interactive visual explanation and publication. This supersedes the earlier local-only delivery scope. Publish and verify GitHub Pages and Vercel in English, Chinese, Japanese and Korean.
+
+- Lead with: AI today makes company and industry analysis more accessible. We believe the **EDGE** lies in individual human behavior: how and why people trade. Highlight EDGE in yellow; retain the existing hero headline and Backer identity.
+- Replace repeated tentative questions and warnings with a direct account of the behavioral layer we are building. Preserve empirical scope and statistical uncertainty in figure captions; preserve synthetic status and model assumptions next to demonstrations.
+- Replace the static hero branch with an interactive investor field: select an announcement or behavioral cohort to see the response change and highlight its history. Reuse the same authored distributions as the main experiment.
+- Add a cohort-composition experiment. Equal, momentum-heavy and loss-sensitive populations flow into four action outcomes. A weighted mixture produces expected choices per 100 people and a signed add-minus-reduce count. Do not present counts as order sizes, price changes or measured forecasts. Removing behavioral history must erase composition effects.
+- Make freshness visible as a clock diagram with an explicit evidence origin, expiry point and advancing marker. Preserve deterministic admission logic and original expiry on retries.
+- Keep interactions keyboard-accessible with text/table equivalents and reduced-motion support. Inspect desktop, 645px user viewport and narrow mobile. Update translations, versioned assets, reviewed public hashes and release evidence before launch.

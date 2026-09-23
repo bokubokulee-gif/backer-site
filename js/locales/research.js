@@ -3,6 +3,21 @@
   window.BackerLocalePacks = window.BackerLocalePacks || {};
   window.BackerLocalePacks.research = {
   "messages": {
+    "High Frequency Trading": [
+        "高频交易",
+        "高頻度取引",
+        "고빈도 거래"
+    ],
+    "High Frequency Trading supports": [
+        "高频交易支持",
+        "高頻度取引の研究支援",
+        "고빈도 거래 지원"
+    ],
+    "Same information. Different trades.": [
+        "同一信息，不同交易。",
+        "同じ情報。異なる取引。",
+        "같은 정보, 다른 거래."
+    ],
     "Backer AI Research": [
       "Backer AI Research",
       "Backer AI Research",

@@ -144,7 +144,11 @@ test('educational simulation scripts retain review and byte-drift guards', async
   const root = fixture();
   write(root, 'js/simulation-model.js', 'window.BackerSimulationModel = {};');
   write(root, 'js/simulation-unreviewed.js', 'window.unknownModel = {};');
+  write(root, 'js/hft-model.js', 'window.unknownModel = {};');
+  write(root, 'js/hft-unreviewed.js', 'window.unknownModel = {};');
   const result = await (await policy()).auditPublicArtifact(root);
   assert.ok(result.findings.some((item) => item.file === 'js/simulation-model.js' && item.code === 'research_script_digest_drift'));
   assert.ok(result.findings.some((item) => item.file === 'js/simulation-unreviewed.js' && item.code === 'unreviewed_research_script'));
+  assert.ok(result.findings.some((item) => item.file === 'js/hft-model.js' && item.code === 'research_script_digest_drift'));
+  assert.ok(result.findings.some((item) => item.file === 'js/hft-unreviewed.js' && item.code === 'unreviewed_research_script'));
 });

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#08080a">
+  <title>High Frequency Trading — Backer Research</title>
+  <meta name="description" content="Behavioral simulation for quantitative and discretionary funds. Explore Backer's thesis, Jev's typed judgments, and the evidence a new signal must earn.">
+  <meta property="og:title" content="High Frequency Trading — Backer Research">
+  <meta property="og:description" content="Same information. Different trades. A research thesis on investor behavior and the next source of edge.">
+  <link rel="icon" href="../img/backer-mark.png?v=2">
+  <link rel="stylesheet" href="../css/simulation.css?v=20260920-5">
+  <link rel="stylesheet" href="../css/simulation-usecases.css?v=20260920-5">
+  <link rel="stylesheet" href="../css/hft-research.css?v=20260923-2">
+  <link rel="stylesheet" href="../css/research-api.css?v=20260923-2">
+  <link rel="stylesheet" href="../css/i18n.css?v=20260920-5">
+  <script src="../js/locales/simulation-usecases.js?v=20260923-2" defer></script>
+  <script src="../js/locales/hft-research.js?v=20260923-2" defer></script>
+  <script src="../js/i18n.js?v=20260920-5" defer></script>
+  <script src="../js/hft-model.js?v=20260923-2" defer></script>
+  <script src="../js/hft-research.js?v=20260923-2" defer></script>
+</head>
+<body class="usecase-page hft-page">
+  <a class="sim-skip" href="#main">Skip to content</a>
+  <header class="sim-header"><a class="sim-brand" href="../research.html">Backer <small>/ Research</small></a><a href="../research.html">Research home ↗</a></header>
+  <nav class="sim-site-nav" aria-label="Simulation pages"><a href="../simulation.html">Overview</a><a href="product-innovation.html">Product Innovation</a><a href="marketing-brand.html">Marketing &amp; Brand</a><a href="audience-segmentation.html">Audience Segmentation</a><a href="scenario-planning.html">Scenario Planning</a><a href="strategic-communications.html">Strategic Communications</a><a href="high-frequency-trading.html" aria-current="page">High Frequency Trading supports</a></nav>
+  <main id="main">
+    <section class="hft-hero sim-shell">
+      <p class="sim-eyebrow">High Frequency Trading supports</p>
+      <div class="hft-hero-grid"><div><h1>Same information.<br><span>Different trades.</span></h1><p class="hft-deck">AI today makes company and industry analysis more accessible. <span class="hft-conviction">We believe the <strong class="hft-edge">EDGE</strong> lies in individual human behavior: how and why people trade.</span></p><a class="sim-link" href="#response-lab">Explore the response model <span aria-hidden="true">↓</span></a></div>
+        <figure class="hft-hero-figure" aria-label="One company event branches into different investor actions">
+          <div class="hft-options hft-hero-events" role="group" aria-label="Explore an announcement"><button type="button" data-event="beat" aria-pressed="true">Earnings beat</button><button type="button" data-event="cut" aria-pressed="false">Guidance cut</button><button type="button" data-event="mixed" aria-pressed="false">Mixed announcement</button></div>
+          <svg id="investor-field" role="img" aria-label="Investor responses grouped by behavioral history"></svg>
+          <div class="hft-field-profiles" role="group" aria-label="Follow a behavioral cohort"><button type="button" data-profile="0" aria-pressed="true"><small>01</small><span>Follows momentum</span></button><button type="button" data-profile="1" aria-pressed="false"><small>02</small><span>Waits for confirmation</span></button><button type="button" data-profile="2" aria-pressed="false"><small>03</small><span>Cuts losses early</span></button></div>
+          <div class="hft-field-legend"><span><i data-action="0"></i>Add</span><span><i data-action="1"></i>Hold</span><span><i data-action="2"></i>Reduce</span><span><i data-action="3"></i>No recorded choice</span></div>
+          <figcaption id="field-reading" aria-live="polite">Illustrative behavioral field · select an event, then follow a cohort.</figcaption>
+        </figure>
+      </div>
+      <div class="hft-scope"><span>For quantitative &amp; discretionary funds</span><p>Model the people behind the orders. Bring behavioral context into research, positioning and execution policy.</p></div>
+    </section>
+
+    <section class="hft-section sim-shell" id="evidence">
+      <div class="hft-section-heading"><p class="sim-eyebrow">01 / The evidence</p><h2>An early advantage.<br>An edge to renew.</h2><p>Chen, Sialm and Xu document a substantial early advantage for disclosed AI hedge funds that diminished after 2017. Better models spread. Differentiated information becomes more valuable.</p></div>
+      <figure class="hft-evidence-figure">
+        <div class="hft-figure-head"><p>AI minus non-AI monthly alpha</p><div class="hft-options" role="group" aria-label="Risk adjustment model"><button type="button" data-study="fh" aria-pressed="true">Fung–Hsieh</button><button type="button" data-study="aqr" aria-pressed="false">AQR</button></div></div>
+        <p id="alpha-announcement" class="hft-sr-only" role="status"></p><div class="hft-evidence-plot"><svg id="alpha-chart" role="img" aria-label="Relative monthly alpha before and after 2018, with approximate 95 percent intervals"></svg></div>
+        <table class="hft-data-table"><caption>Basis points per month · approximate 95% interval</caption><thead><tr><th scope="col">Period</th><th scope="col">Estimate</th><th scope="col">Interval</th></tr></thead><tbody id="alpha-values"><tr><th scope="row">2006–2017</th><td>+49.6</td><td>+18.4 to +80.8</td></tr><tr><th scope="row">2018–2024</th><td>−8.3</td><td>−31.6 to +15.0</td></tr></tbody></table>
+        <figcaption><p>Relative estimates after controls, not absolute fund returns. The post-2017 estimate is statistically indistinguishable from zero. Intervals are estimate ± 1.96 standard errors from Table 5.</p><p>Disclosed US hedge funds, 2006–2024. 89 funds ever classified as AI; 5,894 funds in the performance regressions. This is not a census of AI investing or a study of HFT.</p><a href="https://www.nber.org/system/files/working_papers/w35273/w35273.pdf" target="_blank" rel="noopener noreferrer">Read the paper · Table 5 ↗</a></figcaption>
+      </figure>
+    </section>
+
+    <section class="hft-thesis sim-shell"><p class="sim-eyebrow">The Backer thesis</p><h2>Knowing the business<br>is only part of the trade.</h2><div><p>The same earnings release reaches investors with different positions, convictions and histories. Some add immediately. Others wait, reduce exposure or delegate under preset rules. Those differences shape order flow.</p><p>We are building the behavioral layer for systematic trading: combine observed trading histories with event context to model individual responses. The objective is a new source of alpha rooted in how people act.</p></div></section>
+
+    <section class="hft-section sim-shell" id="response-lab">
+      <div class="hft-section-heading"><p class="sim-eyebrow">02 / Explore the mechanism</p><h2>Change the event.<br>Follow the response.</h2><p>One announcement. Distinct decision patterns. Change the event, follow an individual, then reshape the population to trace the aggregate response.</p></div>
+      <div class="hft-lab">
+        <div class="hft-lab-top"><p class="hft-status">Illustrative scenario · synthetic data</p><button type="button" id="reset-response" class="hft-reset">Reset ↺</button></div>
+        <div class="hft-options hft-events" role="group" aria-label="Company announcement"><button type="button" data-event="beat" aria-pressed="true">Earnings beat</button><button type="button" data-event="cut" aria-pressed="false">Guidance cut</button><button type="button" data-event="mixed" aria-pressed="false">Mixed announcement</button></div>
+        <p id="event-detail">Revenue beats expectations. Management raises its outlook.</p>
+        <div class="hft-lab-grid">
+          <div class="hft-profile-picker"><p class="hft-small-label">Choose a behavioral history</p><div role="group" aria-label="Behavioral history"><button type="button" data-profile="0" aria-pressed="true"><span>01</span><b>Follows momentum</b></button><button type="button" data-profile="1" aria-pressed="false"><span>02</span><b>Waits for confirmation</b></button><button type="button" data-profile="2" aria-pressed="false"><span>03</span><b>Cuts losses early</b></button></div><p id="profile-history">Previously added after upward revisions; often acted within one session.</p></div>
+          <figure class="hft-response-figure"><div class="hft-response-top"><p>Choice within the next session</p><button type="button" id="history-toggle" aria-pressed="true">History included</button></div><div class="hft-probability-bars" id="response-bars"></div><figcaption><span class="hft-legend-line"></span><span>Event-only reference</span></figcaption><p id="response-reading"></p><p id="response-announcement" class="hft-sr-only" role="status" aria-atomic="true"></p></figure>
+        </div>
+        <details class="hft-assumptions"><summary>Inspect the assumptions and values</summary><p>All probabilities are authored examples, not Jev outputs or trained forecasts. Each distribution sums to 100%. The comparison holds the event, current position, resources, market state and one-session horizon fixed. Only the assumed behavioral history changes.</p><p>All profiles start with the same long position and capacity to add or reduce. “Hold” requires an explicit recorded choice; “No recorded choice” means the observation is missing. Neither reveals an unobserved intention.</p><table class="hft-data-table"><caption>Authored choice probabilities · %</caption><thead><tr><th scope="col">Action</th><th scope="col">Selected model</th><th scope="col">Event only</th></tr></thead><tbody id="response-values"></tbody></table></details>
+        <div class="hft-population">
+          <div class="hft-population-heading"><p class="hft-small-label">The aggregation layer</p><h3>Change the crowd.<br>Change the response.</h3><p>A market contains different kinds of decision-makers. Change their proportions and follow the choices that emerge.</p></div>
+          <div class="hft-population-grid"><div><div class="hft-mix-picker" role="group" aria-label="Population composition"><button type="button" data-mix="balanced" aria-pressed="true">Balanced</button><button type="button" data-mix="momentum" aria-pressed="false">Momentum heavy</button><button type="button" data-mix="defensive" aria-pressed="false">Loss sensitive</button></div><div id="cohort-composition"></div><p class="hft-population-note">Expected choices per 100 people · synthetic</p></div><figure class="hft-flow-figure"><svg id="cohort-flow" role="img" aria-label="Behavioral cohorts flow into four action outcomes"></svg><figcaption id="cohort-summary" role="status" aria-live="polite"></figcaption></figure></div>
+          <div class="hft-aggregate-readout"><span>Add − reduce choices</span><strong id="cohort-tilt">+18.0</strong><p>Choice imbalance measures direction by headcount. Position size and price impact enter at the next stage.</p></div>
+          <details class="hft-assumptions"><summary>Inspect the population calculation</summary><p>Each outcome is the population-weighted mean of the selected event’s profile probabilities. Removing history gives every cohort the same event-only distribution. These authored scenarios explain the mechanism; they are not measured forecasts.</p><table class="hft-data-table"><caption>Expected choices per 100 people</caption><thead><tr><th scope="col">Action</th><th scope="col">With current settings</th><th scope="col">Event only</th></tr></thead><tbody id="cohort-values"></tbody></table></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="hft-section sim-shell" id="architecture">
+      <div class="hft-section-heading"><p class="sim-eyebrow">03 / The architecture</p><h2>Jev interprets the event.<br>Backer models the response.</h2><p>Backer behavioral simulation + Jev + advancing foundation models. Structured intelligence turns information into features. Behavioral histories turn those features into a model of human response.</p></div>
+      <div class="hft-pipeline" role="group" aria-label="Inspect a system stage"><button type="button" data-stage="evidence" aria-pressed="false"><small>01</small><b>Evidence</b><span>What was known?</span></button><button type="button" data-stage="jev" aria-pressed="true"><small>02</small><b>Jev</b><span>What does it mean?</span></button><button type="button" data-stage="backer" aria-pressed="false"><small>03</small><b>Backer</b><span>Who responds?</span></button><button type="button" data-stage="fund" aria-pressed="false"><small>04</small><b>Fund controls</b><span>Is it usable?</span></button></div>
+      <div class="hft-stage-detail" aria-live="polite"><div><p class="hft-small-label" id="stage-kind">Typed semantic judgments</p><h3 id="stage-title">A defined answer. Ready for code.</h3><p id="stage-body">Jev selects from defined answers and returns probabilities. Interpret announcements, classify decision context and feed structured features into Backer’s behavioral model.</p><p class="hft-stage-note" id="stage-note">Model confidence describes the answer distribution. It is not a probability of profit.</p></div><div class="hft-contract"><p id="contract-caption">Illustrative Choice question</p><div id="contract-content"></div></div></div>
+      <p class="hft-source-note"><a href="https://docs.typesafe.ai/primitives/choice" target="_blank" rel="noopener noreferrer">TypeSafe Choice ↗</a><a href="https://docs.typesafe.ai/confidence" target="_blank" rel="noopener noreferrer">Confidence semantics ↗</a></p>
+    </section>
+
+    <section class="hft-section sim-shell" id="trading-clock">
+      <div class="hft-section-heading"><p class="sim-eyebrow">04 / Where HFT support fits</p><h2>Read the response.<br>Stay ahead of its decay.</h2><p>Build behavioral context before the event. Refresh it as information arrives. Feed timestamped signals into the fund’s execution systems, where deterministic limits govern every order.</p></div>
+      <div class="hft-clock"><div class="hft-clock-row"><span>01</span><div><h3>Before the event</h3><p>Fit histories, calibrate cohorts and version the model.</p></div><b>Research</b></div><div class="hft-clock-row"><span>02</span><div><h3>As information arrives</h3><p>Interpret the update; publish a timestamped response distribution.</p></div><b>Context</b></div><div class="hft-clock-row"><span>03</span><div><h3>At the execution boundary</h3><p>Check freshness, liquidity, exposure and deterministic limits.</p></div><b>Fund systems</b></div></div>
+      <div class="hft-freshness"><div><p class="hft-small-label">A freshness gate · illustrative 1-second lifetime</p><div class="hft-options" role="group" aria-label="Context age"><button type="button" data-age="250" aria-pressed="true">250 ms old</button><button type="button" data-age="750" aria-pressed="false">750 ms old</button><button type="button" data-age="1500" aria-pressed="false">1,500 ms old</button></div></div><p id="freshness-result" role="status">Fresh context → eligible for further checks</p><figure class="hft-clock-figure"><svg id="freshness-clock" role="img" aria-label="Signal age relative to its original expiry"></svg><figcaption>Evidence starts the clock. A retry never resets it.</figcaption></figure></div>
+      <p class="hft-source-note">Age is measured from the evidence timestamp. Retries preserve the original expiry.</p><p class="hft-source-note">TypeSafe reports 70–500 ms end-to-end in its launch evaluation context. That is not an HFT latency guarantee. Deployment-specific tail latency and signal decay still require measurement. <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev" target="_blank" rel="noopener noreferrer">Vendor measurements ↗</a></p>
+    </section>
+
+    <section class="hft-validation sim-shell" id="validation"><div><p class="sim-eyebrow">05 / Building a durable research engine</p><h2>Better models.<br>Deeper behavioral evidence.</h2><p>Our foundation compounds through richer behavioral histories, Jev’s structured judgments and advances in foundation models. We measure progress in better forecasts of real decisions and incremental value after trading costs.</p></div><ol><li><h3>Freeze the information set.</h3><p>Use consented or licensed histories. Record exposure, positions, timestamps and missing data before the event.</p></li><li><h3>Beat the relevant baselines.</h3><p>Hold out people, events and future periods. Compare public-data, price/volume, flow and no-history models. Score calibration and action timing.</p></li><li><h3>Measure value under real conditions.</h3><p>Replay spreads, fees, impact, queue position and missed fills. Test capacity, regimes and signal decay before prospective paper trading.</p></li><li><h3>Promote models on evidence.</h3><p>Pin versions. Admit a new Jev or foundation model only after it improves held-out outcomes within cost and latency limits.</p></li></ol></section>
+
+    <section class="hft-reading sim-shell"><p class="sim-eyebrow">Research notes</p><div><a href="https://www.nber.org/system/files/working_papers/w35273/w35273.pdf" target="_blank" rel="noopener noreferrer"><strong>The Growth and Performance of Artificial Intelligence in Asset Management ↗</strong><span>Chen, Sialm &amp; Xu · NBER working paper · May 2026</span></a><a href="https://arxiv.org/abs/cond-mat/0311053" target="_blank" rel="noopener noreferrer"><strong>Order-flow predictability and market efficiency ↗</strong><span>Lillo &amp; Farmer · why predictable actions need not imply predictable returns</span></a><a href="https://docs.typesafe.ai/concepts/how-to-build-with-system-one" target="_blank" rel="noopener noreferrer"><strong>Building with System One ↗</strong><span>TypeSafe · typed judgments, code-owned workflows and evaluation</span></a></div></section>
+
+    <section class="research-api sim-shell" aria-labelledby="research-api-title"><div><p class="sim-eyebrow">API early access</p><h2 id="research-api-title">We’re opening the Backer Simulation API.</h2></div><div class="research-api-action"><p>Bring behavioral forecasts into your research workflow. Contact us to discuss early access.</p><a class="research-api-contact" href="../waitlist.html#waitlist-email"><span>Contact us for more</span><span aria-hidden="true">↗</span></a></div></section>
+    <section class="uc-next sim-shell"><a href="../simulation.html"><small>The method</small><span>Inside Backer Simulation <b aria-hidden="true">↗</b></span></a><a href="../research.html"><small>Continue exploring</small><span>Backer Research <b aria-hidden="true">→</b></span></a></section>
+  </main>
+  <footer class="sim-footer"><a href="../research.html">Backer / Research</a><span>Behavioral research</span><a href="../privacy.html">Privacy</a></footer>
+  <noscript><p class="sim-shell hft-noscript">This research page is readable without JavaScript. Enable JavaScript to compare the interactive examples. No live model or trading connection is used.</p></noscript>
+</body>
+</html>

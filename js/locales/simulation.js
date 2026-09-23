@@ -1,6 +1,21 @@
 /* Authored CJK copy for the simulation overview, source scanner and Research gateway. */
 (function(){window.BackerLocalePacks=window.BackerLocalePacks||{};window.BackerLocalePacks.simulation={
   "messages": {
+    "High Frequency Trading": [
+        "高频交易",
+        "高頻度取引",
+        "고빈도 거래"
+    ],
+    "High Frequency Trading supports": [
+        "高频交易支持",
+        "高頻度取引の研究支援",
+        "고빈도 거래 지원"
+    ],
+    "Same information. Different trades.": [
+        "同一信息，不同交易。",
+        "同じ情報。異なる取引。",
+        "같은 정보, 다른 거래."
+    ],
     "Start with": ["从", "まずは", "시작은"],
     "Human Attention.": ["人的注意力出发。", "人の注意から。", "사람의 관심입니다."],
     "Everything else follows.": ["其余的一切，由此展开。", "そこから、すべてが動き出す。", "모든 변화는 그다음에 이어집니다."],

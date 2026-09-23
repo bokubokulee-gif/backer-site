@@ -4,6 +4,41 @@
   window.BackerLocalePacks = window.BackerLocalePacks || {};
   window.BackerLocalePacks.simulationUsecases = {
   "messages": {
+    "High Frequency Trading": [
+        "高频交易",
+        "高頻度取引",
+        "고빈도 거래"
+    ],
+    "High Frequency Trading supports": [
+        "高频交易支持",
+        "高頻度取引の研究支援",
+        "고빈도 거래 지원"
+    ],
+    "Same information. Different trades.": [
+        "同一信息，不同交易。",
+        "同じ情報。異なる取引。",
+        "같은 정보, 다른 거래."
+    ],
+    "API early access": [
+        "API 早期接入",
+        "API 先行アクセス",
+        "API 사전 이용"
+    ],
+    "We’re opening the Backer Simulation API.": [
+        "Backer Simulation API 即将开放。",
+        "Backer Simulation API の先行提供を準備しています。",
+        "Backer Simulation API를 곧 공개합니다."
+    ],
+    "Bring behavioral forecasts into your research workflow. Contact us to discuss early access.": [
+        "将行为预测接入你的研究流程。联系我们，了解早期接入计划。",
+        "行動予測をリサーチに組み込む。先行アクセスについて、お問い合わせください。",
+        "행동 예측을 리서치에 연결하세요. 사전 이용을 원하시면 문의해 주세요."
+    ],
+    "Contact us for more": [
+        "联系我们",
+        "お問い合わせ",
+        "문의하기"
+    ],
     "Product Innovation": [
       "产品创新",
       "製品開発",

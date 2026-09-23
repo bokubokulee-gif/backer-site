@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "sdk_version": "0.7.1",
+  "mock_requests": 1,
+  "endpoint": "POST /v1/systemone",
+  "validated": [
+    "Choice/Noul/Score construction",
+    "batched request serialization",
+    "versioned model field",
+    "typed response access"
+  ],
+  "not_validated": [
+    "live API access",
+    "Jev output accuracy",
+    "live latency",
+    "financial calibration",
+    "strategy performance"
+  ],
+  "external_network_calls": 0,
+  "orders": 0
+}
