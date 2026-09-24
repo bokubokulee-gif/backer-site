@@ -129,7 +129,7 @@
 .hft-validation li:last-child{margin:0;padding-bottom:0;border:0}.hft-validation li:before{content:counter(gate,decimal-leading-zero);position:absolute;left:0;top:4px;font:12px var(--mono);color:var(--hft-gold)}
 .hft-validation li h3{font-size:22px;margin-bottom:12px}.hft-validation li p{font-size:15px;color:var(--sim-muted);line-height:1.85}
 .hft-reading{padding-block:55px 85px;display:grid;grid-template-columns:1fr 2fr;gap:50px}
-.hft-reading a{display:block;border-bottom:1px solid #393735;padding:18px 0}.hft-reading a:first-child{padding-top:0}
+.hft-reading a,.hft-reading .hft-citation{display:block;border-bottom:1px solid #393735;padding:18px 0}.hft-reading a:first-child,.hft-reading .hft-citation:first-child{padding-top:0}
 .hft-reading strong{font-size:15px;font-weight:500;line-height:1.8;display:block}.hft-reading span{display:block;font-size:12px;color:var(--hft-faint);margin-top:7px}
 .hft-reading a:hover strong{color:var(--hft-gold)}.hft-noscript{padding-block:25px;font-size:14px}
 html[data-backer-locale]:not([data-backer-locale=en]) .hft-hero h1{max-width:16ch;font-size:clamp(36px,4.4vw,64px)}

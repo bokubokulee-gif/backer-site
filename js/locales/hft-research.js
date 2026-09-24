@@ -4,6 +4,21 @@
   window.BackerLocalePacks = window.BackerLocalePacks || {};
   window.BackerLocalePacks.hftResearch = {
   messages: {
+    "Source: Chen, Sialm & Xu (2026). The Growth and Performance of Artificial Intelligence in Asset Management. NBER Working Paper 35273, Table 5.": [
+        "来源：Chen、Sialm 与 Xu（2026），《人工智能在资产管理中的发展与表现》，NBER 工作论文第 35273 号，表 5。",
+        "出典：Chen, Sialm & Xu（2026）『資産運用における人工知能の成長と運用成績』、NBER Working Paper 35273、表5。",
+        "출처: Chen, Sialm & Xu (2026), 「자산운용에서 인공지능의 성장과 성과」, NBER Working Paper 35273, 표 5."
+    ],
+    "The Growth and Performance of Artificial Intelligence in Asset Management": [
+        "人工智能在资产管理中的发展与表现",
+        "資産運用における人工知能の成長と運用成績",
+        "자산운용에서 인공지능의 성장과 성과"
+    ],
+    "Chen, Sialm & Xu · NBER Working Paper 35273 · May 2026": [
+        "Chen、Sialm 与 Xu · NBER 工作论文第 35273 号 · 2026 年 5 月",
+        "Chen, Sialm & Xu · NBER Working Paper 35273 · 2026年5月",
+        "Chen, Sialm & Xu · NBER Working Paper 35273 · 2026년 5월"
+    ],
     "High Frequency Trading — Backer Research": [
       "高频交易 — Backer Research",
       "高頻度取引 — Backer Research",
@@ -1664,11 +1679,11 @@
       "私たちが考える次の",
       "우리는 다음"
     ],
-    "We’re opening the Backer Simulation API.": [
-      "我们正在开放 Backer Simulation API。",
-      "Backer Simulation APIを公開します。",
-      "Backer Simulation API를 곧 공개합니다."
-    ],
+    "Backer Simulation API currently beta testing.": [
+  "Backer Simulation API 目前处于测试阶段。",
+  "Backer Simulation API は現在ベータテスト中です。",
+  "Backer Simulation API는 현재 베타 테스트 중입니다."
+],
     "What actually happened?": [
       "他实际做了什么？",
       "実際にはどう動いたか？",

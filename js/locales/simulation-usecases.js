@@ -24,11 +24,11 @@
         "API 先行アクセス",
         "API 사전 이용"
     ],
-    "We’re opening the Backer Simulation API.": [
-        "Backer Simulation API 即将开放。",
-        "Backer Simulation API の先行提供を準備しています。",
-        "Backer Simulation API를 곧 공개합니다."
-    ],
+    "Backer Simulation API currently beta testing.": [
+  "Backer Simulation API 目前处于测试阶段。",
+  "Backer Simulation API は現在ベータテスト中です。",
+  "Backer Simulation API는 현재 베타 테스트 중입니다."
+],
     "Bring behavioral forecasts into your research workflow. Contact us to discuss early access.": [
         "将行为预测接入你的研究流程。联系我们，了解早期接入计划。",
         "行動予測をリサーチに組み込む。先行アクセスについて、お問い合わせください。",
