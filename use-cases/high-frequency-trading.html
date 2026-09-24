@@ -4,20 +4,20 @@
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#08080a">
   <title>High Frequency Trading — Backer Research</title>
-  <meta name="description" content="Behavioral simulation for quantitative and discretionary funds. Explore Backer's thesis, Jev's typed judgments, and the evidence a new signal must earn.">
+  <meta name="description" content="Turn accumulated individual trading behavior into a new research edge. Simulate traders in real market situations with Backer and Jev.">
   <meta property="og:title" content="High Frequency Trading — Backer Research">
-  <meta property="og:description" content="Same information. Different trades. A research thesis on investor behavior and the next source of edge.">
+  <meta property="og:description" content="Same information. Different trades. Build the next edge from accumulated individual trading behavior.">
   <link rel="icon" href="../img/backer-mark.png?v=2">
   <link rel="stylesheet" href="../css/simulation.css?v=20260920-5">
   <link rel="stylesheet" href="../css/simulation-usecases.css?v=20260920-5">
-  <link rel="stylesheet" href="../css/hft-research.css?v=20260923-3">
-  <link rel="stylesheet" href="../css/research-api.css?v=20260923-3">
+  <link rel="stylesheet" href="../css/hft-research.css?v=20260924-1">
+  <link rel="stylesheet" href="../css/research-api.css?v=20260924-1">
   <link rel="stylesheet" href="../css/i18n.css?v=20260920-5">
-  <script src="../js/locales/simulation-usecases.js?v=20260923-3" defer></script>
-  <script src="../js/locales/hft-research.js?v=20260923-3" defer></script>
+  <script src="../js/locales/simulation-usecases.js?v=20260924-1" defer></script>
+  <script src="../js/locales/hft-research.js?v=20260924-1" defer></script>
   <script src="../js/i18n.js?v=20260920-5" defer></script>
-  <script src="../js/hft-model.js?v=20260923-3" defer></script>
-  <script src="../js/hft-research.js?v=20260923-3" defer></script>
+  <script src="../js/hft-model.js?v=20260924-1" defer></script>
+  <script src="../js/hft-research.js?v=20260924-1" defer></script>
 </head>
 <body class="usecase-page hft-page">
   <a class="sim-skip" href="#main">Skip to content</a>
@@ -65,21 +65,71 @@
 
     <section class="hft-section sim-shell" id="architecture">
       <div class="hft-section-heading"><p class="sim-eyebrow">02 / Why Jev</p><h2>A simulation advances<br>one decision at a time.</h2><p>Our architecture puts Jev inside the decision loop. Backer supplies the trader’s accumulated history and current situation. Jev chooses among defined actions. Code updates the simulated state, then the next decision begins.</p></div>
-      <div class="hft-jev-reasons"><div><span>01</span><h3>Decisions the simulator can use.</h3><p>Jev returns a selected option and its probability distribution. Every response fits the same action space, so Backer can compare traders, sample paths and aggregate responses without parsing a conversation.</p></div><div><span>02</span><h3>The individual stays in the decision.</h3><p>Each question includes this trader’s past choices, holdings, available cash and the information visible now. The task is to predict what this person would do, rather than prescribe an ideal investment.</p></div><div><span>03</span><h3>Repeat, observe, improve.</h3><p>Independent judgments can run in parallel against a frozen market snapshot. Later decisions use the updated state. Backer compares the simulation with observed trades to calibrate behavior and evaluate newer models.</p></div></div>
-      <div class="hft-decision-demo">
+      <div class="hft-jev-reasons"><div><span>01</span><h3>Decisions that advance the simulation.</h3><p>Jev returns a selected option and its probability distribution. A shared action space lets Backer compare individuals, sample decision paths and aggregate their responses directly.</p></div><div><span>02</span><h3>The individual stays in the decision.</h3><p>Every judgment carries this trader’s past choices, holdings, available cash and visible information. The target is this person’s next action, shaped by their own history and constraints.</p></div><div><span>03</span><h3>Repeat, observe, improve.</h3><p>Independent judgments run in parallel against a frozen snapshot. Each later decision receives the updated state. Real observed trades close the loop: measure error, calibrate behavior and evaluate the next model.</p></div></div>
+      <div class="hft-decision-demo" id="decision-loop">
         <div class="hft-lab-top"><p class="hft-status">Decision-loop demonstration · authored answers</p><button type="button" id="reset-decision" class="hft-reset">Reset step ↺</button></div>
         <div class="hft-decision-inputs"><div><span>Simulated trader</span><strong id="decision-trader"></strong><div class="hft-options hft-decision-controls" role="group" aria-label="Simulated trader"><button type="button" data-profile="0" aria-pressed="true">Trader 014</button><button type="button" data-profile="1" aria-pressed="false">Trader 028</button><button type="button" data-profile="2" aria-pressed="false">Trader 063</button></div><p id="decision-history"></p></div><div><span>Market situation</span><strong id="decision-event"></strong><div class="hft-options hft-decision-controls" role="group" aria-label="Company announcement"><button type="button" data-event="beat" aria-pressed="true">Earnings beat</button><button type="button" data-event="cut" aria-pressed="false">Guidance cut</button><button type="button" data-event="mixed" aria-pressed="false">Mixed announcement</button></div><p id="decision-market"></p></div></div>
         <div class="hft-decision-ledger" aria-live="polite" aria-atomic="true"><div><span>Shares held</span><strong id="decision-shares">100</strong></div><div><span>Available cash · USD</span><strong id="decision-cash">5,000</strong></div><div><span>Simulated steps</span><strong id="decision-count">0</strong></div></div>
         <div class="hft-choice-question"><small>Jev · Choice</small><h3>Given this history and situation, what would this trader do next?</h3><div id="decision-options"></div><p id="decision-result" role="status" aria-live="polite"></p><button type="button" id="advance-decision">Advance one simulated step <span aria-hidden="true">→</span></button></div>
         <p class="hft-decision-footnote">Change the trader or event to restart the sequence. This demonstration uses authored choices and fixed ten-share fills. A live system evaluates each updated state, models execution costs and keeps simulated choices separate from observed trades.</p>
       </div>
-      <div class="hft-pipeline" role="group" aria-label="Inspect a system stage"><button type="button" data-stage="evidence" aria-pressed="false"><small>01</small><b>History</b><span>Who is this trader?</span></button><button type="button" data-stage="jev" aria-pressed="true"><small>02</small><b>Jev</b><span>What do they choose?</span></button><button type="button" data-stage="backer" aria-pressed="false"><small>03</small><b>Backer</b><span>What happens next?</span></button><button type="button" data-stage="fund" aria-pressed="false"><small>04</small><b>Calibration</b><span>What actually happened?</span></button></div>
-      <div class="hft-stage-detail" aria-live="polite"><div><p class="hft-small-label" id="stage-kind">A bounded decision at each step</p><h3 id="stage-title">What would this trader choose now?</h3><p id="stage-body">Jev evaluates the supplied trader state and selects from explicit actions, with probabilities. Backer can use that judgment inside the simulation without asking for a conversation or parsing a written recommendation.</p><p class="hft-stage-note" id="stage-note">Jev returns choices, not reasons. Explanations come from inspected evidence and tested changes to the inputs.</p></div><div class="hft-contract"><p id="contract-caption">The Choice inside the simulation</p><div id="contract-content"></div></div></div>
-      <p class="hft-source-note"><a href="https://docs.typesafe.ai/primitives/choice" target="_blank" rel="noopener noreferrer">TypeSafe Choice ↗</a><a href="https://docs.typesafe.ai/confidence" target="_blank" rel="noopener noreferrer">Confidence semantics ↗</a></p>
+      <div class="hft-guide" id="jev-workflow">
+        <header class="hft-guide-header"><p class="sim-eyebrow">From the guide to Backer</p><h3>How the Jev workflow fits together.</h3><p>The guide separates market data, judgment, policy and execution. Backer adds the individual: accumulated trading history becomes part of every state, and each decision advances a simulated trader through a market situation.</p></header>
+        <div class="hft-guide-layout">
+          <nav class="hft-guide-steps" aria-label="Jev implementation walkthrough">
+            <button type="button" data-stage="setup" aria-pressed="true"><small>01</small><span>Connect Jev</span></button>
+            <button type="button" data-stage="snapshot" aria-pressed="false"><small>02</small><span>Freeze the state</span></button>
+            <button type="button" data-stage="questions" aria-pressed="false"><small>03</small><span>Ask in parallel</span></button>
+            <button type="button" data-stage="policy" aria-pressed="false"><small>04</small><span>Apply the rules</span></button>
+            <button type="button" data-stage="advance" aria-pressed="false"><small>05</small><span>Advance the world</span></button>
+            <button type="button" data-stage="evaluate" aria-pressed="false"><small>06</small><span>Test against reality</span></button>
+          </nav>
+          <div class="hft-guide-panel" id="guide-panel"><div aria-live="polite" aria-atomic="true"><p class="hft-small-label" id="stage-kind">01 / The connection</p><h3 id="stage-title">One model. A precise interface.</h3><p id="stage-body">Install the TypeSafe skill and Python SDK. Keep the API key on the server, use the direct endpoint, and pin a model version so every experiment can be reproduced.</p></div><div id="guide-visual"></div><p class="hft-stage-note" id="stage-note">Interactive reference workflow. Values and outputs are authored examples; this page makes no live Jev requests.</p><div class="hft-guide-pagination"><span id="guide-position">01 / 06</span><button type="button" id="guide-next">Next step <span aria-hidden="true">→</span></button></div></div>
+        </div>
+        <details class="hft-guide-code"><summary>Inspect the Python request</summary><p>One frozen state, three independent questions. The SDK returns typed answers; Backer code owns state updates and the next request.</p><pre tabindex="0" aria-label="Python SDK example"><code id="guide-python"># Python 3.10+ · pip install typesafe-sdk==0.7.1
+# Credentials belong on the server. This code has not run against live Jev.
+from typesafe_sdk import Choice, Noul, Score, TypeSafeClient
+
+state = {
+    &quot;trader&quot;: &quot;014&quot;,
+    &quot;history_cutoff&quot;: &quot;2026-09-23T13:59:59Z&quot;,
+    &quot;observed_history&quot;: [
+        {&quot;available_at&quot;: &quot;2026-09-11T14:15:00Z&quot;, &quot;event&quot;: &quot;Guidance cut&quot;,
+         &quot;action&quot;: &quot;Sold 20 shares&quot;, &quot;delay_minutes&quot;: 15}
+    ],
+    &quot;decision_at&quot;: &quot;2026-09-23T14:00:01Z&quot;,
+    &quot;event&quot;: &quot;Guidance cut, published at 14:00Z; earnings call at 15:00Z&quot;,
+    &quot;market&quot;: {&quot;price_usd&quot;: 94, &quot;session_closes_at&quot;: &quot;20:00Z&quot;},
+    &quot;account&quot;: {&quot;shares&quot;: 100, &quot;cash_usd&quot;: 5000},
+    &quot;simulation&quot;: {&quot;order_size_shares&quot;: 10, &quot;shorting&quot;: False},
+}
+with TypeSafeClient(model=&quot;jev-1.13.0&quot;) as client:
+    result = client.system_one(state=state, questions={
+        &quot;next_action&quot;: Choice(
+            instructions=&quot;Given this trader&#x27;s history and current state, what is their next action?&quot;,
+            criteria={&quot;add&quot;: &quot;Buy 10 shares&quot;, &quot;hold&quot;: &quot;Keep the current position for now&quot;,
+                      &quot;reduce&quot;: &quot;Sell 10 shares&quot;, &quot;insufficient&quot;: &quot;Evidence does not support a choice&quot;}),
+        &quot;wait_for_confirmation&quot;: Noul(
+            instructions=&quot;Will this trader wait for a second confirming signal before changing exposure this session?&quot;),
+        &quot;reaction_urgency&quot;: Score(
+            instructions=&quot;When is this trader likely to first change exposure after decision_at, this session?&quot;,
+            criteria=[&quot;No change by session close&quot;, &quot;More than 60 minutes later&quot;,
+                      &quot;15 to 60 minutes later&quot;, &quot;Less than 15 minutes later&quot;]),
+    })
+action = result.choices[&quot;next_action&quot;]
+print(action.choice, action.probabilities, action.confidence)
+print(result.nouls[&quot;wait_for_confirmation&quot;].noul)
+print(result.scores[&quot;reaction_urgency&quot;].score)
+# Code checks feasibility, applies simulated fills and updates cash/holdings.
+# Send that updated state in the next request; preserve observed_history.
+</code></pre><a href="https://docs.typesafe.ai/sdk/python" target="_blank" rel="noopener noreferrer">Current Python SDK ↗</a></details>
+        <p class="hft-guide-credit">Adapted from Algo Insights’ step-by-step Jev trading guide, with API details checked against current TypeSafe documentation.</p><p class="hft-source-note"><a href="https://algoinsights.medium.com/build-a-24-7-hft-trading-system-with-jev-a-step-by-step-guide-242d30cd0c5e" target="_blank" rel="noopener noreferrer">Read the original Jev guide ↗</a><a href="https://docs.typesafe.ai/patterns/fan-out" target="_blank" rel="noopener noreferrer">Parallel judgments ↗</a><a href="https://docs.typesafe.ai/confidence" target="_blank" rel="noopener noreferrer">Confidence and calibration ↗</a></p>
+        <div class="hft-guide-contact"><p>Bring your trader data and the situations your fund needs to understand. Contact us for the full simulation design, evaluation protocol and API integration.</p><a href="../waitlist.html#waitlist-email" class="sim-link"><span>Contact us for more</span><span aria-hidden="true">↗</span></a></div>
+      </div>
     </section>
 
     <section class="hft-section sim-shell" id="evidence">
-      <div class="hft-section-heading"><p class="sim-eyebrow">03 / Why funds need a new edge</p><h2>An early advantage.<br>An edge to renew.</h2><p>Chen, Sialm and Xu document a substantial early advantage for disclosed AI hedge funds that diminished after 2017. Better models spread. Differentiated information becomes more valuable.</p></div>
+      <div class="hft-section-heading"><p class="sim-eyebrow">03 / Why funds need a new edge</p><h2>The early AI lead faded.<br>Build the next source of edge.</h2><p>Chen, Sialm and Xu find a strong early lead for disclosed AI hedge funds, but no statistically significant relative alpha after 2017. Our response is to build differentiated evidence: the accumulated decisions of individual traders.</p></div>
       <figure class="hft-evidence-figure">
         <div class="hft-figure-head"><p>AI minus non-AI monthly alpha</p><div class="hft-options" role="group" aria-label="Risk adjustment model"><button type="button" data-study="fh" aria-pressed="true">Fung–Hsieh</button><button type="button" data-study="aqr" aria-pressed="false">AQR</button></div></div>
         <p id="alpha-announcement" class="hft-sr-only" role="status"></p><div class="hft-evidence-plot"><svg id="alpha-chart" role="img" aria-label="Relative monthly alpha before and after 2018, with approximate 95 percent intervals"></svg></div>
@@ -92,7 +142,7 @@
       <div class="hft-section-heading"><p class="sim-eyebrow">04 / Where HFT support fits</p><h2>Read the response.<br>Stay ahead of its decay.</h2><p>Build behavioral context before the event. Refresh it as information arrives. Feed timestamped signals into the fund’s execution systems, where deterministic limits govern every order.</p></div>
       <div class="hft-clock"><div class="hft-clock-row"><span>01</span><div><h3>Before the event</h3><p>Fit histories, calibrate cohorts and version the model.</p></div><b>Research</b></div><div class="hft-clock-row"><span>02</span><div><h3>As information arrives</h3><p>Interpret the update; publish a timestamped response distribution.</p></div><b>Context</b></div><div class="hft-clock-row"><span>03</span><div><h3>At the execution boundary</h3><p>Check freshness, liquidity, exposure and deterministic limits.</p></div><b>Fund systems</b></div></div>
       <div class="hft-freshness"><div><p class="hft-small-label">A freshness gate · illustrative 1-second lifetime</p><div class="hft-options" role="group" aria-label="Context age"><button type="button" data-age="250" aria-pressed="true">250 ms old</button><button type="button" data-age="750" aria-pressed="false">750 ms old</button><button type="button" data-age="1500" aria-pressed="false">1,500 ms old</button></div></div><p id="freshness-result" role="status">Fresh context → eligible for further checks</p><figure class="hft-clock-figure"><svg id="freshness-clock" role="img" aria-label="Signal age relative to its original expiry"></svg><figcaption>Evidence starts the clock. A retry never resets it.</figcaption></figure></div>
-      <p class="hft-source-note">Age is measured from the evidence timestamp. Retries preserve the original expiry.</p><p class="hft-source-note">TypeSafe reports 70–500 ms end-to-end in its launch evaluation context. That is not an HFT latency guarantee. Deployment-specific tail latency and signal decay still require measurement. <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev" target="_blank" rel="noopener noreferrer">Vendor measurements ↗</a></p>
+      <p class="hft-source-note">Age is measured from the evidence timestamp. Retries preserve the original expiry.</p><p class="hft-source-note">Jev fits the judgment layer: event response and tactical decisions on a measured time budget. Microsecond execution stays in the fund’s infrastructure. TypeSafe reports 70–500 ms in its launch evaluation; measure tail latency, signal decay and total cost on the actual workload. <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev" target="_blank" rel="noopener noreferrer">Vendor measurements ↗</a></p>
     </section>
 
     <section class="hft-validation sim-shell" id="validation"><div><p class="sim-eyebrow">05 / Building a durable research engine</p><h2>Better models.<br>Deeper behavioral evidence.</h2><p>The foundation is accumulated individual trading behavior. Each new observed decision extends that history. Jev supplies repeatable choices inside the simulation; future models work with richer evidence. Compare predicted and actual behavior, update the trader model, and test the next situation.</p></div><ol><li><h3>Freeze the information set.</h3><p>Use consented or licensed histories. Record exposure, positions, timestamps and missing data before the event.</p></li><li><h3>Beat the relevant baselines.</h3><p>Hold out people, events and future periods. Compare public-data, price/volume, flow and no-history models. Score calibration and action timing.</p></li><li><h3>Measure value under real conditions.</h3><p>Replay spreads, fees, impact, queue position and missed fills. Test capacity, regimes and signal decay before prospective paper trading.</p></li><li><h3>Promote models on evidence.</h3><p>Pin versions. Admit a new Jev or foundation model only after it improves held-out outcomes within cost and latency limits.</p></li></ol></section>
