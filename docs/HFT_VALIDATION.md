@@ -72,3 +72,13 @@ The supplied complete guide is now embedded as an original six-step implementati
 - Current SDK 0.7.1 examples were validated with mocked transport. The reference two-step script and result are saved in hft-guide-sdk-example.py and hft-guide-sdk-check-output.json. No live Jev call or order was sent.
 - Repository tests: 293 passed. Lint and syntax passed. Final public artifact: 223 allowlisted files, zero critical exposure findings. The reviewed UI digest is the esbuild-minified output digest, matching the publication artifact; source and output were inspected as authored UI data only.
 - SDK code, article audit, tests and review screenshots remain outside the public artifact.
+
+## Hero mechanism redesign — 24 September
+
+Replaced the anonymous cohort field with a named trader's inspectable history, a Jev decision boundary and three selectable next actions. Readers can change the market event, withhold history, inspect each prior trade and trace an action into the next account state. The fixed initial account makes the contribution of history directly comparable; later real observations extend observed history separately from simulated choices.
+
+- Added three-action authored teaching fixtures, signed historical share changes and fixed-lot account projections. Five new tests cover probability conservation, baseline invariance, fixture isolation, exact accounting and invalid input handling. All 19 HFT tests and all 298 repository tests pass; lint and diff checks pass.
+- Browser checked all nine trader/event combinations, history removal across all individuals, all three selectable action projections, Enter-key operation and retained focus. Shared history and reset controls synchronize the hero with the lower simulation.
+- Visually inspected the desktop composition at 1440px, the user's 645px review width and 390px mobile layout. Reviewed EN/ZH/JA/KO, including history-withheld rendering. No horizontal page overflow. The figure stacks below the headline at 1100px to preserve readable interactive controls instead of shrinking the chart.
+- Nineteen new source strings are localized; 348 active source strings have all three CJK translations. Authored-fixture attribution stays visible. The supplied guide, plain-text paper citation and beta API/contact copy remain intact.
+- The minified artifact was browser checked at 645px; its history toggle produces the same zero-difference baseline. Public build audits 223 allowlisted files with zero critical findings. Both reviewed script hashes were recomputed from inspected esbuild output. No live inference requests or trading execution were introduced.

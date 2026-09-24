@@ -38,11 +38,11 @@ const REVIEWED_PUBLIC_DATA = Object.freeze({
 const REVIEWED_RESEARCH_SCRIPTS = Object.freeze({
   'js/hft-model.js': {
     classification: 'published Table 5 coefficients, fictional individual trade histories and synthetic decision fixtures; no private records, live inference or trading service',
-    sha256: '395d1dfd51edeb72fd7fed5501029279f7f6967baf4adb91cfd1a728c7cc4702'
+    sha256: '0fe786f49561a5af7e9e985bf34c5af3d0f66fa8aa68c1c907e67057790d49c9'
   },
   'js/hft-research.js': {
     classification: 'interactive cited research, authored trader fixtures and six-step Jev reference walkthrough; no private records, external requests or execution',
-    sha256: '08678e8f1ac4be0352c41b1cbc4a04f0c8e13e3ff107eb509973974ef1478982'
+    sha256: '1a22e7c6dad28a67ac7c66d2484f6174eb6493a5770faccc9c71865700a3727f'
   },
   'js/simulation-atmosphere.js': {
     classification: 'four authored fictional records with draggable source-to-feature reveal and exact phrase inspection; no extraction service or inference',

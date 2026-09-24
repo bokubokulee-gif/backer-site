@@ -220,3 +220,81 @@ test('all authored ledger paths preserve marked value at the fixed fill price an
   assert.equal(JSON.stringify(model.profiles), observedHistory,
     'simulated steps must not append to or rewrite the observed-history fixtures');
 });
+
+test('hero Choice fixtures conserve three-action probability and match the authored decision at the starting account', () => {
+  const actions = ['add', 'hold', 'reduce'];
+  const eventOnly = { beat: [36, 45, 19], cut: [12, 38, 50], mixed: [25, 49, 26] };
+  for (const event of Object.keys(model.events)) {
+    for (let profile = 0; profile < model.profiles.length; profile += 1) {
+      for (const history of [false, true]) {
+        const probabilities = model.heroResponse(event, profile, history);
+        assert.equal(probabilities.length, 3, 'hero choices do not include missing observations');
+        assert.equal(probabilities.reduce((sum, value) => sum + value, 0), 100);
+        assert.ok(probabilities.every(value => Number.isFinite(value) && value >= 0 && value <= 100));
+        const winner = probabilities.indexOf(Math.max(...probabilities));
+        assert.equal(actions[winner], model.decision(event, profile, { shares: 100, cash: 5000 }, history),
+          `${event}/${profile}/${history}: the returned Choice maximum matches the authored demo action`);
+      }
+      assert.deepEqual(model.heroResponse(event, profile, false), eventOnly[event],
+        'removing history gives each individual the same three-action baseline');
+    }
+  }
+  assert.deepEqual(model.heroResponse('mixed', 0, true), [45, 38, 17]);
+  assert.deepEqual(model.heroResponse('mixed', 2, true), [18, 34, 48]);
+});
+
+test('hero response copies isolate reader mutation from future calls and the four-category observation model', () => {
+  const observations = JSON.stringify(model.events);
+  const personal = model.heroResponse('beat', 0, true);
+  const baseline = model.heroResponse('beat', 0, false);
+  personal[0] = 0;
+  personal.push(99);
+  baseline[1] = 0;
+  assert.deepEqual(model.heroResponse('beat', 0, true), [62, 27, 11]);
+  assert.deepEqual(model.heroResponse('beat', 2, false), [36, 45, 19]);
+  assert.equal(JSON.stringify(model.events), observations);
+  assert.deepEqual(model.response('beat', 0, true), [58, 21, 9, 12]);
+});
+
+test('history record changes represent the recorded trade only, with holds remaining zero', () => {
+  assert.deepEqual(model.profiles.map(profile => profile.records.map(record => record.change)),
+    [[20, 15, -25], [0, 0, -10], [0, -20, -30]]);
+  assert.equal(model.profiles[1].records[0].change, 0,
+    'a later purchase mentioned in context does not turn the recorded hold into a purchase');
+});
+
+test('reader-traced hero projections apply each chosen action to the fixed account without changing its marked value', () => {
+  const expected = {
+    beat: [{ shares: 110, cash: 3960 }, { shares: 100, cash: 5000 }, { shares: 90, cash: 6040 }],
+    cut: [{ shares: 110, cash: 4060 }, { shares: 100, cash: 5000 }, { shares: 90, cash: 5940 }],
+    mixed: [{ shares: 110, cash: 4010 }, { shares: 100, cash: 5000 }, { shares: 90, cash: 5990 }]
+  };
+  const histories = JSON.stringify(model.profiles);
+  for (const [event, outcomes] of Object.entries(expected)) {
+    outcomes.forEach((outcome, action) => {
+      const result = model.heroProjection(event, action);
+      assert.deepEqual(result, outcome);
+      assertClose(result.cash + result.shares * model.markets[event].price,
+        5000 + 100 * model.markets[event].price, `${event}/${action}: fixed-price, zero-fee value conservation`);
+      result.shares = 0;
+      result.cash = 0;
+      assert.deepEqual(model.heroProjection(event, action), outcome, 'each what-if starts from the same fresh account');
+    });
+  }
+  assert.equal(JSON.stringify(model.profiles), histories, 'projections never become observed history');
+  assert.deepEqual(model.heroProjection('cut', 0), { shares: 110, cash: 4060 },
+    'the reader may trace Add even when the authored winning choice is Reduce');
+});
+
+test('hero helpers reject invalid scenario, profile and action identifiers without coercion', () => {
+  for (const event of ['missing', '', 'constructor', 'toString', '__proto__', null, undefined, 0, {}, ['beat']]) {
+    assert.throws(() => model.heroResponse(event, 0, true), RangeError);
+    assert.throws(() => model.heroProjection(event, 0), RangeError);
+  }
+  for (const profile of [-1, 3, 0.5, NaN, Infinity, '0', null, undefined, [], {}]) {
+    assert.throws(() => model.heroResponse('beat', profile, true), RangeError);
+  }
+  for (const action of [-1, 3, 0.5, NaN, Infinity, '0', null, undefined, [], {}, true]) {
+    assert.throws(() => model.heroProjection('beat', action), RangeError);
+  }
+});

@@ -22,19 +22,19 @@
   ];
   var histories = [
     [
-      { date: 'T − 90d', event: 'Management raises guidance.', action: 'Added 20 shares', context: 'Bought 40 minutes after the release, with cash available.' },
-      { date: 'T − 45d', event: 'Earnings exceed expectations.', action: 'Added 15 shares', context: 'Bought in the same session, then trimmed three days later.' },
-      { date: 'T − 12d', event: 'Sales outlook deteriorates.', action: 'Reduced 25 shares', context: 'Reduced before the earnings call, while the broad market was stable.' }
+      { date: 'T − 90d', event: 'Management raises guidance.', action: 'Added 20 shares', change: 20, context: 'Bought 40 minutes after the release, with cash available.' },
+      { date: 'T − 45d', event: 'Earnings exceed expectations.', action: 'Added 15 shares', change: 15, context: 'Bought in the same session, then trimmed three days later.' },
+      { date: 'T − 12d', event: 'Sales outlook deteriorates.', action: 'Reduced 25 shares', change: -25, context: 'Reduced before the earnings call, while the broad market was stable.' }
     ],
     [
-      { date: 'T − 90d', event: 'Management raises guidance.', action: 'Held the position', context: 'Waited for the earnings call before adding two sessions later.' },
-      { date: 'T − 45d', event: 'Margins weaken despite revenue growth.', action: 'Held the position', context: 'Kept the position while waiting for more detail on costs.' },
-      { date: 'T − 12d', event: 'Sales outlook deteriorates.', action: 'Reduced 10 shares', context: 'Reduced after management clarified the cause.' }
+      { date: 'T − 90d', event: 'Management raises guidance.', action: 'Held the position', change: 0, context: 'Waited for the earnings call before adding two sessions later.' },
+      { date: 'T − 45d', event: 'Margins weaken despite revenue growth.', action: 'Held the position', change: 0, context: 'Kept the position while waiting for more detail on costs.' },
+      { date: 'T − 12d', event: 'Sales outlook deteriorates.', action: 'Reduced 10 shares', change: -10, context: 'Reduced after management clarified the cause.' }
     ],
     [
-      { date: 'T − 90d', event: 'Management raises guidance.', action: 'Held the position', context: 'Kept exposure at the planned allocation despite the positive update.' },
-      { date: 'T − 45d', event: 'A price decline follows a weaker outlook.', action: 'Reduced 20 shares', context: 'Reduced within 15 minutes of the update.' },
-      { date: 'T − 12d', event: 'Sales outlook deteriorates.', action: 'Reduced 30 shares', context: 'Cut exposure again while retaining cash for later decisions.' }
+      { date: 'T − 90d', event: 'Management raises guidance.', action: 'Held the position', change: 0, context: 'Kept exposure at the planned allocation despite the positive update.' },
+      { date: 'T − 45d', event: 'A price decline follows a weaker outlook.', action: 'Reduced 20 shares', change: -20, context: 'Reduced within 15 minutes of the update.' },
+      { date: 'T − 12d', event: 'Sales outlook deteriorates.', action: 'Reduced 30 shares', change: -30, context: 'Cut exposure again while retaining cash for later decisions.' }
     ]
   ];
   profiles.forEach(function (profile, i) { profile.id = ['Trader 014', 'Trader 028', 'Trader 063'][i]; profile.records = histories[i]; });
@@ -42,6 +42,12 @@
     beat: { price: 104, context: 'Shares trade at $104 after a positive earnings surprise.', choices: ['add', 'hold', 'hold'] },
     cut: { price: 94, context: 'Shares trade at $94 after management cuts its outlook.', choices: ['reduce', 'hold', 'reduce'] },
     mixed: { price: 99, context: 'Shares trade at $99 as revenue growth and margin pressure conflict.', choices: ['add', 'hold', 'reduce'] }
+  };
+  // Separate authored Choice fixtures: add, hold, reduce. Not observation categories.
+  var heroEvents = {
+    beat: { base: [36, 45, 19], responses: [[62, 27, 11], [15, 73, 12], [24, 58, 18]] },
+    cut: { base: [12, 38, 50], responses: [[12, 33, 55], [7, 52, 41], [7, 21, 72]] },
+    mixed: { base: [25, 49, 26], responses: [[45, 38, 17], [12, 66, 22], [18, 34, 48]] }
   };
   var actions = ['Add', 'Hold', 'Reduce', 'No recorded choice'];
   var mixes = {
@@ -53,6 +59,17 @@
   function response(eventId, profileId, useHistory) {
     if (typeof eventId !== 'string' || !Object.prototype.hasOwnProperty.call(events, eventId) || !Number.isInteger(profileId) || !profiles[profileId]) throw new RangeError('Unknown scenario');
     return (useHistory ? events[eventId].responses[profileId] : events[eventId].base).slice();
+  }
+  function heroResponse(eventId, profileId, useHistory) {
+    response(eventId, profileId, useHistory);
+    return (useHistory ? heroEvents[eventId].responses[profileId] : heroEvents[eventId].base).slice();
+  }
+  function heroProjection(eventId, actionIndex) {
+    response(eventId, 0, false);
+    if (!Number.isInteger(actionIndex) || actionIndex < 0 || actionIndex > 2) throw new RangeError('Unknown hero action');
+    // Reader-selected what-if from a fixed starting account, not an executed prediction.
+    var change = [10, 0, -10][actionIndex];
+    return { shares: 100 + change, cash: 5000 - change * markets[eventId].price };
   }
   function contextStatus(age, ttl) {
     return Number.isFinite(age) && age >= 0 && Number.isFinite(ttl) && ttl > 0 && age < ttl ? 'fresh' : 'expired';
@@ -80,5 +97,5 @@
     var totals = actions.map(function (_, action) { return flows.reduce(function (sum, row) { return sum + row[action]; }, 0); });
     return { flows: flows, totals: totals, tilt: totals[0] - totals[2] };
   }
-  return { studies: studies, markets: markets, decision: decision, step: step, events: events, profiles: profiles, actions: actions, mixes: mixes, interval: interval, response: response, population: population, contextStatus: contextStatus };
+  return { studies: studies, markets: markets, decision: decision, step: step, events: events, profiles: profiles, actions: actions, mixes: mixes, interval: interval, response: response, heroResponse: heroResponse, heroProjection: heroProjection, population: population, contextStatus: contextStatus };
 }));

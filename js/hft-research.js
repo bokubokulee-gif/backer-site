@@ -2,7 +2,7 @@
   'use strict';
   var M = window.BackerHftModel;
   if (!M) return;
-  var state = { study: 'fh', event: 'beat', profile: 0, history: true, stage: 'setup', age: 250, mix: 'balanced', record: 2, ledger: { shares: 100, cash: 5000 }, steps: 0 };
+  var state = { study: 'fh', event: 'beat', profile: 0, history: true, stage: 'setup', age: 250, mix: 'balanced', record: 2, heroAction: null, ledger: { shares: 100, cash: 5000 }, steps: 0 };
   function t(value) { return window.BackerI18n ? window.BackerI18n.t(value) : value; }
   function byId(id) { return document.getElementById(id); }
   function text(id, value) { byId(id).textContent = t(value); }
@@ -17,14 +17,14 @@
     profile.records.forEach(function (record, i) {
       var button = el('button', record.date); button.type = 'button'; button.dataset.record = String(i);
       button.setAttribute('aria-pressed', String(state.record === i));
-      button.addEventListener('click', function () { state.record = i; renderMemory(); byId('memory-timeline').querySelector('[data-record="' + i + '"]').focus(); });
+      button.addEventListener('click', function () { state.record = i; renderMemory(); renderField(); byId('memory-timeline').querySelector('[data-record="' + i + '"]').focus(); });
       timeline.appendChild(button);
     });
     var record = profile.records[state.record];
     text('memory-event', record.event); text('memory-action', record.action); text('memory-context', record.context);
     byId('memory-timeline').closest('.hft-memory').classList.toggle('is-withheld', !state.history);
   }
-  function resetDecision() { state.ledger = { shares: 100, cash: 5000 }; state.steps = 0; }
+  function resetDecision() { state.heroAction = null; state.ledger = { shares: 100, cash: 5000 }; state.steps = 0; }
   function renderDecision() {
     var profile = M.profiles[state.profile], action = M.decision(state.event, state.profile, state.ledger, state.history);
     text('decision-trader', profile.id); text('decision-history', state.history ? profile.history : 'Behavioral history withheld; only the market situation is supplied.');
@@ -41,32 +41,49 @@
   }
 
   function renderField() {
-    var svg = byId('investor-field');
-    svg.setAttribute('viewBox', '0 0 480 256'); svg.replaceChildren();
-    svg.appendChild(svgNode('circle', { cx: 240, cy: 38, r: 25, class: 'hft-event-halo' }));
-    svg.appendChild(svgNode('circle', { cx: 240, cy: 38, r: 7, class: 'hft-event-point' }));
-    [80, 240, 400].forEach(function (cx, profile) {
-      var path = 'M240 65 C240 102 ' + cx + ' 82 ' + cx + ' 128';
-      svg.appendChild(svgNode('path', { d: path, class: 'hft-field-thread' }));
-      svg.appendChild(svgNode('path', { d: path, class: 'hft-field-pulse', style: '--delay:' + profile * 80 + 'ms' }));
-      var values = M.response(state.event, profile, state.history);
-      var group = svgNode('g', { class: 'hft-field-cluster', opacity: profile === state.profile ? 1 : 0.68 });
-      group.appendChild(svgNode('rect', { x: cx - 63, y: 133, width: 126, height: 113, rx: 20, class: profile === state.profile ? 'hft-cluster-frame is-selected' : 'hft-cluster-frame' }));
-      for (var j = 0; j < 24; j++) {
-        var rank = (j + 0.5) / 24 * 100, action = 0, cumulative = values[0];
-        while (rank > cumulative && action < 3) { action++; cumulative += values[action]; }
-        var x = cx - 45 + (j % 6) * 18, y = 160 + Math.floor(j / 6) * 20;
-        var attrs = { class: 'hft-person hft-action-' + action, style: '--delay:' + j * 16 + 'ms' };
-        var mark;
-        if (action === 1) mark = svgNode('rect', Object.assign(attrs, { x: x - 4, y: y - 4, width: 8, height: 8, rx: 1 }));
-        else if (action === 2) mark = svgNode('path', Object.assign(attrs, { d: 'M' + x + ' ' + (y - 5) + 'l5 9h-10Z' }));
-        else mark = svgNode('circle', Object.assign(attrs, { cx: x, cy: y, r: 4.5 }));
-        group.appendChild(mark);
-      }
-      svg.appendChild(group);
+    var svg = byId('investor-field'), canvas = svg.parentElement;
+    var width = canvas.clientWidth, mid = 110, gate = Math.max(160, width * .52);
+    var profile = M.profiles[state.profile], values = M.heroResponse(state.event, state.profile, state.history);
+    var base = M.heroResponse(state.event, state.profile, false);
+    var chosen = state.heroAction === null ? values.indexOf(Math.max.apply(null, values)) : state.heroAction;
+    var projection = M.heroProjection(state.event, chosen), record = profile.records[state.record];
+    var positions = [24, Math.max(68, width * .20), Math.max(112, width * .36)];
+    var records = byId('hero-records'), outcomes = byId('hero-outcomes');
+    svg.setAttribute('viewBox', '0 0 ' + width + ' 244'); svg.replaceChildren(); records.replaceChildren(); outcomes.replaceChildren();
+    canvas.classList.toggle('is-withheld', !state.history);
+    svg.appendChild(svgNode('line', { x1: 0, y1: mid, x2: gate - 24, y2: mid, class: 'hft-lens-axis' }));
+    var historyPath = svgNode('path', { d: 'M24 ' + mid + ' H' + (gate - 24), class: 'hft-lens-history-path' }); svg.appendChild(historyPath);
+    profile.records.forEach(function (entry, i) {
+      var x = positions[i], y = mid - entry.change * 1.35;
+      svg.appendChild(svgNode('line', { x1: x, x2: x, y1: mid, y2: y, class: 'hft-lens-stem', 'data-selected': String(i === state.record) }));
+      var button = el('button', undefined, 'hft-lens-record'); button.type = 'button'; button.dataset.heroRecord = String(i);
+      button.style.left = x + 'px'; button.style.top = y + 'px';
+      button.setAttribute('aria-pressed', String(i === state.record)); button.setAttribute('aria-label', t(entry.date) + ': ' + t(entry.event) + '. ' + t(entry.action));
+      var amount = entry.change === 0 ? '0' : (entry.change > 0 ? '+' : '−') + Math.abs(entry.change);
+      button.append(el('strong', amount), el('small', entry.date));
+      button.addEventListener('click', function () { state.record = i; renderField(); renderMemory(); byId('hero-records').querySelector('[data-hero-record="' + i + '"]').focus(); }); records.append(button);
     });
-    svg.setAttribute('aria-label', t(M.events[state.event].label) + '. ' + t('Investor responses grouped by behavioral history'));
-    byId('field-reading').textContent = t('Illustrative behavioral field') + ' · ' + t(M.profiles[state.profile].history);
+    svg.appendChild(svgNode('line', { x1: gate, x2: gate, y1: 20, y2: 207, class: 'hft-lens-boundary' }));
+    svg.appendChild(svgNode('rect', { x: gate - 23, y: mid - 19, width: 46, height: 38, rx: 2, class: 'hft-lens-gate' }));
+    svg.appendChild(svgNode('text', { x: gate, y: mid + 5, 'text-anchor': 'middle', class: 'hft-lens-jev' }, 'Jev'));
+    [42, 110, 178].forEach(function (y, i) {
+      var end = width - 80, start = gate + 25, curve = start + Math.max(12, (end - start) * .45);
+      var path = 'M' + start + ' ' + mid + ' C' + curve + ' ' + mid + ' ' + (end - 26) + ' ' + y + ' ' + end + ' ' + y;
+      svg.appendChild(svgNode('path', { d: path, class: 'hft-lens-branch hft-lens-choice-' + i, 'stroke-width': 2 + values[i] * .15, 'data-selected': String(i === chosen) }));
+      var button = el('button', undefined, 'hft-lens-outcome hft-lens-choice-' + i); button.type = 'button'; button.dataset.heroAction = String(i); button.style.top = y + 'px';
+      button.setAttribute('aria-pressed', String(i === chosen)); button.setAttribute('aria-label', t(M.actions[i]) + ': ' + values[i] + '%. ' + t('Explore a possible next action'));
+      button.append(el('span', M.actions[i]), el('strong', values[i] + '%'));
+      button.addEventListener('click', function () { state.heroAction = i; renderField(); byId('hero-outcomes').querySelector('[data-hero-action="' + i + '"]').focus(); }); outcomes.append(button);
+    });
+    var lift = values[chosen] - base[chosen];
+    text('hero-history-toggle', state.history ? 'Withhold history' : 'Restore history'); byId('hero-history-toggle').setAttribute('aria-pressed', String(state.history));
+    text('hero-record-date', record.date); text('hero-record-action', record.action);
+    byId('hero-record-context').textContent = t(record.event) + ' ' + t(record.context);
+    byId('hero-lift').textContent = (lift > 0 ? '+' : lift < 0 ? '−' : '') + Math.abs(lift) + ' ' + t('pp');
+    byId('hero-comparison').textContent = t(M.actions[chosen]) + ': ' + base[chosen] + '% → ' + values[chosen] + '%';
+    byId('hero-next-shares').textContent = '100 → ' + projection.shares + ' ' + t('shares');
+    byId('hero-next-cash').textContent = '$5,000 → $' + projection.cash.toLocaleString('en-US') + ' · ' + t('cash');
+    svg.setAttribute('aria-label', t(profile.id) + '. ' + t(M.events[state.event].label) + '. ' + t(state.history ? 'History included' : 'History removed') + '. ' + values.map(function (v, i) { return t(M.actions[i]) + ' ' + v + '%'; }).join(', '));
   }
 
   function renderPopulation() {
@@ -248,11 +265,12 @@
   document.querySelectorAll('[data-profile]').forEach(function (b) { b.addEventListener('click', function () { state.profile = Number(b.dataset.profile); resetDecision(); renderResponse(); }); });
   document.querySelectorAll('[data-stage]').forEach(function (b) { b.addEventListener('click', function () { state.stage = b.dataset.stage; renderStage(); }); });
   document.querySelectorAll('[data-age]').forEach(function (b) { b.addEventListener('click', function () { state.age = Number(b.dataset.age); renderFreshness(); }); });
+  byId('hero-history-toggle').addEventListener('click', function () { state.history = !state.history; resetDecision(); renderResponse(); });
   byId('history-toggle').addEventListener('click', function () { state.history = !state.history; resetDecision(); renderResponse(); });
   byId('reset-response').addEventListener('click', function () { state.event = 'beat'; state.profile = 0; state.history = true; state.mix = 'balanced'; state.record = 2; resetDecision(); renderResponse(); });
   byId('advance-decision').addEventListener('click', function () { if (state.steps < 3) { state.ledger = M.step(state.event, state.profile, state.ledger, state.history); state.steps++; renderDecision(); renderStage(); } });
-  byId('reset-decision').addEventListener('click', function () { resetDecision(); renderDecision(); renderStage(); });
+  byId('reset-decision').addEventListener('click', function () { resetDecision(); renderDecision(); renderStage(); renderField(); });
   byId('guide-next').addEventListener('click', function () { state.stage = guideOrder[(guideOrder.indexOf(state.stage) + 1) % guideOrder.length]; renderStage(); });
   renderAlpha(); renderResponse(); renderStage(); renderFreshness();
-  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(function () { renderAlpha(); renderPopulation(); renderClock(); }).observe(byId('alpha-chart').parentElement);
+  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(function () { renderAlpha(); renderPopulation(); renderClock(); renderField(); }).observe(byId('alpha-chart').parentElement);
 }());

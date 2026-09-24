@@ -5,19 +5,19 @@
   window.BackerLocalePacks.hftResearch = {
   messages: {
     "Source: Chen, Sialm & Xu (2026). The Growth and Performance of Artificial Intelligence in Asset Management. NBER Working Paper 35273, Table 5.": [
-        "来源：Chen、Sialm 与 Xu（2026），《人工智能在资产管理中的发展与表现》，NBER 工作论文第 35273 号，表 5。",
-        "出典：Chen, Sialm & Xu（2026）『資産運用における人工知能の成長と運用成績』、NBER Working Paper 35273、表5。",
-        "출처: Chen, Sialm & Xu (2026), 「자산운용에서 인공지능의 성장과 성과」, NBER Working Paper 35273, 표 5."
+      "来源：Chen、Sialm 与 Xu（2026），《人工智能在资产管理中的发展与表现》，NBER 工作论文第 35273 号，表 5。",
+      "出典：Chen, Sialm & Xu（2026）『資産運用における人工知能の成長と運用成績』、NBER Working Paper 35273、表5。",
+      "출처: Chen, Sialm & Xu (2026), 「자산운용에서 인공지능의 성장과 성과」, NBER Working Paper 35273, 표 5."
     ],
     "The Growth and Performance of Artificial Intelligence in Asset Management": [
-        "人工智能在资产管理中的发展与表现",
-        "資産運用における人工知能の成長と運用成績",
-        "자산운용에서 인공지능의 성장과 성과"
+      "人工智能在资产管理中的发展与表现",
+      "資産運用における人工知能の成長と運用成績",
+      "자산운용에서 인공지능의 성장과 성과"
     ],
     "Chen, Sialm & Xu · NBER Working Paper 35273 · May 2026": [
-        "Chen、Sialm 与 Xu · NBER 工作论文第 35273 号 · 2026 年 5 月",
-        "Chen, Sialm & Xu · NBER Working Paper 35273 · 2026年5月",
-        "Chen, Sialm & Xu · NBER Working Paper 35273 · 2026년 5월"
+      "Chen、Sialm 与 Xu · NBER 工作论文第 35273 号 · 2026 年 5 月",
+      "Chen, Sialm & Xu · NBER Working Paper 35273 · 2026年5月",
+      "Chen, Sialm & Xu · NBER Working Paper 35273 · 2026년 5월"
     ],
     "High Frequency Trading — Backer Research": [
       "高频交易 — Backer Research",
@@ -1680,10 +1680,10 @@
       "우리는 다음"
     ],
     "Backer Simulation API currently beta testing.": [
-  "Backer Simulation API 目前处于测试阶段。",
-  "Backer Simulation API は現在ベータテスト中です。",
-  "Backer Simulation API는 현재 베타 테스트 중입니다."
-],
+      "Backer Simulation API 目前处于测试阶段。",
+      "Backer Simulation API は現在ベータテスト中です。",
+      "Backer Simulation API는 현재 베타 테스트 중입니다."
+    ],
     "What actually happened?": [
       "他实际做了什么？",
       "実際にはどう動いたか？",
@@ -2323,6 +2323,101 @@
       "几分钟内",
       "数分以内",
       "수분 이내"
+    ],
+    "BACKER / SIMULATION": [
+      "BACKER / 模拟",
+      "BACKER / SIMULATION",
+      "BACKER / SIMULATION"
+    ],
+    "Change from event-only": [
+      "个人历史带来的概率变化",
+      "履歴なしとの差",
+      "이벤트 기준 대비 변화"
+    ],
+    "Explore a possible next action": [
+      "推演下一步选择",
+      "次の行動を試す",
+      "다음 행동별 결과 확인"
+    ],
+    "From an individual’s past trades to their next decision": [
+      "从个人交易历史，模拟下一次选择",
+      "個人の取引履歴から、次の判断へ",
+      "개인의 과거 거래에서 다음 결정까지"
+    ],
+    "If this choice is taken": [
+      "选择后的模拟账户",
+      "この行動を選ぶと",
+      "이 선택을 실행하면"
+    ],
+    "Inspect a past decision": [
+      "查看过往决策",
+      "過去の判断を見る",
+      "과거 결정 확인"
+    ],
+    "Interactive illustration · synthetic histories and authored probabilities.": [
+      "交互演示 · 合成交易历史与预设概率。",
+      "操作できる仕組みの図解 · 履歴と確率は説明用の設定値です。",
+      "직접 조작하는 예시 · 합성 기록과 설정된 확률."
+    ],
+    "Next choice · probability": [
+      "下一步选择 · 概率",
+      "次の行動 · 確率",
+      "다음 선택 · 확률"
+    ],
+    "One trader. A history of decisions.": [
+      "一个交易者的决策历史。",
+      "一人のトレーダー。積み重ねた判断。",
+      "한 트레이더의 축적된 결정."
+    ],
+    "Past decisions inform Jev’s next-choice distribution": [
+      "Jev 根据个人交易历史，预测下一步选择的概率",
+      "過去の判断をもとに、Jevが次の行動の確率分布を返す",
+      "과거 결정으로 구성한 Jev의 다음 선택 확률 분포"
+    ],
+    "Past trades · shares": [
+      "过往交易 · 股数",
+      "過去の売買 · 株数",
+      "과거 거래 · 주"
+    ],
+    "Place them in a new situation": [
+      "换一个市场情境",
+      "新たな状況に置く",
+      "새로운 시장 상황에 놓기"
+    ],
+    "Real observed trades extend the history.": [
+      "真实交易不断补充个人历史。",
+      "実際の取引が、履歴をさらに深める。",
+      "실제로 관측한 거래가 기록에 더해집니다."
+    ],
+    "Restore history": [
+      "纳入个人历史",
+      "履歴を戻す",
+      "기록 다시 반영"
+    ],
+    "Same starting account": [
+      "相同的初始账户",
+      "共通の初期残高",
+      "동일한 초기 계좌"
+    ],
+    "Withhold history": [
+      "不使用个人历史",
+      "履歴を外す",
+      "기록 제외"
+    ],
+    "cash": [
+      "现金",
+      "現金",
+      "현금"
+    ],
+    "pp": [
+      "个百分点",
+      "ポイント",
+      "%p"
+    ],
+    "shares": [
+      "股",
+      "株",
+      "주"
     ]
   },
   patterns: {

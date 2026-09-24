@@ -10,14 +10,14 @@
   <link rel="icon" href="../img/backer-mark.png?v=2">
   <link rel="stylesheet" href="../css/simulation.css?v=20260920-5">
   <link rel="stylesheet" href="../css/simulation-usecases.css?v=20260920-5">
-  <link rel="stylesheet" href="../css/hft-research.css?v=20260924-3">
+  <link rel="stylesheet" href="../css/hft-research.css?v=20260924-4">
   <link rel="stylesheet" href="../css/research-api.css?v=20260924-3">
   <link rel="stylesheet" href="../css/i18n.css?v=20260920-5">
   <script src="../js/locales/simulation-usecases.js?v=20260924-3" defer></script>
-  <script src="../js/locales/hft-research.js?v=20260924-3" defer></script>
+  <script src="../js/locales/hft-research.js?v=20260924-4" defer></script>
   <script src="../js/i18n.js?v=20260920-5" defer></script>
-  <script src="../js/hft-model.js?v=20260924-3" defer></script>
-  <script src="../js/hft-research.js?v=20260924-3" defer></script>
+  <script src="../js/hft-model.js?v=20260924-4" defer></script>
+  <script src="../js/hft-research.js?v=20260924-4" defer></script>
 </head>
 <body class="usecase-page hft-page">
   <a class="sim-skip" href="#main">Skip to content</a>
@@ -27,12 +27,15 @@
     <section class="hft-hero sim-shell">
       <p class="sim-eyebrow">High Frequency Trading supports</p>
       <div class="hft-hero-grid"><div><h1>Same information.<br><span>Different trades.</span></h1><p class="hft-deck">AI makes company and industry analysis widely accessible. <span class="hft-conviction">We believe the next <strong class="hft-edge">EDGE</strong> comes from accumulated individual trading behavior: how each person acts, and what makes them change their mind.</span></p><a class="sim-link" href="#response-lab">Explore the response model <span aria-hidden="true">↓</span></a></div>
-        <figure class="hft-hero-figure" aria-label="One company event branches into different investor actions">
-          <div class="hft-options hft-hero-events" role="group" aria-label="Explore an announcement"><button type="button" data-event="beat" aria-pressed="true">Earnings beat</button><button type="button" data-event="cut" aria-pressed="false">Guidance cut</button><button type="button" data-event="mixed" aria-pressed="false">Mixed announcement</button></div>
-          <svg id="investor-field" role="img" aria-label="Investor responses grouped by behavioral history"></svg>
-          <div class="hft-field-profiles" role="group" aria-label="Follow a behavioral cohort"><button type="button" data-profile="0" aria-pressed="true"><small>01</small><span>Follows momentum</span></button><button type="button" data-profile="1" aria-pressed="false"><small>02</small><span>Waits for confirmation</span></button><button type="button" data-profile="2" aria-pressed="false"><small>03</small><span>Cuts losses early</span></button></div>
-          <div class="hft-field-legend"><span><i data-action="0"></i>Add</span><span><i data-action="1"></i>Hold</span><span><i data-action="2"></i>Reduce</span><span><i data-action="3"></i>No recorded choice</span></div>
-          <figcaption id="field-reading" aria-live="polite">Illustrative behavioral field · select an event, then follow a cohort.</figcaption>
+        <figure class="hft-hero-figure hft-lens" aria-label="From an individual’s past trades to their next decision">
+          <div class="hft-lens-heading"><p>One trader. A history of decisions.</p><span>BACKER / SIMULATION</span></div>
+          <div class="hft-lens-top"><div class="hft-lens-traders" role="group" aria-label="Choose an individual trader"><button type="button" data-profile="0" aria-pressed="true">Trader 014</button><button type="button" data-profile="1" aria-pressed="false">Trader 028</button><button type="button" data-profile="2" aria-pressed="false">Trader 063</button></div><button type="button" id="hero-history-toggle" aria-pressed="true">Withhold history</button></div>
+          <div class="hft-lens-event"><span>Place them in a new situation</span><div class="hft-options hft-hero-events" role="group" aria-label="Explore an announcement"><button type="button" data-event="beat" aria-pressed="true">Earnings beat</button><button type="button" data-event="cut" aria-pressed="false">Guidance cut</button><button type="button" data-event="mixed" aria-pressed="false">Mixed announcement</button></div></div>
+          <div class="hft-lens-columns"><span>Past trades · shares</span><span>Next choice · probability</span></div>
+          <div class="hft-lens-canvas"><svg id="investor-field" role="img" aria-label="Past decisions inform Jev’s next-choice distribution"></svg><div id="hero-records" role="group" aria-label="Inspect a past decision"></div><div id="hero-outcomes" role="group" aria-label="Explore a possible next action"></div><div class="hft-lens-now"><span>Same starting account</span><strong>100 <span>shares</span> · $5,000</strong></div></div>
+          <div class="hft-lens-evidence" aria-live="polite" aria-atomic="true"><span id="hero-record-date"></span><div><strong id="hero-record-action"></strong><p id="hero-record-context"></p></div></div>
+          <div class="hft-lens-result" aria-live="polite" aria-atomic="true"><div><span>Change from event-only</span><strong id="hero-lift"></strong><p id="hero-comparison"></p></div><div><span>If this choice is taken</span><strong id="hero-next-shares"></strong><p id="hero-next-cash"></p></div></div>
+          <figcaption id="field-reading"><span>Real observed trades extend the history.</span><small>Interactive illustration · synthetic histories and authored probabilities.</small></figcaption>
         </figure>
       </div>
       <div class="hft-scope"><span>For quantitative &amp; discretionary funds</span><p>Accumulate individual behavior. Simulate traders. Place them in real-world market situations.</p></div>
