@@ -1734,10 +1734,10 @@
       "Jevを判断ループに組み込みます。Backerがトレーダーの蓄積された履歴と現在の状況を渡し、Jevが定義された行動から選択する。コードが状態を更新し、次の判断へ進みます。",
       "Jev는 의사결정 루프의 중심에 있습니다. Backer가 한 트레이더의 축적된 기록과 현재 상황을 전달하면 Jev가 정해진 행동 중 하나를 선택합니다. 코드가 모의 상태를 갱신하고, 다음 판단으로 이어갑니다."
     ],
-    "The same AI analysis reaches people with different positions, habits and reasons to act. They still decide whether to follow it, ignore it or delegate within their own rules.": [
-      "面对同一份 AI 分析，有人跟随，有人观望，也有人交给预设规则执行。持仓、习惯与过往选择的差异，会体现在各自的交易决策中。",
-      "同じAI分析を受け取っても、保有資産、習慣、行動の理由は人それぞれです。分析に従うか、見送るか、自分のルールで判断を委ねるか。その選択は本人に残ります。",
-      "같은 AI 분석을 받아도 사람마다 포지션과 습관, 거래 동기는 다릅니다. 분석을 따를지, 무시할지, 자신의 규칙 안에서 판단을 위임할지는 각자가 결정합니다."
+    "AI brings expert-level stock and industry analysis to people with different positions, habits and reasons to act. Humans still decide whether to follow it or delegate within their own rules.": [
+      "AI 让更多人获得专业级的个股与行业分析。每个人的持仓、习惯和交易动机不同；是否采纳分析，或在自己设定的规则下授权 AI 决策，仍由人决定。",
+      "AIにより、専門家水準の銘柄・業界分析が、異なる保有資産、習慣、投資動機を持つ人々に届きます。分析に従うか、自ら定めたルールの範囲で判断を委ねるか。その決定権は人にあります。",
+      "AI는 포지션과 습관, 거래 동기가 각기 다른 사람들에게 전문가 수준의 종목·산업 분석을 제공합니다. 분석을 따를지, 자신이 정한 규칙 안에서 판단을 위임할지는 여전히 사람이 결정합니다."
     ],
     "01 / The connection": [
       "01 / 连接模型",
