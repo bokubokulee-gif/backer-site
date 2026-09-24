@@ -2,7 +2,7 @@
   'use strict';
   var M = window.BackerHftModel;
   if (!M) return;
-  var state = { study: 'fh', event: 'beat', profile: 0, history: true, stage: 'jev', age: 250, mix: 'balanced', record: 2, ledger: { shares: 100, cash: 5000 }, steps: 0 };
+  var state = { study: 'fh', event: 'beat', profile: 0, history: true, stage: 'setup', age: 250, mix: 'balanced', record: 2, ledger: { shares: 100, cash: 5000 }, steps: 0 };
   function t(value) { return window.BackerI18n ? window.BackerI18n.t(value) : value; }
   function byId(id) { return document.getElementById(id); }
   function text(id, value) { byId(id).textContent = t(value); }
@@ -180,42 +180,61 @@
       var tr = el('tr'); var th = el('th', M.actions[i]); th.scope = 'row'; tr.append(th, el('td', String(value)), el('td', String(event.base[i]))); table.appendChild(tr);
     });
     text('response-reading', state.history ? profile.reading : 'Without history, every profile uses the same event-only distribution. Every person now receives the same forecast.');
-    renderField(); renderPopulation(); renderMemory(); renderDecision();
+    renderField(); renderPopulation(); renderMemory(); renderDecision(); renderStage();
     byId('response-announcement').textContent = t(event.label) + '. ' + t(profile.label) + '. ' + t('Selected distribution') + ': ' + values.map(function (v, i) { return t(M.actions[i]) + ' ' + v + '%'; }).join('; ') + '.';
   }
 
   var STAGES = {
-    evidence: {
-      kind: 'Accumulated individual behavior', title: 'Build from what this person actually did.',
-      body: 'Link each observed trade to the information available, the current position and the market situation. Accumulate decisions across events to model the individual, rather than assign a generic personality.',
-      note: 'Use consented or licensed records. Separate recorded explanations from inferred motives.',
-      caption: 'Backer supplies the trader state', rows: [['History', 'Past choices + information seen + reaction time'], ['Current state', 'Holdings + available cash + constraints'], ['Situation', 'Company event + market conditions + cutoff']]
-    },
-    jev: {
-      kind: 'A bounded decision at each step', title: 'What would this trader choose now?',
-      body: 'Jev evaluates the supplied trader state and selects from explicit actions, with probabilities. Backer can use that judgment inside the simulation without asking for a conversation or parsing a written recommendation.',
-      note: 'Jev returns choices, not reasons. Explanations come from inspected evidence and tested changes to the inputs.',
-      caption: 'The Choice inside the simulation', rows: [['Question', 'Given this history and situation, what would this trader do next?'], ['Options', 'Add · keep position · reduce · insufficient evidence'], ['Output', 'Selected option + probabilities + confidence']]
-    },
-    backer: {
-      kind: 'The simulation advances', title: 'Update the world. Ask again.',
-      body: 'Code applies the simulated choice, updates positions and cash, and advances market conditions. The next Jev judgment sees that updated state. Aggregate calibrated paths across traders to estimate the population response.',
-      note: 'Simulated decisions remain separate from observed trades. Execution and accounting follow explicit code.',
-      caption: 'One step becomes the next input', rows: [['Update', 'Simulated holdings + cash + decision time'], ['Repeat', 'Updated trader state + next market situation'], ['Aggregate', 'Actions + timing + sizes across traders']]
-    },
-    fund: {
-      kind: 'The record keeps growing', title: 'Compare the simulation with real decisions.',
-      body: 'When new trades are observed, compare them with the earlier forecasts. Extend the individual’s history and recalibrate the model. Test new Jev and foundation-model versions against the same held-out decisions.',
-      note: 'Model confidence and realized trading performance are evaluated separately.',
-      caption: 'The accumulation loop', rows: [['Observe', 'Actual decisions + timing + outcomes'], ['Compare', 'Forecast error + calibration + cost'], ['Improve', 'Richer histories + better models + new situations']]
-    }
+    setup: { kind: '01 / The connection', title: 'One model. A precise interface.', body: 'Install the TypeSafe skill and Python SDK. Keep the API key on the server, use the direct endpoint, and pin a model version so every experiment can be reproduced.', note: 'Interactive reference workflow. Values and outputs are authored examples; this page makes no live Jev requests.' },
+    snapshot: { kind: '02 / The input', title: 'A market snapshot becomes personal.', body: 'Code computes prices, spreads, exposure and available cash. Backer adds the individual’s observed decisions and the information they had at the time. Freeze that record before asking Jev.', note: 'Only evidence available at the cutoff enters the request. Later outcomes stay in the evaluation set.' },
+    questions: { kind: '03 / The judgment battery', title: 'One state. Several precise questions.', body: 'Ask action, confirmation and reaction speed together. Each question sees the same frozen state and returns its own typed answer. Independent questions share a request; a question that needs an earlier answer waits for the next request.', note: 'Choice selects an action. Noul estimates whether a condition holds. Score locates the state on a defined rubric. None returns a conversation.' },
+    policy: { kind: '04 / The policy', title: 'The model judges. Code decides what happens.', body: 'The simulator checks freshness and feasibility before using an answer. Cash, holdings and scenario rules remain deterministic. A fund consuming the signal keeps its own exposure limits, risk vetoes and execution policy.', note: 'Confidence thresholds are calibrated on held-out decisions. A concentrated distribution is not proof that a prediction is correct.' },
+    advance: { kind: '05 / The next situation', title: 'Update the state. Run the next decision.', body: 'Apply a simulated fill, account for costs, update holdings and cash, then advance the market clock. Send the new state in a separate Jev request. Repeat across individuals and paths to build the population response.', note: 'The public demonstration uses fixed ten-share fills without fees. Research runs must model spreads, fees, impact and missed fills. Simulated actions never become observed history.' },
+    evaluate: { kind: '06 / The evidence', title: 'Measure the behavior. Then measure the edge.', body: 'Compare rules, a frontier model, Jev, and Jev with calibrated abstention on identical histories and market situations. Remove individual history to measure its contribution. Hold out traders, events and future periods.', note: 'Promote a model when it improves observed outcomes within the latency and cost budget. Pin the new version and retain the previous benchmark.' }
   };
-  function renderStage() {
-    var stage = STAGES[state.stage]; pressed('[data-stage]', 'stage', state.stage);
-    text('stage-kind', stage.kind); text('stage-title', stage.title); text('stage-body', stage.body); text('stage-note', stage.note); text('contract-caption', stage.caption);
-    var container = byId('contract-content'); container.replaceChildren();
-    var dl = el('dl'); stage.rows.forEach(function (row) { var d = el('div'); d.append(el('dt', row[0]), el('dd', row[1])); dl.appendChild(d); }); container.appendChild(dl);
+  var guideOrder = Object.keys(STAGES), primitive = 'choice', delivery = 'healthy';
+  function guideRows(rows) { var dl = el('dl', undefined, 'hft-guide-facts'); rows.forEach(function (pair) { var row = el('div'); row.append(el('dt', pair[0]), el('dd', pair[1])); dl.append(row); }); return dl; }
+  function guideCode(value) { var pre = el('pre'); pre.tabIndex = 0; var code = document.createElement('code'); code.textContent = value; pre.append(code); return pre; }
+  function guideBar(label, value) { var row = el('div', undefined, 'hft-guide-bar'); var track = el('i'); track.style.setProperty('--fill', value + '%'); row.append(el('span', label), track, el('b', value + '%')); return row; }
+  function renderGuideVisual() {
+    var visual = byId('guide-visual'); visual.replaceChildren();
+    if (state.stage === 'setup') {
+      visual.append(guideCode('npx skills add typesafe-ai/skills --skill typesafe-ai\npip install typesafe-sdk==0.7.1'), guideRows([['Server environment', 'TYPESAFE_API_KEY'], ['Direct endpoint', 'POST /v1/systemone'], ['Pinned model', 'jev-1.13.0']]));
+    } else if (state.stage === 'snapshot') {
+      var flow = el('div', undefined, 'hft-snapshot-flow');
+      ['Observed history', 'Current account', 'Visible market'].forEach(function (v) { flow.append(el('span', v)); });
+      flow.append(el('strong', 'One timestamped state')); visual.append(flow);
+      visual.append(guideRows([['Individual', M.profiles[state.profile].id], ['History', state.history ? M.profiles[state.profile].history : 'History removed'], ['Situation', M.events[state.event].detail], ['Shares / cash · USD', state.ledger.shares + ' / ' + state.ledger.cash.toLocaleString('en-US')], ['Market price · USD', String(M.markets[state.event].price)]]));
+    } else if (state.stage === 'questions') {
+      var branches = el('div', undefined, 'hft-judgment-branches'); branches.setAttribute('role', 'group'); branches.setAttribute('aria-label', t('Inspect a typed question'));
+      [['choice', 'Choice'], ['noul', 'Noul'], ['score', 'Score']].forEach(function (entry) { var b = el('button', entry[1]); b.type = 'button'; b.dataset.primitive = entry[0]; b.setAttribute('aria-pressed', String(primitive === entry[0])); b.addEventListener('click', function () { primitive = entry[0]; renderGuideVisual(); byId('guide-visual').querySelector('[data-primitive="' + primitive + '"]').focus(); }); branches.append(b); });
+      visual.append(el('p', 'Same frozen state → independent judgments', 'hft-guide-state-line'), branches);
+      var result = el('div', undefined, 'hft-judgment-result'); result.setAttribute('aria-live', 'polite');
+      if (primitive === 'choice') { result.append(el('h4', 'What would this individual do next?')); [['Add',58],['Hold',26],['Reduce',10],['Insufficient evidence',6]].forEach(function (v) { result.append(guideBar(v[0], v[1])); }); }
+      if (primitive === 'noul') { result.append(el('h4', 'Will they wait for a second confirming signal?'), guideBar('Probability of yes', 22), el('p', 'A yes/no probability. It is neither intensity nor a separate confidence score.')); }
+      if (primitive === 'score') { result.append(el('h4', 'How quickly would they change exposure?'), el('strong', '2.35 / 3', 'hft-guide-big-number'), guideRows([['0', 'No change this session'], ['1', 'More than 60 minutes later'], ['2', '15 to 60 minutes later'], ['3', 'Less than 15 minutes later']]), el('p', 'A probability-weighted rubric value, not a duration in minutes.')); }
+      visual.append(result, el('small', 'Authored outputs for one example request.'));
+    } else if (state.stage === 'policy') {
+      var modes = [['healthy','On time'],['uncertain','Low confidence'],['late','Past deadline'],['offline','Jev unavailable'],['limit','Hard limit']];
+      var controls = el('div', undefined, 'hft-options hft-guide-modes'); controls.setAttribute('role', 'group'); controls.setAttribute('aria-label', t('Test a policy condition'));
+      modes.forEach(function (entry) { var b = el('button', entry[1]); b.type = 'button'; b.dataset.delivery = entry[0]; b.setAttribute('aria-pressed', String(delivery === entry[0])); b.addEventListener('click', function () { delivery = entry[0]; renderGuideVisual(); byId('guide-visual').querySelector('[data-delivery="' + delivery + '"]').focus(); }); controls.append(b); });
+      var outcomes = {healthy:['Apply the feasible simulated action','Continue after checking available cash, holdings and scenario limits.'],uncertain:['Record an abstention','Use a threshold evaluated on the cost of each error. Do not invent a trade.'],late:['Discard the answer','Refresh the evidence and ask again. A retry never resets the original deadline.'],offline:['Use the explicit fallback','Run a tested deterministic baseline or stop this path. Log the service failure.'],limit:['Stop this path','The hard rule overrides the model. Downstream funds apply their own risk response.']};
+      var outcome = el('div', undefined, 'hft-policy-outcome'); outcome.dataset.condition = delivery; outcome.setAttribute('role','status'); outcome.append(el('small','Code-owned outcome'),el('h4',outcomes[delivery][0]),el('p',outcomes[delivery][1])); visual.append(controls,outcome);
+    } else if (state.stage === 'advance') {
+      var next = M.step(state.event,state.profile,state.ledger,state.history);
+      visual.append(el('p','One illustrative next step', 'hft-guide-state-line'),guideRows([['Shares held',state.ledger.shares + ' → ' + next.shares],['Available cash · USD',state.ledger.cash.toLocaleString('en-US') + ' → ' + next.cash.toLocaleString('en-US')],['Observed records','Unchanged'],['Next request','Updated account + next market snapshot']]));
+      var jump = el('a','Try the decision loop ↑','sim-link'); jump.href='#decision-loop'; visual.append(jump);
+    } else {
+      visual.append(guideRows([['Behavioral accuracy','Brier score · log loss · action timing'],['Calibration','Predicted probabilities vs observed frequencies'],['Economic value','Net P&L · drawdown · slippage · capacity'],['Operating budget','Tail latency · coverage · cost per decision']]));
+      var loop = el('div',undefined,'hft-calibration-loop'); ['Predict','Observe','Compare','Recalibrate'].forEach(function(v){loop.append(el('span',v));}); visual.append(loop);
+    }
   }
+  function renderStage() {
+    var stage = STAGES[state.stage], index = guideOrder.indexOf(state.stage); pressed('[data-stage]', 'stage', state.stage);
+    text('stage-kind',stage.kind); text('stage-title',stage.title); text('stage-body',stage.body); text('stage-note',stage.note);
+    byId('guide-position').textContent = '0' + (index + 1) + ' / 06'; text('guide-next', index === 5 ? 'Back to the start ↺' : 'Next step →'); renderGuideVisual();
+  }
+
   function renderFreshness() {
     pressed('[data-age]', 'age', state.age);
     var fresh = M.contextStatus(state.age, 1000) === 'fresh';
@@ -231,8 +250,9 @@
   document.querySelectorAll('[data-age]').forEach(function (b) { b.addEventListener('click', function () { state.age = Number(b.dataset.age); renderFreshness(); }); });
   byId('history-toggle').addEventListener('click', function () { state.history = !state.history; resetDecision(); renderResponse(); });
   byId('reset-response').addEventListener('click', function () { state.event = 'beat'; state.profile = 0; state.history = true; state.mix = 'balanced'; state.record = 2; resetDecision(); renderResponse(); });
-  byId('advance-decision').addEventListener('click', function () { if (state.steps < 3) { state.ledger = M.step(state.event, state.profile, state.ledger, state.history); state.steps++; renderDecision(); } });
-  byId('reset-decision').addEventListener('click', function () { resetDecision(); renderDecision(); });
+  byId('advance-decision').addEventListener('click', function () { if (state.steps < 3) { state.ledger = M.step(state.event, state.profile, state.ledger, state.history); state.steps++; renderDecision(); renderStage(); } });
+  byId('reset-decision').addEventListener('click', function () { resetDecision(); renderDecision(); renderStage(); });
+  byId('guide-next').addEventListener('click', function () { state.stage = guideOrder[(guideOrder.indexOf(state.stage) + 1) % guideOrder.length]; renderStage(); });
   renderAlpha(); renderResponse(); renderStage(); renderFreshness();
   if (typeof ResizeObserver !== 'undefined') new ResizeObserver(function () { renderAlpha(); renderPopulation(); renderClock(); }).observe(byId('alpha-chart').parentElement);
 }());

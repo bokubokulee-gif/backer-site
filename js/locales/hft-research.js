@@ -12,12 +12,12 @@
     "Behavioral simulation for quantitative and discretionary funds. Explore Backer's thesis, Jev's typed judgments, and the evidence a new signal must earn.": [
       "面向量化与主观策略基金的个体交易模拟。以长期积累的交易记录为基础，用 Jev 模拟人在不同市场情境下的下一步选择。",
       "クオンツ・裁量運用ファンドのための行動シミュレーション。Backer の仮説、Jev の型付き判断、新たなシグナルに必要な実証を探る。",
-      "퀀트·재량 운용 펀드를 위한 행동 시뮬레이션. Backer의 연구 가설, Jev의 타입 지정 판단, 새로운 신호에 필요한 실증 근거를 살펴봅니다."
+      "퀀트·재량 운용 펀드를 위한 개인별 거래 시뮬레이션. 축적된 거래 기록과 Jev의 선택형 판단으로 실제 시장 상황에서 각 트레이더의 다음 행동을 모델링합니다."
     ],
     "Same information. Different trades. A research thesis on investor behavior and the next source of edge.": [
-      "同一条消息，不同的交易选择。从个体交易行为的持续积累中，寻找新的优势。",
+      "同一条消息，不同的交易选择。从持续积累的个体交易行为中，构建新的交易优势。",
       "同じ情報。異なる取引。投資家の行動から次の優位性を探る研究仮説。",
-      "같은 정보, 다른 거래. 투자자 행동에서 다음 우위의 원천을 찾는 연구 가설."
+      "같은 정보, 다른 거래. Backer는 개인별 거래 행동의 축적에서 새로운 우위를 만듭니다."
     ],
     "Same information.": [
       "同一条消息。",
@@ -30,9 +30,9 @@
       "다른 거래."
     ],
     "Explore the response model": [
-      "探索个体交易模拟",
-      "反応モデルを探る",
-      "반응 모델 살펴보기"
+      "模拟个人交易",
+      "トレーダーをシミュレーションする",
+      "트레이더 시뮬레이션 살펴보기"
     ],
     "One company event branches into different investor actions": [
       "同一项公司消息，对应不同交易者的选择",
@@ -57,7 +57,7 @@
     "For quantitative & discretionary funds": [
       "面向量化与主观策略基金",
       "クオンツ・裁量運用ファンド向け",
-      "퀀트·재량 운용 펀드를 위해"
+      "퀀트·재량 운용 펀드를 위한 시뮬레이션"
     ],
     "01 / The evidence": [
       "01 / 实证依据",
@@ -126,8 +126,8 @@
     ],
     "The Backer thesis": [
       "Backer 的核心判断",
-      "Backer の研究仮説",
-      "Backer의 연구 가설"
+      "Backerの核心",
+      "Backer의 핵심 관점"
     ],
     "Knowing the business": [
       "理解公司，",
@@ -207,7 +207,7 @@
     "Behavioral history": [
       "个人交易历史",
       "行動履歴",
-      "행동 이력"
+      "개인별 거래 기록"
     ],
     "Follows momentum": [
       "跟随趋势",
@@ -600,7 +600,7 @@
       "근거를 바탕으로 모델을 채택합니다."
     ],
     "Pin versions. Admit a new Jev or foundation model only after it improves held-out outcomes within cost and latency limits.": [
-      "固定每次评估的模型版本。新版本需要在成本与延迟要求内，改善独立测试样本上的预测结果。",
+      "固定模型版本，以独立测试样本检验每次升级。采用能改善预测、并满足成本与延迟要求的新版本。",
       "版を固定する。新しい Jev や基盤モデルは、コストと遅延の制限内で検証用データの結果を改善した場合に採用する。",
       "버전을 고정합니다. 새로운 Jev나 기반 모델은 비용·지연 한도 안에서 검증 데이터의 결과를 개선한 경우에만 채택합니다."
     ],
@@ -636,8 +636,8 @@
     ],
     "TypeSafe · typed judgments, code-owned workflows and evaluation": [
       "TypeSafe · 明确的选择、代码执行流程与效果评估",
-      "TypeSafe · 型付き判断、コードによるフロー制御と評価",
-      "TypeSafe · 타입 지정 판단, 코드가 제어하는 흐름, 평가"
+      "TypeSafe · 定義した形式で返る判断、コードによる制御と評価",
+      "TypeSafe · 타입이 명확한 판단, 코드가 제어하는 실행과 평가"
     ],
     "This research page is readable without JavaScript. Enable JavaScript to compare the interactive examples. No live model or trading connection is used.": [
       "本页文字可直接阅读；启用 JavaScript 后可操作演示。页面没有连接在线模型或实盘交易。",
@@ -651,7 +651,7 @@
     ],
     "All profiles start with the same long position and capacity to add or reduce. “Hold” requires an explicit recorded choice; “No recorded choice” means the observation is missing. Neither reveals an unobserved intention.": [
       "各交易者从相同的多头持仓出发，具备相同的加减仓条件。“持有”表示有明确的持有记录；“暂无选择记录”表示缺少观测，不能据此判断其真实意图。",
-      "どの人物像も、同じ買い持ちと売買余力から始まる。「保有継続」には明示的な選択の記録が必要。「選択記録なし」は観測の欠落を意味する。どちらからも、観測していない意図は分からない。",
+      "全員が同じ買い持ちと売買余力から始まります。「保有継続」は明示的な選択の記録、「選択記録なし」は観測の欠落です。どちらも、記録されていない意図までは示しません。",
       "모든 유형은 같은 매수 포지션과 증감 여력에서 시작합니다. ‘보유 유지’에는 명시적인 선택 기록이 필요하며, ‘선택 기록 없음’은 관측이 누락됐다는 뜻입니다. 어느 쪽도 관측되지 않은 의도를 알려주지는 않습니다."
     ],
     "Age is measured from the evidence timestamp. Retries preserve the original expiry.": [
@@ -762,12 +762,12 @@
     "Change the crowd.": [
       "调整人群比例，",
       "集団を変える。",
-      "집단이 달라지면."
+      "시장 참여자가 바뀌면,"
     ],
     "Change the response.": [
       "观察整体反应。",
       "反応が変わる。",
-      "반응도 달라집니다."
+      "거래의 흐름도 달라집니다."
     ],
     "A market contains different kinds of decision-makers. Change their proportions and follow the choices that emerge.": [
       "市场中既有跟随趋势的人，也有等待确认或倾向止损的人。调整他们的比例，查看整体选择如何变化。",
@@ -821,7 +821,7 @@
     ],
     "Each outcome is the population-weighted mean of the selected event’s profile probabilities. Removing history gives every cohort the same event-only distribution. These authored scenarios explain the mechanism; they are not measured forecasts.": [
       "按各类交易者所占比例，对其选择概率加权平均。不使用个人历史时，所有人采用同一组事件预测。这里的数值用于演示计算过程，并非实测预测。",
-      "各結果は、選択したイベントに対する人物像別の確率を、集団比率で加重平均したもの。履歴を外すと、すべての群に同じイベント基準の分布を適用する。仕組みを示す設定例であり、実測に基づく予測ではない。",
+      "各結果は、選んだイベントに対する各群の確率を、構成比で加重平均した値です。履歴を外すと、すべての群に同じイベント基準の分布を適用します。仕組みを示す設定例であり、実測による予測ではありません。",
       "각 결과는 선택한 이벤트의 유형별 확률을 집단 비중으로 가중평균한 값입니다. 이력을 제외하면 모든 집단에 같은 이벤트 기준 분포를 적용합니다. 작동 원리를 설명하는 설정 예시이며, 측정에 근거한 예측은 아닙니다."
     ],
     "Expected choices per 100 people": [
@@ -867,17 +867,17 @@
     "Read the response.": [
       "捕捉反应，",
       "反応を捉える。",
-      "반응을 읽고."
+      "반응을 읽고,"
     ],
     "Stay ahead of its decay.": [
       "把握信号有效期。",
       "シグナルの鮮度を保つ。",
-      "신호의 유효성을 지킵니다."
+      "신호가 약해지기 전에 대응합니다."
     ],
     "Build behavioral context before the event. Refresh it as information arrives. Feed timestamped signals into the fund’s execution systems, where deterministic limits govern every order.": [
       "在事件发生前准备好个人行为模型，随新信息更新模拟。将带时间戳的信号送入基金执行系统，每笔订单都遵循预设的交易与风控规则。",
       "イベント前に行動の背景を整え、情報が届くたびに更新する。時刻付きのシグナルをファンドの執行システムへ渡し、明確な上限ルールで各注文を管理する。",
-      "이벤트 전에 행동 맥락을 구축하고 새 정보가 들어오면 갱신합니다. 시각이 기록된 신호를 펀드 집행 시스템으로 전달하고, 정해진 한도로 모든 주문을 통제합니다."
+      "이벤트 전에 개인별 행동 맥락을 구축하고, 새 정보가 들어올 때마다 갱신합니다. 시각이 기록된 신호를 펀드의 집행 시스템에 전달합니다. 모든 주문은 명시적인 한도와 규칙을 따릅니다."
     ],
     "750 ms old": [
       "750 毫秒前",
@@ -897,7 +897,7 @@
     "05 / Building a durable research engine": [
       "05 / 让数据积累推动模型迭代",
       "05 / 継続して進化する研究基盤",
-      "05 / 지속적으로 발전하는 연구 기반"
+      "05 / 지속되는 우위의 기반"
     ],
     "Better models.": [
       "持续改进模型，",
@@ -907,7 +907,7 @@
     "Deeper behavioral evidence.": [
       "持续积累真实行为。",
       "行動の証拠を深める。",
-      "더 깊은 행동 근거."
+      "더 깊이 쌓이는 행동 근거."
     ],
     "Our foundation compounds through richer behavioral histories, Jev’s structured judgments and advances in foundation models. We measure progress in better forecasts of real decisions and incremental value after trading costs.": [
       "个人交易记录不断积累，Jev 与后续模型据此持续迭代。以真实决策检验预测，以扣除交易成本后的增量价值衡量进展。",
@@ -1006,7 +1006,7 @@
     ],
     "Without history, every profile uses the same event-only distribution. Every person now receives the same forecast.": [
       "不使用个人历史时，模型只依据当前事件，所有交易者得到同一组预测。",
-      "履歴を外すと、すべての人物像に同じイベント基準の分布を適用する。全員に同じ予測を返す。",
+      "履歴を外すと、全員に同じイベント基準の分布を適用します。個人の違いが消え、予測も同じになります。",
       "이력을 제외하면 모든 유형에 같은 이벤트 기준 분포를 적용합니다. 이제 모든 사람에게 같은 예측이 주어집니다."
     ],
     "/ Research": [
@@ -1032,7 +1032,7 @@
     "A behavioral history is a sequence of decisions under specific conditions.": [
       "个人交易历史，记录的是一个人在不同条件下作出的一次次选择。",
       "行動履歴とは、それぞれの状況で下した判断の積み重ねです。",
-      "행동 기록은 구체적인 조건에서 내린 결정이 이어진 것입니다."
+      "행동 기록은 구체적인 시장 조건과 그때 내린 결정의 연속입니다."
     ],
     "A bounded decision at each step": [
       "每一步，都从明确选项中判断",
@@ -1077,7 +1077,7 @@
     "Accumulate individual behavior. Simulate traders. Place them in real-world market situations.": [
       "持续积累个人交易记录，在真实市场情境下模拟他的选择。",
       "個人の行動を蓄積し、トレーダーを再現する。現実の市場状況に置き、次の判断を追う。",
-      "개인별 행동을 축적하고, 트레이더를 시뮬레이션합니다. 현실적인 시장 상황에서 그들의 선택을 살펴봅니다."
+      "개인별 거래 행동을 축적합니다. 그 기록으로 트레이더를 모델링하고, 현실의 시장 상황에서 다음 선택을 시뮬레이션합니다."
     ],
     "Accumulated decisions · inspect a record": [
       "过往交易记录 · 点击查看",
@@ -1156,8 +1156,8 @@
     ],
     "Backer uses this accumulated behavior to simulate individual traders and place them in real-world market situations. Change an earnings report, a price move or a liquidity constraint. Trace how each person responds, then how those decisions combine. This is the new edge we are building.": [
       "Backer 以这些持续积累的记录模拟具体交易者，再将他置于贴近真实市场的情境。改变财报内容、价格走势或流动性限制，观察他如何选择，再汇总不同人的反应。这就是我们正在建立的新优势。",
-      "Backerは蓄積した行動から一人ひとりのトレーダーを再現し、現実の市場状況に置きます。決算、値動き、流動性の制約を変え、それぞれの反応と、判断が重なった結果を追う。それが、私たちの築く新たな優位性です。",
-      "Backer는 축적된 행동을 바탕으로 개별 트레이더를 시뮬레이션하고, 현실적인 시장 상황에 놓습니다. 실적 발표, 가격 움직임, 유동성 제약을 바꾸며 각자의 반응과 그 결정들이 합쳐지는 과정을 추적합니다. 우리가 만드는 새로운 우위입니다."
+      "Backerは蓄積した行動から一人ひとりのトレーダーを再現し、現実の市場状況に置きます。決算、値動き、流動性の制約を変え、個人の反応と、その判断が重なる先を追う。私たちはここから、新たな優位性を築きます。",
+      "Backer는 축적된 거래 행동으로 개별 트레이더를 모델링하고, 현실의 시장 상황에서 그 사람의 다음 선택을 시뮬레이션합니다. 실적 발표, 가격 변화, 유동성 제약을 바꿔 각자의 반응을 추적하고, 그 결정이 모여 만드는 흐름을 읽습니다. 이것이 우리가 구축하는 새로운 우위입니다."
     ],
     "Behavioral history withheld; only the market situation is supplied.": [
       "本轮不使用个人交易历史，仅提供当前市场情境。",
@@ -1177,7 +1177,7 @@
     "Build from what this person actually did.": [
       "从这个人实际做过的交易出发。",
       "その人が実際にしたことから始める。",
-      "이 사람이 실제로 한 행동에서 출발합니다."
+      "이 사람이 실제로 내린 결정에서 시작합니다."
     ],
     "Calibration": [
       "校准",
@@ -1187,12 +1187,12 @@
     "Choose an individual trader": [
       "选择一位交易者",
       "トレーダーを選ぶ",
-      "트레이더 선택"
+      "개별 트레이더 선택"
     ],
     "Code applies the simulated choice, updates positions and cash, and advances market conditions. The next Jev judgment sees that updated state. Aggregate calibrated paths across traders to estimate the population response.": [
-      "代码执行模拟选择，更新持仓和现金，再推进市场情境。Jev 据此判断下一步。将经过校准的个人交易过程汇总，就能估计整个人群的反应。",
+      "代码执行模拟选择，更新持仓、现金与市场情境。Jev 根据更新后的状态判断下一步。经过校准的个人交易路径汇总后，形成对整个人群反应的预测。",
       "コードが選択を反映し、保有と現金を更新して、市場の時間を進めます。Jevは更新後の状態から次を判断します。各トレーダーの経路を較正して集計し、集団の反応を推定します。",
-      "코드가 모의 선택을 적용해 포지션과 현금을 갱신하고 시장 상황을 다음 단계로 진행합니다. Jev는 갱신된 상태에서 다시 판단합니다. 보정된 개별 경로를 합쳐 집단의 반응을 추정합니다."
+      "코드가 선택을 반영해 모의 포지션과 현금을 갱신하고 시장 상황을 진행합니다. Jev는 갱신된 상태를 받아 다음 행동을 판단합니다. 보정된 개인별 경로를 합쳐 집단의 반응을 추정합니다."
     ],
     "Company event + market conditions + cutoff": [
       "公司事件、市场条件与信息截止时点",
@@ -1237,7 +1237,7 @@
     "Each question includes this trader’s past choices, holdings, available cash and the information visible now. The task is to predict what this person would do, rather than prescribe an ideal investment.": [
       "每次判断都带入这个人的既往选择、当前持仓、可用现金和此刻已知的信息。模拟要回答的是他接下来会怎么做，而非替他给出一份理想投资建议。",
       "過去の選択、保有資産、利用可能な現金、現時点で知り得る情報を、判断のたびに渡します。予測するのは理想的な投資ではなく、この人がどう動くかです。",
-      "각 질문에는 해당 트레이더의 과거 선택, 보유 자산, 가용 현금, 현재 접할 수 있는 정보가 담깁니다. 이상적인 투자를 권하는 대신, 이 사람이 실제로 무엇을 할지 예측합니다."
+      "각 질문에는 그 트레이더의 과거 선택, 보유 자산, 가용 현금, 현재 접한 정보가 담깁니다. 목표는 이 사람의 다음 행동을 예측하는 것입니다. 이상적인 투자 전략을 처방하는 일이 아닙니다."
     ],
     "Earnings exceed expectations.": [
       "盈利超出预期。",
@@ -1246,8 +1246,8 @@
     ],
     "Every observed decision links a person, the information they saw, their position and the choice they made. Accumulated over time, that history reveals when they follow conviction, wait for confirmation or change course.": [
       "每条交易记录，都将交易者、当时看到的信息、持仓与最终选择联系起来。长期积累后，我们逐步了解他何时坚持判断、何时等待确认，又在什么情况下改变决定。",
-      "実際の判断を、その人が見た情報、当時の保有、選んだ行動と結びつける。履歴が蓄積するほど、どの場面で信念を貫き、確認を待ち、判断を変えるのかが見えてきます。",
-      "관측된 결정 하나에는 그 사람과 접한 정보, 당시 포지션, 실제 선택이 함께 담깁니다. 기록이 쌓이면 언제 확신에 따라 행동하고, 확인을 기다리며, 판단을 바꾸는지 드러납니다."
+      "実際の判断を、その人が見た情報、当時の保有、選んだ行動と結びつける。蓄積された履歴から、信念を貫く場面、確認を待つ場面、判断を変える条件を捉えます。",
+      "거래 기록에는 한 사람의 선택과 당시 접한 정보, 보유 포지션이 함께 담깁니다. 이 기록이 쌓이면 확신에 따라 움직이는 때, 추가 근거를 기다리는 때, 판단을 바꾸는 조건이 드러납니다."
     ],
     "Forecast error + calibration + cost": [
       "预测误差、概率校准与成本",
@@ -1290,9 +1290,9 @@
       "개선"
     ],
     "Independent judgments can run in parallel against a frozen market snapshot. Later decisions use the updated state. Backer compares the simulation with observed trades to calibrate behavior and evaluate newer models.": [
-      "在同一时点的市场条件下，可以并行模拟不同交易者。后续判断则依据各自更新后的持仓和情境继续推进。Backer 再将模拟与真实交易对照，校准行为预测，并检验新模型的效果。",
+      "固定同一时点的市场条件，并行模拟不同交易者的选择。后续决策依据各自更新后的持仓与情境推进。Backer 将模拟结果与真实交易对照，校准预测，并检验新模型的效果。",
       "同じ時点の市場情報に基づく独立した判断は、並列に実行できます。その後の判断には更新後の状態を使います。Backerは実際の取引と照合し、行動モデルを較正して、新しいモデルを評価します。",
-      "같은 시점의 시장 상태를 고정하면 독립적인 판단을 병렬로 실행할 수 있습니다. 이후 결정에는 갱신된 상태를 사용합니다. Backer는 시뮬레이션을 관측된 거래와 대조해 행동 모델을 보정하고 새 모델을 평가합니다."
+      "같은 시점의 시장 상태를 고정해 독립적인 판단을 병렬로 실행합니다. 다음 결정에는 갱신된 상태를 적용합니다. Backer는 시뮬레이션과 실제 거래를 대조해 행동 모델을 보정하고 새 모델을 평가합니다."
     ],
     "Inside Backer Simulation": [
       "了解 Backer Simulation",
@@ -1312,12 +1312,12 @@
     "Jev evaluates the supplied trader state and selects from explicit actions, with probabilities. Backer can use that judgment inside the simulation without asking for a conversation or parsing a written recommendation.": [
       "Jev 根据这个人的历史、持仓与当前情境，从明确的行动选项中给出选择及概率。Backer 直接用这些结果推进模拟，无需从对话或分析长文中提取交易结论。",
       "Jevは渡されたトレーダーの状態を評価し、定義された行動から選択して、確率も返します。Backerは会話や助言文を解釈することなく、その判断をシミュレーションに組み込めます。",
-      "Jev는 제공된 트레이더 상태를 평가하고, 정해진 행동 중 하나를 선택해 확률과 함께 반환합니다. Backer는 대화나 추천문 해석 없이 이 판단을 시뮬레이션에 바로 사용할 수 있습니다."
+      "Jev는 전달받은 트레이더 상태를 평가해 정해진 행동을 선택하고, 선택지별 확률을 반환합니다. Backer는 이 판단을 시뮬레이션에 바로 적용합니다. 대화를 주고받거나 추천문을 해석할 필요가 없습니다."
     ],
     "Jev returns a selected option and its probability distribution. Every response fits the same action space, so Backer can compare traders, sample paths and aggregate responses without parsing a conversation.": [
-      "Jev 返回所选行动及各选项的概率。统一的选项让 Backer 可以比较不同交易者，按概率采样不同的交易路径，再汇总整体反应。",
+      "Jev 返回所选行动及各选项的概率。Backer 据此比较不同交易者，按概率采样不同的交易路径，再汇总整体反应。",
       "Jevは選択肢と確率分布を返します。回答が共通の行動の集合に収まるため、Backerは会話を読み解くことなく、トレーダーを比較し、経路をサンプリングし、反応を集計できます。",
-      "Jev는 선택한 항목과 각 선택지의 확률 분포를 반환합니다. 모든 응답이 같은 행동 집합을 따르므로, Backer는 대화를 해석하지 않고도 트레이더를 비교하고 행동 경로를 샘플링하며 반응을 집계할 수 있습니다."
+      "Jev는 선택한 항목과 선택지별 확률 분포를 반환합니다. 응답이 모두 같은 행동 집합을 따르므로 Backer는 트레이더 간 선택을 비교하고, 경로를 샘플링하고, 집단 반응을 집계합니다."
     ],
     "Jev returns choices, not reasons. Explanations come from inspected evidence and tested changes to the inputs.": [
       "Jev 返回选择，不生成理由。对选择原因的解释，来自原始记录，以及改变条件后的对照模拟。",
@@ -1327,7 +1327,7 @@
     "Jev · Choice": [
       "Jev · 选择题",
       "Jev · Choice",
-      "Jev · Choice"
+      "Jev · 선택형 판단"
     ],
     "Keep the position": [
       "维持持仓",
@@ -1345,9 +1345,9 @@
       "비용에 관한 추가 설명을 기다리며 포지션을 유지했습니다."
     ],
     "Link each observed trade to the information available, the current position and the market situation. Accumulate decisions across events to model the individual, rather than assign a generic personality.": [
-      "将每笔真实交易与当时可见的信息、持仓和市场条件对应起来。持续记录同一个人在不同事件中的选择，形成个人行为模型，而非套用一个泛化的性格标签。",
+      "将每笔真实交易与当时可见的信息、持仓和市场条件对应起来。持续积累同一个人在不同事件中的选择，据此建立这个人的行为模型。",
       "実際の取引を、その時点の情報、保有、市場状況と結びつけます。性格をひとくくりに決めつけず、さまざまなイベントでの判断を積み重ね、その人をモデル化します。",
-      "관측된 거래를 당시 접할 수 있던 정보, 포지션, 시장 상황과 연결합니다. 여러 사건에 걸친 결정을 축적해 개인을 모델링합니다. 획일적인 성격 유형을 부여하는 방식이 아닙니다."
+      "실제 거래를 당시 접한 정보, 보유 포지션, 시장 상황과 연결합니다. 여러 상황에 걸친 선택을 축적해 특정 개인을 모델링합니다. 일반적인 성격 유형을 대입하지 않습니다."
     ],
     "Management raises guidance.": [
       "管理层上调业绩指引。",
@@ -1377,7 +1377,7 @@
     "Model the trader.": [
       "先模拟这个人，",
       "トレーダーをモデル化する。",
-      "트레이더를 모델링합니다."
+      "한 사람의 거래를 모델링하고,"
     ],
     "One step becomes the next input": [
       "这一步的结果，成为下一步的依据",
@@ -1486,8 +1486,8 @@
     ],
     "Select a trader. Inspect the decisions accumulated in their history. Place that trader into a new market situation and follow the next choice.": [
       "选择一位交易者，查看他的过往决策。再给他一个新的市场情境，观察模拟中的下一步选择。",
-      "一人のトレーダーを選び、蓄積された判断を確認する。新たな市場状況に置いて、次の選択を追ってみてください。",
-      "트레이더를 선택하고 그동안 쌓인 결정 기록을 살펴보세요. 새로운 시장 상황에 놓인 이 사람이 다음에 무엇을 선택하는지 따라가 봅니다."
+      "一人のトレーダーを選び、積み重ねた判断を確認する。新たな市場状況に置き、次の選択を追います。",
+      "한 트레이더를 선택하고 쌓여 온 거래 기록을 확인하세요. 그 사람을 새로운 시장 상황에 놓고 다음 선택을 따라갑니다."
     ],
     "Shares held": [
       "持仓股数",
@@ -1512,7 +1512,7 @@
     "Simulate traders inside the situations your fund needs to understand. Contact us about behavioral data, scenario design and API early access.": [
       "围绕基金关心的市场情境，模拟具体交易者的选择。联系我们，交流行为数据、情境设计与 API 早期接入。",
       "ファンドが把握したい状況で、トレーダーの行動をシミュレーションする。行動データ、シナリオ設計、API先行アクセスについてご相談ください。",
-      "펀드가 이해해야 할 시장 상황에서 트레이더의 행동을 시뮬레이션합니다. 행동 데이터, 시나리오 설계, API 사전 이용에 관해 문의해 주세요."
+      "펀드가 분석할 시장 상황 속에서 개별 트레이더의 선택을 시뮬레이션하세요. 행동 데이터, 시나리오 설계, API 사전 이용을 문의하세요."
     ],
     "Simulated decisions remain separate from observed trades. Execution and accounting follow explicit code.": [
       "模拟选择与真实交易分别记录，成交和资金计算由明确的代码规则执行。",
@@ -1577,7 +1577,7 @@
     "The Choice inside the simulation": [
       "模拟中的 Jev 选择题",
       "シミュレーション内のChoice",
-      "시뮬레이션 안의 Choice"
+      "시뮬레이션 안의 선택형 판단"
     ],
     "The accumulation loop": [
       "从观察到更新，再到下一次模拟",
@@ -1586,8 +1586,8 @@
     ],
     "The foundation is accumulated individual trading behavior. Each new observed decision extends that history. Jev supplies repeatable choices inside the simulation; future models work with richer evidence. Compare predicted and actual behavior, update the trader model, and test the next situation.": [
       "我们的基础，是个体交易行为的长期积累。每一次新观察，都让个人历史更完整。Jev 在模拟中反复判断下一步选择，后续模型则利用更丰富的记录继续改进。将预测与真实选择对照，更新对这个人的理解，再进入下一个情境。",
-      "基盤となるのは、個人の取引行動の蓄積です。新たに観測した判断が、その人の履歴に加わる。Jevがシミュレーション内の選択を担い、次のモデルには、より豊かな根拠を渡す。予測と実際の行動を照合し、トレーダーのモデルを更新して、次の状況を検証します。",
-      "토대는 축적된 개인별 거래 행동입니다. 새로 관측한 결정이 더해질 때마다 기록이 깊어집니다. Jev는 시뮬레이션 안에서 반복 가능한 선택을 제공하고, 차세대 모델은 더 풍부한 근거를 활용합니다. 예측과 실제 행동을 대조해 트레이더 모델을 갱신하고 다음 상황을 시험합니다."
+      "基盤は、個人の取引行動の蓄積です。新たな判断の観測が履歴を深め、Jevがシミュレーション内の選択を担う。次のモデルは、さらに豊かな履歴を使えます。予測を実際の行動と照合し、その人のモデルを更新して、次の状況を検証します。",
+      "기반은 지속적으로 축적되는 개인별 거래 행동입니다. 실제 선택이 관측될 때마다 기록이 깊어집니다. Jev는 시뮬레이션의 판단을 맡고, 차세대 모델은 더 풍부한 행동 근거를 활용합니다. 예측과 실제 행동을 대조해 트레이더 모델을 갱신하고 새로운 상황을 검증합니다."
     ],
     "The highlighted choice is an authored example, not a live Jev answer.": [
       "高亮选项为演示预设，并非 Jev 的实时输出。",
@@ -1597,7 +1597,7 @@
     "The individual stays in the decision.": [
       "每次判断，都带着这个人的历史。",
       "一人ひとりの履歴を、判断の中心に。",
-      "판단의 중심에는 그 사람이 있습니다."
+      "모든 판단에 그 사람의 기록이 담깁니다."
     ],
     "The method": [
       "模拟方法",
@@ -1617,7 +1617,7 @@
     "Then change their world.": [
       "再改变他面对的市场。",
       "そして、その人の状況を変える。",
-      "그다음, 시장 조건을 바꿉니다."
+      "그가 마주할 시장을 바꿉니다."
     ],
     "Trader 014": [
       "交易者 014",
@@ -1692,7 +1692,7 @@
     "When new trades are observed, compare them with the earlier forecasts. Extend the individual’s history and recalibrate the model. Test new Jev and foundation-model versions against the same held-out decisions.": [
       "新的真实交易出现后，与此前的预测逐一对照，补充个人历史并重新校准。新版本的 Jev 或其他模型，都用同一组未参与训练的决策记录检验。",
       "新たな取引が観測されたら、事前の予測と照合します。個人の履歴を追加し、モデルを再較正する。Jevや基盤モデルの新バージョンも、同じ未使用の判断データで検証します。",
-      "새로운 거래가 관측되면 앞선 예측과 대조합니다. 개인의 기록을 확장하고 모델을 다시 보정합니다. 새 Jev와 파운데이션 모델 버전은 학습에서 제외한 동일한 결정 기록으로 평가합니다."
+      "새 거래가 관측되면 앞선 예측과 대조합니다. 개인별 기록을 확장하고 모델을 다시 보정합니다. 새 Jev와 파운데이션 모델은 학습에 쓰지 않은 동일한 결정 기록으로 평가합니다."
     ],
     "Who is this trader?": [
       "这个人过去如何交易？",
@@ -1715,14 +1715,599 @@
       "트레이더나 사건을 바꾸면 시퀀스가 다시 시작됩니다. 이 데모는 미리 작성한 선택과 10주 단위의 고정 체결을 사용합니다. 실제 시스템은 갱신된 상태마다 판단하고, 거래 비용을 모델링하며, 모의 선택과 실제 거래를 구분해 기록합니다."
     ],
     "Our architecture puts Jev inside the decision loop. Backer supplies the trader’s accumulated history and current situation. Jev chooses among defined actions. Code updates the simulated state, then the next decision begins.": [
-      "Jev 直接参与模拟中的每一步决策。Backer 提供这个人长期积累的交易记录与当前情境，Jev 从明确的选项中判断他下一步会怎么做。代码随之更新持仓和现金，再把新的状态交给 Jev，继续下一步。",
+      "Jev 直接参与模拟中的每一步决策。Backer 提供这个人长期积累的交易记录与当前情境，Jev 从明确选项中判断他下一步会怎么做。代码随之更新持仓和现金，再把新的状态交给 Jev，继续下一步。",
       "Jevを判断ループに組み込みます。Backerがトレーダーの蓄積された履歴と現在の状況を渡し、Jevが定義された行動から選択する。コードが状態を更新し、次の判断へ進みます。",
-      "우리 아키텍처는 의사결정 루프 안에 Jev를 둡니다. Backer가 트레이더의 축적된 기록과 현재 상황을 제공하면, Jev가 정해진 행동 중 하나를 선택합니다. 코드가 모의 상태를 갱신하면 다음 결정이 시작됩니다."
+      "Jev는 의사결정 루프의 중심에 있습니다. Backer가 한 트레이더의 축적된 기록과 현재 상황을 전달하면 Jev가 정해진 행동 중 하나를 선택합니다. 코드가 모의 상태를 갱신하고, 다음 판단으로 이어갑니다."
     ],
     "The same AI analysis reaches people with different positions, habits and reasons to act. They still decide whether to follow it, ignore it or delegate within their own rules.": [
       "面对同一份 AI 分析，有人跟随，有人观望，也有人交给预设规则执行。持仓、习惯与过往选择的差异，会体现在各自的交易决策中。",
       "同じAI分析を受け取っても、保有資産、習慣、行動の理由は人それぞれです。分析に従うか、見送るか、自分のルールで判断を委ねるか。その選択は本人に残ります。",
-      "같은 AI 분석을 받아도 사람마다 보유 포지션과 습관, 거래 동기는 다릅니다. 분석을 따를지, 무시할지, 자신의 규칙 안에서 결정을 위임할지는 여전히 각자가 정합니다."
+      "같은 AI 분석을 받아도 사람마다 포지션과 습관, 거래 동기는 다릅니다. 분석을 따를지, 무시할지, 자신의 규칙 안에서 판단을 위임할지는 각자가 결정합니다."
+    ],
+    "01 / The connection": [
+      "01 / 连接模型",
+      "01 / 接続",
+      "01 / 연결"
+    ],
+    "02 / The input": [
+      "02 / 准备输入",
+      "02 / 入力",
+      "02 / 입력"
+    ],
+    "03 / The judgment battery": [
+      "03 / 并行判断",
+      "03 / 並列の判断",
+      "03 / 병렬 판단"
+    ],
+    "04 / The policy": [
+      "04 / 应用规则",
+      "04 / 制御ルール",
+      "04 / 실행 규칙"
+    ],
+    "05 / The next situation": [
+      "05 / 推进情境",
+      "05 / 次の状況",
+      "05 / 다음 상황"
+    ],
+    "06 / The evidence": [
+      "06 / 实证评估",
+      "06 / 検証",
+      "06 / 검증"
+    ],
+    "15 to 60 minutes later": [
+      "15 至 60 分钟",
+      "15〜60分",
+      "15~60분"
+    ],
+    "A market snapshot becomes personal.": [
+      "同一时刻的市场，不同的个人处境。",
+      "市場の一場面を、その人の状況に変える。",
+      "시장 상태에 한 사람의 기록을 더합니다."
+    ],
+    "A probability-weighted rubric value, not a duration in minutes.": [
+      "按各等级概率加权的评分，不是以分钟计的耗时。",
+      "各段階の確率で加重平均した評価値です。分単位の時間ではありません。",
+      "평가 척도의 값을 확률로 가중평균한 점수입니다. 분 단위의 소요 시간이 아닙니다."
+    ],
+    "A yes/no probability. It is neither intensity nor a separate confidence score.": [
+      "条件成立的概率。它不表示强度，也不是额外的置信度分数。",
+      "「はい」である確率です。程度の強さや、別個の確信度を示す値ではありません。",
+      "예·아니오의 확률입니다. 반응 강도나 별도의 확신도 점수가 아닙니다."
+    ],
+    "Adapted from Algo Insights’ step-by-step Jev trading guide, with API details checked against current TypeSafe documentation.": [
+      "本流程参考 Algo Insights 的 Jev 交易系统开发指南，API 用法已按最新 TypeSafe 文档核对。",
+      "Algo InsightsのJev取引ガイドをBackerの設計に応用。APIの仕様はTypeSafeの現行ドキュメントで確認しています。",
+      "Algo Insights의 Jev 트레이딩 구축 가이드를 바탕으로 구성했습니다. API 세부 사항은 최신 TypeSafe 문서로 확인했습니다."
+    ],
+    "Advance the world": [
+      "更新情境与持仓",
+      "状況を進める",
+      "상황 진행"
+    ],
+    "Apply a simulated fill, account for costs, update holdings and cash, then advance the market clock. Send the new state in a separate Jev request. Repeat across individuals and paths to build the population response.": [
+      "模拟成交、计入成本，更新持仓与现金，再推进市场时间。将新的状态通过下一次 Jev 请求送入模型。反复模拟不同个人与交易路径，汇总整个人群的反应。",
+      "約定とコストを反映し、保有と現金を更新して、市場の時間を進める。その状態を次のJevリクエストに渡します。個人と経路ごとに繰り返し、集団の反応を組み立てます。",
+      "모의 체결과 비용을 반영해 보유 자산과 현금을 갱신하고 시장 시간을 진행합니다. 갱신된 상태를 새 Jev 요청으로 전달합니다. 여러 개인과 경로에 걸쳐 반복해 집단의 반응을 구성합니다."
+    ],
+    "Apply the feasible simulated action": [
+      "执行符合条件的模拟选择",
+      "実行可能な行動を反映する",
+      "실행 가능한 모의 행동 반영"
+    ],
+    "Apply the rules": [
+      "应用交易规则",
+      "ルールを適用する",
+      "규칙 적용"
+    ],
+    "Ask action, confirmation and reaction speed together. Each question sees the same frozen state and returns its own typed answer. Independent questions share a request; a question that needs an earlier answer waits for the next request.": [
+      "同时询问交易选择、是否等待确认以及反应速度。每道题基于同一份固定状态，返回约定格式的答案。独立问题放在同一次请求中；依赖前一答案的问题，留到下一次请求。",
+      "次の行動、確認を待つか、反応の速さを、一度に問います。各質問は同じ状態を参照し、定義された形式で個別に回答します。独立した質問はまとめ、前の回答が必要な質問は次のリクエストで送ります。",
+      "다음 행동, 추가 확인 여부, 반응 속도를 함께 묻습니다. 각 질문은 동일하게 고정된 상태를 받아 정해진 타입의 답을 반환합니다. 독립적인 질문은 한 요청에 담고, 앞선 답이 필요한 질문은 다음 요청에서 처리합니다."
+    ],
+    "Ask in parallel": [
+      "并行提问",
+      "並列に問う",
+      "병렬 질문"
+    ],
+    "Authored outputs for one example request.": [
+      "本次请求的输出均为演示设定值。",
+      "一つのリクエストに対する出力例。数値は説明用の設定値です。",
+      "하나의 요청을 설명하기 위해 미리 설정한 출력입니다."
+    ],
+    "Back to the start ↺": [
+      "回到第一步 ↺",
+      "最初に戻る ↺",
+      "처음으로 ↺"
+    ],
+    "Behavioral accuracy": [
+      "行为预测准确度",
+      "行動予測の精度",
+      "행동 예측 정확도"
+    ],
+    "Brier score · log loss · action timing": [
+      "Brier 分数 · 对数损失 · 行动时间",
+      "Brierスコア · 対数損失 · 行動のタイミング",
+      "브라이어 점수 · 로그 손실 · 행동 시점"
+    ],
+    "Bring your trader data and the situations your fund needs to understand. Contact us for the full simulation design, evaluation protocol and API integration.": [
+      "围绕你的交易者数据与研究情境，设计完整的模拟方案。联系我们，进一步讨论评估方法与 API 接入。",
+      "トレーダーのデータと、ファンドが把握したい市場状況をお持ちください。シミュレーション設計、評価手順、API連携についてご相談いただけます。",
+      "펀드의 트레이더 데이터와 분석할 시장 상황을 알려주세요. 전체 시뮬레이션 설계, 평가 절차, API 연동을 문의하세요."
+    ],
+    "Build the next source of edge.": [
+      "建立下一种交易优势。",
+      "次の優位性を築く。",
+      "다음 우위의 원천을 만듭니다."
+    ],
+    "Chen, Sialm and Xu find a strong early lead for disclosed AI hedge funds, but no statistically significant relative alpha after 2017. Our response is to build differentiated evidence: the accumulated decisions of individual traders.": [
+      "Chen、Sialm 与 Xu 发现，披露采用 AI 的对冲基金早期曾明显领先，但在 2017 年后，相对 Alpha 已不再具有统计显著性。Backer 的路径是积累独有的数据：具体交易者在不同情境下的真实选择。",
+      "Chen、Sialm、Xuの研究は、AI利用を開示したヘッジファンドの初期の大きな優位性を示しています。ただし2017年以降、相対アルファは統計的に有意ではありません。Backerが築くのは、独自の判断材料。一人ひとりのトレーダーが重ねてきた選択です。",
+      "Chen, Sialm, Xu는 AI 사용을 공시한 헤지펀드의 뚜렷한 초기 우위를 확인했지만, 2017년 이후에는 통계적으로 유의한 상대 알파를 찾지 못했습니다. 우리는 개별 트레이더의 결정을 축적해 차별화된 행동 근거를 구축합니다."
+    ],
+    "Choice": [
+      "Choice",
+      "Choice",
+      "Choice"
+    ],
+    "Choice selects an action. Noul estimates whether a condition holds. Score locates the state on a defined rubric. None returns a conversation.": [
+      "Choice 选择行动，Noul 估计条件成立的概率，Score 按预先定义的等级评分。三者都直接返回判断结果，无需对话。",
+      "Choiceは行動を選び、Noulは条件が成り立つ確率を返し、Scoreは定義した段階で評価します。返るのは会話ではなく、コードが使える判断です。",
+      "Choice는 행동을 선택합니다. Noul은 조건이 성립할 확률을 추정합니다. Score는 정의된 평가 척도에서 상태의 위치를 산출합니다. 모두 대화문 대신 정해진 타입의 값을 반환합니다."
+    ],
+    "Code computes prices, spreads, exposure and available cash. Backer adds the individual’s observed decisions and the information they had at the time. Freeze that record before asking Jev.": [
+      "代码计算价格、买卖价差、风险敞口与可用现金。Backer 加入这个人的真实交易记录，以及他当时掌握的信息。在请求 Jev 之前，先固定这份状态。",
+      "コードが価格、スプレッド、保有リスク、利用可能な現金を計算する。Backerは本人の実際の判断と、当時知り得た情報を加えます。その時点の記録を固定し、Jevに渡します。",
+      "코드가 가격, 스프레드, 익스포저, 가용 현금을 계산합니다. Backer는 개인의 실제 결정과 당시 접한 정보를 더합니다. 이 기록을 고정한 뒤 Jev에 질문합니다."
+    ],
+    "Code-owned outcome": [
+      "由代码确定处理结果",
+      "コードによる処理",
+      "코드가 결정하는 처리 결과"
+    ],
+    "Compare rules, a frontier model, Jev, and Jev with calibrated abstention on identical histories and market situations. Remove individual history to measure its contribution. Hold out traders, events and future periods.": [
+      "在相同的个人历史与市场情境下，比较规则模型、前沿模型、Jev，以及经过弃答阈值校准的 Jev。移除个人历史，衡量其增量价值；再用未参与训练的交易者、事件和后续时段检验结果。",
+      "同じ履歴と市場状況で、固定ルール、最先端モデル、Jev、判断見送りを較正したJevを比較します。個人の履歴を外した場合との差で、その価値を測る。トレーダー、イベント、将来期間を検証用に分離します。",
+      "동일한 기록과 시장 상황에서 규칙 기반 모델, 프런티어 모델, Jev, 판단 보류 기준을 보정한 Jev를 비교합니다. 개인별 기록을 제외한 실험으로 그 기여도를 측정합니다. 트레이더, 사건, 미래 기간을 검증용으로 분리합니다."
+    ],
+    "Confidence and calibration ↗": [
+      "置信度与校准 ↗",
+      "確信度と較正 ↗",
+      "확신도와 보정 ↗"
+    ],
+    "Confidence thresholds are calibrated on held-out decisions. A concentrated distribution is not proof that a prediction is correct.": [
+      "用未参与训练的决策记录校准置信度阈值。答案概率集中，并不代表预测一定正确。",
+      "確信度のしきい値は、未使用の判断データで較正します。確率が一つに集中していても、予測が正しい証明にはなりません。",
+      "확신도 기준값은 학습에 쓰지 않은 결정 기록으로 보정합니다. 확률이 한 선택지에 집중됐다고 예측이 옳다는 뜻은 아닙니다."
+    ],
+    "Connect Jev": [
+      "连接 Jev",
+      "Jevを接続する",
+      "Jev 연결"
+    ],
+    "Continue after checking available cash, holdings and scenario limits.": [
+      "核验可用现金、持仓与情境中的限制后，继续模拟。",
+      "利用可能な現金、保有、シナリオの制約を確認して進めます。",
+      "가용 현금, 보유 자산, 시나리오 한도를 확인한 뒤 진행합니다."
+    ],
+    "Current Python SDK ↗": [
+      "最新 Python SDK ↗",
+      "現行のPython SDK ↗",
+      "최신 Python SDK ↗"
+    ],
+    "Current account": [
+      "当前账户",
+      "現在の保有と現金",
+      "현재 계좌 상태"
+    ],
+    "Decisions that advance the simulation.": [
+      "每次选择，都推进下一步模拟。",
+      "シミュレーションを前に進める判断。",
+      "시뮬레이션을 움직이는 판단."
+    ],
+    "Direct endpoint": [
+      "直连接口",
+      "直接接続先",
+      "직접 호출 엔드포인트"
+    ],
+    "Discard the answer": [
+      "弃用本次答案",
+      "回答を破棄する",
+      "응답 폐기"
+    ],
+    "Economic value": [
+      "交易价值",
+      "経済的価値",
+      "경제적 가치"
+    ],
+    "Every judgment carries this trader’s past choices, holdings, available cash and visible information. The target is this person’s next action, shaped by their own history and constraints.": [
+      "每次判断都带入这个人的既往选择、当前持仓、可用现金和此刻已知的信息。我们要预测的是：在自己的经历与约束之下，他下一步会怎么做。",
+      "過去の選択、保有、利用可能な現金、知り得る情報を、判断のたびに引き継ぐ。予測するのは、その人の履歴と制約から生まれる次の行動です。",
+      "모든 판단에는 그 트레이더의 과거 선택, 보유 자산, 가용 현금, 현재 접한 정보가 담깁니다. 예측 대상은 그 사람의 기록과 제약이 빚어내는 다음 행동입니다."
+    ],
+    "Freeze the state": [
+      "固定当前状态",
+      "状態を固定する",
+      "상태 고정"
+    ],
+    "From the guide to Backer": [
+      "从 Jev 开发指南到 Backer 模拟",
+      "ガイドをBackerの設計へ",
+      "가이드에서 Backer로"
+    ],
+    "Hard limit": [
+      "触及硬性限制",
+      "制限への抵触",
+      "강제 제한"
+    ],
+    "How quickly would they change exposure?": [
+      "这个人会多快调整仓位？",
+      "どの速さで保有を変えるか？",
+      "얼마나 빨리 포지션을 조정할까요?"
+    ],
+    "How the Jev workflow fits together.": [
+      "Jev 如何进入完整的模拟流程。",
+      "Jevを組み込む、六つの手順。",
+      "Jev로 시뮬레이션을 구축하는 과정."
+    ],
+    "Independent judgments run in parallel against a frozen snapshot. Each later decision receives the updated state. Real observed trades close the loop: measure error, calibrate behavior and evaluate the next model.": [
+      "基于同一份固定状态，并行执行独立判断；后续决策依据更新后的状态推进。真实交易反馈到模拟中，用来衡量误差、校准行为预测，并检验下一版模型。",
+      "同じ時点の状態に対する独立した判断を並列に実行し、続く判断には更新後の状態を渡す。実際の取引と照合して誤差を測り、行動モデルを較正し、次のモデルを評価します。",
+      "고정된 시장 상태에서 독립적인 판단을 병렬로 실행합니다. 이후의 결정에는 갱신된 상태를 전달합니다. 실제 거래를 관측해 오차를 측정하고, 행동 모델을 보정하고, 다음 모델을 평가합니다."
+    ],
+    "Individual": [
+      "交易者",
+      "対象のトレーダー",
+      "개별 트레이더"
+    ],
+    "Inspect a typed question": [
+      "查看不同题型",
+      "質問の型を確認する",
+      "질문 타입 살펴보기"
+    ],
+    "Inspect the Python request": [
+      "查看 Python 请求示例",
+      "Pythonのリクエストを見る",
+      "Python 요청 확인"
+    ],
+    "Install the TypeSafe skill and Python SDK. Keep the API key on the server, use the direct endpoint, and pin a model version so every experiment can be reproduced.": [
+      "安装 TypeSafe 技能包与 Python SDK。API 密钥保存在服务端，直接连接 TypeSafe 接口；固定模型版本，确保每次实验可复现。",
+      "TypeSafeスキルとPython SDKを導入。APIキーはサーバーで管理し、APIに直接接続します。実験を再現できるよう、モデルのバージョンを固定します。",
+      "TypeSafe 스킬과 Python SDK를 설치합니다. API 키는 서버에 보관하고 엔드포인트를 직접 호출합니다. 모델 버전을 고정해 모든 실험을 재현할 수 있게 합니다."
+    ],
+    "Interactive reference workflow. Values and outputs are authored examples; this page makes no live Jev requests.": [
+      "交互式流程演示。数值与输出均为预设示例，本页不发起实时 Jev 请求。",
+      "操作して確認できる実装例です。数値と出力は説明用の設定値で、このページからJevへの実リクエストは行いません。",
+      "직접 조작하는 참조 워크플로입니다. 수치와 출력은 미리 설정한 예시이며, 이 페이지는 Jev를 실시간으로 호출하지 않습니다."
+    ],
+    "Jev fits the judgment layer: event response and tactical decisions on a measured time budget. Microsecond execution stays in the fund’s infrastructure. TypeSafe reports 70–500 ms in its launch evaluation; measure tail latency, signal decay and total cost on the actual workload.": [
+      "Jev 负责在明确的时间预算内判断事件反应与交易选择，微秒级执行由基金自身的基础设施完成。TypeSafe 发布评测的延迟为 70–500 毫秒；实际接入时，需按真实任务测量尾部延迟、信号衰减与总成本。",
+      "Jevは判断の層を担います。処理時間を測定し、イベントへの反応や戦術判断に組み込む。マイクロ秒単位の執行はファンド側の基盤で行います。TypeSafeの公開時評価は70〜500ms。実際の負荷で、遅い応答の分布、シグナルの減衰、総コストを測定します。",
+      "Jev는 판단 계층을 맡습니다. 측정된 시간 한도 안에서 사건에 대한 반응과 전술적 결정을 처리합니다. 마이크로초 단위의 주문 집행은 펀드 인프라가 담당합니다. TypeSafe의 출시 평가 수치는 70~500 ms입니다. 실제 워크로드에서 꼬리 지연, 신호 감쇠, 총비용을 측정합니다."
+    ],
+    "Jev implementation walkthrough": [
+      "Jev 接入步骤",
+      "Jevの実装手順",
+      "Jev 단계별 구현 가이드"
+    ],
+    "Jev returns a selected option and its probability distribution. A shared action space lets Backer compare individuals, sample decision paths and aggregate their responses directly.": [
+      "Jev 返回所选行动及各选项的概率。Backer 用统一的选项比较不同个人，采样交易决策路径，再直接汇总整体反应。",
+      "Jevは選択肢と確率分布を返します。行動を共通の形式で表すことで、Backerは個人を比較し、判断の経路をサンプリングし、反応をそのまま集計できます。",
+      "Jev는 선택한 항목과 선택지별 확률 분포를 반환합니다. 공통된 행동 집합을 바탕으로 Backer는 개인 간 선택을 비교하고, 결정 경로를 샘플링하고, 반응을 바로 집계합니다."
+    ],
+    "Jev unavailable": [
+      "Jev 暂不可用",
+      "Jevに接続不可",
+      "Jev 이용 불가"
+    ],
+    "Later in the session": [
+      "本时段稍后",
+      "同じセッションの後半",
+      "해당 거래 세션 후반"
+    ],
+    "Less than 15 minutes later": [
+      "不到 15 分钟",
+      "15分未満",
+      "15분 미만"
+    ],
+    "Low confidence": [
+      "置信度不足",
+      "確信度が低い",
+      "낮은 확신도"
+    ],
+    "Market price · USD": [
+      "市价 · 美元",
+      "市場価格 · 米ドル",
+      "시장 가격 · USD"
+    ],
+    "Measure the behavior. Then measure the edge.": [
+      "先检验行为预测，再衡量交易优势。",
+      "行動を測る。そして、優位性を測る。",
+      "행동 예측을 검증하고, 우위를 측정합니다."
+    ],
+    "More than 60 minutes later": [
+      "超过 60 分钟",
+      "60分超",
+      "60분 초과"
+    ],
+    "Net P&L · drawdown · slippage · capacity": [
+      "净损益 · 回撤 · 滑点 · 资金容量",
+      "純損益 · ドローダウン · スリッページ · 運用容量",
+      "순손익 · 낙폭 · 슬리피지 · 운용 용량"
+    ],
+    "Next request": [
+      "下一次请求",
+      "次のリクエスト",
+      "다음 요청"
+    ],
+    "Next step": [
+      "下一步",
+      "次の手順",
+      "다음 단계"
+    ],
+    "Next step →": [
+      "下一步 →",
+      "次の手順 →",
+      "다음 단계 →"
+    ],
+    "No change this session": [
+      "本时段不调整",
+      "このセッションでは変更なし",
+      "이번 거래 세션에는 유지"
+    ],
+    "Noul": [
+      "Noul",
+      "Noul",
+      "Noul"
+    ],
+    "Observed history": [
+      "真实交易历史",
+      "実際の取引履歴",
+      "관측된 거래 기록"
+    ],
+    "Observed records": [
+      "实际观测记录",
+      "観測記録",
+      "관측 기록"
+    ],
+    "On time": [
+      "按时返回",
+      "期限内",
+      "기한 내 응답"
+    ],
+    "One frozen state, three independent questions. The SDK returns typed answers; Backer code owns state updates and the next request.": [
+      "基于同一份固定状态，并行提出三个独立问题。SDK 返回约定格式的答案；Backer 代码负责更新状态，再发起下一轮请求。",
+      "固定した一つの状態に、三つの独立した質問。SDKが定義された形式の回答を返し、Backerのコードが状態を更新して、次のリクエストを送ります。",
+      "고정된 상태 하나에 독립적인 질문 세 개를 보냅니다. SDK는 타입이 정해진 답을 반환하고, Backer 코드가 상태 갱신과 다음 요청을 제어합니다."
+    ],
+    "One illustrative next step": [
+      "下一步模拟示例",
+      "次の一手を例で見る",
+      "다음 단계의 예시"
+    ],
+    "One model. A precise interface.": [
+      "一个模型，一套明确的接口。",
+      "一つのモデル。明確な入出力。",
+      "하나의 모델. 명확한 인터페이스."
+    ],
+    "One state. Several precise questions.": [
+      "同一份状态，多个明确问题。",
+      "一つの状態に、明確な質問を重ねる。",
+      "하나의 상태. 여러 개의 명확한 질문."
+    ],
+    "One timestamped state": [
+      "带时间戳的完整状态",
+      "時刻を付した一つの状態",
+      "시각이 기록된 하나의 상태"
+    ],
+    "Only evidence available at the cutoff enters the request. Later outcomes stay in the evaluation set.": [
+      "只使用截止时点之前已知的信息。后续实际结果留作评估依据。",
+      "基準時点で利用できた情報だけを入力します。その後の結果は、評価用データとして分離します。",
+      "기준 시점까지 확보한 근거만 요청에 포함합니다. 이후 결과는 평가용으로 남겨둡니다."
+    ],
+    "Operating budget": [
+      "运行约束",
+      "運用の制約",
+      "운영 한도"
+    ],
+    "Parallel judgments ↗": [
+      "并行判断 ↗",
+      "判断の並列実行 ↗",
+      "병렬 판단 ↗"
+    ],
+    "Past deadline": [
+      "超过有效期",
+      "期限超過",
+      "기한 초과"
+    ],
+    "Pinned model": [
+      "固定模型版本",
+      "固定するモデル",
+      "고정한 모델 버전"
+    ],
+    "Predict": [
+      "预测",
+      "予測",
+      "예측"
+    ],
+    "Predicted probabilities vs observed frequencies": [
+      "预测概率与实际发生频率",
+      "予測確率と実際の発生頻度を照合",
+      "예측 확률과 실제 관측 빈도"
+    ],
+    "Probability of yes": [
+      "“是”的概率",
+      "「はい」の確率",
+      "‘예’의 확률"
+    ],
+    "Promote a model when it improves observed outcomes within the latency and cost budget. Pin the new version and retain the previous benchmark.": [
+      "新模型在延迟与成本预算内改善实测表现后，再采用新版本。固定版本编号，并保留前一版评估基准。",
+      "遅延とコストの制約内で、観測結果に対する精度を改善したモデルを採用します。新バージョンを固定し、従来の評価結果も保存します。",
+      "지연과 비용 한도 안에서 관측 결과를 개선한 모델을 채택합니다. 새 버전을 고정하고 이전 벤치마크를 보존합니다."
+    ],
+    "Python SDK example": [
+      "Python SDK 示例",
+      "Python SDKの実装例",
+      "Python SDK 예시"
+    ],
+    "Read the original Jev guide ↗": [
+      "阅读 Jev 开发指南原文 ↗",
+      "元のJevガイドを読む ↗",
+      "Jev 가이드 원문 ↗"
+    ],
+    "Recalibrate": [
+      "重新校准",
+      "再較正",
+      "재보정"
+    ],
+    "Record an abstention": [
+      "记录为弃答",
+      "判断の見送りを記録する",
+      "판단 보류 기록"
+    ],
+    "Refresh the evidence and ask again. A retry never resets the original deadline.": [
+      "更新已有信息后重新提问。重试不会延长原请求的有效期。",
+      "情報を更新して、再度判断します。再試行しても、元の期限は延長しません。",
+      "근거 데이터를 갱신한 뒤 다시 질문합니다. 재시도해도 원래 기한은 바뀌지 않습니다."
+    ],
+    "Run a tested deterministic baseline or stop this path. Log the service failure.": [
+      "切换到经过验证的规则模型，或终止这条模拟路径，并记录服务故障。",
+      "検証済みの固定ルールに切り替えるか、この経路を止めます。サービス障害も記録します。",
+      "검증된 규칙 기반 모델로 전환하거나 이 경로를 중단합니다. 서비스 장애를 기록합니다."
+    ],
+    "Same frozen state → independent judgments": [
+      "同一份固定状态 → 多个独立判断",
+      "同じ固定状態 → 独立した判断",
+      "동일하게 고정된 상태 → 독립적인 판단"
+    ],
+    "Same information. Different trades. Build the next edge from accumulated individual trading behavior.": [
+      "同一条消息，不同的交易选择。从持续积累的个体交易行为中，构建新的交易优势。",
+      "同じ情報でも、取引は違う。一人ひとりの取引行動の蓄積から、次の優位性を築く。",
+      "같은 정보, 다른 거래. 축적된 개인별 거래 행동에서 다음 우위를 만듭니다."
+    ],
+    "Score": [
+      "Score",
+      "Score",
+      "Score"
+    ],
+    "Server environment": [
+      "服务端环境",
+      "サーバーの環境変数",
+      "서버 환경"
+    ],
+    "Shares / cash · USD": [
+      "持仓股数／现金 · 美元",
+      "保有株数 / 現金 · 米ドル",
+      "보유 주식 수 / 현금 · USD"
+    ],
+    "Stop this path": [
+      "终止这条模拟路径",
+      "この経路を停止する",
+      "경로 중단"
+    ],
+    "Tail latency · coverage · cost per decision": [
+      "尾部延迟 · 覆盖率 · 单次决策成本",
+      "テールレイテンシ · 判断を返す割合 · 判断1回のコスト",
+      "꼬리 지연 · 판단 제공률 · 결정당 비용"
+    ],
+    "Test a policy condition": [
+      "测试不同处理条件",
+      "制御ルールの条件を試す",
+      "실행 조건 시험"
+    ],
+    "Test against reality": [
+      "对照真实交易",
+      "実際の取引で検証する",
+      "실제 기록으로 검증"
+    ],
+    "The early AI lead faded.": [
+      "AI 基金的早期优势已消退。",
+      "AIの初期の優位性は薄れた。",
+      "초기 AI 우위는 약해졌습니다."
+    ],
+    "The guide separates market data, judgment, policy and execution. Backer adds the individual: accumulated trading history becomes part of every state, and each decision advances a simulated trader through a market situation.": [
+      "这套流程依次处理市场数据、模型判断、交易规则与执行。Backer 将具体交易者带入其中：每一步都以长期积累的个人交易记录为依据，让这个人在不断变化的市场情境中作出选择。",
+      "ガイドは市場データ、判断、制御、執行を分けています。Backerが加えるのは、個人です。蓄積した取引履歴を毎回の状態に組み込み、一つの判断を次の状況につなげて、その人の行動をシミュレーションします。",
+      "가이드는 시장 데이터, 판단, 규칙, 집행을 분리합니다. Backer는 여기에 개인을 더합니다. 축적된 거래 기록을 모든 상태에 포함하고, 매번의 결정으로 모의 트레이더를 다음 시장 상황에 진입시킵니다."
+    ],
+    "The hard rule overrides the model. Downstream funds apply their own risk response.": [
+      "硬性规则优先于模型判断。接收信号的基金依照自己的风控规则处理。",
+      "明示した制限がモデルの判断に優先します。利用するファンドは、それぞれのリスク管理方針で対応します。",
+      "강제 규칙이 모델 판단보다 우선합니다. 신호를 받는 펀드는 자체 위험 대응 규칙을 적용합니다."
+    ],
+    "The model judges. Code decides what happens.": [
+      "模型给出判断，代码确定后续操作。",
+      "モデルが判断し、コードが処理を決める。",
+      "모델이 판단하고, 코드가 실행을 결정합니다."
+    ],
+    "The public demonstration uses fixed ten-share fills without fees. Research runs must model spreads, fees, impact and missed fills. Simulated actions never become observed history.": [
+      "本页演示每次固定成交 10 股，不计费用。研究模拟需纳入买卖价差、费用、市场冲击和未成交情况。模拟选择始终与真实交易历史分开保存。",
+      "公開デモは手数料を省き、毎回10株が約定する設定です。研究ではスプレッド、手数料、価格インパクト、未約定を組み込みます。シミュレーション上の行動を、観測された履歴には加えません。",
+      "공개 데모는 수수료 없이 10주 단위로 고정 체결합니다. 실제 연구에서는 스프레드, 수수료, 시장 충격, 미체결을 모델링해야 합니다. 모의 행동을 실제 관측 기록에 섞지 않습니다."
+    ],
+    "The simulator checks freshness and feasibility before using an answer. Cash, holdings and scenario rules remain deterministic. A fund consuming the signal keeps its own exposure limits, risk vetoes and execution policy.": [
+      "模拟器先检查答案是否有效、行动是否可执行。现金、持仓与情境限制均由明确规则控制。接收信号的基金继续使用自身的敞口限额、风控否决与执行规则。",
+      "シミュレーターは回答を使う前に、情報の鮮度と実行可能性を確認します。現金、保有、シナリオのルールはコードで管理。シグナルを使うファンドは、保有リスクの上限、停止条件、執行方針を自ら設定します。",
+      "시뮬레이터는 응답을 적용하기 전에 최신성과 실행 가능성을 확인합니다. 현금, 보유 자산, 시나리오 규칙은 명시적인 코드로 처리합니다. 신호를 사용하는 펀드는 자체 익스포저 한도, 위험 차단 기준, 집행 정책을 유지합니다."
+    ],
+    "Try the decision loop ↑": [
+      "试运行逐步决策 ↑",
+      "判断ループを試す ↑",
+      "의사결정 루프 체험 ↑"
+    ],
+    "Turn accumulated individual trading behavior into a new research edge. Simulate traders in real market situations with Backer and Jev.": [
+      "以长期积累的个体交易行为建立新的研究优势。Backer 与 Jev 共同模拟具体交易者在真实市场情境下的选择。",
+      "個人の取引行動の蓄積を、新たなリサーチの優位性へ。BackerとJevで、現実の市場状況に置かれたトレーダーの行動をシミュレーションします。",
+      "축적된 개인별 거래 행동을 새로운 리서치 우위로 만듭니다. Backer와 Jev로 실제 시장 상황을 재현하고 개별 트레이더의 다음 선택을 시뮬레이션합니다."
+    ],
+    "Unchanged": [
+      "保持不变",
+      "変更なし",
+      "변경 없음"
+    ],
+    "Update the state. Run the next decision.": [
+      "更新状态，开始下一次判断。",
+      "状態を更新し、次の判断へ。",
+      "상태를 갱신하고, 다음 판단을 실행합니다."
+    ],
+    "Updated account + next market snapshot": [
+      "更新后的账户与下一时点的市场",
+      "更新した保有・現金と、次の市場状況",
+      "갱신된 계좌 상태 + 다음 시장 상태"
+    ],
+    "Use a threshold evaluated on the cost of each error. Do not invent a trade.": [
+      "根据各类判断错误的代价设定并验证阈值。证据不足时记录弃答，不强行生成交易。",
+      "誤りごとの損失を踏まえて検証したしきい値を使います。根拠のない取引を作りません。",
+      "오류별 비용을 평가해 정한 기준값을 적용합니다. 근거 없이 거래를 만들어내지 않습니다."
+    ],
+    "Use the explicit fallback": [
+      "执行预设的备用方案",
+      "定義済みの代替処理を使う",
+      "정해진 대체 절차 적용"
+    ],
+    "Visible market": [
+      "当时可见的市场信息",
+      "その時点で見える市場",
+      "현재 관측 가능한 시장"
+    ],
+    "What would this individual do next?": [
+      "这个人下一步会怎么做？",
+      "この人は次にどう動くか？",
+      "이 사람은 다음에 무엇을 할까요?"
+    ],
+    "Will they wait for a second confirming signal?": [
+      "他会等待第二个确认信号吗？",
+      "もう一つの裏付けを待つか？",
+      "판단을 뒷받침할 두 번째 신호를 기다릴까요?"
+    ],
+    "Within an hour": [
+      "一小时内",
+      "1時間以内",
+      "1시간 이내"
+    ],
+    "Within minutes": [
+      "几分钟内",
+      "数分以内",
+      "수분 이내"
     ]
   },
   patterns: {
@@ -1735,8 +2320,8 @@
   rich: {
     ".hft-deck": [
       "AI 让公司研究与行业分析越来越普及。<span class=\"hft-conviction\">我们相信，新的 <strong class=\"hft-edge\">EDGE</strong> 来自持续积累的个体交易行为：这个人如何选择，又在什么情况下改变决定。</span>",
-      "AIによって、企業や業界の分析が広く利用できるようになりました。<span class=\"hft-conviction\">次の<strong class=\"hft-edge\">EDGE</strong>は、一人ひとりの取引行動の蓄積にあると考えています。どう動き、何をきっかけに判断を変えるのか。その違いを捉えます。</span>",
-      "AI는 기업·산업 분석의 문턱을 낮춥니다. <span class=\"hft-conviction\">우리는 다음 <strong class=\"hft-edge\">EDGE</strong>가 개인별로 쌓인 거래 기록에서 나온다고 믿습니다. 각자의 선택과 판단이 바뀌는 조건에 주목합니다.</span>"
+      "AIが企業・業界分析の裾野を広げています。<span class=\"hft-conviction\">次の<strong class=\"hft-edge\">EDGE</strong>は、一人ひとりの取引行動の蓄積にあると、私たちは確信しています。どう動き、何をきっかけに判断を変えるのか。その違いを捉えます。</span>",
+      "AI는 기업·산업 분석의 문턱을 낮춥니다. <span class=\"hft-conviction\">우리는 개인별 거래 행동의 축적이 다음 <strong class=\"hft-edge\">EDGE</strong>의 원천이라고 믿습니다. 누가 어떤 상황에서 거래하고, 무엇이 그 판단을 바꾸는지 모델링합니다.</span>"
     ]
   }
 };

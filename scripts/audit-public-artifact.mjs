@@ -41,8 +41,8 @@ const REVIEWED_RESEARCH_SCRIPTS = Object.freeze({
     sha256: '395d1dfd51edeb72fd7fed5501029279f7f6967baf4adb91cfd1a728c7cc4702'
   },
   'js/hft-research.js': {
-    classification: 'interactive presentation of cited aggregate estimates and synthetic fixtures with fixed freshness example; no external requests or execution',
-    sha256: '92261252049bc70d99ba48fea66311791e511206e15a8e27ccfc542d01f3734d'
+    classification: 'interactive cited research, authored trader fixtures and six-step Jev reference walkthrough; no private records, external requests or execution',
+    sha256: '08678e8f1ac4be0352c41b1cbc4a04f0c8e13e3ff107eb509973974ef1478982'
   },
   'js/simulation-atmosphere.js': {
     classification: 'four authored fictional records with draggable source-to-feature reveal and exact phrase inspection; no extraction service or inference',

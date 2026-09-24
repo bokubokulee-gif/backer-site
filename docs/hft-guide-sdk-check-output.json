@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "sdk_version": "0.7.1",
+  "mock_requests": 2,
+  "external_network_calls": 0,
+  "orders": 0,
+  "second_account": {
+    "cash_cents": 593900,
+    "shares": 90
+  },
+  "final_account": {
+    "cash_cents": 593900,
+    "shares": 90
+  },
+  "verified": [
+    "Choice/Noul/Score serialization and typed response access",
+    "sequential updated state",
+    "observed history frozen",
+    "buy/sell fees and cash accounting",
+    "hold leaves balances",
+    "feasibility and abstention rejection",
+    "future history rejection",
+    "input immutability"
+  ]
+}

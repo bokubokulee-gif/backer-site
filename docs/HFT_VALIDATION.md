@@ -7,7 +7,7 @@
 - Packaged preview: http://127.0.0.1:4398/use-cases/high-frequency-trading.html
 - Research entry: http://127.0.0.1:4398/research.html
 - Source: `use-cases/high-frequency-trading.html`, `js/hft-model.js`, `js/hft-research.js`, `css/hft-research.css`.
-- Locales: `js/locales/hft-research.js` plus the existing shared packs. 344 complete EN→ZH/JA/KO entries; extraction found no missing page-specific static or dynamic strings.
+- Locales: `js/locales/hft-research.js` plus the existing shared packs. 461 complete EN→ZH/JA/KO entries; extraction found no missing page-specific static or dynamic strings.
 - API invitation and contact route added to all six use cases. Contact leads to the existing early-access form, preserving the selected language. No form was submitted.
 
 ## Research and evidence boundaries
@@ -16,7 +16,7 @@ Read `HFT_PAPER_AUDIT.md` for the original-paper review, including the corrected
 
 Read `HFT_JEV_AUDIT.md` for the architecture and current documentation audit. `hft-jev-interface-check.py` passed against TypeSafe SDK 0.7.1 with mocked HTTP; `hft-jev-interface-check-output.json` records that result. This checks request/response compatibility, not real inference, accuracy, latency or profitability.
 
-The requested Medium tutorial could not be read through web retrieval, the documented reader, direct HTTP or browser content extraction. The browser eventually exposed its title, but content extraction continued timing out. No unseen tutorial code or return claim is marked verified. The page relies on original research and current TypeSafe primary documentation.
+The Medium URL was inaccessible during the initial pass. On 24 September the user supplied the complete article text, which was read and audited against current TypeSafe docs and SDK 0.7.1. The page now incorporates its setup, state, parallel judgment, policy, update and calibration sequence directly in the Jev section. See HFT_JEV_AUDIT.md for concrete corrections to the supplied examples and claims.
 
 All response distributions on the page are authored teaching fixtures. No trader corpus, trained simulation, live Jev request, broker connection, order execution, or new API service is included. The opening-API copy describes early access. The proposed alpha remains a research hypothesis.
 
@@ -61,3 +61,14 @@ The user clarified that the core edge is accumulated individual trading behavior
 - Rewrote the full Chinese page as native editorial copy; updated Japanese and Korean. All 280 active source strings have three translations; the catalog has 344 entries including compatibility keys.
 - Reviewed the actual Chinese hero, individual record inspector and decision ledger. Source and packaged preview show the revised accumulated-history thesis and why Jev participates in simulation.
 - Added HFT_JEV_DECISION_LOOP.md with the exact documented Choice request and separation of observed history, simulated state, model abstention and real outcomes.
+
+
+## Supplied article integration and four-language editorial pass — 24 September
+
+The supplied complete guide is now embedded as an original six-step implementation walkthrough inside the Jev section, with adjacent attribution and source link. It covers SDK setup, timestamped individual state, independent Choice/Noul/Score questions, deterministic policy, sequential simulation updates and held-out calibration. A collapsible 36-line Python request uses current SDK syntax. The contextual contact invitation sits immediately after the guide; all six use cases retain the API/contact footer.
+
+- Rewrote the English narrative and reviewed every active language: 117 new translated keys, with further native editorial changes in Chinese, Japanese and Korean. 461 three-language entries; all 337 active display strings covered.
+- Browser checked all six stages, all three primitive displays and all five policy conditions in EN/ZH/JA/KO at measured 390px, with no page overflow. Desktop English and mobile Chinese/Japanese/Korean render checks completed. Keyboard Enter switches the primitive, next-step wraps correctly, code expands without page overflow, and the contextual contact link preserves language and reaches the existing email form.
+- Current SDK 0.7.1 examples were validated with mocked transport. The reference two-step script and result are saved in hft-guide-sdk-example.py and hft-guide-sdk-check-output.json. No live Jev call or order was sent.
+- Repository tests: 293 passed. Lint and syntax passed. Final public artifact: 223 allowlisted files, zero critical exposure findings. The reviewed UI digest is the esbuild-minified output digest, matching the publication artifact; source and output were inspected as authored UI data only.
+- SDK code, article audit, tests and review screenshots remain outside the public artifact.
