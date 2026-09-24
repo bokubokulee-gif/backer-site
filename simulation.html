@@ -5,13 +5,13 @@
 <title>How Simulation Works — Backer Research</title>
 <meta name="description" content="Follow the path from attention to decisions. Explore Backer's simulation research through explicit questions, behavioral mechanisms and testable outcomes.">
 <link rel="icon" href="img/backer-mark.png?v=2">
-<link rel="stylesheet" href="css/simulation.css?v=20260920-5">
+<link rel="stylesheet" href="css/simulation.css?v=20260924-allocation-1">
 <link rel="stylesheet" href="css/simulation-atmosphere.css?v=20260920-5">
 <script src="js/access-gate.js?v=20260914-locale-3"></script>
-<script src="js/locales/simulation.js?v=20260923-1" defer></script>
+<script src="js/locales/simulation.js?v=20260924-allocation-1" defer></script>
 <script src="js/i18n.js?v=20260920-5" defer></script>
 <script src="js/simulation.js?v=20260920-5" defer></script>
-<script src="js/simulation-story.js?v=20260920-5" defer></script>
+<script src="js/simulation-story.js?v=20260924-allocation-1" defer></script>
 <script src="js/simulation-atmosphere.js?v=20260920-5" defer></script>
 <script src="js/simulation-motion.js?v=20260920-5" defer></script>
 <link rel="stylesheet" href="css/i18n.css?v=20260920-5">
@@ -39,6 +39,20 @@
 <div class="story-tabs" role="group" aria-label="Population mechanism stage"><button type="button" data-story-stage="0" aria-pressed="true"><span>01</span> Exposure</button><button type="button" data-story-stage="1" aria-pressed="false"><span>02</span> Memory</button><button type="button" data-story-stage="2" aria-pressed="false"><span>03</span> Choice</button><button type="button" data-story-stage="3" aria-pressed="false"><span>04</span> Allocation</button></div>
 <div class="story-figure-heading"><h3 id="story-figure-title">Launch a signal.</h3><button class="story-reset" type="button" id="story-reset">Reset ↺</button></div>
 <div class="story-plot"><svg id="population-scene" viewBox="0 0 700 460" role="group" aria-roledescription="interactive model" aria-labelledby="population-scene-title population-scene-desc"><title id="population-scene-title">A population of 100 illustrative profiles</title><desc id="population-scene-desc">Use the controls below to explore exposure, memory, choice and resource allocation.</desc><g id="scene-guides"></g><g id="scene-links" aria-hidden="true"></g><g id="scene-trail" aria-hidden="true"></g><g id="scene-points"></g><g id="scene-objects"></g></svg></div>
+<div class="allocation-detail" id="allocation-detail" hidden>
+<div class="allocation-groups">
+<div class="allocation-group" data-allocation-group="0"><strong data-allocation-units>15</strong><span>units committed</span><p data-allocation-formula>15 acting × 1 unit each</p></div>
+<div class="allocation-group" data-allocation-group="1"><strong data-allocation-units>22</strong><span>units committed</span><p data-allocation-formula>11 acting × 2 units each</p></div>
+<div class="allocation-group" data-allocation-group="2"><strong data-allocation-units>25</strong><span>units committed</span><p data-allocation-formula>5 acting × 5 units each</p></div>
+</div>
+<div class="allocation-transfer">
+<div class="allocation-reserve"><strong id="allocation-reserve-count">5 parcels available</strong><p>1 parcel = 30 resource units</p></div>
+<div class="allocation-actions"><button type="button" id="allocation-add" data-allocation-action="allocate" aria-describedby="allocation-explanation"><span class="allocation-parcel" aria-hidden="true">≡</span><span>Give C one parcel</span><span aria-hidden="true">→</span></button><button type="button" id="allocation-return" data-allocation-action="return">Return one parcel</button></div>
+<p class="allocation-explanation" id="allocation-explanation">Each parcel adds 1 unit of capacity to all 30 C profiles. Only those acting commit it.</p>
+</div>
+<div class="allocation-summary"><p><strong id="allocation-total">62</strong><span>of 400 units committed</span></p><p id="allocation-actors">31 profiles acting</p></div>
+<p class="allocation-note">Units represent an illustrative resource budget.</p>
+</div>
 <div class="story-result" aria-live="polite" aria-atomic="true"><output id="story-value">65</output><div><span id="story-unit">profiles encountered the signal</span><small id="story-secondary">35 remain outside its reach.</small></div></div>
 <div class="story-follow" id="story-follow"><p>Select a point to trace its decision.</p></div>
 <figcaption id="story-caption">Click the signal to send it. Close a channel to change who can encounter it.</figcaption>

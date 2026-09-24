@@ -1,6 +1,51 @@
 /* Authored CJK copy for the simulation overview, source scanner and Research gateway. */
 (function(){window.BackerLocalePacks=window.BackerLocalePacks||{};window.BackerLocalePacks.simulation={
   "messages": {
+    "Bright dots act; dim dots defer. Larger dots have more capacity.": [
+      "亮点表示行动，暗点表示暂缓。点越大，可投入的资源越多。",
+      "明るい点は行動、暗い点は見送りを表します。点が大きいほど投入できる資源が多くなります。",
+      "밝은 점은 행동, 어두운 점은 보류를 뜻합니다. 점이 클수록 투입할 수 있는 자원이 많습니다."
+    ],
+    "units committed": [
+      "投入量（单位）",
+      "投入量（単位）",
+      "투입량(단위)"
+    ],
+    "1 parcel = 30 resource units": [
+      "每份 = 30 单位资源",
+      "1束 = 資源30単位",
+      "1묶음 = 자원 30단위"
+    ],
+    "Give C one parcel": [
+      "给 C 组一份",
+      "C群に1束渡す",
+      "C 집단에 1묶음 주기"
+    ],
+    "Return one parcel": [
+      "退回一份",
+      "1束戻す",
+      "1묶음 반환"
+    ],
+    "Each parcel adds 1 unit of capacity to all 30 C profiles. Only those acting commit it.": [
+      "每份资源为 C 组的 30 人各增加 1 单位容量；只有行动者才会投入。",
+      "1束でC群の30人全員に1単位ずつ加わります。投入するのは行動した人だけです。",
+      "한 묶음은 C 집단 30명 모두의 자원 한도를 1단위씩 늘립니다. 행동하는 프로필만 이를 투입합니다."
+    ],
+    "of 400 units committed": [
+      "/ 400 单位已投入",
+      "／400単位を投入",
+      "/ 400단위 투입"
+    ],
+    "Units represent an illustrative resource budget.": [
+      "单位用于计量本例中的资源预算。",
+      "単位は、この例の資源予算を表します。",
+      "단위는 이 예시의 자원 예산을 나타냅니다."
+    ],
+    "Give C a parcel, then return it. The number acting stays fixed; their committed resources change.": [
+      "给 C 组一份资源，再退回。行动人数不变，实际投入随之变化。",
+      "C群に1束渡し、戻してみてください。行動人数は変わらず、投入量が変わります。",
+      "C 집단에 1묶음을 주고 돌려받아 보세요. 행동 인원은 그대로이고 투입량이 달라집니다."
+    ],
     "High Frequency Trading": [
         "高频交易",
         "高頻度取引",
@@ -1366,6 +1411,36 @@
     ]
   },
   "patterns": {
+    "{0} acting × {1} unit each": [
+      "{0} 人行动 × 每人 {1} 单位",
+      "{0}人が行動 × 1人{1}単位",
+      "{0}명 행동 × 1명당 {1}단위"
+    ],
+    "{0} acting × {1} units each": [
+      "{0} 人行动 × 每人 {1} 单位",
+      "{0}人が行動 × 1人{1}単位",
+      "{0}명 행동 × 1명당 {1}단위"
+    ],
+    "{0} parcel available": [
+      "可用资源 {0} 份",
+      "残り{0}束",
+      "사용 가능한 자원 {0}묶음"
+    ],
+    "{0} parcels available": [
+      "可用资源 {0} 份",
+      "残り{0}束",
+      "사용 가능한 자원 {0}묶음"
+    ],
+    "{0} profile acting": [
+      "{0} 人行动",
+      "{0}人が行動",
+      "{0}명 행동"
+    ],
+    "{0} profiles acting": [
+      "{0} 人行动",
+      "{0}人が行動",
+      "{0}명 행동"
+    ],
     "Source {0} of 4": ["第 {0} 份来源，共 4 份","情報源 {0} / 4","자료 {0} / 4"],
     "Profile {0}": [
       "个体 {0}",

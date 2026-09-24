@@ -54,7 +54,7 @@ const REVIEWED_RESEARCH_SCRIPTS = Object.freeze({
   },
   'js/simulation-story.js': {
     classification: '100 synthetic profiles with a conserved 400-unit budget, direct signal gates, elapsed memory, removable barriers and conserved resource parcels; no human data or fitted engine',
-    sha256: '5da81859a57c40d4fae92b52eb8f1736639105209ee3c7db2b586643682a9cde'
+    sha256: 'ff5560df51ed211c76c949d25e64636bc08d02959c9c4186ad46029c8bf2744e'
   },
   // Exact-byte educational demo review: docs/SIMULATION_PUBLIC_SCRIPT_REVIEW.md.
   // Proprietary research modules below remain blocked.

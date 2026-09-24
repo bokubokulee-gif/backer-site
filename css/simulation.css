@@ -87,3 +87,42 @@ html[data-backer-locale=ko][lang=ko] :is(h1,h2,h3,h4,p,figcaption,summary){word-
 @media(max-width:760px){.overview-heading{gap:30px}}
 html[data-backer-locale=ko][lang=ko] body{word-break:keep-all;overflow-wrap:break-word}
 @supports(word-break:auto-phrase){html[data-backer-locale=ja][lang=ja] :is(h1,h2,h3,h4){word-break:auto-phrase}}
+
+/* Allocation: keep quantities, capacity transfer and the budget in separate reading bands. */
+.allocation-detail[hidden]{display:none}
+.story-instrument[data-stage="3"] .story-plot{margin-top:20px}
+.story-instrument[data-stage="3"] .story-plot svg{height:auto;max-height:none;display:block}
+.story-instrument[data-stage="3"] .story-plot .scene-meta{font-size:14px}
+.allocation-groups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;text-align:center;padding:8px 0 28px}
+.allocation-group{min-width:0;border-radius:4px;outline:1px solid transparent;outline-offset:8px;transition:outline-color .2s,background .2s}
+.allocation-group.is-drop-target{outline-color:var(--sim-amber);background:#e9bd8610}
+.allocation-group>strong{display:block;font-size:32px;line-height:1.15;font-weight:600;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:var(--sim-ink)}
+.allocation-group>span{display:block;font-size:12px;line-height:1.5;margin-top:8px;color:var(--sim-muted)}
+.allocation-group>p{font-size:12px;line-height:1.65;margin-top:10px;color:#b2aba0;text-wrap:balance}
+.allocation-transfer{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px 24px;border-block:1px solid var(--sim-line);padding:24px 0}
+.allocation-reserve strong{font-size:15px;font-weight:600;color:var(--sim-ink)}
+.allocation-reserve p{font-size:12px;line-height:1.65;color:#b2aba0;margin-top:6px}
+.allocation-actions{display:flex;flex-direction:column;align-items:stretch;gap:6px}
+.allocation-actions button{min-height:44px;font:500 13px/1.5 var(--sans);border-radius:4px;padding:8px 12px;transition:background .2s,color .2s;cursor:pointer}
+#allocation-add{display:flex;align-items:center;justify-content:center;gap:12px;border:1px solid #806440;color:#f2d1a4;background:#211b14;touch-action:none}
+.allocation-parcel{display:grid;place-items:center;width:25px;height:29px;flex-shrink:0;background:#e9bd86;color:#604322;border:1px solid #f5ddb7;border-radius:3px;font-size:22px;line-height:1;position:relative;z-index:1;cursor:grab}
+#allocation-return{color:#c4c0b8;text-decoration:underline;text-underline-offset:4px}
+.allocation-actions button:hover:enabled{background:#352a1c;color:#fff}
+.allocation-actions button:focus-visible{outline:2px solid #e9bd86;outline-offset:4px}
+.allocation-actions button:disabled{opacity:.35;cursor:default}
+.allocation-explanation{grid-column:1/-1;font-size:13px;line-height:1.7;color:#c4c0b8;max-width:65ch}
+.allocation-summary{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px 24px;padding-top:23px;color:#c4c0b8}
+.allocation-summary p:first-child{display:flex;align-items:baseline;flex-wrap:wrap;gap:10px}
+.allocation-summary strong{font-size:25px;line-height:1.3;font-weight:600;color:#f5f3ee;font-variant-numeric:tabular-nums}
+.allocation-summary span,.allocation-summary p{font-size:13px;line-height:1.7}
+.allocation-note{font-size:12px;line-height:1.7;color:#a6a29a;margin:9px 0 24px}
+.story-instrument[data-stage="3"] .story-follow{min-height:0;padding-block:16px 0}
+@media(max-width:760px){
+ .story-instrument[data-stage="3"] .story-plot svg{max-height:none}
+ .story-instrument[data-stage="3"] .story-plot .scene-meta{font-size:13px}
+ .allocation-groups{gap:12px;padding-top:12px;padding-bottom:28px}
+ .allocation-group>strong{font-size:30px}.allocation-group>span{font-size:12px;margin:8px auto 0}.allocation-group>p{font-size:12px}
+ .allocation-transfer{grid-template-columns:1fr;gap:17px;padding-block:24px}
+ .allocation-actions{flex-direction:row;flex-wrap:wrap;gap:10px}.allocation-actions button{font-size:13px}
+ .allocation-explanation{font-size:13px}.allocation-summary{gap:8px}.allocation-summary p:first-child{gap:9px}
+}
