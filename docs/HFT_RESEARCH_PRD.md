@@ -1,5 +1,19 @@
 # High Frequency Trading supports
 
+## Current refinement — 24 September 2026, local review only
+
+This instruction supersedes earlier launch notes below: refine the published HFT page as the base, import the useful mechanics from the Research Lab prototype, and preview locally. Do not deploy, push or publish. The base HTML matches the published GitHub Pages page retrieved for the comparison.
+
+Lead with a proposed event-response pilot for a fund's entry/exit timing. Preserve the contextual trader histories, history-on/off comparison, cohort illustration and sequential ledger. Explain separately what participants may do and what the fund might do with that information. Bridge the proposed research through direction, size, timing, coverage and liquidity; do not label counts as tradable flow or authored prices as forecasts.
+
+Add a reader-controlled comparison of the fund's alternatives under identical authored paths, with explicit spreads, fees, limited fills, cash and inventory constraints. Keep this hypothetical fund account separate from simulated participant behavior. Add a readable typed Choice contract and an optional local-only server adapter; all keys remain server-side, missing service stays explicit, and no judgment automatically selects or executes a fund action.
+
+Clarify dataset feasibility and current status: synthetic fixtures and a modeling interface exist; a proprietary dataset, production feed, commercial beta and profitable signal are not established here. Distinguish observed Hold, missing records and model abstention. Do not import the Lab's toy scoring as evidence of learning or calibration.
+
+Define a bounded pilot: agree data rights/coverage, instruments, event family and horizon; freeze the fund's existing benchmark; compare with/without history and against a simple behavioral model; evaluate unseen future events plus prospective shadow decisions; measure forecast quality and net economic value with pre-agreed go/no-go criteria. Retain the AI study as context rather than proof of the behavioral thesis.
+
+Acceptance: all English/Chinese/Japanese/Korean copy complete, existing interactions preserved, typed/provenance/error and accounting tests pass, browser language/keyboard/mobile checks pass, claim ledger refreshed, bottom Open research API and Contact us CTAs work. No website redesign or changes to other use cases.
+
 Status: implemented and verified locally, 23 September 2026. See HFT_VALIDATION.md for evidence and access limits.
 
 ## Purpose

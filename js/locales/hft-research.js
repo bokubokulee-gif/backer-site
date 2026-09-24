@@ -139,10 +139,10 @@
       "論文を読む · 表 5 ↗",
       "논문 보기 · 표 5 ↗"
     ],
-    "The Backer thesis": [
-      "Backer 的核心判断",
-      "Backerの核心",
-      "Backer의 핵심 관점"
+    "Backer Simulation thesis": [
+      "Backer 模拟的核心判断",
+      "Backerシミュレーションの核心",
+      "Backer 시뮬레이션의 핵심 관점"
     ],
     "Knowing the business": [
       "理解公司，",
@@ -1389,10 +1389,10 @@
       "モデルの確信度と実際の取引成績は、別々に評価します。",
       "모델의 확신도와 실제 거래 성과는 별도로 평가합니다."
     ],
-    "Model the trader.": [
-      "先模拟这个人，",
-      "トレーダーをモデル化する。",
-      "한 사람의 거래를 모델링하고,"
+    "Simulate traders.": [
+      "模拟交易者。",
+      "トレーダーをシミュレーションする。",
+      "트레이더를 시뮬레이션하세요."
     ],
     "One step becomes the next input": [
       "这一步的结果，成为下一步的依据",
@@ -1629,10 +1629,10 @@
       "シミュレーションが進む",
       "시뮬레이션을 다음 단계로"
     ],
-    "Then change their world.": [
-      "再改变他面对的市场。",
-      "そして、その人の状況を変える。",
-      "그가 마주할 시장을 바꿉니다."
+    "You have your alphas.": [
+      "找到你的 Alpha。",
+      "そこに、あなたのアルファがある。",
+      "당신의 알파가 여기에 있습니다."
     ],
     "Trader 014": [
       "交易者 014",
@@ -2429,10 +2429,302 @@
   },
   rich: {
     ".hft-deck": [
-      "AI 让公司研究与行业分析越来越普及。<span class=\"hft-conviction\">我们相信，新的 <strong class=\"hft-edge\">EDGE</strong> 来自持续积累的个体交易行为：这个人如何选择，又在什么情况下改变决定。</span>",
-      "AIが企業・業界分析の裾野を広げています。<span class=\"hft-conviction\">次の<strong class=\"hft-edge\">EDGE</strong>は、一人ひとりの取引行動の蓄積にあると、私たちは確信しています。どう動き、何をきっかけに判断を変えるのか。その違いを捉えます。</span>",
-      "AI는 기업·산업 분석의 문턱을 낮춥니다. <span class=\"hft-conviction\">우리는 개인별 거래 행동의 축적이 다음 <strong class=\"hft-edge\">EDGE</strong>의 원천이라고 믿습니다. 누가 어떤 상황에서 거래하고, 무엇이 그 판단을 바꾸는지 모델링합니다.</span>"
+      "公开信息只是交易决策的一部分。<span class=\"hft-conviction\">我们相信，长期积累的交易者行为记录可能揭示新的<strong class=\"hft-edge\">交易优势</strong>：谁会行动，在什么条件下行动，又会在何时行动。</span> <span>需要检验的问题很具体：在现有信号之上，这些信息能否改善买卖时机，并在扣除成本后仍然有价值？</span>",
+      "公開情報は、取引判断の一部にすぎません。<span class=\"hft-conviction\">蓄積したトレーダーの行動履歴には、新たな<strong class=\"hft-edge\">優位性</strong>の手がかりがあると考えています。誰が、どの条件で、いつ動くのか。</span> <span>検証する問いは明確です。この情報は既存のシグナルに加えて売買のタイミングを改善し、コスト控除後も価値をもたらすでしょうか。</span>",
+      "공개된 정보는 거래 판단의 일부입니다. <span class=\"hft-conviction\">우리는 축적된 트레이더의 행동 기록이 새로운 <strong class=\"hft-edge\">우위</strong>의 단서를 줄 수 있다고 봅니다. 누가 어떤 조건에서 언제 움직일지를 파악하는 것입니다.</span> <span>검증할 질문은 구체적입니다. 이 정보가 기존 신호에 더해 매수·매도 시점을 개선하고, 비용을 뺀 뒤에도 가치를 낼 수 있을까요?</span>"
     ]
   }
 };
+  Object.assign(window.BackerLocalePacks.hftResearch.messages, {
+    "Starting fund account": ["基金初始账户", "ファンドの初期口座", "펀드 초기 계좌"],
+    "Starting price": ["起始价格", "開始価格", "시작 가격"],
+    "Filled / requested shares": ["成交 / 申请股数", "約定株数 / 注文株数", "체결 / 요청 주식 수"],
+    "Fee · USD": ["手续费 · 美元", "手数料 · 米ドル", "수수료 · 미국 달러"],
+    "Spread cost · USD": ["价差成本 · 美元", "スプレッドコスト · 米ドル", "호가 차이 비용 · 미국 달러"],
+    "Remaining cash · USD": ["剩余现金 · 美元", "残余現金 · 米ドル", "남은 현금 · 미국 달러"],
+    "Shares after fill": ["成交后持股数", "約定後の保有株数", "체결 후 보유 주식 수"],
+    "End value · USD": ["期末价值 · 美元", "期末資産額 · 米ドル", "종료 자산 가치 · 미국 달러"],
+    "Difference from Hold · USD": ["相对持有的差额 · 美元", "保有継続との差 · 米ドル", "보유 유지 대비 차이 · 미국 달러"],
+    "Start": ["起点", "開始", "시작"],
+    "Authored endpoint": ["人为设定的终点", "設定した終点", "설정한 종료점"],
+    "Live Jev judgment · synthetic inputs": ["Jev 实时判断 · 合成输入", "JEVの実応答 · 合成入力", "JEV 실시간 응답 · 합성 입력"],
+    "Evaluating frozen state…": ["正在评估冻结状态…", "固定した状態を評価中…", "고정된 상태 평가 중…"],
+    "Abstain": ["弃答", "判断保留", "판단 유보"],
+    "Jev is not configured on this local server. The authored fixture remains visible.": [
+      "此本地服务器尚未配置 Jev，当前仍显示人为设定的示例。",
+      "このローカルサーバーにはJevが設定されていません。設定済みの例を引き続き表示します。",
+      "이 로컬 서버에는 Jev가 설정되지 않았습니다. 설정된 예시를 계속 표시합니다."
+    ],
+    "Jev is unavailable. No live judgment was applied.": ["Jev 暂不可用，未应用实时判断。", "Jevを利用できません。実際の判断結果は適用していません。", "Jev를 이용할 수 없습니다. 실시간 판단은 적용되지 않았습니다."],
+    "The server returned an invalid judgment. The authored fixture remains visible.": ["服务器返回的判断无效，当前仍显示人为设定的示例。", "サーバーの判断応答が無効です。設定済みの例を引き続き表示します。", "서버가 유효하지 않은 판단을 반환했습니다. 설정된 예시를 계속 표시합니다."],
+    "The judgment timed out. No live result was applied.": ["判断请求超时，未应用实时结果。", "判断がタイムアウトしました。実際の結果は適用していません。", "판단 요청 시간이 초과됐습니다. 실시간 결과는 적용되지 않았습니다."],
+    "The server rejected this fixture selection.": ["服务器拒绝了这组示例选项。", "サーバーがこのサンプル選択を拒否しました。", "서버가 이 예시 선택값을 거부했습니다."],
+    "The server rejected this request origin.": ["服务器拒绝了此请求来源。", "サーバーがこのリクエスト元を拒否しました。", "서버가 이 요청 출처를 거부했습니다."],
+    "The local adapter is busy. Try again shortly.": ["本地适配器正忙，请稍后重试。", "ローカルアダプターは処理中です。少し待って再試行してください。", "로컬 어댑터가 처리 중입니다. 잠시 후 다시 시도하세요."],
+    "The request or response exceeded the local size limit.": ["请求或响应超出了本地大小限制。", "リクエストまたは応答がローカルのサイズ上限を超えました。", "요청 또는 응답이 로컬 크기 제한을 초과했습니다."],
+    "The local adapter requires a JSON POST request.": ["本地适配器要求使用 JSON POST 请求。", "ローカルアダプターにはJSON形式のPOSTリクエストが必要です。", "로컬 어댑터에는 JSON POST 요청이 필요합니다."],
+    "The local adapter is unavailable on this host. The authored fixture remains visible.": ["此主机上无法使用本地适配器，当前仍显示人为设定的示例。", "このホストではローカルアダプターを利用できません。設定済みの例を引き続き表示します。", "이 호스트에서는 로컬 어댑터를 이용할 수 없습니다. 설정된 예시를 계속 표시합니다."],
+    "Evaluating the starting participant snapshot. The fund comparison stays unchanged.": ["正在评估参与者的初始快照，基金比较保持不变。", "参加者の初期スナップショットを評価中です。ファンドの比較は変わりません。", "참여자의 초기 스냅샷을 평가합니다. 펀드 비교는 바뀌지 않습니다."],
+    "Selected by model": ["模型选择", "モデルの選択", "모델의 선택"],
+    "Confidence": ["置信度", "信頼度", "신뢰도"],
+    "Inputs changed. Previous judgments were cleared; the authored fixture is shown.": ["输入已变化，之前的判断已清除；当前显示人为设定的示例。", "入力が変わったため前の判断を消去しました。設定済みの例を表示しています。", "입력이 바뀌어 이전 판단을 지웠습니다. 설정된 예시를 표시합니다."],
+    "Bundled local contract. Checking the optional adapter…": ["已载入随附的本地接口约定，正在检查可选适配器…", "同梱のローカル仕様を表示しています。任意のアダプターを確認中…", "내장된 로컬 명세를 표시합니다. 선택적 어댑터 확인 중…"],
+    "Contract loaded from the local adapter. Availability does not establish model accuracy.": ["已从本地适配器载入接口约定。接口可用不代表模型准确。", "ローカルアダプターから仕様を取得しました。利用可能であることは、モデルの精度を示しません。", "로컬 어댑터에서 명세를 불러왔습니다. 이용 가능 여부가 모델 정확도를 입증하지는 않습니다."],
+    "Bundled contract shown. This host has no available local adapter.": ["当前显示随附接口约定，此主机没有可用的本地适配器。", "同梱の仕様を表示しています。このホストに利用可能なローカルアダプターはありません。", "내장된 명세를 표시합니다. 이 호스트에는 이용 가능한 로컬 어댑터가 없습니다."],
+    "This reference walkthrough uses authored examples. The separate local adapter can request a Jev judgment.": [
+      "这份参考指南使用人为设定的示例。独立的本地适配器可以请求 Jev 判断。",
+      "この手順ガイドは設定済みの例を使います。別のローカルアダプターからJevの判断をリクエストできます。",
+      "이 참고 안내는 설정된 예시를 사용합니다. 별도의 로컬 어댑터에서 Jev 판단을 요청할 수 있습니다."
+    ],
+    "Confidence thresholds require evaluation on held-out decisions. A concentrated distribution is not proof that a prediction is correct.": [
+      "置信度阈值需要在留出的决策样本上检验。概率分布集中，并不能证明预测正确。",
+      "信頼度のしきい値は、学習に使わない判断データで評価する必要があります。分布が集中していても、予測が正しい証拠にはなりません。",
+      "신뢰도 기준은 학습에 사용하지 않은 결정 데이터로 평가해야 합니다. 분포가 집중됐다고 예측이 맞다는 뜻은 아닙니다."
+    ],
+    "The participant ledger uses fixed ten-share fills without fees. The separate fund comparison illustrates costs and partial fills. Research runs must also evaluate impact and missed fills. Simulated actions never become observed history.": [
+      "参与者账本按固定 10 股成交，不计手续费；独立的基金比较展示成本与部分成交。正式研究还必须评估市场冲击和未成交情况。模拟行动永远不能作为实际观测历史。",
+      "参加者の残高例は固定10株、手数料なしで約定します。別のファンド比較でコストと部分約定を示しています。研究では市場インパクトや未約定も評価する必要があります。模擬行動を実際の観測履歴に加えてはいけません。",
+      "참여자 잔고 예시는 수수료 없이 고정 10주가 체결됩니다. 별도의 펀드 비교는 비용과 부분 체결을 보여줍니다. 연구에서는 시장 영향과 미체결도 평가해야 합니다. 시뮬레이션 행동을 실제 관측 기록으로 취급해서는 안 됩니다."
+    ],
+    "THE PROPOSED USE CASE": ["拟议应用场景", "提案する用途", "제안하는 활용 사례"],
+    "A guidance cut.": ["一次业绩指引下调，", "業績見通しの下方修正。", "실적 전망 하향."],
+    "Two different decisions.": ["两种不同的决策。", "二つの異なる判断。", "서로 다른 두 가지 결정."],
+    "A company lowers its earnings outlook. Your team already models the announcement and the initial price move. Test whether the responses of a defined, observable group of holders add useful information.": [
+      "一家公司下调盈利预期。你的团队已经在分析公告内容和最初的价格反应。接下来要检验的是：一组可识别、可观测持有者的反应，能否提供额外的有用信息。",
+      "ある企業が利益見通しを引き下げます。運用チームはすでに発表内容と初動の値動きを分析しています。そこに、範囲を明確にした観測可能な保有者集団の反応が有用な情報を加えるかを検証します。",
+      "한 기업이 이익 전망을 낮춥니다. 투자팀은 이미 발표 내용과 초기 가격 움직임을 분석하고 있습니다. 범위를 정해 관측할 수 있는 보유자 집단의 반응이 여기에 유용한 정보를 더하는지 검증합니다."
+    ],
+    "The participant": ["参与者的决策", "参加者の判断", "참여자의 결정"],
+    "What might this person do?": ["这个人可能会怎么做？", "この人はどう動くか？", "이 사람은 어떻게 행동할까요?"],
+    "Sell immediately, wait for confirmation, or buy after the decline? History may help distinguish those responses. Holdings and available cash constrain their size.": [
+      "立即卖出、等待更多信息确认，还是在下跌后买入？历史记录或许有助于区分这些反应。已有持仓和可用现金则限制了交易规模。",
+      "すぐ売るのか、確認を待つのか、下落後に買うのか。履歴がその違いを見分ける手がかりになるかもしれません。取引量は保有資産と手元資金に制約されます。",
+      "즉시 매도할까요, 추가 확인을 기다릴까요, 하락 후 매수할까요? 과거 기록은 이런 반응을 구별하는 단서가 될 수 있습니다. 거래 규모는 보유 자산과 가용 현금의 제약을 받습니다."
+    ],
+    "The fund": ["基金的决策", "ファンドの判断", "펀드의 결정"],
+    "What should we do with that information?": ["我们该如何使用这些信息？", "その情報をどう使うか？", "이 정보를 어떻게 활용할까요?"],
+    "Keep the planned entry or exit, wait, or change execution? Compare those decisions against your existing approach, after costs. Predicting a person’s action does not by itself identify a profitable trade.": [
+      "按原计划买入或卖出、继续等待，还是调整执行方式？扣除成本后，将这些选择与现有方法比较。预测出一个人的行动，本身并不能确定一笔有利可图的交易。",
+      "予定どおり売買するか、待つか、執行方法を変えるか。コスト控除後の結果を現在の手法と比較します。人の行動を予測するだけで、利益の出る取引が特定できるわけではありません。",
+      "계획한 매수·매도를 유지할까요, 기다릴까요, 실행 방식을 바꿀까요? 비용을 반영해 기존 방식과 비교합니다. 사람의 행동을 예측하는 것만으로 수익성 있는 거래를 찾아낼 수는 없습니다."
+    ],
+    "Observe": ["观察", "観測する", "관측"],
+    "Earlier decisions, positions and information available at the time.": ["此前的决策、持仓，以及当时已经可用的信息。", "過去の判断、保有状況、その時点で利用できた情報。", "이전 결정, 보유 자산, 당시 이용할 수 있었던 정보."],
+    "Judge": ["判断", "判断する", "판단"],
+    "Jev evaluates explicit responses with probabilities. Code keeps constraints separate.": ["Jev 为明确列出的反应评估概率，代码单独执行约束。", "Jevが明示された反応の確率を評価し、制約はコードが別に管理します。", "Jev가 명시된 반응별 확률을 평가하고, 제약 조건은 코드가 별도로 관리합니다."],
+    "Estimate flow": ["估计交易流", "売買フローを推定する", "거래 흐름 추정"],
+    "Study trade direction, size and timing, population coverage and available liquidity.": ["研究交易方向、规模与时机，以及人群覆盖和可用流动性。", "売買の方向・量・時刻、参加者のカバー範囲、利用可能な流動性を調べます。", "거래 방향·규모·시점, 참여자 범위, 이용 가능한 유동성을 살펴봅니다."],
+    "Test and calibrate": ["检验与校准", "検証し校正する", "검증과 보정"],
+    "Compare the fund’s alternatives. Measure results, then use later observations to improve the next model.": ["比较基金的不同选择，衡量结果，再用后续观测改进下一版模型。", "ファンドの選択肢を比較し、結果を測定します。その後の観測を次のモデルの改善に用います。", "펀드의 선택지를 비교하고 결과를 측정한 뒤, 이후의 관측으로 다음 모델을 개선합니다."],
+    "Proposed research chain. The examples below do not estimate population flow, price impact or profitable fund decisions. Predictable actions need not produce predictable returns.": [
+      "以上是拟议的研究链路。下方示例并未估计整体交易流、价格冲击或基金决策的盈利性。行为可预测，不代表收益也可预测。",
+      "以上は提案する研究の流れです。以下の例は、集団全体の売買フロー、価格への影響、利益を生むファンド判断を推定するものではありません。行動が予測できても、リターンが予測できるとは限りません。",
+      "제안하는 연구 과정입니다. 아래 예시는 집단의 거래 흐름, 가격 영향, 수익성 있는 펀드 결정을 추정하지 않습니다. 행동을 예측할 수 있어도 수익률까지 예측할 수 있는 것은 아닙니다."
+    ],
+    "Start with evidence you can actually observe.": ["从真正能够观测的证据开始。", "実際に観測できる証拠から始める。", "실제로 관측할 수 있는 근거에서 시작합니다."],
+    "A pilot first establishes which participant records exist, the rights to use them, their coverage and reporting delays, and whether holdings are observed or inferred. Your own trade log does not reveal everyone else’s positions. Missing records remain missing.": [
+      "试点首先确认有哪些参与者记录、是否有权使用、覆盖范围和报告延迟，以及持仓来自实际观测还是推断。自己的交易日志无法揭示所有其他人的持仓。缺失的记录，必须继续标为缺失。",
+      "パイロットではまず、どの参加者記録が存在し、利用権、カバー範囲、報告の遅れがどうなっているか、保有状況が観測値か推定値かを確認します。自社の取引記録だけでは他者全員の保有は分かりません。欠損記録を埋めた事実として扱うこともできません。",
+      "파일럿은 어떤 참여자 기록이 존재하는지, 사용 권한·포괄 범위·보고 지연은 어떤지, 보유 자산이 관측값인지 추정값인지부터 확인합니다. 자체 거래 기록만으로 다른 모든 사람의 포지션을 알 수는 없습니다. 누락된 기록은 누락으로 남겨야 합니다."
+    ],
+    "Available here: synthetic fixtures and a local modeling interface. A proprietary dataset, customer adoption and a production signal feed are not established by this page.": [
+      "本页已提供合成示例和本地建模接口，但并未证明已拥有专有数据集、客户采用或生产级信号服务。",
+      "ここで利用できるのは、合成のサンプルデータとローカルのモデル用インターフェースです。独自データセット、顧客による採用、本番のシグナル配信を示すものではありません。",
+      "현재 제공되는 것은 합성 예시와 로컬 모델링 인터페이스입니다. 이 페이지는 독점 데이터셋, 고객 도입, 운영 중인 신호 제공 서비스가 확보됐음을 보여주지 않습니다."
+    ],
+    "02 / COMPARE THE FUND’S ALTERNATIVES": ["02 / 比较基金的不同选择", "02 / ファンドの選択肢を比較", "02 / 펀드의 선택지 비교"],
+    "A response is an input.": ["他人的反应是一项输入，", "反応予測は判断材料。", "반응 예측은 판단의 입력입니다."],
+    "The trade is a separate decision.": ["自己的交易是另一项决策。", "取引は別の判断。", "거래는 별개의 결정입니다."],
+    "This hypothetical fund account is separate from the participant above. Compare adding, holding or reducing under the same authored price path. Change the path or available liquidity to inspect the consequences of each assumption.": [
+      "这个假设的基金账户与上方参与者相互独立。在同一条人为设定的价格路径下，比较加仓、持有或减仓。改变路径或可用流动性，观察每项假设如何影响结果。",
+      "この仮想ファンド口座は、上の参加者とは別です。同じ説明用の価格経路で、買い増し・保有継続・保有縮小を比較します。経路や流動性を変え、各仮定が結果にどう影響するかを確認してください。",
+      "이 가상 펀드 계좌는 위 참여자와 별개입니다. 동일하게 설정한 가격 경로에서 추가 매수·보유 유지·비중 축소를 비교합니다. 경로나 이용 가능한 유동성을 바꾸며 각 가정의 영향을 살펴보세요."
+    ],
+    "Synthetic accounting example · not a return forecast": ["合成数据记账示例 · 非收益预测", "合成データによる計算例 · リターン予測ではありません", "합성 데이터 회계 예시 · 수익률 예측 아님"],
+    "Authored future path": ["人为设定的后续路径", "説明用に設定した将来経路", "예시로 설정한 이후 경로"],
+    "Rebound": ["反弹", "反発", "반등"],
+    "Further decline": ["继续下跌", "続落", "추가 하락"],
+    "Unchanged": ["期末价格不变", "終値は変わらず", "종료 가격 동일"],
+    "Available liquidity": ["可用流动性", "利用可能な流動性", "이용 가능한 유동성"],
+    "Normal depth": ["正常深度", "通常の板の厚さ", "일반적인 호가 잔량"],
+    "Thin depth": ["深度不足", "薄い板", "부족한 호가 잔량"],
+    "Synthetic fund portfolio values under a shared authored path": ["同一条人为路径下的合成基金组合价值", "共通の設定経路による仮想ファンドの資産額", "동일한 설정 경로에서의 가상 펀드 자산 가치"],
+    "Same starting account and path for every alternative. Model probabilities do not set these prices or choose the fund’s action.": [
+      "每个选项使用相同的初始账户和价格路径。模型概率不会决定这些价格，也不会替基金选择行动。",
+      "すべての選択肢で初期口座と価格経路は共通です。モデルの確率が価格を設定したり、ファンドの行動を選んだりすることはありません。",
+      "모든 선택지는 같은 초기 계좌와 가격 경로를 사용합니다. 모델 확률이 이 가격을 정하거나 펀드의 행동을 선택하지 않습니다."
+    ],
+    "Select the fund’s hypothetical action": ["选择基金的假设行动", "ファンドの仮想行動を選択", "펀드의 가상 행동 선택"],
+    "Inspect the fund comparison": ["查看基金比较的假设与数值", "ファンド比較の前提と数値を確認", "펀드 비교의 가정과 수치 확인"],
+    "Each branch starts with 100 shares and $5,000. A single order requests up to 10 shares. Fees are 0.1% of filled value. Normal depth allows 10 shares at a $0.20 spread; thin depth allows 3 at a $0.80 spread. Cash and inventory remain nonnegative. These are teaching assumptions, not venue estimates.": [
+      "各分支均从 100 股和 5,000 美元开始，单笔订单最多申请 10 股。手续费为成交金额的 0.1%。正常深度下，价差为 0.20 美元，最多成交 10 股；深度不足时，价差为 0.80 美元，最多成交 3 股。现金和持仓均不得为负。这些是讲解用假设，并非交易场所的估计参数。",
+      "各分岐は100株と5,000ドルから始まり、1回の注文は最大10株です。手数料は約定金額の0.1%。通常の板ではスプレッド0.20ドルで10株まで、薄い板では0.80ドルで3株まで約定します。現金と保有株数は負になりません。説明用の仮定であり、実際の取引所の推定値ではありません。",
+      "각 경로는 100주와 5,000달러에서 시작하며, 한 번의 주문은 최대 10주입니다. 수수료는 체결 금액의 0.1%입니다. 일반 잔량에서는 호가 차이 0.20달러에 최대 10주, 부족한 잔량에서는 0.80달러에 최대 3주가 체결됩니다. 현금과 보유 수량은 음수가 될 수 없습니다. 설명용 가정이며 실제 거래소의 추정치가 아닙니다."
+    ],
+    "Later values mark the resulting holdings on an externally authored path. The example omits market impact, borrowing, queue position and signal generation. It cannot establish that a behavioral forecast improves trading.": [
+      "后续价值按外部设定的价格路径，对成交后的持仓重新估值。示例不包含市场冲击、借贷、订单排队或信号生成，不能证明行为预测改善了交易表现。",
+      "その後の資産額は、約定後の保有を外部で設定した価格経路で評価したものです。市場インパクト、借入、注文待ち順、シグナル生成は含みません。行動予測が取引を改善する証拠にはなりません。",
+      "이후 가치는 외부에서 설정한 가격 경로로 체결 후 보유 자산을 평가한 값입니다. 시장 영향, 차입, 주문 대기 순서, 신호 생성은 포함하지 않습니다. 행동 예측이 거래 성과를 개선한다는 증거가 될 수 없습니다."
+    ],
+    "Synthetic alternatives · USD": ["合成情景下的不同选择 · 美元", "合成データによる選択肢 · 米ドル", "합성 시나리오 선택지 · 미국 달러"],
+    "Alternative": ["选项", "選択肢", "선택지"],
+    "End value": ["期末价值", "期末資産額", "종료 자산 가치"],
+    "Difference from Hold": ["相对持有的差额", "保有継続との差", "보유 유지 대비 차이"],
+    "03 / WHY JEV": ["03 / 为什么用 Jev", "03 / JEVを使う理由", "03 / JEV를 사용하는 이유"],
+    "Authored fixture · Jev has not been called": ["人为设定的示例 · 尚未调用 Jev", "設定済みの例 · JEV未呼び出し", "설정된 예시 · JEV 호출 전"],
+    "Authored fixture · not a Jev judgment": ["人为设定的示例 · 非 Jev 判断", "設定済みの例 · JEVの判断ではありません", "설정된 예시 · JEV의 판단 아님"],
+    "Evaluate with Jev": ["用 Jev 评估", "Jevで評価", "Jev로 평가"],
+    "A typed judgment of the participant’s next response.": ["对参与者下一步反应的类型化判断。", "参加者の次の反応を型付き判断で返す。", "참여자의 다음 반응에 대한 타입이 정해진 판단."],
+    "The selected trader, event and history setting above define this snapshot. The optional local adapter sends only reconstructed synthetic state; credentials stay on the server. This judgment never selects a fund action or places an order.": [
+      "这份快照由上方选定的交易者、事件及历史开关确定。可选的本地适配器只发送重新构建的合成状态，凭证保留在服务器端。判断结果不会替基金选择行动，也不会下单。",
+      "このスナップショットは、上で選んだ参加者、イベント、履歴設定で決まります。任意のローカルアダプターは再構成した合成状態だけを送り、認証情報はサーバーに保持します。判断結果がファンドの行動を選択したり、注文を出したりすることはありません。",
+      "위에서 선택한 트레이더, 이벤트, 기록 설정이 이 스냅샷을 정의합니다. 선택적으로 사용하는 로컬 어댑터는 재구성한 합성 상태만 전송하며 인증 정보는 서버에 보관합니다. 이 판단은 펀드의 행동을 선택하거나 주문을 제출하지 않습니다."
+    ],
+    "Starting snapshot: 100 shares and $5,000. The step-by-step ledger below is a separate illustration.": [
+      "初始快照：100 股和 5,000 美元。下方逐步更新的账本是独立演示。",
+      "初期スナップショットは100株と5,000ドルです。下の段階的な残高更新は別の例です。",
+      "초기 스냅샷은 100주와 5,000달러입니다. 아래의 단계별 잔고 갱신은 별개의 예시입니다."
+    ],
+    "Hold is a behavioral choice. A missing observation means there is no outcome to score. Abstention means the model cannot support a match. Confidence describes distribution concentration, not accuracy or profit.": [
+      "持有是一种行为选择。观测缺失表示没有可计分的结果。弃答表示模型无法支持某个选项。置信度描述的是概率分布的集中程度，不是准确率或盈利能力。",
+      "保有継続は行動の選択です。観測欠損には採点できる結果がありません。判断保留は、モデルが選択を裏付けられないことを意味します。信頼度が示すのは分布の集中度であり、精度や利益ではありません。",
+      "보유 유지는 행동 선택입니다. 관측 누락은 평가할 결과가 없다는 뜻입니다. 판단 유보는 모델이 특정 선택을 뒷받침할 수 없다는 의미입니다. 신뢰도는 확률 분포의 집중도이며 정확도나 수익이 아닙니다."
+    ],
+    "Open research API": ["打开研究 API", "研究APIを開く", "연구 API 열기"],
+    "Research API · local preview": ["研究 API · 本地预览", "研究API · ローカルプレビュー", "연구 API · 로컬 미리보기"],
+    "Close API": ["关闭 API", "APIを閉じる", "API 닫기"],
+    "This is an inspectable local contract for synthetic participant judgments. It accepts fixture selections, not a fund’s private records. A production data interface would be agreed during the pilot.": [
+      "这里可查看用于合成参与者判断的本地接口约定。它只接受示例选项，不接收基金的私有记录。生产数据接口将在研究试点中另行约定。",
+      "合成参加者の判断用に、ローカルのインターフェース仕様を確認できます。受け付けるのはサンプルの選択情報であり、ファンドの非公開記録ではありません。本番データのインターフェースはパイロットで合意する予定です。",
+      "합성 참여자 판단을 위한 로컬 인터페이스 명세입니다. 예시 선택값만 받으며 펀드의 비공개 기록은 받지 않습니다. 운영 데이터 인터페이스는 파일럿 과정에서 합의할 예정입니다."
+    ],
+    "Captured fixture selection": ["本次捕获的示例选项", "取得したサンプル選択", "캡처한 예시 선택값"],
+    "Typed response and evidence boundary": ["类型化响应与证据边界", "型付き応答と証拠の範囲", "타입이 정해진 응답과 근거의 범위"],
+    "Keep the API key on the server. Version the question and inputs. Validate the complete probability distribution before use. No judgment authorizes a trade.": [
+      "API 密钥保留在服务器端。问题与输入均记录版本，使用前校验完整概率分布。任何判断结果都不构成交易授权。",
+      "APIキーはサーバーに保持します。質問と入力を版管理し、使用前に確率分布全体を検証します。判断結果は取引の許可にはなりません。",
+      "API 키는 서버에 보관합니다. 질문과 입력의 버전을 관리하고 사용 전에 전체 확률 분포를 검증합니다. 어떤 판단도 거래를 승인하지 않습니다."
+    ],
+    "This research page is readable without JavaScript. Enable JavaScript to compare the interactive examples. Default results are authored. The optional local adapter requires server configuration. No trading connection is used.": [
+      "关闭 JavaScript 仍可阅读本页；启用后可操作示例并比较结果。默认结果为人为设定。可选本地适配器需要服务器配置。本页不连接交易系统。",
+      "JavaScriptなしでも本文を読めます。例を操作して比較するにはJavaScriptを有効にしてください。初期結果は設定値です。任意のローカルアダプターにはサーバー設定が必要です。取引システムには接続しません。",
+      "JavaScript 없이도 본문을 읽을 수 있습니다. 예시를 조작하고 비교하려면 JavaScript를 활성화하세요. 기본 결과는 설정된 예시이며, 선택적 로컬 어댑터에는 서버 설정이 필요합니다. 거래 시스템에 연결하지 않습니다."
+    ],
+    "Test whether behavioral history and holdings improve event-driven trade timing beyond an existing strategy, after costs.": [
+      "检验行为历史与持仓信息，能否在现有策略之上改善事件后的买卖时机，并在扣除成本后创造增量价值。",
+      "行動履歴と保有状況が、イベント後の売買タイミングを既存戦略より改善し、コスト控除後も価値を生むかを検証します。",
+      "행동 기록과 보유 자산 정보가 기존 전략에 더해 이벤트 이후의 매매 시점을 개선하고, 비용 차감 후에도 가치를 내는지 검증합니다."
+    ],
+    "Same information. Different trades. A proposed research pilot for the decisions your fund already makes.": [
+      "同一条消息，不同的交易选择。围绕基金已有的交易决策，提出一项可检验的研究试点。",
+      "同じ情報。異なる取引。ファンドが日々行う判断を対象に、研究パイロットを提案します。",
+      "같은 정보, 다른 거래. 펀드가 이미 내리고 있는 결정을 대상으로 연구 파일럿을 제안합니다."
+    ],
+    "For event-driven investment teams": ["面向事件驱动投资团队", "イベントドリブン運用チームへ", "이벤트 기반 투자팀을 위한 연구"],
+    "A proposed research pilot around earnings and guidance. Local demonstrations use synthetic data; no trading advantage or execution-speed claim is established.": [
+      "拟以业绩公告与业绩指引为切入点开展研究试点。本地演示使用合成数据，尚未验证交易优势或执行速度。",
+      "決算発表と業績見通しを対象とする研究パイロットの提案です。ローカルのデモは合成データを使っており、売買の優位性や執行速度を実証するものではありません。",
+      "실적 발표와 경영진 전망을 대상으로 연구 파일럿을 제안합니다. 로컬 데모는 합성 데이터를 사용하며, 거래 우위나 주문 실행 속도를 입증하지 않습니다."
+    ],
+    "The same announcement reaches people with different holdings, available cash and reasons to act. Their histories may help explain who responds immediately, who waits and who changes course.": [
+      "同一份公告，面对的是持仓、可用资金和交易动机各不相同的人。他们过去的选择，或许能帮助判断谁会立即行动、谁会等待、谁会改变方向。",
+      "同じ発表を受け取っても、保有資産、手元資金、取引の動機は人によって異なります。過去の履歴は、すぐ動く人、待つ人、方針を変える人を見分ける手がかりになるかもしれません。",
+      "같은 발표를 접해도 보유 자산, 가용 현금, 거래 이유는 사람마다 다릅니다. 과거 기록은 누가 즉시 반응하고, 누가 기다리며, 누가 방향을 바꿀지 이해하는 단서가 될 수 있습니다."
+    ],
+    "A useful history connects each decision to the information available at the time, the position held, the amount traded and the delay before acting. These records are the proposed evidence; a personality label is not a substitute.": [
+      "有用的历史记录，应把每次决策与当时可获得的信息、已有持仓、交易数量和行动延迟联系起来。我们计划以这些记录为依据；给人贴一个性格标签，不能代替证据。",
+      "有用な履歴は、一つひとつの判断を、その時点で得られた情報、保有状況、取引量、行動までの時間と結び付けます。根拠にするのはこうした記録であり、性格のラベルでは代替できません。",
+      "유용한 기록은 각 결정을 당시 알 수 있었던 정보, 보유 규모, 거래량, 행동까지 걸린 시간과 연결합니다. 연구의 근거는 이런 기록이며, 성향을 붙인 이름으로 대체할 수 없습니다."
+    ],
+    "Backer is developing the loop: behavioral history plus holdings and context; Jev evaluates explicit alternatives; code simulates, compares and updates the state. Observed outcomes would then support calibration. The commercial question is whether those responses add value to a fund’s existing decisions.": [
+      "Backer 正在构建这样一个循环：将行为历史、持仓和当前情境交给 Jev，评估明确列出的选项；由代码完成模拟、比较和状态更新，再用实际观测结果校准。商业价值最终取决于：这些反应预测能否改善基金已有的决策。",
+      "Backerは、行動履歴・保有状況・現在の環境をもとにJevが明示された選択肢を評価し、コードがシミュレーション、比較、状態更新を行う循環を開発しています。その後、実際の結果を校正に用いる計画です。事業上の問いは、その反応予測がファンドの既存判断に価値を加えるかどうかです。",
+      "Backer는 행동 기록·보유 자산·현재 상황을 바탕으로 Jev가 명시된 선택지를 평가하고, 코드가 시뮬레이션·비교·상태 갱신을 맡는 과정을 개발하고 있습니다. 이후 실제 관측 결과로 예측을 보정할 계획입니다. 핵심은 이 반응 예측이 펀드의 기존 판단에 가치를 더하는지입니다."
+    ],
+    "All profiles start with the same long position and capacity to add or reduce. This four-category display describes possible records: Add, Hold, Reduce or a missing observation. Missing data is not an action. The separate Jev Choice interface also permits model abstention, which must never be scored as an observed trade.": [
+      "所有人物都从相同的多头持仓出发，均有加仓或减仓的能力。这里的四类表示可能记录到的情况：加仓、明确持有、减仓或观测缺失。缺失数据不是一种行动。另设的 Jev Choice 接口允许模型弃答；弃答也不能作为已发生的交易计分。",
+      "全員が同じ買い持ちポジションから始まり、買い増し・保有縮小の余力を持ちます。ここで示す4区分は、買い増し、保有継続、保有縮小、観測欠損という記録上の分類です。欠損は行動ではありません。別のJev Choiceインターフェースではモデルの判断保留も認めますが、それを実際の取引として採点してはいけません。",
+      "모든 인물은 같은 매수 포지션에서 시작하며 추가 매수와 비중 축소가 가능합니다. 이 네 범주는 기록 가능한 결과인 추가 매수, 명시적 보유 유지, 비중 축소, 관측 누락을 뜻합니다. 누락은 행동이 아닙니다. 별도의 Jev Choice 인터페이스는 모델의 판단 유보도 허용하지만, 이를 실제 거래로 간주해 평가해서는 안 됩니다."
+    ],
+    "Change the mix of synthetic participants to inspect possible recorded responses. This is a headcount illustration, not an estimate of orders, capital or price movement.": [
+      "调整合成参与者的构成，观察可能记录到的反应。这里展示的是人数分布，不是订单量、资金量或价格变化的估计。",
+      "合成された参加者の構成を変えて、記録されうる反応を確認します。これは人数の例示であり、注文量、資金量、価格変動の推定ではありません。",
+      "합성 참여자의 구성을 바꾸며 기록될 수 있는 반응을 살펴보세요. 이 예시는 인원 분포이며, 주문량·자금 규모·가격 변동의 추정치가 아닙니다."
+    ],
+    "A few large sellers can outweigh many small buyers. Trade size, arrival time, coverage and liquidity must be estimated before these counts could inform a fund’s decision.": [
+      "少数大额卖单，可能超过许多小额买单的总量。要让人数分布为基金决策提供参考，还需要估计交易规模、到达时间、样本覆盖和市场流动性。",
+      "少数の大口売りが、多数の小口買いを上回ることもあります。この人数をファンドの判断に役立てるには、取引量、注文が出る時刻、データのカバー範囲、流動性を推定する必要があります。",
+      "소수의 대규모 매도가 다수의 소규모 매수보다 클 수 있습니다. 인원 수를 펀드의 판단에 활용하려면 거래 규모, 주문 도착 시점, 표본의 범위, 유동성을 함께 추정해야 합니다."
+    ],
+    "The participant model and the fund’s decision are separate. Backer supplies a participant’s history, holdings and current situation. Jev returns probabilities over defined responses. Code owns constraints, simulated updates and the next request. A fund tests how to use those responses within its own strategy.": [
+      "预测参与者会怎么做，与决定基金该怎么做，是两个问题。Backer 提供参与者的历史、持仓和当前情境，Jev 返回各个明确选项的概率。约束、模拟状态更新和下一次请求由代码负责。基金再检验如何把这些反应预测用于自身策略。",
+      "参加者の行動モデルと、ファンド自身の判断は別です。Backerが参加者の履歴・保有状況・現在の環境を提供し、Jevが定義済みの反応ごとの確率を返します。制約、シミュレーションの状態更新、次のリクエストはコードが管理します。ファンドは、その予測を自らの戦略でどう使うかを検証します。",
+      "참여자의 행동 예측과 펀드의 판단은 별개입니다. Backer가 참여자의 기록·보유 자산·현재 상황을 제공하면 Jev는 정해진 반응별 확률을 반환합니다. 제약 조건, 시뮬레이션 상태 갱신, 다음 요청은 코드가 관리합니다. 펀드는 이 예측을 자체 전략에 어떻게 활용할지 검증합니다."
+    ],
+    "Independent judgments can share a frozen snapshot. Later decisions receive updated state. In a pilot, recorded outcomes would support error measurement, calibration and comparison with the previous model. Replaying the examples here does not train Jev.": [
+      "独立判断可以共用同一份冻结快照，后续决策则接收更新后的状态。在研究试点中，实际记录的结果将用于衡量误差、校准预测并比较新旧模型。反复运行本页示例不会训练 Jev。",
+      "独立した判断には同じ固定スナップショットを渡し、後続の判断には更新後の状態を渡せます。パイロットでは実際の記録を用いて誤差を測り、予測を校正し、旧モデルと比較する計画です。このページの例を繰り返しても、Jevは学習しません。",
+      "독립적인 판단에는 동일하게 고정한 스냅샷을 사용하고, 이후 결정에는 갱신된 상태를 전달할 수 있습니다. 파일럿에서는 실제 기록으로 오차를 측정하고 예측을 보정하며 이전 모델과 비교할 계획입니다. 이 예시를 반복해도 Jev가 학습하지는 않습니다."
+    ],
+    "Define the data and trading decision with us. A pilot starts by checking which records exist, what they cover and whether they were available before the decision.": [
+      "与我们一起明确数据和待检验的交易决策。试点首先核实：有哪些记录、覆盖哪些对象，以及这些信息是否在决策前已经可用。",
+      "データと検証する取引判断を一緒に定義しましょう。パイロットは、どの記録が存在し、何をカバーし、判断の前に利用可能だったかの確認から始めます。",
+      "함께 데이터와 검증할 거래 결정을 정의합니다. 파일럿은 어떤 기록이 있고 무엇을 포함하며, 결정 전에 이용할 수 있었는지 확인하는 데서 시작합니다."
+    ],
+    "Contact us": ["联系我们", "お問い合わせ", "문의하기"],
+    "RESEARCH CONTEXT / NOT BACKER RESULTS": ["研究背景 / 非 Backer 实测结果", "研究の背景 / BACKERの実績ではありません", "연구 배경 / BACKER의 실적이 아닙니다"],
+    "An AI label is not": ["贴上 AI 标签，", "AIという名前だけでは、", "AI라는 이름만으로"],
+    "evidence of an edge.": ["不等于拥有优势。", "優位性の証明にはならない。", "우위가 입증되지는 않습니다."],
+    "Chen, Sialm and Xu report an early relative advantage for disclosed AI hedge funds, but no statistically significant relative alpha after 2017. This motivates a demand for evidence. It does not show that AI caused the decline or that Backer’s behavioral approach produces profitable signals.": [
+      "Chen、Sialm 与 Xu 的研究发现，披露使用 AI 的对冲基金在早期具有相对优势，但 2017 年之后的相对 Alpha 不再具有统计显著性。这提醒我们必须用证据检验优势；它既不能证明优势下降由 AI 导致，也不能证明 Backer 的行为研究能产生盈利信号。",
+      "Chen、Sialm、Xuは、AI利用を開示したヘッジファンドに初期の相対的優位性があった一方、2017年以降の相対アルファは統計的に有意でなかったと報告しています。求められるのは実証です。この結果は、AIが低下の原因だとも、Backerの行動研究が利益を生むシグナルにつながるとも示していません。",
+      "Chen, Sialm, Xu는 AI 사용을 공시한 헤지펀드가 초기에는 상대적 우위를 보였지만, 2017년 이후의 상대 알파는 통계적으로 유의하지 않았다고 보고합니다. 이는 실증이 필요하다는 배경입니다. AI가 하락의 원인이었다거나 Backer의 행동 연구가 수익성 있는 신호를 만든다는 증거는 아닙니다."
+    ],
+    "DEPLOYMENT DESIGN / TIME MATTERS": ["部署设计 / 时间决定信息是否有用", "導入設計 / 情報の時間価値", "도입 설계 / 정보의 유효 시간"],
+    "The proposed pilot targets decisions after an event, on a horizon agreed with the fund. Build context before the announcement, timestamp each judgment and measure whether it arrives while it is still useful. Execution remains under the fund’s controls.": [
+      "拟议试点关注事件发生后的决策，具体时间范围由双方约定。公告前准备情境信息，为每次判断记录时间戳，并衡量结果到达时是否仍然有用。交易执行始终由基金控制。",
+      "提案するパイロットは、ファンドと合意した時間軸でイベント後の判断を検証します。発表前に状況を整理し、各判断に時刻を記録し、情報が有効なうちに届くかを測定します。取引の執行は引き続きファンドが管理します。",
+      "제안하는 파일럿은 펀드와 합의한 시간 범위에서 이벤트 이후의 결정을 다룹니다. 발표 전에 맥락을 준비하고, 각 판단에 시각을 기록하며, 아직 유용할 때 도착하는지 측정합니다. 거래 실행은 펀드가 계속 통제합니다."
+    ],
+    "Jev belongs in the proposed judgment layer. This page establishes no high-frequency execution speed. Measure end-to-end latency, stale results and cost on the actual workload; the vendor’s measurements are background, not an application benchmark.": [
+      "Jev 位于拟议系统的判断层。本页未验证高频交易执行速度。端到端延迟、过期结果比例和成本，都需要在实际工作负载下测量；供应商公布的测量仅作背景，不能当作本应用的性能指标。",
+      "Jevは提案する判断レイヤーを担います。このページは高頻度の執行速度を実証していません。実際の処理内容で、全体の遅延、期限切れ結果、コストを測る必要があります。ベンダーの測定値は参考情報であり、このアプリケーションの性能値ではありません。",
+      "Jev는 제안하는 시스템의 판단 계층을 맡습니다. 이 페이지는 고빈도 주문 실행 속도를 입증하지 않습니다. 실제 작업에서 전체 지연, 유효 시간이 지난 결과, 비용을 측정해야 합니다. 공급업체 측정치는 참고 자료이며 이 애플리케이션의 성능 지표가 아닙니다."
+    ],
+    "THE PILOT / DEFINE SUCCESS BEFORE THE TEST": ["研究试点 / 先定义成功，再开始检验", "パイロット / 検証前に成功基準を決める", "파일럿 / 검증 전에 성공 기준 정의"],
+    "Test on your events.": ["用你的事件样本检验，", "実際の対象イベントで、", "실제 대상 이벤트로,"],
+    "Against your benchmark.": ["与现有方法比较。", "既存の手法と比較する。", "기존 방식과 비교하세요."],
+    "Start with one instrument universe, one event family and one decision horizon. Agree the existing strategy and success criteria before outcomes are revealed. The proposed deliverable is a reproducible comparison and a clear go/no-go decision, followed by a prospective shadow test without committing trading capital.": [
+      "从一组交易标的、一类事件和一个决策时间范围开始。在看到结果前，约定现有策略基准与成功标准。拟交付可复现的比较和明确的继续／停止结论，再进行前瞻性影子测试：记录本来会做出的交易，但不投入真实交易资金。",
+      "対象銘柄群、イベントの種類、判断の時間軸を一つずつ定めます。結果を見る前に、比較する既存戦略と成功基準に合意します。再現可能な比較と明確な継続・中止判断を成果物とし、その後は実際の売買資金を使わず、将来の判断を記録するシャドーテストを行う計画です。",
+      "하나의 거래 대상군, 이벤트 유형, 판단 시간 범위에서 시작합니다. 결과를 보기 전에 기존 전략과 성공 기준을 합의합니다. 재현 가능한 비교와 명확한 진행·중단 판단을 제공하고, 이후 실제 거래 자금을 투입하지 않은 채 앞으로의 결정을 기록하는 섀도 테스트를 진행하는 것이 제안 내용입니다."
+    ],
+    "Establish rights, participant coverage, holdings, event exposure and reporting delays. Freeze only information available before each decision. Mark missing observations and model abstention separately.": [
+      "确认数据使用权、参与者覆盖、持仓、接触事件信息的情况和记录延迟。每次决策只使用此前已经可用的信息，并分别标记观测缺失与模型弃答。",
+      "利用権、参加者のカバー範囲、保有状況、イベント情報への接触、報告の遅れを確認します。各判断の前に得られた情報だけを固定し、観測欠損とモデルの判断保留を分けて記録します。",
+      "데이터 사용 권한, 참여자 범위, 보유 자산, 이벤트 정보 접촉 여부, 보고 지연을 확인합니다. 각 결정 전에 이용할 수 있던 정보만 고정하고, 관측 누락과 모델의 판단 유보를 별도로 표시합니다."
+    ],
+    "Compare the fund’s existing model, the same inputs without history, a simple behavioral model and the Jev-based model. Reserve later events for evaluation; test familiar and unseen participants separately.": [
+      "比较基金现有模型、不使用历史的同输入模型、简单行为模型和 Jev 模型。保留较晚发生的事件用于评估，并分别检验已见过和未见过的参与者。",
+      "ファンドの既存モデル、履歴を除いた同一入力のモデル、単純な行動モデル、Jevを使うモデルを比較します。後の時期のイベントを評価用に残し、既知の参加者と未見の参加者を分けて検証します。",
+      "펀드의 기존 모델, 같은 입력에서 기록만 제외한 모델, 단순 행동 모델, Jev 기반 모델을 비교합니다. 이후 시점의 이벤트는 평가용으로 남기고, 기존에 본 참여자와 처음 보는 참여자를 따로 검증합니다."
+    ],
+    "Use two scorecards: response accuracy, timing and calibration; then economic results after spreads, fees, impact, missed fills and data/model costs. Check drawdowns, trade size and sensitivity to delay. Better predictions alone do not pass the economic test.": [
+      "分两层评估：先看反应预测的准确度、时机和概率校准；再扣除买卖价差、手续费、市场冲击、未成交损失以及数据和模型成本，衡量经济结果。同时检查回撤、交易规模和延迟敏感性。预测更准，并不等于通过了经济价值检验。",
+      "評価は二段階です。まず反応予測の精度、タイミング、確率の校正を確認し、次にスプレッド、手数料、市場インパクト、未約定、データ・モデル費用を反映した経済的結果を測ります。ドローダウン、取引量、遅延への感度も確認します。予測が良くなるだけでは、経済的な合格にはなりません。",
+      "두 단계로 평가합니다. 먼저 반응 예측의 정확도·시점·확률 보정을 보고, 이후 호가 차이·수수료·시장 영향·미체결·데이터 및 모델 비용을 반영한 경제적 결과를 확인합니다. 낙폭, 거래 규모, 지연 민감도도 점검합니다. 예측 개선만으로 경제적 검증을 통과할 수는 없습니다."
+    ],
+    "Record timestamped predictions, coverage, abstentions and model versions. Report whether the agreed criteria were met. Fit or calibrate on earlier observations, evaluate the frozen next version on new data, and retain the previous benchmark.": [
+      "保留带时间戳的预测、覆盖情况、弃答记录和模型版本，报告是否达到事先约定的标准。用较早的观测拟合或校准，在新数据上评估冻结后的下一版本，并保留原有基准。",
+      "時刻付きの予測、カバー範囲、判断保留、モデルの版を記録し、合意した基準を満たしたか報告します。過去の観測で学習・校正し、固定した次版を新しいデータで評価します。以前のベンチマークも残します。",
+      "시각이 포함된 예측, 적용 범위, 판단 유보, 모델 버전을 기록하고 합의한 기준의 충족 여부를 보고합니다. 이전 관측으로 학습하거나 보정한 뒤 다음 버전을 고정해 새 데이터로 평가하며, 기존 비교 기준도 유지합니다."
+    ],
+    "RESEARCH PILOT / API PREVIEW": ["研究试点 / API 预览", "研究パイロット / APIプレビュー", "연구 파일럿 / API 미리보기"],
+    "Evaluate on your events.": ["用你的事件，检验它的价值。", "対象イベントで価値を確かめる。", "대상 이벤트로 가치를 검증하세요."],
+    "Discuss a bounded research pilot: establish the data, choose the decision and compare with your current approach. Inspect the typed interface below. Production access, a proprietary dataset and profitable signals are not established by this preview.": [
+      "讨论一项范围明确的研究试点：确认数据，选定决策，与现有方法比较。下方可查看类型化接口。本预览不代表已具备生产服务、专有数据集或经验证的盈利信号。",
+      "範囲を定めた研究パイロットをご相談ください。データを確認し、対象の判断を選び、現在の手法と比較します。下で型付きインターフェースを確認できます。このプレビューは、本番サービス、独自データセット、収益性のあるシグナルの提供を示すものではありません。",
+      "범위가 명확한 연구 파일럿을 논의하세요. 데이터를 확인하고, 대상 결정을 정한 뒤 현재 방식과 비교합니다. 아래에서 타입이 정해진 인터페이스를 살펴볼 수 있습니다. 이 미리보기는 운영 서비스, 독점 데이터셋, 수익성 있는 신호가 확보됐음을 뜻하지 않습니다."
+    ]
+  });
 }());

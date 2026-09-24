@@ -78,6 +78,8 @@ const PUBLIC_FILES = Object.freeze([
   'css/research-api.css',
   'js/hft-model.js',
   'js/hft-research.js',
+  'js/hft-pilot.js',
+  'js/hft-contract.js',
   'css/simulation-usecases.css',
   'js/simulation-usecases.js',
   'css/simulation.css',

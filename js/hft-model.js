@@ -97,5 +97,123 @@
     var totals = actions.map(function (_, action) { return flows.reduce(function (sum, row) { return sum + row[action]; }, 0); });
     return { flows: flows, totals: totals, tilt: totals[0] - totals[2] };
   }
-  return { studies: studies, markets: markets, decision: decision, step: step, events: events, profiles: profiles, actions: actions, mixes: mixes, interval: interval, response: response, heroResponse: heroResponse, heroProjection: heroProjection, population: population, contextStatus: contextStatus };
+
+  // Fund choices are separate from the participant whose behavior is modeled.
+  // These paths are reader-selected assumptions, never inferred from a Choice.
+  var fundPaths = {
+    rebound: [1, 0.990, 0.985, 0.997, 1.010, 1.024, 1.030],
+    fall: [1, 0.992, 0.986, 0.978, 0.969, 0.958, 0.950],
+    flat: [1, 1.002, 0.999, 1.001, 0.998, 1.002, 1]
+  };
+  var fundDepths = {
+    normal: { spread: 0.20, availableShares: 10 },
+    thin: { spread: 0.80, availableShares: 3 }
+  };
+  var choiceIds = ['hold', 'add', 'reduce', 'abstain'];
+  function rounded(value) { return Number(value.toFixed(6)); }
+  function knownKey(value, table) {
+    return typeof value === 'string' && Object.prototype.hasOwnProperty.call(table, value);
+  }
+  function plainObject(value) {
+    return value !== null && typeof value === 'object' && !Array.isArray(value)
+      && [Object.prototype, null].indexOf(Object.getPrototypeOf(value)) !== -1;
+  }
+  function exactKeys(value, keys) {
+    return plainObject(value) && Object.keys(value).length === keys.length
+      && keys.every(function (key) { return Object.prototype.hasOwnProperty.call(value, key); });
+  }
+  function validateFixtureSelection(input) {
+    if (!exactKeys(input, ['eventId', 'profileId', 'historyIncluded'])
+      || !knownKey(input.eventId, events) || !Number.isInteger(input.profileId)
+      || input.profileId < 0 || input.profileId >= profiles.length
+      || typeof input.historyIncluded !== 'boolean') throw new TypeError('Invalid synthetic selection');
+    return { eventId: input.eventId, profileId: input.profileId, historyIncluded: input.historyIncluded };
+  }
+  function compareAlternatives(eventId, pathId, depthId) {
+    if (pathId === undefined) pathId = 'rebound';
+    if (depthId === undefined) depthId = 'normal';
+    if (!knownKey(eventId, markets) || !knownKey(pathId, fundPaths) || !knownKey(depthId, fundDepths)) {
+      throw new RangeError('Unknown fund comparison fixture');
+    }
+    var initial = { shares: 100, cash: 5000, mark: markets[eventId].price };
+    initial.value = initial.cash + initial.shares * initial.mark;
+    var depth = fundDepths[depthId];
+    var assumptions = { orderCap: 10, spread: depth.spread, feeRate: 0.001,
+      availableShares: depth.availableShares, steps: fundPaths[pathId].length - 1 };
+    var path = fundPaths[pathId].map(function (relative) { return Number((initial.mark * relative).toFixed(2)); });
+    var finalMark = path[path.length - 1];
+    var holdValue = initial.cash + initial.shares * finalMark;
+    var branches = ['add', 'hold', 'reduce'].map(function (id) {
+      var requested = id === 'hold' ? 0 : assumptions.orderCap;
+      var fillPrice = id === 'hold' ? null : rounded(initial.mark + (id === 'add' ? 1 : -1) * assumptions.spread / 2);
+      var capacity = id === 'add' ? Math.floor(initial.cash / (fillPrice * (1 + assumptions.feeRate))) : initial.shares;
+      var filled = Math.min(requested, assumptions.availableShares, capacity);
+      var notional = filled * (fillPrice || 0);
+      var fee = rounded(notional * assumptions.feeRate);
+      var cash = rounded(initial.cash + (id === 'add' ? -notional : notional) - fee);
+      var shares = initial.shares + (id === 'add' ? filled : -filled);
+      if (cash < 0 || shares < 0) throw new RangeError('Synthetic fund constraint violated');
+      // Point zero precedes the one initial trade; later points mark its holdings.
+      var points = path.map(function (mark, index) { return index === 0 ? initial.value : rounded(cash + shares * mark); });
+      var finalValue = points[points.length - 1];
+      return { id: id, requestedShares: requested, filledShares: filled, unfilledShares: requested - filled,
+        fillPrice: fillPrice, spreadCost: rounded(filled * assumptions.spread / 2), fee: fee,
+        cash: cash, shares: shares, postTradeValue: rounded(cash + shares * initial.mark), points: points,
+        finalMark: finalMark, finalValue: finalValue, pnl: rounded(finalValue - initial.value),
+        incrementalVsHold: rounded(finalValue - holdValue) };
+    });
+    return { eventId: eventId, pathId: pathId, depthId: depthId, synthetic: true,
+      initial: initial, path: path, assumptions: assumptions, branches: branches };
+  }
+
+  /** Canonical English fixture state only. No future path, outcomes or client text. */
+  function buildJudgmentState(input) {
+    var selection = validateFixtureSelection(input);
+    var event = events[selection.eventId];
+    var records = selection.historyIncluded ? histories[selection.profileId].map(function (record) {
+      return { relativeTime: record.date, event: record.event, action: record.action,
+        shareChange: record.change, context: record.context };
+    }) : [];
+    return {
+      evidence: 'Authored synthetic records and market context. No observed person, live price or validated behavioral forecast.',
+      instrument: 'Fictional company shares; amounts are illustrative US dollars.',
+      behavioralHistory: { status: selection.historyIncluded ? 'included' : 'withheld', records: records },
+      holdings: { shares: 100, cash: 5000 },
+      situationalContext: { eventId: selection.eventId, event: event.label, detail: event.detail,
+        marketMark: markets[selection.eventId].price, marketDescription: markets[selection.eventId].context,
+        decisionHorizon: 'The next decision within one synthetic session.' },
+      constraints: { noShortSelling: true, noBorrowing: true, maximumOrderShares: 10 }
+    };
+  }
+
+  /** Validate structure and provenance; schema validity is not behavioral accuracy. */
+  function validateJudgment(input) {
+    if (!exactKeys(input, ['type', 'choice', 'probabilities', 'confidence', 'source', 'model'])
+      || input.type !== 'choice' || choiceIds.indexOf(input.choice) === -1
+      || !exactKeys(input.probabilities, choiceIds) || typeof input.confidence !== 'number'
+      || !Number.isFinite(input.confidence) || input.confidence < 0 || input.confidence > 1
+      || !((input.source === 'fixture' && input.model === 'fixture-v1')
+        || (input.source === 'jev' && input.model === 'jev-1.13.0'))) throw new TypeError('Invalid Choice judgment');
+    var values = choiceIds.map(function (id) { return input.probabilities[id]; });
+    if (values.some(function (value) { return typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > 1; })
+      || Math.abs(values.reduce(function (sum, value) { return sum + value; }, 0) - 1) > 0.000001
+      || input.probabilities[input.choice] < Math.max.apply(Math, values) - 1e-12) throw new TypeError('Invalid Choice distribution');
+    return { type: 'choice', choice: input.choice,
+      probabilities: { hold: input.probabilities.hold, add: input.probabilities.add,
+        reduce: input.probabilities.reduce, abstain: input.probabilities.abstain },
+      confidence: input.confidence, source: input.source, model: input.model };
+  }
+  function fixtureJudgment(input) {
+    var selection = validateFixtureSelection(input);
+    var values = heroResponse(selection.eventId, selection.profileId, selection.historyIncluded);
+    var probabilities = { hold: values[1] / 100, add: values[0] / 100, reduce: values[2] / 100, abstain: 0 };
+    var choice = choiceIds.reduce(function (best, id) { return probabilities[id] > probabilities[best] ? id : best; }, 'hold');
+    // A displayed fixture concentration statistic, not a cached Jev answer or accuracy estimate.
+    var confidence = Math.max(0, (4 * probabilities[choice] - 1) / 3);
+    return validateJudgment({ type: 'choice', choice: choice, probabilities: probabilities,
+      confidence: confidence, source: 'fixture', model: 'fixture-v1' });
+  }
+  return { studies: studies, markets: markets, decision: decision, step: step, events: events, profiles: profiles, actions: actions, mixes: mixes, interval: interval, response: response, heroResponse: heroResponse, heroProjection: heroProjection, population: population, contextStatus: contextStatus,
+    compareAlternatives: compareAlternatives, buildJudgmentState: buildJudgmentState,
+    validateJudgment: validateJudgment, fixtureJudgment: fixtureJudgment };
 }));

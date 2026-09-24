@@ -36,13 +36,21 @@ const REVIEWED_PUBLIC_DATA = Object.freeze({
 });
 
 const REVIEWED_RESEARCH_SCRIPTS = Object.freeze({
+  'js/hft-pilot.js': {
+    classification: 'authored fund branch accounting presenter and explicit optional local typed judgment client; no private records, credentials, automatic order or fitted forecast',
+    sha256: '5a943bb392de5645113553d8d4f6ec85b1024879e0a8c54ab8d12d90c5d8a48c'
+  },
+  'js/hft-contract.js': {
+    classification: 'public local-preview fixture selector and typed response schema; no provider credentials, private data or production access claim',
+    sha256: '578fc998be26b64cf79fd325e0b5b9ad9914bc662eec8fdcd6a5a86c687a1fbb'
+  },
   'js/hft-model.js': {
     classification: 'published Table 5 coefficients, fictional individual trade histories and synthetic decision fixtures; no private records, live inference or trading service',
-    sha256: '0fe786f49561a5af7e9e985bf34c5af3d0f66fa8aa68c1c907e67057790d49c9'
+    sha256: 'a3cf85e861e6b5f1e720f0e4c3dd1ee28f353efc64ddaff0f57bd30a7599989e'
   },
   'js/hft-research.js': {
     classification: 'interactive cited research, authored trader fixtures and six-step Jev reference walkthrough; no private records, external requests or execution',
-    sha256: '1a22e7c6dad28a67ac7c66d2484f6174eb6493a5770faccc9c71865700a3727f'
+    sha256: '8de2245a5793f33fcd31b75077f5d1780fce467d52cdf81afb0466d8d4e1cbc2'
   },
   'js/simulation-atmosphere.js': {
     classification: 'four authored fictional records with draggable source-to-feature reveal and exact phrase inspection; no extraction service or inference',
