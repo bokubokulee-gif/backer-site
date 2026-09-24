@@ -10,14 +10,14 @@
   <link rel="icon" href="../img/backer-mark.png?v=2">
   <link rel="stylesheet" href="../css/simulation.css?v=20260920-5">
   <link rel="stylesheet" href="../css/simulation-usecases.css?v=20260920-5">
-  <link rel="stylesheet" href="../css/hft-research.css?v=20260924-1">
-  <link rel="stylesheet" href="../css/research-api.css?v=20260924-1">
+  <link rel="stylesheet" href="../css/hft-research.css?v=20260924-3">
+  <link rel="stylesheet" href="../css/research-api.css?v=20260924-3">
   <link rel="stylesheet" href="../css/i18n.css?v=20260920-5">
-  <script src="../js/locales/simulation-usecases.js?v=20260924-1" defer></script>
-  <script src="../js/locales/hft-research.js?v=20260924-1" defer></script>
+  <script src="../js/locales/simulation-usecases.js?v=20260924-3" defer></script>
+  <script src="../js/locales/hft-research.js?v=20260924-3" defer></script>
   <script src="../js/i18n.js?v=20260920-5" defer></script>
-  <script src="../js/hft-model.js?v=20260924-1" defer></script>
-  <script src="../js/hft-research.js?v=20260924-1" defer></script>
+  <script src="../js/hft-model.js?v=20260924-3" defer></script>
+  <script src="../js/hft-research.js?v=20260924-3" defer></script>
 </head>
 <body class="usecase-page hft-page">
   <a class="sim-skip" href="#main">Skip to content</a>
@@ -74,7 +74,7 @@
         <p class="hft-decision-footnote">Change the trader or event to restart the sequence. This demonstration uses authored choices and fixed ten-share fills. A live system evaluates each updated state, models execution costs and keeps simulated choices separate from observed trades.</p>
       </div>
       <div class="hft-guide" id="jev-workflow">
-        <header class="hft-guide-header"><p class="sim-eyebrow">From the guide to Backer</p><h3>How the Jev workflow fits together.</h3><p>The guide separates market data, judgment, policy and execution. Backer adds the individual: accumulated trading history becomes part of every state, and each decision advances a simulated trader through a market situation.</p></header>
+        <header class="hft-guide-header"><h3>How the Jev workflow fits together.</h3><p>The guide separates market data, judgment, policy and execution. Backer adds the individual: accumulated trading history becomes part of every state, and each decision advances a simulated trader through a market situation.</p></header>
         <div class="hft-guide-layout">
           <nav class="hft-guide-steps" aria-label="Jev implementation walkthrough">
             <button type="button" data-stage="setup" aria-pressed="true"><small>01</small><span>Connect Jev</span></button>
@@ -123,7 +123,7 @@ print(result.scores[&quot;reaction_urgency&quot;].score)
 # Code checks feasibility, applies simulated fills and updates cash/holdings.
 # Send that updated state in the next request; preserve observed_history.
 </code></pre><a href="https://docs.typesafe.ai/sdk/python" target="_blank" rel="noopener noreferrer">Current Python SDK ↗</a></details>
-        <p class="hft-guide-credit">Adapted from Algo Insights’ step-by-step Jev trading guide, with API details checked against current TypeSafe documentation.</p><p class="hft-source-note"><a href="https://algoinsights.medium.com/build-a-24-7-hft-trading-system-with-jev-a-step-by-step-guide-242d30cd0c5e" target="_blank" rel="noopener noreferrer">Read the original Jev guide ↗</a><a href="https://docs.typesafe.ai/patterns/fan-out" target="_blank" rel="noopener noreferrer">Parallel judgments ↗</a><a href="https://docs.typesafe.ai/confidence" target="_blank" rel="noopener noreferrer">Confidence and calibration ↗</a></p>
+        <p class="hft-guide-credit">Adapted from Algo Insights’ step-by-step Jev trading guide, with API details checked against current TypeSafe documentation.</p>
         <div class="hft-guide-contact"><p>Bring your trader data and the situations your fund needs to understand. Contact us for the full simulation design, evaluation protocol and API integration.</p><a href="../waitlist.html#waitlist-email" class="sim-link"><span>Contact us for more</span><span aria-hidden="true">↗</span></a></div>
       </div>
     </section>
@@ -134,7 +134,7 @@ print(result.scores[&quot;reaction_urgency&quot;].score)
         <div class="hft-figure-head"><p>AI minus non-AI monthly alpha</p><div class="hft-options" role="group" aria-label="Risk adjustment model"><button type="button" data-study="fh" aria-pressed="true">Fung–Hsieh</button><button type="button" data-study="aqr" aria-pressed="false">AQR</button></div></div>
         <p id="alpha-announcement" class="hft-sr-only" role="status"></p><div class="hft-evidence-plot"><svg id="alpha-chart" role="img" aria-label="Relative monthly alpha before and after 2018, with approximate 95 percent intervals"></svg></div>
         <table class="hft-data-table"><caption>Basis points per month · approximate 95% interval</caption><thead><tr><th scope="col">Period</th><th scope="col">Estimate</th><th scope="col">Interval</th></tr></thead><tbody id="alpha-values"><tr><th scope="row">2006–2017</th><td>+49.6</td><td>+18.4 to +80.8</td></tr><tr><th scope="row">2018–2024</th><td>−8.3</td><td>−31.6 to +15.0</td></tr></tbody></table>
-        <figcaption><p>Relative estimates after controls, not absolute fund returns. The post-2017 estimate is statistically indistinguishable from zero. Intervals are estimate ± 1.96 standard errors from Table 5.</p><p>Disclosed US hedge funds, 2006–2024. 89 funds ever classified as AI; 5,894 funds in the performance regressions. This is not a census of AI investing or a study of HFT.</p><a href="https://www.nber.org/system/files/working_papers/w35273/w35273.pdf" target="_blank" rel="noopener noreferrer">Read the paper · Table 5 ↗</a></figcaption>
+        <figcaption><p>Relative estimates after controls, not absolute fund returns. The post-2017 estimate is statistically indistinguishable from zero. Intervals are estimate ± 1.96 standard errors from Table 5.</p><p>Disclosed US hedge funds, 2006–2024. 89 funds ever classified as AI; 5,894 funds in the performance regressions. This is not a census of AI investing or a study of HFT.</p><p class="hft-paper-citation">Source: Chen, Sialm &amp; Xu (2026). The Growth and Performance of Artificial Intelligence in Asset Management. NBER Working Paper 35273, Table 5.</p></figcaption>
       </figure>
     </section>
 
@@ -147,9 +147,9 @@ print(result.scores[&quot;reaction_urgency&quot;].score)
 
     <section class="hft-validation sim-shell" id="validation"><div><p class="sim-eyebrow">05 / Building a durable research engine</p><h2>Better models.<br>Deeper behavioral evidence.</h2><p>The foundation is accumulated individual trading behavior. Each new observed decision extends that history. Jev supplies repeatable choices inside the simulation; future models work with richer evidence. Compare predicted and actual behavior, update the trader model, and test the next situation.</p></div><ol><li><h3>Freeze the information set.</h3><p>Use consented or licensed histories. Record exposure, positions, timestamps and missing data before the event.</p></li><li><h3>Beat the relevant baselines.</h3><p>Hold out people, events and future periods. Compare public-data, price/volume, flow and no-history models. Score calibration and action timing.</p></li><li><h3>Measure value under real conditions.</h3><p>Replay spreads, fees, impact, queue position and missed fills. Test capacity, regimes and signal decay before prospective paper trading.</p></li><li><h3>Promote models on evidence.</h3><p>Pin versions. Admit a new Jev or foundation model only after it improves held-out outcomes within cost and latency limits.</p></li></ol></section>
 
-    <section class="hft-reading sim-shell"><p class="sim-eyebrow">Research notes</p><div><a href="https://www.nber.org/system/files/working_papers/w35273/w35273.pdf" target="_blank" rel="noopener noreferrer"><strong>The Growth and Performance of Artificial Intelligence in Asset Management ↗</strong><span>Chen, Sialm &amp; Xu · NBER working paper · May 2026</span></a><a href="https://arxiv.org/abs/cond-mat/0311053" target="_blank" rel="noopener noreferrer"><strong>Order-flow predictability and market efficiency ↗</strong><span>Lillo &amp; Farmer · why predictable actions need not imply predictable returns</span></a><a href="https://docs.typesafe.ai/concepts/how-to-build-with-system-one" target="_blank" rel="noopener noreferrer"><strong>Building with System One ↗</strong><span>TypeSafe · typed judgments, code-owned workflows and evaluation</span></a></div></section>
+    <section class="hft-reading sim-shell"><p class="sim-eyebrow">Research notes</p><div><div class="hft-citation"><strong>The Growth and Performance of Artificial Intelligence in Asset Management</strong><span>Chen, Sialm &amp; Xu · NBER Working Paper 35273 · May 2026</span></div><a href="https://arxiv.org/abs/cond-mat/0311053" target="_blank" rel="noopener noreferrer"><strong>Order-flow predictability and market efficiency ↗</strong><span>Lillo &amp; Farmer · why predictable actions need not imply predictable returns</span></a><a href="https://docs.typesafe.ai/concepts/how-to-build-with-system-one" target="_blank" rel="noopener noreferrer"><strong>Building with System One ↗</strong><span>TypeSafe · typed judgments, code-owned workflows and evaluation</span></a></div></section>
 
-    <section class="research-api sim-shell" aria-labelledby="research-api-title"><div><p class="sim-eyebrow">API early access</p><h2 id="research-api-title">We’re opening the Backer Simulation API.</h2></div><div class="research-api-action"><p>Simulate traders inside the situations your fund needs to understand. Contact us about behavioral data, scenario design and API early access.</p><a class="research-api-contact" href="../waitlist.html#waitlist-email"><span>Contact us for more</span><span aria-hidden="true">↗</span></a></div></section>
+    <section class="research-api sim-shell" aria-labelledby="research-api-title"><div><p class="sim-eyebrow">API early access</p><h2 id="research-api-title">Backer Simulation API currently beta testing.</h2></div><div class="research-api-action"><p>Simulate traders inside the situations your fund needs to understand. Contact us about behavioral data, scenario design and API early access.</p><a class="research-api-contact" href="../waitlist.html#waitlist-email"><span>Contact us for more</span><span aria-hidden="true">↗</span></a></div></section>
     <section class="uc-next sim-shell"><a href="../simulation.html"><small>The method</small><span>Inside Backer Simulation <b aria-hidden="true">↗</b></span></a><a href="../research.html"><small>Continue exploring</small><span>Backer Research <b aria-hidden="true">→</b></span></a></section>
   </main>
   <footer class="sim-footer"><a href="../research.html">Backer / Research</a><span>Behavioral research</span><a href="../privacy.html">Privacy</a></footer>
