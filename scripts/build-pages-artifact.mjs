@@ -5,12 +5,19 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { transform } from 'esbuild';
 import { auditPublicArtifact, formatAudit, inspectPublicText } from './audit-public-artifact.mjs';
+import { addSocialMetadata, normalizeSiteUrl } from './social-metadata.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const destination = path.resolve(process.argv[2] || '');
+const options = process.argv.slice(3);
+if (options.length && (options.length !== 2 || options[0] !== '--site-url')) {
+  throw new Error('Usage: build-pages-artifact.mjs <empty-directory> [--site-url https://host/base/]');
+}
+const siteUrl = normalizeSiteUrl(options[1] || process.env.PUBLIC_SITE_URL || undefined);
 
 const PUBLIC_FILES = Object.freeze([
   '.nojekyll',
+  'robots.txt',
   'js/i18n.js',
   'css/i18n.css',
   'js/locales/marketing.js',
@@ -163,6 +170,7 @@ const PUBLIC_FILES = Object.freeze([
   'data/market2-people.json',
   'data/trades-eligible-accounts.json',
   'img/backer-mark.png',
+  'img/backer-social-20260926.png',
   'img/attention-simulation-preview.png',
   'img/pitch/altman.jpg',
   'img/pitch/andreessen.jpg',
@@ -256,6 +264,7 @@ try {
 }
 
 const stagingDirectory = await mkdtemp(path.join(destinationParent, `.${destinationName}.staging-`));
+const publicPages = new Map();
 
 async function writePublicFile(relativePath) {
   const source = path.join(ROOT, relativePath);
@@ -264,7 +273,10 @@ async function writePublicFile(relativePath) {
   await mkdir(path.dirname(target), { recursive: true });
 
   const extension = path.extname(relativePath).toLowerCase();
-  if (extension === '.js' || extension === '.mjs' || extension === '.css') {
+  if (extension === '.html' && !relativePath.startsWith('admin/')) {
+    const input = publicPages.get(relativePath);
+    await writeFile(target, addSocialMetadata(input, relativePath, { siteUrl, pages: publicPages }), 'utf8');
+  } else if (extension === '.js' || extension === '.mjs' || extension === '.css') {
     const input = await readFile(source, 'utf8');
     const sourceFindings = inspectPublicText(relativePath, input);
     if (sourceFindings.length) {
@@ -287,6 +299,9 @@ async function writePublicFile(relativePath) {
 }
 
 try {
+  for (const relativePath of PUBLIC_FILES.filter((file) => file.endsWith('.html') && !file.startsWith('admin/'))) {
+    publicPages.set(relativePath, await readFile(path.join(ROOT, relativePath), 'utf8'));
+  }
   for (const relativePath of PUBLIC_FILES) await writePublicFile(relativePath);
 
   const audit = await auditPublicArtifact(stagingDirectory);
@@ -297,7 +312,7 @@ try {
 
   if (destinationExists) await rmdir(destination);
   await rename(stagingDirectory, destination);
-  console.log(`Built and audited allowlisted public artifact with ${PUBLIC_FILES.length} files.`);
+  console.log(`Built and audited allowlisted public artifact with ${PUBLIC_FILES.length} files. Social sharing base: ${siteUrl}`);
 } catch (error) {
   await rm(stagingDirectory, { recursive: true, force: true });
   throw error;
