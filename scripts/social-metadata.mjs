@@ -108,6 +108,6 @@ export function addSocialMetadata(html, pagePath, { siteUrl = DEFAULT_SITE_URL, 
     ['name', 'twitter:image', imageUrl],
     ['name', 'twitter:image:alt', SOCIAL_IMAGE_ALT]
   ].map(([attribute, key, value]) => `<meta ${attribute}="${key}" content="${escapeHtml(value)}" />`).join('\n');
-  const outputHead = `${cleaned.trimEnd()}\n<link rel="canonical" href="${escapeHtml(pageUrl)}" />\n${metas}\n`;
+  const outputHead = `${cleaned.replace(/^[\t ]+$/gm, '').trimEnd()}\n<link rel="canonical" href="${escapeHtml(pageUrl)}" />\n${metas}\n`;
   return html.replace(head[0], () => head[0].replace(head[1], () => outputHead));
 }
