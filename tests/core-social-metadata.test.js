@@ -9,7 +9,7 @@ const test = require('node:test');
 
 const ROOT = path.join(__dirname, '..');
 const BASES = ['https://backer-site.vercel.app/', 'https://bokubokulee-gif.github.io/backer-site/'];
-const IMAGE = 'img/backer-social-20260926.png';
+const IMAGE = 'img/backer-social-20261002.png';
 const ALIASES = {
   'index.html': 'backerdemo.html',
   'portfolio.html': 'waitlist.html',
@@ -64,8 +64,8 @@ test('both complete public artifacts contain crawler-readable cards with host-co
           'og:image': new URL(IMAGE, base).href,
           'og:image:secure_url': new URL(IMAGE, base).href,
           'og:image:type': 'image/png',
-          'og:image:width': '1200',
-          'og:image:height': '630',
+          'og:image:width': '3840',
+          'og:image:height': '2016',
           'twitter:card': 'summary_large_image',
           'twitter:site': '@backer_ai',
           'twitter:image': new URL(IMAGE, base).href
@@ -87,8 +87,8 @@ test('both complete public artifacts contain crawler-readable cards with host-co
       }
       const image = fs.readFileSync(path.join(output, IMAGE));
       assert.equal(image.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
-      assert.equal(image.readUInt32BE(16), 1200);
-      assert.equal(image.readUInt32BE(20), 630);
+      assert.equal(image.readUInt32BE(16), 3840);
+      assert.equal(image.readUInt32BE(20), 2016);
       assert.ok(image.length < 5_000_000, 'X image remains under 5 MB');
       const robots = fs.readFileSync(path.join(output, 'robots.txt'), 'utf8');
       assert.match(robots, /User-agent: \*\s+Allow: \/\s/);

@@ -1,5 +1,5 @@
 export const DEFAULT_SITE_URL = 'https://backer-site.vercel.app/';
-export const SOCIAL_IMAGE_PATH = 'img/backer-social-20260926.png';
+export const SOCIAL_IMAGE_PATH = 'img/backer-social-20261002.png';
 export const SOCIAL_IMAGE_ALT = 'Backer AI — Predict where attention flows.';
 
 // Keep script/style bodies and comments opaque while inspecting static head tags.
@@ -98,8 +98,8 @@ export function addSocialMetadata(html, pagePath, { siteUrl = DEFAULT_SITE_URL, 
     ['property', 'og:image', imageUrl],
     ['property', 'og:image:secure_url', imageUrl],
     ['property', 'og:image:type', 'image/png'],
-    ['property', 'og:image:width', '1200'],
-    ['property', 'og:image:height', '630'],
+    ['property', 'og:image:width', '3840'],
+    ['property', 'og:image:height', '2016'],
     ['property', 'og:image:alt', SOCIAL_IMAGE_ALT],
     ['name', 'twitter:card', 'summary_large_image'],
     ['name', 'twitter:site', '@backer_ai'],

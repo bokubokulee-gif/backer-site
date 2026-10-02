@@ -377,93 +377,46 @@ export function mountResearchRobot(host) {
   }
 
   function makeBodyMark() {
-    // Trace the real mark's four rays. Straight cuts remain straight while the
-    // circular outside is a smooth spline rather than a faceted raster contour.
-    const contours = [
-      { start: [275,10], lines: [[46,293]], arc: [[39,260], [38,225], [41,195], [48,166], [57,141], [81,99], [98,78], [132,48], [167,28], [201,16], [233,10], [275,10]] },
-      { start: [55,319], lines: [[375,44]], arc: [[390,53], [408,70], [424,90]], end: [[61,333]] },
-      { start: [72,352], lines: [[470,184]], arc: [[474,205], [476,230], [475,255]], end: [[80,366]] },
-      { start: [97,387], lines: [[438,359]], arc: [[411,395], [372,427], [330,448], [277,460], [224,458], [171,442], [134,421], [97,387]] },
-    ];
-    const scale = 0.000625;
-    const point = ([x, y]) => new THREE.Vector2((x - 257) * scale, (235 - y) * scale);
-    const shapes = contours.map(contour => {
-      const shape = new THREE.Shape();
-      const start = point(contour.start);
-      shape.moveTo(start.x, start.y);
-      const lineTo = value => { const next = point(value); shape.lineTo(next.x, next.y); };
-      contour.lines.forEach(lineTo);
-      shape.splineThru(contour.arc.map(point));
-      (contour.end || []).forEach(lineTo);
-      shape.closePath();
-      return shape;
-    });
-    const source = new THREE.ExtrudeGeometry(shapes, {
-      depth: 0.009, steps: 1, bevelEnabled: true,
-      bevelThickness: 0.0032, bevelSize: 0.0028, bevelSegments: 8, curveSegments: 16,
-    });
-    const positions = source.getAttribute('position');
-    const normals = source.getAttribute('normal');
-    const surfaces = [[], []];
-    const vertex = index => [positions.getX(index), positions.getY(index), positions.getZ(index),
-      normals.getX(index), normals.getY(index), normals.getZ(index)];
-    const midpoint = (a, b) => a.map((value, index) => (value + b[index]) * 0.5);
-    const edgeLengthSquared = (a, b) => (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2;
-    function subdivide(a, b, c, output) {
-      const ab = edgeLengthSquared(a, b);
-      const bc = edgeLengthSquared(b, c);
-      const ca = edgeLengthSquared(c, a);
-      // Short cap triangles follow the sphere instead of cutting a flat chord
-      // through the cream body. The bevel normals are interpolated as well.
-      if (Math.max(ab, bc, ca) > 0.02 ** 2) {
-        if (ab >= bc && ab >= ca) {
-          const mid = midpoint(a, b);
-          subdivide(a, mid, c, output); subdivide(mid, b, c, output);
-        } else if (bc >= ca) {
-          const mid = midpoint(b, c);
-          subdivide(a, b, mid, output); subdivide(a, mid, c, output);
-        } else {
-          const mid = midpoint(c, a);
-          subdivide(a, b, mid, output); subdivide(mid, b, c, output);
-        }
+    // Apply the approved raster itself. Curved UV geometry follows the chassis;
+    // it never traces or invents a different silhouette for the brand mark.
+    // The approved square includes soft glow padding; this size keeps the
+    // visible mark as legible as the previous badge without cropping that glow.
+    const geometry = new THREE.PlaneGeometry(0.42, 0.42, 40, 40);
+    const positions = geometry.getAttribute('position');
+    for (let index = 0; index < positions.count; index += 1) {
+      const x = positions.getX(index);
+      const y = positions.getY(index);
+      positions.setZ(index, Math.sqrt(0.43 ** 2 - x * x - y * y) + 0.0015);
+    }
+    positions.needsUpdate = true;
+    geometry.computeVertexNormals();
+    geometry.computeBoundingSphere();
+    const surface = own(new THREE.MeshBasicMaterial({
+      color: '#ffffff', transparent: true, depthWrite: false,
+      alphaTest: 0.003, toneMapped: false,
+    }));
+    const mark = mesh(body, geometry, surface);
+    mark.name = 'research-robot-body-mark';
+    mark.visible = false;
+    mark.userData.source = 'img/backer-mark.webp?v=20261002';
+    host.dataset.robotMarkState = 'loading';
+    const sourceUrl = new URL(mark.userData.source, document.baseURI).href;
+    const texture = own(new THREE.TextureLoader().load(sourceUrl, loaded => {
+      if (stopped) {
+        loaded.dispose();
         return;
       }
-      output.push(a, b, c);
-    }
-    source.groups.forEach(group => {
-      const output = surfaces[group.materialIndex];
-      for (let index = group.start; index < group.start + group.count; index += 3) {
-        subdivide(vertex(index), vertex(index + 1), vertex(index + 2), output);
-      }
-    });
-    source.dispose();
-    const geometry = new THREE.BufferGeometry();
-    const curvedPositions = [];
-    const curvedNormals = [];
-    const normal = new THREE.Vector3();
-    let offset = 0;
-    surfaces.forEach((vertices, materialIndex) => {
-      vertices.forEach(([x, y, z, nx, ny, nz]) => {
-        const surfaceZ = Math.sqrt(0.43 ** 2 - x * x - y * y);
-        curvedPositions.push(x, y, surfaceZ + z + 0.0008);
-        // Inverse-transpose of the curved projection preserves real bevel
-        // highlights as the body turns; the mark is actual surface geometry.
-        normal.set(nx + x / surfaceZ * nz, ny + y / surfaceZ * nz, nz).normalize();
-        curvedNormals.push(normal.x, normal.y, normal.z);
-      });
-      geometry.addGroup(offset, vertices.length, materialIndex);
-      offset += vertices.length;
-    });
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(curvedPositions, 3));
-    geometry.setAttribute('normal', new THREE.Float32BufferAttribute(curvedNormals, 3));
-    geometry.computeBoundingSphere();
-    const faceSurface = material({ color: '#ddcfb6', roughness: 0.4, metalness: 0.16 });
-    const edgeSurface = material({ color: '#b29d7b', roughness: 0.46, metalness: 0.24 });
-    const mark = mesh(body, geometry, [faceSurface, edgeSurface]);
-    mark.name = 'research-robot-body-mark';
-    mark.castShadow = true;
-    mark.userData.source = 'img/backer-mark.png';
-    mark.userData.reliefDepth = 0.0122;
+      surface.map = loaded;
+      surface.needsUpdate = true;
+      mark.visible = true;
+      host.dataset.robotMarkState = 'ready';
+      host.dataset.robotMarkResolution = `${loaded.image.width}x${loaded.image.height}`;
+      requestFrame();
+    }, undefined, () => {
+      if (!stopped) host.dataset.robotMarkState = 'unavailable';
+    }));
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.anisotropy = renderer.capabilities?.getMaxAnisotropy?.() || 1;
   }
 
   function isNestedControl(event) {
@@ -501,8 +454,7 @@ export function mountResearchRobot(host) {
     scene.add(new THREE.HemisphereLight('#fff0d8', '#504938', 1.1));
     const key = new THREE.DirectionalLight('#ffe8c6', 2.6);
     key.position.set(3, 4, 5);
-    // Only the small relief casts a shadow. A detailed 2048px map resolves its
-    // fine contact edge without changing the existing head/glasses lighting.
+    // Preserve the existing soft chassis and accessory lighting.
     key.castShadow = true;
     key.shadow.mapSize.set(2048, 2048);
     Object.assign(key.shadow.camera, { left: -0.8, right: 0.8, top: 0.8, bottom: -0.8, near: 1, far: 10 });

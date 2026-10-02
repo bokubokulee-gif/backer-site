@@ -8,7 +8,7 @@ const THREE = require('three');
 
 // Exercise the real scene and DOM handlers, replacing only WebGL and the browser event loop.
 // Geometry/materials remain Three.js objects, so the accessory's placement is testable too.
-function mountFixture() {
+function mountFixture({ finishLogoLoad = true } = {}) {
   class Target {
     constructor() {
       this.listeners = new Map();
@@ -43,6 +43,7 @@ function mountFixture() {
   host.closest = selector => selector === '.research-robot-wrap' ? { querySelector: () => greeting } : null;
   const document = new Target();
   document.hidden = false;
+  document.baseURI = 'https://backer.example/backer-site/research.html';
   document.createElement = () => {
     const canvas = new Target();
     canvas.getContext = () => ({
@@ -70,12 +71,22 @@ function mountFixture() {
   let now = 1000;
   let nextFrame = 0;
   const frames = new Map();
+  const logoLoads = [];
+  class TextureLoader {
+    load(url, onLoad, onProgress, onError) {
+      const texture = new THREE.Texture();
+      texture.image = { width: 4096, height: 4096 };
+      texture.userData.sourceUrl = url;
+      logoLoads.push({ texture, onLoad, onError });
+      return texture;
+    }
+  }
   const source = fs.readFileSync(path.join(__dirname, '../components/robot/robot-scene.mjs'), 'utf8')
     .replace(/^import \* as THREE from 'three';\s*/, '')
     .replace('export function mountResearchRobot', 'function mountResearchRobot');
   const factory = new Function('THREE', 'window', 'document', 'performance', 'requestAnimationFrame', 'cancelAnimationFrame', 'ResizeObserver', 'IntersectionObserver',
     `${source}\nreturn mountResearchRobot;`);
-  const mount = factory({ ...THREE, WebGLRenderer: Renderer }, window, document, { now: () => now },
+  const mount = factory({ ...THREE, WebGLRenderer: Renderer, TextureLoader }, window, document, { now: () => now },
     callback => { frames.set(++nextFrame, callback); return nextFrame; }, id => frames.delete(id), Observer, Observer);
   const dispose = mount(host);
   function flush() {
@@ -85,10 +96,55 @@ function mountFixture() {
     pending.forEach(callback => callback(now));
   }
   flush();
+  function finishLogo(error = false) {
+    for (const pending of logoLoads.splice(0)) {
+      if (error) pending.onError(new Error('Image unavailable'));
+      else pending.onLoad(pending.texture);
+    }
+    flush();
+  }
+  if (finishLogoLoad) finishLogo();
   assert.equal(host.dataset.robotState, 'ready', 'The real robot scene should initialize');
   const pointer = (type, values = {}) => ({ pointerId: 7, pointerType: type, isPrimary: true, clientX: 300, clientY: 240, target: host, ...values });
-  return { host, document, window, greeting, renderer, frames, flush, dispose, pointer, advance: ms => { now += ms; } };
+  return { host, document, window, greeting, renderer, frames, flush, finishLogo, dispose, pointer, advance: ms => { now += ms; } };
 }
+
+test('Robot embeds the approved 4K logo on its body with transparency and original color', () => {
+  const f = mountFixture();
+  const mark = f.renderer.scene.getObjectByName('research-robot-body-mark');
+  assert.equal(mark.visible, true);
+  assert.equal(f.host.dataset.robotMarkState, 'ready');
+  assert.equal(f.host.dataset.robotMarkResolution, '4096x4096');
+  assert.equal(mark.material.map.userData.sourceUrl, 'https://backer.example/backer-site/img/backer-mark.webp?v=20261002');
+  assert.equal(mark.material.map.colorSpace, THREE.SRGBColorSpace);
+  assert.ok(mark.material.transparent && !mark.material.depthWrite);
+  assert.equal(mark.material.toneMapped, false);
+  assert.equal(mark.material.color.getHexString(), 'ffffff');
+  const positions = mark.geometry.getAttribute('position');
+  assert.ok(positions.getZ(Math.floor(positions.count / 2)) > positions.getZ(0), 'The decal follows the curved chassis');
+  let disposed = false;
+  mark.material.map.addEventListener('dispose', () => { disposed = true; });
+  f.dispose();
+  assert.equal(disposed, true);
+});
+
+test('A failed or late logo image cannot break robot controls or revive a disposed scene', () => {
+  const failed = mountFixture({ finishLogoLoad: false });
+  failed.finishLogo(true);
+  assert.equal(failed.host.dataset.robotState, 'ready');
+  assert.equal(failed.host.dataset.robotMarkState, 'unavailable');
+  assert.equal(failed.renderer.scene.getObjectByName('research-robot-body-mark').visible, false);
+  failed.host.click();
+  assert.equal(failed.host.getAttribute('aria-pressed'), 'true');
+  failed.dispose();
+  const late = mountFixture({ finishLogoLoad: false });
+  const mark = late.renderer.scene.getObjectByName('research-robot-body-mark');
+  late.dispose();
+  late.finishLogo();
+  assert.equal(mark.visible, false);
+  assert.equal(late.frames.size, 0);
+  assert.equal(late.host.dataset.robotState, 'unavailable');
+});
 
 test('Robot native click toggles head-mounted clear glasses while preserving the normal eyes', () => {
   const f = mountFixture();

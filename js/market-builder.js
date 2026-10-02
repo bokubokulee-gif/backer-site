@@ -89,7 +89,7 @@
       return (url.protocol === 'https:' || url.protocol === 'http:') && !url.username && !url.password ? url.href : '';
     } catch (error) { return ''; }
   }
-  function safeImage(value) { return safeURL(value) || 'img/backer-mark.png?v=2'; }
+  function safeImage(value) { return safeURL(value) || 'img/backer-mark.webp?v=20261002'; }
   function platformLabel(id) { return PLATFORM_LABELS[id] || clean(id).replace(/[_-]+/g, ' ').replace(/\b\w/g, function (letter) { return letter.toUpperCase(); }) || 'Platform'; }
   function isoDate(value) {
     var date = new Date(value);

@@ -198,7 +198,7 @@
         name: clean(row.displayName || row.display_name || row.name) || clean(primary.handle) || id,
         displayName: clean(row.displayName || row.display_name || row.name),
         handle: primary && clean(primary.handle) ? '@' + clean(primary.handle).replace(/^@/, '') : '',
-        avatar: safeURL(row.avatarUrl || row.avatar_url) || 'img/backer-mark.png?v=2',
+        avatar: safeURL(row.avatarUrl || row.avatar_url) || 'img/backer-mark.webp?v=20261002',
         avatarAlt: (clean(row.displayName || row.display_name || row.name) || 'Creator') + ' public profile picture',
         avatarSourceUrl: safeURL(row.avatarSourceUrl || row.avatar_source_url || (primary && primary.sourceUrl)),
         bio: clean(row.bio),

@@ -19,7 +19,7 @@ test('Research entry opens the dedicated preview with Backer interaction states'
   assert.match(page, /href="research-lab\/"/);
   assert.match(page, /Trading Behavior Research Preview/);
   assert.doesNotMatch(page, /coming soon/i);
-  assert.match(page, /img\/backer-mark\.png/);
+  assert.match(page, /img\/backer-mark\.webp/);
   assert.match(styles, /\.research-preview:focus-visible/);
   assert.match(styles, /body\.is-launching/);
   assert.match(behavior, /data-research-preview/);
@@ -38,19 +38,19 @@ test('Published Lab carries the Backer mark and the bounded PMXT layer', () => {
   const labStylesheet = labPage.match(/\.\/assets\/(styles-[^"']+\.css)/)?.[1];
   const labScriptAsset = labPage.match(/\.\/assets\/(lab-[^"']+\.js)/)?.[1];
 
-  assert.match(labPage, /img\/backer-mark\.png/);
+  assert.match(labPage, /img\/backer-mark\.webp/);
   assert.match(labPage, /class="backer-home-link" href="\.\.\/research\.html"/);
   for (const page of [methodPage, thesisPage]) {
     assert.match(page, /class="paper-brand"/);
-    assert.match(page, /img\/backer-mark\.png/);
+    assert.match(page, /img\/backer-mark\.webp/);
     assert.match(page, /<article>/);
     assert.match(page, /class="paper-body"/);
     assert.match(page, /class="paper-sources"/);
     assert.doesNotMatch(page, /assets\/(?:thesis-[^"']+|method-public-v1)\.js/);
   }
   assert.deepEqual(
-    fs.readFileSync(path.join(ROOT, 'img/backer-mark.png')),
-    fs.readFileSync(path.join(ROOT, 'research-lab/img/backer-mark.png')),
+    fs.readFileSync(path.join(ROOT, 'img/backer-mark.webp')),
+    fs.readFileSync(path.join(ROOT, 'research-lab/img/backer-mark.webp')),
   );
   assert.match(labPage, /PMXT · PUBLIC SNAPSHOT/);
   assert.match(labPage, /RESEARCH PREVIEW/);
