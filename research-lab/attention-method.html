@@ -1,11 +1,12 @@
 <!doctype html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#08080a"/>
 <title>Measure attention before predicting it. | Human attention prediction method | Backer Research</title>
-<link rel="icon" type="image/png" href="./img/backer-mark.png"/><link rel="stylesheet" href="./assets/research-papers.css?v=20260920-5"/>
+<link rel="icon" type="image/webp" href="./img/backer-mark.webp?v=20261002"/><link rel="stylesheet" href="./assets/research-papers.css?v=20260920-5"/>
 <script src="../js/locales/research-papers.js?v=20260920-5" defer></script>
 <script src="../js/i18n.js?v=20260920-5" defer></script>
 <script src="./assets/research-papers.js?v=20260920-5" defer></script>
 <link rel="stylesheet" href="../css/i18n.css?v=20260920-5">
+<link rel="stylesheet" href="../css/backer-brand.css?v=20261002" />
 <link rel="canonical" href="https://bokubokulee-gif.github.io/backer-site/research-lab/attention-method.html" />
 <meta name="description" content="A forecast needs an observable target, a fixed horizon and a denominator. “Attention” becomes scientific only after those choices are explicit." />
 <meta property="og:type" content="website" />
@@ -13,20 +14,20 @@
 <meta property="og:title" content="Measure attention before predicting it. | Human attention prediction method | Backer Research" />
 <meta property="og:description" content="A forecast needs an observable target, a fixed horizon and a denominator. “Attention” becomes scientific only after those choices are explicit." />
 <meta property="og:url" content="https://bokubokulee-gif.github.io/backer-site/research-lab/attention-method.html" />
-<meta property="og:image" content="https://bokubokulee-gif.github.io/backer-site/img/backer-social-20260926.png" />
-<meta property="og:image:secure_url" content="https://bokubokulee-gif.github.io/backer-site/img/backer-social-20260926.png" />
+<meta property="og:image" content="https://bokubokulee-gif.github.io/backer-site/img/backer-social-20261002.png" />
+<meta property="og:image:secure_url" content="https://bokubokulee-gif.github.io/backer-site/img/backer-social-20261002.png" />
 <meta property="og:image:type" content="image/png" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
+<meta property="og:image:width" content="3840" />
+<meta property="og:image:height" content="2016" />
 <meta property="og:image:alt" content="Backer AI — Predict where attention flows." />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@backer_ai" />
 <meta name="twitter:title" content="Measure attention before predicting it. | Human attention prediction…" />
 <meta name="twitter:description" content="A forecast needs an observable target, a fixed horizon and a denominator. “Attention” becomes scientific only after those choices are explicit." />
-<meta name="twitter:image" content="https://bokubokulee-gif.github.io/backer-site/img/backer-social-20260926.png" />
+<meta name="twitter:image" content="https://bokubokulee-gif.github.io/backer-site/img/backer-social-20261002.png" />
 <meta name="twitter:image:alt" content="Backer AI — Predict where attention flows." />
 </head><body data-paper="attention-method"><a class="paper-skip" href="#paper">Skip to article</a>
-<header class="paper-header"><a class="paper-brand" href="../research.html"><img src="./img/backer-mark.png" alt=""/>Backer <small>RESEARCH</small></a><nav class="paper-nav" aria-label="Human attention prediction papers"><a href="./attention-flow.html">Preview</a><a href="./attention-method.html" aria-current="page">Method</a><a href="./attention-thesis.html">Thesis</a><a class="paper-home" href="../research.html">Research home ↗</a></nav></header>
+<header class="paper-header"><a class="paper-brand" href="../research.html"><img src="./img/backer-mark.webp?v=20261002" alt=""/>Backer <small>RESEARCH</small></a><nav class="paper-nav" aria-label="Human attention prediction papers"><a href="./attention-flow.html">Preview</a><a href="./attention-method.html" aria-current="page">Method</a><a href="./attention-thesis.html">Thesis</a><a class="paper-home" href="../research.html">Research home ↗</a></nav></header>
 <main id="paper" class="paper"><article><header class="paper-intro"><p class="paper-kicker">Human attention prediction / Method</p><h1>Measure attention before predicting it.</h1><p class="paper-deck">A forecast needs an observable target, a fixed horizon and a denominator. “Attention” becomes scientific only after those choices are explicit.</p><div class="paper-meta"><span>Backer Research</span><span>20 September 2026</span><span>Research note · 01</span></div><p class="paper-status">Research protocol · The preview uses illustrative data. Live platform feeds and prospective forecast scores are not connected.</p></header>
 <div class="paper-body"><section class="paper-section" id="section-1"><span class="section-no">01</span><h2>Define the denominator.</h2><p>For an instrumented population, one possible target is a topic’s share of observed attention time during the next interval. Let <em>d</em><sub>ik</sub> be eligible viewing seconds person <em>i</em> assigns to topic <em>k</em>. Then a topic share is:</p><div class="paper-equation">sₖ = Σᵢ dᵢₖ / Σᵢ Σⱼ dᵢⱼ<small>Include an “other” category and a mutually exclusive allocation rule. The denominator is observed eligible time, not all human attention.</small></div><p>Public posts, likes, searches and viewing counts are different measurements. Without person-level exposure and dwell data, a system may forecast a share of those observed events; it should name that proxy. A normalized search index cannot silently become a percentage of people.</p></section></div>
 <div class="paper-body"><section class="paper-section" id="section-2"><span class="section-no">02</span><h2>Distinguish a signal from a state.</h2><p>A feed records encounters and actions. Sustained interest is a state inferred from their sequence. A minimal candidate state accumulates exposure and decays when exposure stops:</p><div class="paper-equation">mₜ = ρmₜ₋₁ + (1 − ρ)eₜ,  0 ≤ ρ &lt; 1<small>m is a bounded illustrative state and e is normalized exposure. A fitted model would have to estimate retention and test whether this state predicts a declared outcome.</small></div><p>The memory–retrieval–action architecture in <a href="https://arxiv.org/abs/2304.03442v2">Generative Agents</a> motivates separating experience from subsequent behavior. Its demonstrations concern believable agents; they do not establish that this equation forecasts human attention. Here the recurrence is a deliberately inspectable hypothesis.</p></section></div>
