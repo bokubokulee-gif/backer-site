@@ -3892,10 +3892,10 @@ window.BackerLocalePacks.marketing = {
       "個別の解析記録は、サーバー側セッションを使う保護された管理画面からのみ閲覧できます。公開の解析レスポンスに、訪問者、IP、位置、参照元、セッション、管理者の情報は含まれません。",
       "개별 분석 기록은 서버 측 세션을 사용하는 보호된 관리자 대시보드에서만 볼 수 있습니다. 공개 분석 응답에는 방문자, IP, 위치, 참조 페이지, 세션, 관리자 데이터가 포함되지 않습니다."
     ],
-    "The header number is an explicitly scheduled display: 2,305 at the 20 August 2026 UTC anchor, then 5 more after each completed UTC day. It is not read from GA4, Backer’s first-party collector, hosting logs, a third-party badge, or a view-count API.": [
-      "页眉数字明确按预定规则展示：以 UTC 2026 年 8 月 20 日的 2,305 为基准，每完整经过一个 UTC 日增加 5。它不读取 GA4、Backer 第一方采集器、托管日志、第三方徽章或浏览量 API。",
-      "ヘッダーの数字は、明示的に定めたスケジュールによる表示です。UTCの2026年8月20日の2,305を基点に、UTCで1日が完了するごとに5増えます。GA4、自社の収集システム、ホスティングログ、第三者バッジ、閲覧数APIから取得していません。",
-      "헤더 숫자는 명시적으로 정해진 일정에 따른 표시입니다. UTC 2026년 8월 20일의 2,305를 기준으로 하루가 지날 때마다 5씩 증가합니다. GA4, Backer 자체 수집기, 호스팅 로그, 외부 배지, 조회 수 API에서 읽어오는 값이 아닙니다."
+    "The header number is a scheduled display shared across Backer sites: 2,560 on 10 October 2026 UTC, then a pseudorandom increase of 6–23 after each completed UTC day. It is not measured traffic and is not read from GA4, Backer’s first-party collector, hosting logs, or a view-count API.": [
+      "页眉数字是 Backer 各站点共用的计划展示值：以 UTC 2026 年 10 月 10 日的 2,560 为基准，每完整经过一个 UTC 日伪随机增加 6–23。它不是实测流量，也不读取 GA4、Backer 第一方采集器、托管日志或浏览量 API。",
+      "ヘッダーの数字はBackerの各サイトで共通の定期表示です。UTCの2026年10月10日の2,560を基点に、UTCで1日が完了するごとに疑似乱数で6〜23増えます。実測のアクセス数ではなく、GA4、自社の収集システム、ホスティングログ、閲覧数APIから取得していません。",
+      "헤더 숫자는 Backer 사이트 전체에서 공유하는 예정 표시값입니다. UTC 2026년 10월 10일의 2,560을 기준으로 하루가 지날 때마다 의사 난수로 6–23씩 증가합니다. 실제 측정한 트래픽이 아니며 GA4, Backer 자체 수집기, 호스팅 로그, 조회 수 API에서 읽어오는 값이 아닙니다."
     ],
     "Dashboard metrics are labeled “First-party consented analytics.” They are separate from the scheduled header display and may differ from GA4 or hosting logs because of consent choices, ad blockers, outages, retry deduplication, bot filtering, and different identity models.": [
       "后台指标标注为“经同意的第一方分析”，独立于按计划展示的页眉数字。由于同意选择、广告拦截、服务中断、重试去重、机器人过滤及身份识别模型不同，数据可能与 GA4 或托管日志不同。",
