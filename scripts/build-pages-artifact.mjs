@@ -5,6 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { transform } from 'esbuild';
 import { auditPublicArtifact, formatAudit, inspectPublicText } from './audit-public-artifact.mjs';
+import { addViewCountAssets } from './view-count-assets.mjs';
 import { addSocialMetadata, normalizeSiteUrl } from './social-metadata.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -130,6 +131,9 @@ const PUBLIC_FILES = Object.freeze([
   'css/trades-portfolio.css',
   'css/waitlist.css',
   'js/admin-analytics.js',
+  'js/backer-view-count-core.js',
+  'js/backer-view-count.js',
+  'css/backer-view-count.css',
   'js/analytics-core.js',
   'js/analytics.js',
   'js/app.js',
@@ -274,9 +278,10 @@ async function writePublicFile(relativePath) {
   await mkdir(path.dirname(target), { recursive: true });
 
   const extension = path.extname(relativePath).toLowerCase();
-  if (extension === '.html' && !relativePath.startsWith('admin/')) {
-    const input = publicPages.get(relativePath);
-    await writeFile(target, addSocialMetadata(input, relativePath, { siteUrl, pages: publicPages }), 'utf8');
+  if (extension === '.html') {
+    const input = await readFile(source, 'utf8');
+    const html = relativePath.startsWith('admin/') ? input : addSocialMetadata(input, relativePath, { siteUrl, pages: publicPages });
+    await writeFile(target, addViewCountAssets(html, relativePath), 'utf8');
   } else if (extension === '.js' || extension === '.mjs' || extension === '.css') {
     const input = await readFile(source, 'utf8');
     const sourceFindings = inspectPublicText(relativePath, input);
