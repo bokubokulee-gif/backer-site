@@ -13,7 +13,7 @@ test('Reading styles remain available on the surviving research surfaces', () =>
     const styles = [...page.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*>/g)].map(match => match[0]);
     const readingIndex = styles.findIndex(style => /assets\/readability-v1\.css/.test(style));
     assert.ok(readingIndex >= 0, `${file} must load the shared reading styles`);
-    const pageStyles = styles.filter(style => !/css\/(?:backer-dock|i18n)\.css/.test(style));
+    const pageStyles = styles.filter(style => !/css\/(?:backer-dock|backer-view-count|i18n)\.css/.test(style));
     assert.match(pageStyles.at(-1), /assets\/research-notes-20260920\.css/,
       `${file} must apply reading styles after all Lab page styles`);
     const languageIndex = styles.findIndex(style => /css\/i18n\.css/.test(style));

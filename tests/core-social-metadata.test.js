@@ -34,7 +34,8 @@ function metaValues(html, name) {
   }).map(([tag]) => tag.match(/\bcontent="([^"]*)"/i)?.[1]);
 }
 
-test('both complete public artifacts contain crawler-readable cards with host-correct URLs', () => {
+test('both complete public artifacts contain crawler-readable cards with host-correct URLs', async () => {
+  const { addViewCountAssets } = await import('../scripts/view-count-assets.mjs');
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'backer-social-build-'));
   try {
     const files = publicFiles();
@@ -52,7 +53,7 @@ test('both complete public artifacts contain crawler-readable cards with host-co
       for (const page of files.filter((file) => file.endsWith('.html'))) {
         const html = fs.readFileSync(path.join(output, page), 'utf8');
         if (page.startsWith('admin/')) {
-          assert.equal(html, fs.readFileSync(path.join(ROOT, page), 'utf8'));
+          assert.equal(html, addViewCountAssets(fs.readFileSync(path.join(ROOT, page), 'utf8'), page));
           assert.equal(metaValues(html, 'twitter:card').length, 0);
           continue;
         }
