@@ -4,10 +4,11 @@
    ========================================================= */
 (function (root, factory) {
   'use strict';
-  var api = factory();
+  var counter = typeof module === 'object' && module.exports ? require('./backer-view-count-core') : root.BackerViewCountCore;
+  var api = factory(counter);
   if (typeof module === 'object' && module.exports) module.exports = api;
   if (root) root.BackerAnalyticsCore = api;
-})(typeof window !== 'undefined' ? window : this, function () {
+})(typeof window !== 'undefined' ? window : this, function (Counter) {
   'use strict';
 
   var POLICY_VERSION = '2026-08-20';
@@ -280,10 +281,7 @@
   }
 
   function publicCountFallback(now) {
-    var d = new Date(now == null ? Date.now() : now);
-    var today = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
-    var elapsed = Math.max(0, Math.floor((today - PUBLIC_COUNT_ANCHOR_UTC) / 86400000));
-    return PUBLIC_COUNT_BASE + elapsed * PUBLIC_COUNT_DAILY;
+    return Counter.countAt(now);
   }
 
   return {

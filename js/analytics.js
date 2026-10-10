@@ -510,7 +510,7 @@
     countEl.classList.remove('is-unavailable');
     countEl.setAttribute('data-source', 'scheduled_display');
     countEl.setAttribute('aria-label', formatCount(value) + '. Scheduled display, not measured traffic.');
-    countEl.title = 'Scheduled display: 2,305 on 20 August 2026 UTC, plus 5 after each completed UTC day. Not measured traffic.';
+    countEl.title = window.BackerViewCountCore.DISCLOSURE;
   }
 
   function millisecondsUntilNextUTCMidnight(now) {
@@ -537,6 +537,7 @@
   }
 
   function mountBrandCount() {
+    if (window.BackerViewCount) return;
     if (!publicViewCountsEnabled) return;
     if (document.querySelector('.backer-brand-lockup')) return;
     var brand = document.querySelector('header a.brand, header a.mdp-brand');
