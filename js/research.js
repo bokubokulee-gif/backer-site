@@ -140,14 +140,11 @@
     sync();
   }
   function mountActionLines() {
-    var locale = window.BackerI18n ? window.BackerI18n.locale : 'en';
-    var editions = window.BackerLocalePacks && window.BackerLocalePacks.simulation && window.BackerLocalePacks.simulation.actionLine;
-    if (editions) mountRotatingLine(document.querySelector('[data-research-actions]'), editions[locale] || editions.en, false, 1000);
     mountRotatingLine(document.querySelector('[data-research-principle]'), {
       words: ['Human', 'Capital', 'Conviction', 'Culture'],
       fitActiveWord: true,
       suffix: '',
-      accessibleLabel: 'Human, capital, conviction, and culture follow where human attention accumulates.',
+      accessibleLabel: 'Human, capital, conviction, and culture follow where attention accumulates.',
       pauseLabel: 'Pause rotating phrase',
       resumeLabel: 'Resume rotating phrase'
     }, true, 0);
