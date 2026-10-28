@@ -63,6 +63,9 @@
     ],
     "Start with": ["从", "まずは", "시작은"],
     "Human Attention.": ["人的注意力出发。", "人の注意から。", "사람의 관심입니다."],
+    "Attention.": ["注意力出发。", "注意から。", "관심입니다."],
+    "Simulation": ["仿真", "シミュレーション", "시뮬레이션"],
+    "Simulate human + agent behavior": ["模拟人类 + 智能体行为", "人間 + エージェントの行動をシミュレーション", "사람 + 에이전트의 행동을 시뮬레이션"],
     "Everything else follows.": ["其余的一切，由此展开。", "そこから、すべてが動き出す。", "모든 변화는 그다음에 이어집니다."],
     "We simulate a world configured to accumulated human attention and decision makings.": ["我们构建一个仿真世界，观察人的注意力如何积累、决策如何形成。", "人の注意が集まり、意思決定が形づくられる世界をシミュレーションします。", "사람의 관심이 쌓이고 의사결정이 형성되는 세계를 시뮬레이션합니다."],
     "Define your population": ["定义目标人群", "対象となる集団を定める", "대상 집단 정의하기"],
@@ -81,6 +84,7 @@
     "Simulation stages": ["仿真阶段", "シミュレーションの段階", "시뮬레이션 단계"],
     "interactive illustration": ["交互式示意图", "インタラクティブな図解", "인터랙티브 시각화"],
     "Use Cases": ["应用场景", "活用例", "활용 사례"],
+    "Simulation Use Cases": ["仿真应用场景", "シミュレーション活用例", "시뮬레이션 활용 사례"],
     "Explore Backer’s trading behavior research, attention prediction and interactive attention simulation.": ["探索 Backer 的交易行为研究、注意力预测与交互式注意力仿真。", "Backerの取引行動研究、注意予測、インタラクティブな注意シミュレーションを探る。", "Backer의 거래 행동 연구, 관심 예측, 인터랙티브 관심 시뮬레이션을 살펴보세요."],
     "Scan complete. Select a feature to inspect its evidence.": ["扫描完成。选择特征，查看依据。","読み取り完了。特徴を選び、根拠を確認してください。","스캔 완료. 특성을 선택해 근거를 확인하세요."],
     "├─ object ────── ├─ observation ────── └─ unknown ──────": ["├─ 对象 ────── ├─ 观测 ────── └─ 未知 ──────","├─ 対象 ────── ├─ 観察 ────── └─ 不明 ──────","├─ 대상 ────── ├─ 관측 ────── └─ 미지 ──────"],
@@ -1658,84 +1662,6 @@
       "{0}단위의 자원 투입. 접촉 {1}, 고려 {2}, 행동 {3}. 점을 선택해 과정을 추적하세요."
     ]
   },
-  "actionLine": {
-  "en": {
-    "prefix": "Simulate human behavior before you ",
-    "words": [
-      "commit",
-      "invest",
-      "price",
-      "ship",
-      "expand",
-      "launch",
-      "hire",
-      "acquire",
-      "pivot",
-      "announce"
-    ],
-    "suffix": ".",
-    "accessibleLabel": "Simulate human behavior before you act.",
-    "pauseLabel": "Pause rotating word",
-    "resumeLabel": "Resume rotating word"
-  },
-  "zh": {
-    "prefix": "先模拟人类行为，再",
-    "words": [
-      "作出决定",
-      "投资",
-      "定价",
-      "交付产品",
-      "拓展业务",
-      "推出产品",
-      "招聘",
-      "收购",
-      "调整方向",
-      "发布消息"
-    ],
-    "suffix": "。",
-    "accessibleLabel": "先模拟人类行为，再行动。",
-    "pauseLabel": "暂停文字轮换",
-    "resumeLabel": "继续文字轮换"
-  },
-  "ja": {
-    "prefix": "人の行動をシミュレーションしてから、",
-    "words": [
-      "決断する",
-      "投資する",
-      "価格を決める",
-      "製品を届ける",
-      "事業を広げる",
-      "立ち上げる",
-      "採用する",
-      "買収する",
-      "方針を変える",
-      "発表する"
-    ],
-    "suffix": "。",
-    "accessibleLabel": "人の行動をシミュレーションしてから、実行する。",
-    "pauseLabel": "言葉の切り替えを一時停止",
-    "resumeLabel": "言葉の切り替えを再開"
-  },
-  "ko": {
-    "prefix": "사람의 행동을 먼저 시뮬레이션하고, ",
-    "words": [
-      "결정하세요",
-      "투자하세요",
-      "가격을 정하세요",
-      "제품을 내놓으세요",
-      "사업을 확장하세요",
-      "출시하세요",
-      "채용하세요",
-      "인수하세요",
-      "방향을 바꾸세요",
-      "발표하세요"
-    ],
-    "suffix": ".",
-    "accessibleLabel": "사람의 행동을 먼저 시뮬레이션하고, 실행하세요.",
-    "pauseLabel": "문구 전환 일시정지",
-    "resumeLabel": "문구 전환 재개"
-  }
-},
   "rich": {
     ".attention-experience .intro-description-copy": [
       "<span class=\"intro-description-lead\"><span class=\"attention\">模拟</span>一个世界</span><span class=\"intro-description-detail\">呈现人的注意力如何积累、决策如何形成</span>",
